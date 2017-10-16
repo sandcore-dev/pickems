@@ -21,5 +21,10 @@ class DatabaseSeeder extends Seeder
         
         $this->call( DriversTableSeeder::class );
         $this->call( TeamsTableSeeder::class );
+
+        $this->call( EntriesTableSeeder::class );
+        $this->call( RacesTableSeeder::class );
+
+        $this->call( LeaguesTableSeeder::class );
     }
 }
