@@ -13,14 +13,19 @@ class ModifyPicksTable extends Migration
      */
     public function up()
     {
-        Schema::table( [ 'picks', function (Blueprint $table)
+        Schema::table( 'picks', function (Blueprint $table)
 		{
+			$table->dropForeign( [ 'race_id' ] );
 			$table->dropForeign( [ 'user_id' ] );
-			
+
 			$table->dropUnique( [ 'race_id', 'user_id', 'entry_id' ] );
 			$table->dropUnique( [ 'race_id', 'user_id', 'rank' ] );
+
+			$table->dropColumn( 'user_id' );
 			
-			$table->integer('league_user_id')->unsigned();
+			$table->foreign('race_id')->references('id')->on('races');
+			
+			$table->integer('league_user_id')->unsigned()->after('entry_id');
 			
 			$table->foreign('league_user_id')->references('id')->on('league_user');
 
@@ -37,7 +42,7 @@ class ModifyPicksTable extends Migration
      */
     public function down()
     {
-        Schema::table( [ 'picks', function (Blueprint $table)
+        Schema::table( 'picks', function (Blueprint $table)
 		{
 			$table->dropUnique( [ 'race_id', 'league_user_id', 'rank' ] );
 			$table->dropUnique( [ 'race_id', 'league_user_id', 'entry_id' ] );
