@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Circuits extends Model
+class Circuit extends Model
 {
 	/**
 	 * Get country of this circuit.
@@ -13,6 +13,6 @@ class Circuits extends Model
 	 */
 	public function country()
 	{
-		return $this->hasOne( Countries::class, 'country_id' );
+		return $this->hasOne( Country::class );
 	}
 }

@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Drivers extends Model
+class Driver extends Model
 {
 	/**
 	 * Get entries of this driver.
@@ -13,6 +13,6 @@ class Drivers extends Model
 	 */
 	public function entries()
 	{
-		return $this->hasMany( Entries::class, 'driver_id' );
+		return $this->hasMany( Entry::class );
 	}
 }

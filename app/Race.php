@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Races extends Model
+class Race extends Model
 {
 	/**
 	 * Get the circuit of this race.
@@ -13,7 +13,7 @@ class Races extends Model
 	 */
 	public function circuit()
 	{
-		return $this->hasOne( Circuits::class, 'circuit_id' );
+		return $this->hasOne( Circuit::class );
 	}
 	
 	/**
@@ -23,7 +23,7 @@ class Races extends Model
 	 */
 	public function season()
 	{
-		return $this->hasOne( Seasons::class, 'season_id' );
+		return $this->hasOne( Season::class );
 	}
 	
 	/**
@@ -33,6 +33,6 @@ class Races extends Model
 	 */
 	public function results()
 	{
-		return $this->hasMany( Results::class, 'race_id' );
+		return $this->hasMany( Result::class );
 	}
 }

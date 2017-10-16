@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Standings extends Model
+class Standing extends Model
 {
 	/**
 	 * Get the race of this standings entry.
@@ -13,7 +13,7 @@ class Standings extends Model
 	 */
 	public function race()
 	{
-		return $this->hasOne( Races::class, 'race_id' );
+		return $this->hasOne( Race::class );
 	}
 	
 	/**
@@ -23,7 +23,7 @@ class Standings extends Model
 	 */
 	public function user()
 	{
-		return $this->hasOne( User::class, 'user_id' );
+		return $this->hasOne( User::class );
 	}
 	
 	/**
@@ -33,6 +33,6 @@ class Standings extends Model
 	 */
 	public function previous()
 	{
-		return $this->hasOne( Standings::class, 'previous_id' );
+		return $this->hasOne( Standing::class, 'previous_id' );
 	}
 }

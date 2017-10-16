@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Countries extends Model
+class Country extends Model
 {
 	/**
 	 * Get circuits in this country.
@@ -13,6 +13,6 @@ class Countries extends Model
 	 */
 	public function circuits()
 	{
-		return $this->hasMany( Circuits::class, 'country_id' );
+		return $this->hasMany( Circuit::class, 'country_id' );
 	}
 }

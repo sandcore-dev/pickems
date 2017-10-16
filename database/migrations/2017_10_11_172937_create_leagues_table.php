@@ -1,0 +1,65 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateLeaguesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('leagues', function (Blueprint $table)
+		{
+		    $table->increments('id');
+		    $table->string('name')->unique();
+		    $table->timestamps();
+		}
+        );
+        
+        Schema::create('league_user', function (Blueprint $table)
+		{
+		    $table->increments('id');
+		    $table->integer('league_id')->unsigned();
+		    $table->integer('user_id')->unsigned();
+		    $table->timestamps();
+		    
+		    $table->foreign('league_id')->references('id')->on('leagues');
+		    $table->foreign('user_id')->references('id')->on('users');
+		    
+		    $table->unique( [ 'league_id', 'user_id' ] );
+		}
+        );
+        
+        Schema::create('league_season', function (Blueprint $table)
+		{
+		    $table->increments('id');
+		    $table->integer('league_id')->unsigned();
+		    $table->integer('season_id')->unsigned();
+		    $table->timestamps();
+		    
+		    $table->foreign('league_id')->references('id')->on('leagues');
+		    $table->foreign('season_id')->references('id')->on('seasons');
+		    
+		    $table->unique( [ 'league_id', 'season_id' ] );
+		}
+        );
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('league_season');
+        Schema::dropIfExists('league_user');
+        
+        Schema::dropIfExists('leagues');
+    }
+}

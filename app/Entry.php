@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Entries extends Model
+class Entry extends Model
 {
 	/**
 	 * Get team of this entry.
@@ -13,7 +13,7 @@ class Entries extends Model
 	 */
 	public function team()
 	{
-		return $this->hasOne( Teams::class, 'team_id' );
+		return $this->hasOne( Team::class );
 	}
 	 
 	/**
@@ -23,7 +23,7 @@ class Entries extends Model
 	 */
 	public function driver()
 	{
-		return $this->hasOne( Drivers::class, 'driver_id' );
+		return $this->hasOne( Driver::class );
 	}
 	 
 	/**
@@ -33,6 +33,6 @@ class Entries extends Model
 	 */
 	public function season()
 	{
-		return $this->hasOne( Seasons::class, 'season_id' );
+		return $this->hasOne( Season::class );
 	}
 }

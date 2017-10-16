@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Teams extends Model
+class Team extends Model
 {
 	/**
 	 * Get entries of this team.
@@ -13,6 +13,6 @@ class Teams extends Model
 	 */
 	public function entries()
 	{
-		return $this->hasMany( Entries::class, 'team_id' );
+		return $this->hasMany( Entry::class );
 	}
 }

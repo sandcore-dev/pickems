@@ -13,6 +13,6 @@ class Series extends Model
 	 */
 	public function seasons()
 	{
-		return $this->hasMany( Seasons::class, 'season_id' );
+		return $this->hasMany( Season::class );
 	}
 }
