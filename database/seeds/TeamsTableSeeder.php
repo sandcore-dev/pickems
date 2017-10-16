@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Seeder;
 
-use App\Series;
+use App\Team;
 
-class SeriesTableSeeder extends Seeder
+class TeamsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class SeriesTableSeeder extends Seeder
      */
     public function run()
     {
-	factory( Series::class, 10 )->create();
+	factory( Team::class, 11 )->create();
     }
 }

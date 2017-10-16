@@ -17,8 +17,11 @@ class CreateTeamsTable extends Migration
 		{
 		    $table->increments('id');
 		    $table->string('name')->unique();
+		    $table->integer('country_id')->unsigned();
 		    $table->boolean('active');
 		    $table->timestamps();
+		    
+		    $table->foreign('country_id')->references('id')->on('countries');
 		}
         );
     }

@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Seeder;
 
-use App\Series;
+use App\Circuit;
 
-class SeriesTableSeeder extends Seeder
+class CircuitsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class SeriesTableSeeder extends Seeder
      */
     public function run()
     {
-	factory( Series::class, 10 )->create();
+    	factory( Circuit::class, 22 )->create();
     }
 }

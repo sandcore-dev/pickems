@@ -2,8 +2,10 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\Series::class, function (Faker $faker) {
+use App\Series;
+
+$factory->define(Series::class, function (Faker $faker) {
     return [
-    	'name'	=> $faker->name,
+    	'name'	=> $faker->unique()->company . ' Championship',
     ];
 });
