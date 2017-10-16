@@ -26,5 +26,11 @@ class DatabaseSeeder extends Seeder
         $this->call( RacesTableSeeder::class );
 
         $this->call( LeaguesTableSeeder::class );
+
+        $this->call( LeagueSeasonTableSeeder::class );
+        $this->call( LeagueUserTableSeeder::class );
+        
+        $this->call( PicksTableSeeder::class );
+        $this->call( ResultsTableSeeder::class );
     }
 }
