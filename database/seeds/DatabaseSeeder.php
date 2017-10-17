@@ -32,5 +32,6 @@ class DatabaseSeeder extends Seeder
         
         $this->call( PicksTableSeeder::class );
         $this->call( ResultsTableSeeder::class );
+        $this->call( StandingsTableSeeder::class );
     }
 }

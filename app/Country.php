@@ -13,6 +13,26 @@ class Country extends Model
 	 */
 	public function circuits()
 	{
-		return $this->hasMany( Circuit::class, 'country_id' );
+		return $this->hasMany( Circuit::class );
+	}
+	
+	/**
+	 * Get drivers of this country.
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Collection
+	 */
+	public function drivers()
+	{
+		return $this->hasMany( Driver::class );
+	}
+	
+	/**
+	 * Get teams of this country.
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Collection
+	 */
+	public function teams()
+	{
+		return $this->hasMany( Team::class );
 	}
 }

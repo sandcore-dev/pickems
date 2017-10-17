@@ -13,7 +13,7 @@ class Result extends Model
 	 */
 	public function race()
 	{
-		return $this->hasOne( Race::class );
+		return $this->belongsTo( Race::class );
 	}
 	
 	/**
@@ -23,6 +23,6 @@ class Result extends Model
 	 */
 	public function entry()
 	{
-		return $this->hasOne( Entry::class );
+		return $this->belongsTo( Entry::class );
 	}
 }

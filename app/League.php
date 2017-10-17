@@ -25,4 +25,24 @@ class League extends Model
 	{
 		return $this->belongsToMany( Season::class );
 	}
+	
+	/**
+	* Get picks of this league.
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
+	*/
+	public function picks()
+	{
+		return $this->belongsToMany( Pick::class, 'league_user', 'id', 'league_id' );
+	}
+	
+	/**
+	* Get standings of this league.
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
+	*/
+	public function standings()
+	{
+		return $this->belongsToMany( Standing::class, 'league_user', 'id', 'league_id' );
+	}
 }

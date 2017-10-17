@@ -13,7 +13,7 @@ class Pick extends Model
 	 */
 	public function race()
 	{
-		return $this->hasOne( Race::class );
+		return $this->belongsTo( Race::class );
 	}
 
 	/**
@@ -23,7 +23,7 @@ class Pick extends Model
 	 */
 	public function entry()
 	{
-		return $this->hasOne( Entry::class );
+		return $this->belongsTo( Entry::class );
 	}
 
 	/**
@@ -33,6 +33,16 @@ class Pick extends Model
 	 */
 	public function user()
 	{
-		return $this->hasOne( User::class );
+		return $this->belongsTo( User::class, 'league_user_id' );
+	}
+
+	/**
+	 * Get the league of this result.
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Collection
+	 */
+	public function league()
+	{
+		return $this->belongsTo( League::class, 'league_user_id' );
 	}
 }

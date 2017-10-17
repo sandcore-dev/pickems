@@ -13,7 +13,7 @@ class Standing extends Model
 	 */
 	public function race()
 	{
-		return $this->hasOne( Race::class );
+		return $this->belongsTo( Race::class );
 	}
 	
 	/**
@@ -23,7 +23,7 @@ class Standing extends Model
 	 */
 	public function user()
 	{
-		return $this->hasOne( User::class );
+		return $this->belongsTo( User::class, 'league_user_id' );
 	}
 	
 	/**

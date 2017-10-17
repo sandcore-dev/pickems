@@ -36,4 +36,14 @@ class User extends Authenticatable
     {
     	return $this->belongsToMany( League::class );
     }
+    
+    /**
+     * Get picks of this user.
+     *
+     * @return	\Illuminate\Database\Eloquent\Collection
+     */
+    public function picks()
+    {
+    	return $this->belongsToMany( Pick::class, 'league_user', 'user_id', 'id' );
+    }
 }

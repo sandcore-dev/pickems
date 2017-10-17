@@ -17,6 +17,26 @@ class Season extends Model
 	}
 
 	/**
+	* Get races of this season.
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
+	*/
+	public function races()
+	{
+		return $this->hasMany( Race::class );
+	}
+
+	/**
+	* Get entries of this season.
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
+	*/
+	public function entries()
+	{
+		return $this->hasMany( Entry::class );
+	}
+
+	/**
 	* Get leagues of this season.
 	*
 	* @return	\Illuminate\Database\Eloquent\Collection

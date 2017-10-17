@@ -13,7 +13,7 @@ class Entry extends Model
 	 */
 	public function team()
 	{
-		return $this->hasOne( Team::class );
+		return $this->belongsTo( Team::class );
 	}
 	 
 	/**
@@ -23,7 +23,7 @@ class Entry extends Model
 	 */
 	public function driver()
 	{
-		return $this->hasOne( Driver::class );
+		return $this->belongsTo( Driver::class );
 	}
 	 
 	/**
@@ -33,6 +33,26 @@ class Entry extends Model
 	 */
 	public function season()
 	{
-		return $this->hasOne( Season::class );
+		return $this->belongsTo( Season::class );
+	}
+	 
+	/**
+	 * Get results of this entry.
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Collection
+	 */
+	public function results()
+	{
+		return $this->hasMany( Result::class );
+	}
+	 
+	/**
+	 * Get picks of this entry.
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Collection
+	 */
+	public function picks()
+	{
+		return $this->hasMany( Pick::class );
 	}
 }
