@@ -68,4 +68,20 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
+    
+    /**
+     * Block the registration form.
+     */
+    public function showRegistrationForm()
+    {
+    	return response('Forbidden', 403);
+    }
+    
+    /**
+     * Block the registration.
+     */
+    public function register()
+    {
+    	return response('Forbidden', 403);
+    }
 }
