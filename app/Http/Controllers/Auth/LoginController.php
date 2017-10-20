@@ -36,4 +36,14 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+    
+    /**
+     * What is the username column called?
+     *
+     * @return	string
+     */
+    public function username()
+    {
+    	return 'username';
+    }
 }

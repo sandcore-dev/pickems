@@ -17,7 +17,7 @@ class CreateTeamsTable extends Migration
 		{
 		    $table->increments('id');
 		    $table->string('name')->unique();
-		    $table->integer('country_id')->unsigned();
+		    $table->integer('country_id')->unsigned()->nullable();
 		    $table->boolean('active');
 		    $table->timestamps();
 		    
