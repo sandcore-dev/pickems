@@ -265,7 +265,6 @@ class MigrateOldData extends Command
 	    	
 	    	$rows = $table->get();
 	    	
-	    	// not using chunk() anymore as it was discovered to be buggy
 		foreach( $rows as $row )
 		{
 			$model = new $mapping['model'];
