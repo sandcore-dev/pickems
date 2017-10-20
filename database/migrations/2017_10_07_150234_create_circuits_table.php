@@ -19,6 +19,7 @@ class CreateCircuitsTable extends Migration
 		    $table->string('name')->unique();
 		    $table->smallInteger('length')->unsigned()->nullable();
 		    $table->string('city')->nullable();
+		    $table->string('area')->nullable();
 		    $table->integer('country_id')->unsigned();
 		    $table->timestamps();
 		    
