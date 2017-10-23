@@ -15,4 +15,14 @@ class Circuit extends Model
 	{
 		return $this->belongsTo( Country::class );
 	}
+
+	/**
+	 * Get the place of this circuit.
+	 *
+	 * @return 	string
+	 */
+	public function getLocationAttribute()
+	{
+		return $this->city . ', ' . ( $this->area ? $this->area . ', ' : '' ) . $this->country->name;
+	}
 }

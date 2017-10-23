@@ -3,10 +3,25 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Season extends Model
 {
 	/**
+	* The "booting" method of the model.
+	*
+	* @return void
+	*/
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope('sortByStartAndEnd', function (Builder $builder) {
+		    $builder->orderBy('start_year', 'desc')->orderBy('end_year', 'desc');
+		});
+	}
+    
+    	/**
 	 * Get series of this season.
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection
@@ -44,5 +59,20 @@ class Season extends Model
 	public function leagues()
 	{
 		return $this->belongsToMany( League::class );
+	}
+	
+	/**
+	 * Get the season's name.
+	 *
+	 * @return 	string
+	 */
+	public function getNameAttribute()
+	{
+		$out = $this->start_year;
+		
+		if( $this->start_year != $this->end_year )
+			$out .= '-' . $this->end_year;
+		
+		return $out;
 	}
 }
