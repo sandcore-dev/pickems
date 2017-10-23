@@ -26,4 +26,15 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home');
+
+Route::get('profile', 'ProfileController@index')->name('profile');
+Route::post('profile/save', 'ProfileController@saveProfile')->name('profile.save');
+Route::post('profile/password', 'ProfileController@savePassword')->name('profile.password');
+
+Route::get('picks', 'PicksController@index')->name('picks');
+
+Route::get('standings', 'StandingsController@index')->name('standings');
+
+
+

@@ -1,18 +1,18 @@
 <nav class="navbar navbar-default navbar-inverse">
 	<ul class="navbar-nav nav">
 		@if( !Auth::check() )
-			<li><a href="{{ route('login') }}">Login</a></li>
+			<li class="{{ Route::currentRouteName() == 'login' ? 'active' : '' }}"><a href="{{ route('login') }}">Login</a></li>
 		@else
-			<li><a href="#">Home</a></li>
-			<li><a href="#">Profile</a></li>
-			<li><a href="#">Picks</a></li>
-			<li><a href="#">Standings</a></li>
+			<li class="{{ Route::currentRouteName() == 'home' ? 'active' : '' }}"><a href="{{ route('home') }}">Home</a></li>
+			<li class="{{ Route::currentRouteName() == 'profile' ? 'active' : '' }}" ><a href="{{ route('profile') }}">Profile</a></li>
+			<li class="{{ Route::currentRouteName() == 'picks' ? 'active' : '' }}" ><a href="{{ route('picks') }}">Picks</a></li>
+			<li class="{{ Route::currentRouteName() == 'standings' ? 'active' : '' }}" ><a href="{{ route('standings') }}">Standings</a></li>
 
 			@if( Gate::allows('admin') )
 				<li><a class="warning" href="#">Admin</a></li>
 			@endif
 
-			<li><a href="{{ route('logout') }}">Logout</a></li>
+			<li><a class="danger" href="{{ route('logout') }}">Logout</a></li>
 		@endif
 	</ul>
 	

@@ -50,5 +50,10 @@ body::after
 		{
 			color: $brand-warning;
 		}
+		
+		.danger
+		{
+			color: $brand-danger;
+		}
 	}
 }

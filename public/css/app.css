@@ -8389,3 +8389,7 @@ body::after {
   color: #cbb956;
 }
 
+.navbar .nav .danger {
+  color: #bf5329;
+}
+
