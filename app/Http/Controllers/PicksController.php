@@ -42,7 +42,7 @@ class PicksController extends Controller
     	$races		= $currentSeason->races();
     	
     	if( !$raceId and $races->count() > 1 )
-    		return redirect()->route( 'picks', [ 'leagueId' => $leagues->first()->id, 'seasonId' => $seasons->first()->id, 'raceId' => $races->first()->id ] );
+    		return redirect()->route( 'picks', [ 'leagueId' => $leagues->first()->id, 'seasonId' => $seasons->first()->id, 'raceId' => $races->nextOrLast()->id ] );
     		
     	$currentRace	= $currentSeason->races()->findOrFail( $raceId );
     	

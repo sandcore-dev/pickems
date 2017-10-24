@@ -70,4 +70,21 @@ class Race extends Model
 	{
 		return $this->hasMany( Pick::class );
 	}
+	
+	/**
+	 * Get next race according to current date.
+	 *
+	 * @param	$query	\Illuminate\Database\Eloquent\Builder
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNextOrLast( Builder $query )
+	{
+		$first = $query->where( 'race_day', '>=', date('Y-m-d') )->orderBy( 'race_day', 'asc' )->first();
+		
+		if( $first->count() )
+			return $first;
+		
+		return $query->orderBy( 'race_day', 'desc' )->first();
+	}
 }
