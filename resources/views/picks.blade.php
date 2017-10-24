@@ -22,7 +22,9 @@
 		            		
 		            		<ul class="dropdown-menu" aria-labelledby="leagueDropdown">
 		            		@foreach( $leagues as $league )
-		            			<li class="{{ $currentLeague->id == $league->id ? 'active' : '' }}"><a href="{{ route('picks', [ 'leagueId' => $league->id ] ) }}">{{ $league->name }}</a></li>
+		            			<li class="{{ $currentLeague->id == $league->id ? 'active' : '' }}">
+		            				<a href="{{ route('picks', [ 'leagueId' => $league->id ] ) }}">{{ $league->name }}</a>
+		            			</li>
 		            		@endforeach
 		            		</ul>
 		            	</div>
@@ -36,7 +38,9 @@
 		            		
 		            		<ul class="dropdown-menu" aria-labelledby="seasonDropdown">
 		            		@foreach( $seasons as $season )
-		            			<li class="{{ $currentSeason->id == $season->id ? 'active' : '' }}"><a href="{{ route('picks', [ 'leagueId' => $currentLeague->id, 'seasonId' => $season->id ] ) }}">{{ $season->name }}</a></li>
+		            			<li class="{{ $currentSeason->id == $season->id ? 'active' : '' }}">
+		            				<a href="{{ route('picks', [ 'leagueId' => $currentLeague->id, 'seasonId' => $season->id ] ) }}">{{ $season->name }}</a>
+		            			</li>
 		            		@endforeach
 		            		</ul>
 		            	</div>
@@ -44,12 +48,18 @@
 
 		            	<div class="btn-group">
 		            		<button class="btn btn-default dropdown-toggle" type="button" id="raceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		            			<span class="flag-icon flag-icon-{{ strtolower( $currentRace->circuit->country->code ) }}"></span>
 		            			{{ $currentRace->circuit->country->name }} <span class="caret"></span>
 		            		</button>
 		            		
 		            		<ul class="dropdown-menu" aria-labelledby="raceDropdown">
 		            		@foreach( $races as $race )
-		            			<li class="{{ $currentRace->id == $race->id ? 'active' : '' }}"><a href="{{ route('picks', [ 'leagueId' => $currentLeague->id, 'seasonId' => $currentSeason->id, 'raceId' => $race->id ] ) }}">{{ $race->circuit->country->name }}</a></li>
+		            			<li class="{{ $currentRace->id == $race->id ? 'active' : '' }}">
+		            				<a href="{{ route('picks', [ 'leagueId' => $currentLeague->id, 'seasonId' => $currentSeason->id, 'raceId' => $race->id ] ) }}">
+		            					<span class="flag-icon flag-icon-{{ strtolower( $race->circuit->country->code ) }}"></span>
+		            					{{ $race->circuit->country->name }}
+		            				</a>
+		            			</li>
 		            		@endforeach
 		            		</ul>
 		            	</div>
