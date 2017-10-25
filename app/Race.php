@@ -80,11 +80,13 @@ class Race extends Model
 	 */
 	public function scopeNextOrLast( Builder $query )
 	{
-		$first = $query->where( 'race_day', '>=', date('Y-m-d') )->orderBy( 'race_day', 'asc' )->first();
+		$newQuery = clone $query;
 		
-		if( $first->count() )
+		$first = $query->where( 'race_day', '>=', date('Y-m-d') )->first();
+		
+		if( $first )
 			return $first;
 		
-		return $query->orderBy( 'race_day', 'desc' )->first();
+		return $newQuery->orderBy( 'race_day', 'desc' )->first();
 	}
 }
