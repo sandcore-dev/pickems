@@ -5,16 +5,20 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use App\Collections\EntryCollection;
+
 class Entry extends Model
 {
 	/**
-	* The "booting" method of the model.
+	* Creates a new Collection instance of this model.
 	*
-	* @return void
+	* @param	array	$models
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
 	*/
-	protected static function boot()
+	public function newCollection( array $models = [] )
 	{
-		parent::boot();
+		return new EntryCollection( $models );
 	}
 
 	/**
