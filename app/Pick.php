@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Pick extends Model
 {
 	/**
-	 * Get the race of this result.
+	 * Get the race of this pick.
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection
 	 */
@@ -17,7 +17,7 @@ class Pick extends Model
 	}
 
 	/**
-	 * Get the entry of this result.
+	 * Get the entry of this pick.
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection
 	 */
@@ -27,7 +27,7 @@ class Pick extends Model
 	}
 
 	/**
-	 * Get the user of this result.
+	 * Get the user of this pick.
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection
 	 */
@@ -37,7 +37,7 @@ class Pick extends Model
 	}
 
 	/**
-	 * Get the league of this result.
+	 * Get the league of this pick.
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection
 	 */
