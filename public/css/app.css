@@ -10419,7 +10419,7 @@ body {
 body::after {
   display: block;
   content: "";
-  position: absolute;
+  position: fixed;
   z-index: -1;
   top: 0;
   left: 0;
@@ -10453,5 +10453,9 @@ body::after {
 
 .navbar .nav .danger {
   color: #bf5329;
+}
+
+.pickems-grid {
+  margin-top: 30px;
 }
 

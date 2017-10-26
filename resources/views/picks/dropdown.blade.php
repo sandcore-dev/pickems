@@ -1,16 +1,3 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-        
-            @if (session('status'))
-                <div class="alert alert-success">
-                    {{ session('status') }}
-                </div>
-            @endif
-            
             	<div class="btn-group" role="group">
             		
             		@if( $leagues->count() > 1 )
@@ -64,8 +51,4 @@
 	            	</div>
 	            	
 	        </div>
-    
-        </div>
-    </div>
-</div>
-@endsection
+

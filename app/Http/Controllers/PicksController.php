@@ -46,7 +46,7 @@ class PicksController extends Controller
     		
    	$currentRace	= $currentSeason->races()->findOrFail( $raceId );
     	
-        return view('picks')->with([
+        return view('picks.index')->with([
         	'leagues'	=> $leagues->get(),
         	'currentLeague'	=> $currentLeague,
         	

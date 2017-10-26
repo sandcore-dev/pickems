@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Race extends Model
 {
+	protected $dates = [
+		'weekend_start',
+		'created_at',
+		'updated_at',
+	];
+	
 	/**
 	* The "booting" method of the model.
 	*
@@ -87,6 +93,16 @@ class Race extends Model
 		if( $first )
 			return $first;
 		
-		return $newQuery->orderBy( 'race_day', 'desc' )->first();
+		return $newQuery->withoutGlobalScope('sortByRaceDay')->orderBy( 'race_day', 'desc' )->first();
+	}
+	
+	/**
+	 * Can we pick for this race?
+	 *
+	 * @return	bool
+	 */
+	public function getPickableAttribute()
+	{
+		return false;
 	}
 }

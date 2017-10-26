@@ -7,7 +7,7 @@ body::after
 {
 	display: block;
 	content: "";
-	position: absolute;
+	position: fixed;
 	z-index: -1;
 	top: 0;
 	left: 0;
@@ -58,3 +58,7 @@ body::after
 	}
 }
 
+.pickems-grid
+{
+	margin-top: 30px;
+}

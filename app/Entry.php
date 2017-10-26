@@ -3,9 +3,20 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Entry extends Model
 {
+	/**
+	* The "booting" method of the model.
+	*
+	* @return void
+	*/
+	protected static function boot()
+	{
+		parent::boot();
+	}
+
 	/**
 	 * Get team of this entry.
 	 *
@@ -54,5 +65,37 @@ class Entry extends Model
 	public function picks()
 	{
 		return $this->hasMany( Pick::class );
+	}
+
+	/**
+	 * Get active entries.
+	 *
+	 * @param	$query	\Illuminate\Database\Eloquent\Builder
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeActive( Builder $query )
+	{
+		return $query->where('active', 1);
+	}
+
+	/**
+	 * Order by teams and drivers.
+	 *
+	 * @param	$query	\Illuminate\Database\Eloquent\Builder
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeSortByTeamDriver( Builder $query )
+	{
+		return $query->with([
+			'team' => function ($query) {
+				$query->orderBy( 'name', 'asc' );
+			},
+			'driver' => function ($query) {
+				$query->orderBy( 'last_name', 'asc' );
+				$query->orderBy( 'first_name', 'asc' );
+			},
+		]);
 	}
 }
