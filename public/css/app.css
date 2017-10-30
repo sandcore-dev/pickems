@@ -3994,7 +3994,7 @@ select[multiple].input-lg,
 .btn:hover,
 .btn:focus,
 .btn.focus {
-  color: #333;
+  color: #fff;
   text-decoration: none;
 }
 
@@ -4022,30 +4022,30 @@ fieldset[disabled] a.btn {
 }
 
 .btn-default {
-  color: #333;
-  background-color: #fff;
-  border-color: #ccc;
+  color: #fff;
+  background-color: black;
+  border-color: black;
 }
 
 .btn-default:focus,
 .btn-default.focus {
-  color: #333;
-  background-color: #e6e5e5;
-  border-color: #8c8c8c;
+  color: #fff;
+  background-color: black;
+  border-color: black;
 }
 
 .btn-default:hover {
-  color: #333;
-  background-color: #e6e5e5;
-  border-color: #adadad;
+  color: #fff;
+  background-color: black;
+  border-color: black;
 }
 
 .btn-default:active,
 .btn-default.active,
 .open > .btn-default.dropdown-toggle {
-  color: #333;
-  background-color: #e6e5e5;
-  border-color: #adadad;
+  color: #fff;
+  background-color: black;
+  border-color: black;
 }
 
 .btn-default:active:hover,
@@ -4057,9 +4057,9 @@ fieldset[disabled] a.btn {
 .open > .btn-default.dropdown-toggle:hover,
 .open > .btn-default.dropdown-toggle:focus,
 .open > .btn-default.dropdown-toggle.focus {
-  color: #333;
-  background-color: #d4d4d4;
-  border-color: #8c8c8c;
+  color: #fff;
+  background-color: black;
+  border-color: black;
 }
 
 .btn-default:active,
@@ -4077,13 +4077,13 @@ fieldset[disabled] a.btn {
 fieldset[disabled] .btn-default:hover,
 fieldset[disabled] .btn-default:focus,
 fieldset[disabled] .btn-default.focus {
-  background-color: #fff;
-  border-color: #ccc;
+  background-color: black;
+  border-color: black;
 }
 
 .btn-default .badge {
-  color: #fff;
-  background-color: #333;
+  color: black;
+  background-color: #fff;
 }
 
 .btn-primary {
@@ -10455,8 +10455,23 @@ body::after {
   color: #bf5329;
 }
 
+.btn-default:hover {
+  background-color: #262626;
+}
+
 .pickems-grid {
   margin-top: 30px;
   margin-bottom: 30px;
+}
+
+.pickems-grid .bracket {
+  padding: 5px 10px 0;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff)), -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff));
+  background-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+  background-repeat: no-repeat;
+  background-size: 5px 50%;
+  background-position: top left, top right;
+  border: solid #fff;
+  border-width: 5px 0 0;
 }
 

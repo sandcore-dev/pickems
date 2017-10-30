@@ -32,7 +32,11 @@ Route::get('profile', 'ProfileController@index')->name('profile');
 Route::post('profile/save', 'ProfileController@saveProfile')->name('profile.save');
 Route::post('profile/password', 'ProfileController@savePassword')->name('profile.password');
 
-Route::get('picks/{leagueId?}/{seasonId?}/{raceId?}', 'PicksController@index')->name('picks');
+Route::get('picks', 'PicksController@index')->name('picks');
+Route::get('picks/{league}', 'PicksController@league')->name('picks.league');
+Route::get('picks/{league}/season/{season}', 'PicksController@season')->name('picks.season');
+Route::get('picks/{league}/{race}', 'PicksController@race')->name('picks.race');
+Route::post('picks/{league}/{race}', 'PicksController@create')->name('picks.create');
 
 Route::get('standings', 'StandingsController@index')->name('standings');
 

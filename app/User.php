@@ -44,6 +44,6 @@ class User extends Authenticatable
      */
     public function picks()
     {
-    	return $this->belongsToMany( Pick::class, 'league_user', 'user_id', 'id' );
+    	return $this->belongsToMany( Pick::class, 'league_user', 'user_id', 'id', null, 'league_user_id' );
     }
 }

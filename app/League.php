@@ -33,7 +33,7 @@ class League extends Model
 	*/
 	public function picks()
 	{
-		return $this->belongsToMany( Pick::class, 'league_user', 'id', 'league_id' );
+		return $this->belongsToMany( Pick::class, 'league_user', 'league_id', 'id', null, 'league_user_id' );
 	}
 	
 	/**

@@ -31,12 +31,13 @@ $text-color: #fff;
 $link-color: #fff;
 $link-hover-decoration: none;
 
-// Navbar
-// $navbar-inverse-link-active-bg: transparent;
-
 // Buttons
 $btn-primary-color: invert($text-color);
 $btn-primary-bg: $text-color;
+
+$btn-default-color: $text-color;
+$btn-default-bg: invert($text-color);
+$btn-default-border: $btn-default-bg;
 
 // Inputs
 $input-color: #fff;

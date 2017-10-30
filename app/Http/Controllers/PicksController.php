@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\League;
+use App\Season;
+use App\Race;
+
 class PicksController extends Controller
 {
     /**
@@ -15,46 +19,76 @@ class PicksController extends Controller
     {
         $this->middleware('auth');
     }
-
+    
+    /**
+     * Go to the default race.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+    	$user		= auth()->user();
+    	
+    	$league		= $user->leagues()->first();
+    	
+    	return $this->league( $league );
+    }
+    
+    /**
+     * Use league data to go to the default race.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function league( League $league )
+    {
+    	$season		= $league->seasons()->first();
+    	
+    	return $this->season( $league, $season );
+    }
+    
+    /**
+     * Use season data to go to the default race.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function season( League $league, Season $season )
+    {
+    	$race		= $season->races()->nextOrLast();
+    	
+    	return redirect()->route( 'picks.race', [ 'league' => $league->id, 'race' => $race->id ] );
+    }
+    
     /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index( $leagueId = null, $seasonId = null, $raceId = null )
+    public function race( League $league, Race $race )
     {
     	$user		= auth()->user();
-
-    	$leagues	= $user->leagues();
     	
-    	if( !$leagueId and $leagues->count() > 0 )
-    		return redirect()->route( 'picks', [ 'leagueId' => $leagues->first()->id ] );
-    	
-    	$currentLeague	= $user->leagues()->findOrFail( $leagueId );
-    	
-    	$seasons	= $currentLeague->seasons();
-    	
-    	if( !$seasonId and $seasons->count() > 1 )
-    		return redirect()->route( 'picks', [ 'leagueId' => $currentLeague->id, 'seasonId' => $currentLeague->seasons()->first()->id ] );
-    	
-    	$currentSeason	= $currentLeague->seasons()->findOrFail( $seasonId );
-
-    	$races		= $currentSeason->races();
-    	
-     	if( !$raceId and $races->count() > 1 )
-    		return redirect()->route( 'picks', [ 'leagueId' => $currentLeague->id, 'seasonId' => $currentSeason->id, 'raceId' => $races->nextOrLast()->id ] );
+    	if( !$user->leagues->contains($league) )
+    		abort(404);
     		
-   	$currentRace	= $currentSeason->races()->findOrFail( $raceId );
-    	
         return view('picks.index')->with([
-        	'leagues'	=> $leagues->get(),
-        	'currentLeague'	=> $currentLeague,
-        	
-        	'seasons'	=> $seasons->get(),
-        	'currentSeason'	=> $currentSeason,
-        	
-        	'races'		=> $races->get(),
-        	'currentRace'	=> $currentRace,
+        	'leagues'	=> $user->leagues,
+        	'currentLeague'	=> $league,
+        	'currentRace'	=> $race,
         ]);
+    }
+
+    /**
+     * Add pick.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create( League $league, Race $race )
+    {
+    	$user		= auth()->user();
+    	
+    	if( !$user->leagues->contains($league) )
+    		abort(404);
+    	
+    	dd( $user->leagues()->whereIn( 'leagues.id', $league )->first()->pivot );
     }
 }

@@ -58,8 +58,34 @@ body::after
 	}
 }
 
+.btn-default
+{
+	&:hover
+	{
+		background-color: lighten($btn-default-bg, 15%);
+	}
+}
+
 .pickems-grid
 {
 	margin-top: 30px;
 	margin-bottom: 30px;
+	
+	.bracket
+	{
+		padding: 5px 10px 0;
+		
+		background-image:
+			linear-gradient(#fff, #fff),
+			linear-gradient(#fff, #fff);
+
+		background-repeat: no-repeat;
+		
+		background-size: 5px 50%;
+
+		background-position: top left, top right;
+
+		border: solid #fff;
+		border-width: 5px 0 0;
+  	}
 }
