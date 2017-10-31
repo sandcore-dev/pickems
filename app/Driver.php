@@ -25,4 +25,14 @@ class Driver extends Model
 	{
 		return $this->hasMany( Entry::class );
 	}
+	
+	/**
+	 * Get full name of this driver.
+	 *
+	 * @return	string
+	 */
+	public function getFullNameAttribute()
+	{
+		return $this->first_name . ' ' . $this->last_name;
+	}
 }

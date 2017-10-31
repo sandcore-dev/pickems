@@ -9,6 +9,13 @@ use App\Collections\PickCollection;
 class Pick extends Model
 {
 	/**
+	 * The attributes that are mass-assignable.
+	 *
+	 * @var		array
+	 */
+	protected $fillable = [ 'race_id', 'entry_id', 'league_user_id', 'rank', 'carry_over' ];
+	
+	/**
 	* Creates a new Collection instance of this model.
 	*
 	* @param	array	$models
