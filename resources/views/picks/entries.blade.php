@@ -1,6 +1,6 @@
 <div class="col-md-3">
 	@if( $currentRace->weekend_start->gte( \Carbon\Carbon::now() ) )
-		<form class="btn-group-vertical drivers" role="group" aria-label="Drivers" method="post" action="{{ route( 'picks.create', [ 'league' => $currentLeague->id, 'race' => $currentRace->id ] ) }}">
+		<form class="btn-group-vertical btn-block drivers" role="group" aria-label="Drivers" method="post" action="{{ route( 'picks.create', [ 'league' => $currentLeague->id, 'race' => $currentRace->id ] ) }}">
 			{{ csrf_field() }}
 	
 			@foreach( $entriesByTeam as $entries )

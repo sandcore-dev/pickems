@@ -1,7 +1,7 @@
 <div class="col-md-9">
 @if ($errors->has('entry'))
 	<div class="row">
-		<div class="col-md-7 col-md-offset-2">
+		<div class="col-md-10 col-md-offset-1">
 			<p class="text-danger text-center">
 				<strong>{{ $errors->first('entry') }}</strong>
 			</p>
@@ -13,9 +13,9 @@
 	{{ csrf_field() }}
 	{{ method_field('DELETE') }}
 	
-	@forelse( $picks as $pick )
+	@foreach( $picks as $pick )
 		<div class="row">
-			<div class="col-md-3 col-md-offset-{{ $pick->rank % 2 == 0 ? 6 : 2 }}">
+			<div class="col-md-4 col-md-offset-{{ $pick->rank % 2 == 0 ? 7 : 1 }}">
 				<div class="rank text-center">{{ $pick->rank }}</div>
 				<div class="bracket">
 					@if( $pick->entry )
@@ -29,17 +29,6 @@
 				</div>
 			</div>
 		</div>
-	@empty
-		@foreach( range( 1, config('picks.max') ) as $rank )
-			<div class="row">
-				<div class="col-md-3 col-md-offset-{{ $rank % 2 == 0 ? 6 : 2 }}">
-					<div class="rank text-center">{{ $rank }}</div>
-					<div class="bracket">
-						&nbsp;
-					</div>
-				</div>
-			</div>
-		@endforeach
-	@endforelse
+	@endforeach
 	</form>
 </div>
