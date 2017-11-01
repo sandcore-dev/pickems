@@ -49,3 +49,21 @@ $input-color-placeholder: lighten($text-color, 30%);
 // Panels
 $panel-default-heading-bg: transparent;
 $panel-bg: transparent;
+
+// Tables
+$table-bg: invert($text-color);
+$table-bg-accent: lighten($table-bg, 15%);
+$table-bg-hover: lighten($table-bg, 25%);
+
+// Pagination
+$pagination-bg: invert($text-color);
+$pagination-border: $pagination-bg;
+
+$pagination-active-bg: lighten($pagination-bg, 15%);
+$pagination-active-border: $pagination-active-bg;
+
+$pagination-hover-bg: lighten($table-bg, 25%);
+$pagination-hover-border: $pagination-hover-bg;
+
+$pagination-disabled-bg: $pagination-bg;
+$pagination-disabled-border: $pagination-disabled-bg;

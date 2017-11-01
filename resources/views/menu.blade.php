@@ -9,14 +9,12 @@
 			<li class="{{ Route::currentRouteName() == 'standings' ? 'active' : '' }}" ><a href="{{ route('standings') }}">Standings</a></li>
 
 			@if( Gate::allows('admin') )
-				<li><a class="warning" href="#">Admin</a></li>
+				<li><a class="warning" href="{{ route('series.index') }}">Admin</a></li>
 			@endif
 
 			<li><a class="danger" href="{{ route('logout') }}">Logout</a></li>
 		@endif
 	</ul>
 	
-	@if( Auth::check() )
-	<p class="navbar-text pull-right">Logged in as <a href="#">{{ Auth::user()->name }}</a></p>
-	@endif
+	@include('auth.username')
 </nav>

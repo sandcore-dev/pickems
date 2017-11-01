@@ -17,9 +17,11 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<h1>{{ config('app.name', 'Laravel') }}</h1>
-		
-				@include('menu')
+				<h1>{{ config('app.name', 'Laravel') }} @yield('secondary')</h1>
+
+				@section('menu')		
+					@include('menu')
+				@show
 			</div>
 		</div>
 	</div>

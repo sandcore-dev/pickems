@@ -3,10 +3,32 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Series extends Model
 {
 	/**
+	 * The attributes that are mass-assignable.
+	 *
+	 * @var		array
+	 */
+	protected $fillable = [ 'name' ];
+	 
+	/**
+ 	 * The "booting" method of the model.
+	 *
+	 * @return void
+	 */
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope('orderByName', function (Builder $builder) {
+			$builder->orderBy('name', 'asc');
+		});
+	}
+    
+    	/**
 	 * Get seasons of this series
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection

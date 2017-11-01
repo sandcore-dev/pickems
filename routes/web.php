@@ -39,6 +39,12 @@ Route::get('picks/{league}/{race}', 'PicksController@race')->name('picks.race');
 Route::post('picks/{league}/{race}', 'PicksController@create')->name('picks.create');
 Route::delete('picks/{league}/{race}', 'PicksController@delete')->name('picks.delete');
 
+Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namespace' => 'Admin' ], function () {
+	Route::resources([
+		'series'	=> 'SeriesController',
+	]);
+});
+
 Route::get('standings', 'StandingsController@index')->name('standings');
 
 
