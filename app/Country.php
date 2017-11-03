@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Country extends Model
 {
@@ -12,6 +13,20 @@ class Country extends Model
 	 * @var		array
 	 */
 	protected $fillable = [ 'code', 'name' ];
+
+	/**
+ 	 * The "booting" method of the model.
+	 *
+	 * @return void
+	 */
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope('orderByName', function (Builder $builder) {
+			$builder->orderBy('name', 'asc');
+		});
+	}
 
 	/**
 	 * Get circuits in this country.
