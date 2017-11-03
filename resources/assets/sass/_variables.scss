@@ -45,6 +45,7 @@ $input-bg: #000;
 $input-border: lighten($text-color, 40%);
 $input-border-focus: lighten($brand-primary, 25%);
 $input-color-placeholder: lighten($text-color, 30%);
+$input-bg-disabled: lighten($input-bg, 30%);
 
 // Panels
 $panel-default-heading-bg: transparent;

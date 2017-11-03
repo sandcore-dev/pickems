@@ -42,6 +42,7 @@ Route::delete('picks/{league}/{race}', 'PicksController@delete')->name('picks.de
 Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namespace' => 'Admin' ], function () {
 	Route::resources([
 		'series'	=> 'SeriesController',
+		'seasons'	=> 'SeasonsController',
 	]);
 });
 
