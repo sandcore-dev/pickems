@@ -44,6 +44,7 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 		'series'	=> 'SeriesController',
 		'seasons'	=> 'SeasonsController',
 		'countries'	=> 'CountriesController',
+		'circuits'	=> 'CircuitsController',
 	]);
 });
 
