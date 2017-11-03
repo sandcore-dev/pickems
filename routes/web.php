@@ -43,6 +43,7 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 	Route::resources([
 		'series'	=> 'SeriesController',
 		'seasons'	=> 'SeasonsController',
+		'countries'	=> 'CountriesController',
 	]);
 });
 
