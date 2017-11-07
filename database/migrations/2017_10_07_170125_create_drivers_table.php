@@ -19,7 +19,7 @@ class CreateDriversTable extends Migration
 		    $table->string('first_name');
 		    $table->string('last_name');
 		    $table->integer('country_id')->unsigned()->nullable();
-		    $table->boolean('active');
+		    $table->boolean('active')->default(0);
 		    $table->timestamps();
 		    
 		    $table->foreign('country_id')->references('id')->on('countries');

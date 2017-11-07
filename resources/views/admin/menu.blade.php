@@ -6,6 +6,7 @@
 			<li class="{{ Route::currentRouteName() == 'countries.index' ? 'active' : '' }}"><a href="{{ route('countries.index') }}">Countries</a></li>
 			<li class="{{ Route::currentRouteName() == 'circuits.index' ? 'active' : '' }}"><a href="{{ route('circuits.index') }}">Circuits</a></li>
 			<li class="{{ Route::currentRouteName() == 'races.index' ? 'active' : '' }}"><a href="{{ route('races.index') }}">Races</a></li>
+			<li class="{{ Route::currentRouteName() == 'drivers.index' ? 'active' : '' }}"><a href="{{ route('drivers.index') }}">Drivers</a></li>
 			
 			<li><a class="warning" href="{{ route('home') }}">Return</a></li>
 
