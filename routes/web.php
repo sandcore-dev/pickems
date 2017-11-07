@@ -48,6 +48,7 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 		'races'		=> 'RacesController',
 		'drivers'	=> 'DriversController',
 		'teams'		=> 'TeamsController',
+		'entries'	=> 'EntriesController',
 	]);
 });
 
