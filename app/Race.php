@@ -7,12 +7,25 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Race extends Model
 {
+	/**
+	 * Date fields.
+	 *
+	 * @var	array
+	 */
 	protected $dates = [
 		'weekend_start',
+		'race_day',
 		'created_at',
 		'updated_at',
 	];
 	
+	/**
+	 * The attributes that are mass-assignable.
+	 *
+	 * @var		array
+	 */
+	protected $fillable = [ 'season_id', 'circuit_id', 'name', 'weekend_start', 'race_day' ];
+
 	/**
 	* The "booting" method of the model.
 	*
