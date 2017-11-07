@@ -66,7 +66,7 @@
 				
 				@slot('label', 'Race day')
 				
-				@slot('value', $race->race_day);
+				@slot('value', $race->race_day)
 				
 				@slot('year_attributes')
 					min="{{ $race->season->start_year }}" max="{{ $race->season->end_year }}"
@@ -78,7 +78,7 @@
 				
 				@slot('label', 'Weekend start')
 				
-				@slot('value', $race->weekend_start));
+				@slot('value', $race->weekend_start))
 				
 				@slot('year_attributes')
 					min="{{ $race->season->start_year }}" max="{{ $race->season->end_year }}"

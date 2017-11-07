@@ -62,7 +62,7 @@
 				
 				@slot('label', 'Race day')
 				
-				@slot('value', \Carbon\Carbon::createFromDate($season->start_year));
+				@slot('value', \Carbon\Carbon::createFromDate($season->start_year))
 				
 				@slot('year_attributes')
 					min="{{ $season->start_year }}" max="{{ $season->end_year }}"
@@ -74,7 +74,7 @@
 				
 				@slot('label', 'Weekend start')
 				
-				@slot('value', \Carbon\Carbon::createFromDate($season->start_year));
+				@slot('value', \Carbon\Carbon::createFromDate($season->start_year))
 				
 				@slot('year_attributes')
 					min="{{ $season->start_year }}" max="{{ $season->end_year }}"
