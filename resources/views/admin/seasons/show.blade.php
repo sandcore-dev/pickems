@@ -15,15 +15,13 @@
                         	Do you want to delete the season <strong>{{ $season->name }}</strong> from the series <strong>{{ $season->series->name }}</strong>?
                         </div>
 
-                        <div class="form-group">
-                            <div class="col-md-8 col-md-offset-4">
-                                <button type="submit" class="btn btn-danger">
-                                    Delete
-                                </button>
-                                
-                                <a class="btn btn-primary" href="{{ route( 'seasons.index', [ 'series' => $season->series->id ] ) }}">Cancel</a>
-                            </div>
-                        </div>
+			@component('admin.form.submit')
+				@slot('cancel', route( 'seasons.index', [ 'series' => $season->series->id ] ))
+				
+				@slot('context', 'danger')
+				
+				Delete season
+			@endcomponent
                     </form>
 
                 </div>

@@ -15,15 +15,13 @@
                         	Do you want to delete the series <strong>{{ $series->name }}</strong>?
                         </div>
 
-                        <div class="form-group">
-                            <div class="col-md-8 col-md-offset-4">
-                                <button type="submit" class="btn btn-danger">
-                                    Delete
-                                </button>
-                                
-                                <a class="btn btn-primary" href="{{ route('series.index') }}">Cancel</a>
-                            </div>
-                        </div>
+			@component('admin.form.submit')
+				@slot('cancel', route('series.index'))
+				
+				@slot('context', 'danger')
+				
+				Delete series
+			@endcomponent
                     </form>
 
                 </div>

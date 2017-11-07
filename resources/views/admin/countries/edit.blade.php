@@ -11,41 +11,35 @@
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
-                        <div class="form-group{{ $errors->has('code') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Code</label>
+			@component('admin.form.input')
+				@slot('field', 'code')
+				
+				@slot('value', $country->code)
+				
+				@slot('label', 'Code')
+				
+				@slot('attributes')
+					required autofocus
+				@endslot
+			@endcomponent
+			
+			@component('admin.form.input')
+				@slot('field', 'name')
+				
+				@slot('value', $country->name)
 
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control" name="code" value="{{ old('code', $country->code) }}" required autofocus>
+				@slot('label', 'Name')
+				
+				@slot('attributes')
+					required
+				@endslot
+			@endcomponent
 
-                                @if ($errors->has('code'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('code') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Name</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control" name="name" value="{{ old('name', $country->name) }}" required>
-
-                                @if ($errors->has('name'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-8 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Edit country
-                                </button>
-                            </div>
-                        </div>
+			@component('admin.form.submit')
+				@slot('cancel', route('circuits.index'))
+				
+				Edit country
+			@endcomponent
                     </form>
 
                 </div>
