@@ -72,7 +72,7 @@ class ResultsController extends Controller
         	'races'		=> $season->races,
         	'entriesByTeam'	=> $entriesByTeam,
         	'results'	=> $results->padMissing(),
-        	'showRecalcBut'	=> $results->count() == config('picks.max'),
+        	'showRecalcBut'	=> $results->count() >= config('picks.max'),
         ]);
     }
 

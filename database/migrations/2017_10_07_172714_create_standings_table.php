@@ -18,10 +18,10 @@ class CreateStandingsTable extends Migration
 		    $table->increments('id');
 		    $table->integer('user_id')->unsigned();
 		    $table->integer('race_id')->unsigned();
-		    $table->smallInteger('rank')->unsigned();
+		    $table->smallInteger('rank')->unsigned()->default(0);
 		    $table->integer('previous_id')->unsigned()->nullable();
-		    $table->smallInteger('picked')->unsigned();
-		    $table->smallInteger('positions_correct')->unsigned();
+		    $table->smallInteger('picked')->unsigned()->default(0);
+		    $table->smallInteger('positions_correct')->unsigned()->default(0);
 		    $table->timestamps();
 		    
 		    $table->foreign('user_id')->references('id')->on('users');

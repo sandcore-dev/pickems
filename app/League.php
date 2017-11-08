@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Pivots\PickUser;
+
 class League extends Model
 {
 	/**
@@ -13,7 +15,7 @@ class League extends Model
 	*/
 	public function users()
 	{
-		return $this->belongsToMany( User::class );
+		return $this->belongsToMany( User::class )->using(PickUser::class)->withPivot('id');
 	}
 	
 	/**
@@ -43,6 +45,6 @@ class League extends Model
 	*/
 	public function standings()
 	{
-		return $this->belongsToMany( Standing::class, 'league_user', 'id', 'league_id' );
+		return $this->belongsToMany( Standing::class, 'league_user', 'league_id', 'id', null, 'league_user_id' );
 	}
 }
