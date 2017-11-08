@@ -127,7 +127,7 @@ class StandingsController extends Controller
 	 */
 	protected function setRankings( League $league, Race $race )
 	{
-		$standings = $league->standings->where( 'race_id', $race->id )->sort(function ($a, $b) {
+		$standings = $league->standings()->where( 'race_id', $race->id )->get()->sort(function ($a, $b) {
 			 foreach( [ 'totalOverall', 'totalPositionsCorrect', 'totalPicked', 'previousRank' ] as $attr )
 			 {
 			 	switch( $b->{$attr} <=> $a->{$attr} )
