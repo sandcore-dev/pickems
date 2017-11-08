@@ -10,6 +10,27 @@ use App\Collections\EntryCollection;
 class Entry extends Model
 {
 	/**
+	 * The attributes that are mass-assignable.
+	 *
+	 * @var		array
+	 */
+	protected $fillable = [ 'season_id', 'car_number', 'team_id', 'driver_id', 'active' ];
+
+	/**
+	* The "booting" method of the model.
+	*
+	* @return void
+	*/
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope('sortByCarNumber', function (Builder $builder) {
+		    $builder->orderBy('car_number', 'asc');
+		});
+	}
+
+	/**
 	* Creates a new Collection instance of this model.
 	*
 	* @param	array	$models

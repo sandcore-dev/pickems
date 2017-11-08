@@ -57,4 +57,14 @@ class Driver extends Model
 	{
 		return $this->first_name . ' ' . $this->last_name;
 	}
+	
+	/**
+	 * Get full name of this driver, with last name first and then a comma.
+	 *
+	 * @return	string
+	 */
+	public function getLastFirstAttribute()
+	{
+		return $this->last_name . ', ' . $this->first_name;
+	}
 }

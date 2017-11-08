@@ -4,7 +4,7 @@
     <div class="col-md-6">
         <select id="{{ $field }}" class="form-control" name="{{ $field }}" {{ isset($attributes) ? $attributes : '' }}>
         	@foreach( $options as $option )
-			<option value="{{ $option->id }}"{{ old($field, (isset($value) ? $value : '')) == $option->id ? ' selected' : '' }}>{{ $option->name }}</option>
+			<option value="{{ $option->id }}"{{ old($field, (isset($value) ? $value : '')) == $option->id ? ' selected' : '' }}>{{ $option->{ isset($option_label) ? $option_label : 'name' } }}</option>
 		@endforeach
         </select>
 
