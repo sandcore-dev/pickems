@@ -33,12 +33,22 @@ class PickCollection extends Collection
 		foreach( range( 1, config('picks.max') ) as $index )
 			if( !isset( $picks[$index] ) )
 			{
-				$picks[$index] = new Pick;
+				$picks[$index] = $this->getNewObject();
 				$picks[$index]->rank = $index;
 			}
 		
 		ksort($picks);
 		
 		return new self( $picks );
+	}
+	
+	/**
+	 * Get a new instance of the object.
+	 *
+	 * @return	\App\Pick
+	 */
+	protected function getNewObject()
+	{
+		return new Pick;
 	}
 }

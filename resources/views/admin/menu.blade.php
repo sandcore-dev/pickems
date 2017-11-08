@@ -40,6 +40,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Results <span class="caret"></span></a>
+				
+				<ul class="dropdown-menu">
+					<li class="{{ Route::currentRouteName() == 'results.index' ? 'active' : '' }}"><a href="{{ route('results.index') }}">Results</a></li>
+				</ul>
+			</li>
 			
 			<li><a class="warning" href="{{ route('home') }}">Return</a></li>
 

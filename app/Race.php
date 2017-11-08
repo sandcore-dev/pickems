@@ -110,6 +110,25 @@ class Race extends Model
 	}
 	
 	/**
+	 * Get previous race according to current date.
+	 *
+	 * @param	$query	\Illuminate\Database\Eloquent\Builder
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopePreviousOrFirst( Builder $query )
+	{
+		$newQuery = clone $query;
+		
+		$last = $query->withoutGlobalScope('sortByRaceDay')->where( 'race_day', '<=', date('Y-m-d') )->orderBy('race_day', 'desc')->first();
+		
+		if( $last )
+			return $last;
+		
+		return $newQuery->first();
+	}
+	
+	/**
 	 * Can we pick for this race?
 	 *
 	 * @return	bool

@@ -50,6 +50,14 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 		'teams'		=> 'TeamsController',
 		'entries'	=> 'EntriesController',
 	]);
+	
+	Route::group([ 'prefix' => 'results' ], function () {
+		Route::get('/', 'ResultsController@index')->name('results.index');
+		Route::post('{race}', 'ResultsController@create')->name('results.create');
+		Route::delete('{race}', 'ResultsController@delete')->name('results.delete');
+	});
+	
+	Route::get('standings/{season}', 'StandingsController@recalculate')->name('standings.recalculate');
 });
 
 Route::get('standings', 'StandingsController@index')->name('standings');
