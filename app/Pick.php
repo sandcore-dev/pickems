@@ -66,4 +66,24 @@ class Pick extends Model
 	{
 		return $this->belongsTo( League::class, 'league_user_id' );
 	}
+	
+	/**
+	 * Calculate the points of this pick.
+	 *
+	 * @return	integer|null
+	 */
+	public function getPointsAttribute()
+	{
+		if( $this->race->results->isEmpty() )
+			return null;
+		
+		$result		= $this->race->results->where( 'rank', '<=', config('picks.max') )->whereIn( 'entry_id', $this->entry_id );
+		
+		$points		= $result->count();
+		
+		if( $points )
+			$points	+= $result->first()->rank == $this->rank ? 1 : 0;
+		
+		return $points;
+	}
 }
