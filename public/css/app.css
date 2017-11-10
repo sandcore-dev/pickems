@@ -10475,3 +10475,8 @@ body::after {
   border-width: 5px 0 0;
 }
 
+.team-color {
+  border: 0;
+  border-left: 10px solid transparent;
+}
+
