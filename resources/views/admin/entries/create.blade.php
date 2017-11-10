@@ -65,6 +65,18 @@
 				@slot('option_label', 'lastFirst')
 			@endcomponent
 
+			@component('admin.form.input')
+				@slot('type', 'color')
+				
+				@slot('field', 'color')
+				
+				@slot('label', 'Color')
+				
+				@slot('attributes')
+					required
+				@endslot
+			@endcomponent
+
 			@component('admin.form.checkbox')
 				@slot('field', 'active')
 				

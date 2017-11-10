@@ -17,6 +17,7 @@ use App\Driver;
 use App\Entry;
 
 use App\Rules\GreaterThanEqual;
+use App\Rules\ValidHexValue;
 
 class EntriesController extends Controller
 {
@@ -95,13 +96,14 @@ class EntriesController extends Controller
     		'car_number'		=> [ 'required', 'numeric' ],
     		'team_id'		=> [ 'required', 'integer', 'exists:teams,id' ],
     		'driver_id'		=> [ 'required', 'integer', 'exists:drivers,id' ],
+    		'color'			=> [ 'required', new ValidHexValue ],
     		'active'		=> [ 'boolean' ],
     	]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'driver_id', $request->input('driver_id') )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'car_number' => 'This entry already exists.' ]);
     	
-    	if( $entry = Entry::create( $request->only('season_id', 'car_number', 'team_id', 'driver_id', 'active') ) )
+    	if( $entry = Entry::create( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'active') ) )
 		session()->flash( 'status', "The entry '{$entry->car_number}' has been added." );
     	
     	return redirect()->route( 'entries.index', [ 'season' => $request->season_id ] );
@@ -146,13 +148,14 @@ class EntriesController extends Controller
     		'car_number'		=> [ 'required', 'numeric' ],
     		'team_id'		=> [ 'required', 'integer', 'exists:teams,id' ],
     		'driver_id'		=> [ 'required', 'integer', 'exists:drivers,id' ],
+    		'color'			=> [ 'required', new ValidHexValue ],
     		'active'		=> [ 'boolean' ],
     	]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'driver_id', $request->input('driver_id') )->where( 'id', '!=', $entry->id )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'car_number' => 'This entry already exists.' ]);
     	
-    	if( $entry->update( $request->only('season_id', 'car_number', 'team_id', 'driver_id', 'active') ) )
+    	if( $entry->update( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'active') ) )
 		session()->flash( 'status', "The entry '{$entry->car_number}' has been changed." );
     	
     	return redirect()->route( 'entries.index', [ 'season' => $entry->season->id ] );

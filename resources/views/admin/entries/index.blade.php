@@ -42,6 +42,10 @@
 							<tr>
 								<td>
 									<a href="{{ route( 'entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->car_number }}</a>
+									
+									@if( $entry->color )
+									<span class="pull-right glyphicon glyphicon-stop" style="color: {{ $entry->color }}"></span>
+									@endif
 								</td>
 								<td>
 									<a href="{{ route( 'entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->team->name }}</a>
