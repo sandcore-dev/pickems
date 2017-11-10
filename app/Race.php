@@ -129,6 +129,18 @@ class Race extends Model
 	}
 	
 	/**
+	 * Get next race deadline according to current date.
+	 *
+	 * @param	$query	\Illuminate\Database\Eloquent\Builder
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNextDeadline( Builder $query )
+	{
+		return $query->where( 'weekend_start', '>', date('Y-m-d H:i:s') );
+	}
+	
+	/**
 	 * Can we pick for this race?
 	 *
 	 * @return	bool
