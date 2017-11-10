@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Standing extends Model
 {
@@ -12,6 +13,20 @@ class Standing extends Model
 	 * @var		array
 	 */
 	protected $fillable = [ 'race_id', 'league_user_id' ];
+
+	/**
+	* The "booting" method of the model.
+	*
+	* @return void
+	*/
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope('sortByRaceRank', function (Builder $builder) {
+		    $builder->orderBy('race_id', 'asc')->orderBy('rank', 'asc');
+		});
+	}
 
 	/**
 	 * Get the race of this standings entry.
@@ -51,6 +66,38 @@ class Standing extends Model
 	public function getPreviousRankAttribute()
 	{
 		return $this->previous ? $this->previous->rank : null;
+	}
+	
+	/**
+	 * Get the difference between current rank and previous rank
+	 *
+	 * @return	integer|null
+	 */
+	public function getRankMovedAttribute()
+	{
+		if( is_null( $this->previousRank ) )
+			return null;
+		
+		return $this->previousRank - $this->rank;
+	}
+	
+	/**
+	 * Get the correct glyphicon class according to rankMoved.
+	 *
+	 * @return	string
+	 */
+	public function getRankMovedGlyphiconAttribute()
+	{
+		if( is_null( $this->rankMoved ) )
+			return 'glyphicon-star';
+
+		if( $this->rankMoved < 0 )		
+			return 'glyphicon-arrow-down text-danger';
+
+		if( $this->rankMoved > 0 )			
+			return 'glyphicon-arrow-up text-success';
+		
+		return 'glyphicon-pause text-info';
 	}
 	
 	/**

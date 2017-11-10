@@ -6,7 +6,7 @@
 			<li class="{{ Route::currentRouteName() == 'home' ? 'active' : '' }}"><a href="{{ route('home') }}">Home</a></li>
 			<li class="{{ Route::currentRouteName() == 'profile' ? 'active' : '' }}" ><a href="{{ route('profile') }}">Profile</a></li>
 			<li class="{{ Route::currentRouteName() == 'picks' ? 'active' : '' }}" ><a href="{{ route('picks') }}">Picks</a></li>
-			<li class="{{ Route::currentRouteName() == 'standings' ? 'active' : '' }}" ><a href="{{ route('standings') }}">Standings</a></li>
+			<li class="{{ Route::currentRouteName() == 'standings.race' ? 'active' : '' }}" ><a href="{{ route('standings') }}">Standings</a></li>
 
 			@if( Gate::allows('admin') )
 				<li><a class="warning" href="{{ route('series.index') }}">Admin</a></li>
