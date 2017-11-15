@@ -75,7 +75,12 @@ class SeasonsController extends Controller
     		return redirect()->back()->withInput()->withErrors([ 'start_year' => 'This season already exists.' ]);
     	
     	if( $season = Season::create( $request->only('series_id', 'start_year', 'end_year') ) )
+    	{
 		session()->flash( 'status', "The season '{$season->name}' has been added." );
+		
+		foreach( $season->previous->leagues as $league )
+			$league->seasons()->attach( $season->id );
+	}
     	
     	return redirect()->route( 'seasons.index', [ 'series' => $request->series_id ] );
     }

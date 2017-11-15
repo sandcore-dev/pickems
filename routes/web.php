@@ -67,5 +67,12 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 	});
 	
 	Route::get('standings/{season}', 'StandingsController@recalculate')->name('standings.recalculate');
+	
+	Route::group([ 'prefix' => 'userleagues' ], function () {
+		Route::get('/', 'UserLeaguesController@index')->name('userleagues.index');
+		Route::get('{user}', 'UserLeaguesController@edit')->name('userleagues.edit');
+		Route::get('{user}/{league}/attach', 'UserLeaguesController@attach')->name('userleagues.attach');
+		Route::get('{user}/{league}/detach', 'UserLeaguesController@detach')->name('userleagues.detach');
+	});
 });
 

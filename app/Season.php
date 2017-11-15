@@ -82,4 +82,17 @@ class Season extends Model
 		
 		return $out;
 	}
+	
+	/**
+	 * Get previous season.
+	 *
+	 * @return	\App\Season
+	 */
+	public function getPreviousAttribute()
+	{
+		$previousSeasons = $this->series->seasons->where( 'id', '!=', $this->id )->where( 'start_year', '<', $this->start_year )->where( 'end_year', '<', $this->end_year )->sortByDesc('name');
+		
+		return $previousSeasons->isEmpty() ? new self : $previousSeasons->first();
+	}
+	 
 }

@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use App\Season;
+
 class Series extends Model
 {
 	/**
@@ -36,5 +38,18 @@ class Series extends Model
 	public function seasons()
 	{
 		return $this->hasMany( Season::class );
+	}
+	
+	/**
+	 * Get latest (most recent by year) season.
+	 *
+	 * @return	\App\Season
+	 */
+	public function getLatestSeasonAttribute()
+	{
+		if( $this->seasons->isEmpty() )
+			return new Season;
+			
+		return $this->seasons->sortByDesc('name')->first();
 	}
 }

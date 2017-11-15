@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Controller;
 
+use App\Series;
 use App\League;
 
 class LeaguesController extends Controller
@@ -44,7 +45,7 @@ class LeaguesController extends Controller
      */
     public function create()
     {
-    	return view('admin.leagues.create');
+    	return view('admin.leagues.create')->with( 'series', Series::all() );
     }
 
     /**
@@ -56,11 +57,24 @@ class LeaguesController extends Controller
     public function store(Request $request)
     {
     	$request->validate([
-    		'name'	=> [ 'required', 'min:2', 'unique:leagues' ],
+    		'name'		=> [ 'required', 'min:2', 'unique:leagues' ],
+    		'series'	=> [ 'required', 'array', 'min:1' ],
+    		'series.*'	=> [ 'required', 'exists:series,id' ],
     	]);
     	
     	if( $league = League::create( $request->only('name') ) )
+    	{
 		session()->flash( 'status', "The league '{$league->name}' has been added." );
+		
+		foreach( $request->input('series') as $series )
+		{
+			$series = Series::findOrFail($series);
+			
+			$league->seasons()->attach( $series->latestSeason->id );
+		}
+		
+		$league->save();
+	}
     	
     	return redirect()->route( 'leagues.index' );
     }

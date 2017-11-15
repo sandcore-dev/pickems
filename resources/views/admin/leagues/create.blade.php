@@ -20,6 +20,18 @@
 				@endslot
 			@endcomponent
 			
+			@component('admin.form.select')
+				@slot('field', 'series[]')
+				
+				@slot('label', 'Series')
+				
+				@slot('options', $series);
+				
+				@slot('attributes')
+					required multiple size="10"
+				@endslot
+			@endcomponent
+			
 			@component('admin.form.submit')
 				@slot('cancel', route( 'leagues.index' ) )
 				

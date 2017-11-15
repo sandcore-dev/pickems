@@ -48,6 +48,10 @@
 				<ul class="dropdown-menu">
 					<li class="{{ Route::currentRouteName() == 'users.index' ? 'active' : '' }}"><a href="{{ route('users.index') }}">Users</a></li>
 					<li class="{{ Route::currentRouteName() == 'leagues.index' ? 'active' : '' }}"><a href="{{ route('leagues.index') }}">Leagues</a></li>
+					
+					<li role="separator" class="divider"></li>
+
+					<li class="{{ Route::currentRouteName() == 'userleagues.index' ? 'active' : '' }}"><a href="{{ route('userleagues.index') }}">User's leagues</a></li>
 				</ul>
 			</li>
 			
