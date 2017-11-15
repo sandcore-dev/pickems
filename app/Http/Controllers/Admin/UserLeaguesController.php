@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Controller;
 
@@ -60,6 +61,8 @@ class UserLeaguesController extends Controller
     {
     	$user->leagues()->attach( $league->id );
     	
+    	session()->flash( 'status', "League '{$league->name}' attached." );
+    	
     	return redirect()->back();
     }
  
@@ -73,7 +76,14 @@ class UserLeaguesController extends Controller
      */
     public function detach(User $user, League $league)
     {
-    	$user->leagues()->detach( $league->id );
+    	try {
+	    	$user->leagues()->detach( $league->id );
+	    	
+	    	session()->flash( 'status', "League '{$league->name}' detached." );
+	}
+	catch( QueryException $e ) {
+		session()->flash( 'error', "Cannot detach league '{$league->name}'." );
+	}
     	
     	return redirect()->back();
     }

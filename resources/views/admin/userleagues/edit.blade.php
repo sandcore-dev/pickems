@@ -10,6 +10,12 @@
 					</div>
 				@endif
 
+				@if (session('error'))
+					<div class="alert alert-danger">
+						{{ session('error') }}
+					</div>
+				@endif
+
 				<div class="text-center">
 					Add or remove leagues for user <strong>{{ $user->name }}</strong>:
 				</div>
@@ -53,6 +59,10 @@
 				
 				<div class="text-center">
 					{{ $leagues->links() }}
+				</div>
+				
+				<div class="text-center">
+					<a class="btn btn-primary" href="{{ route('userleagues.index') }}">Go to index</a>
 				</div>
 			</div>
 		</div>
