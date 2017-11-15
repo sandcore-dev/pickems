@@ -40,11 +40,14 @@
 				</ul>
 			</li>
 			
+			<li class="{{ Route::currentRouteName() == 'results.index' ? 'active' : '' }}"><a href="{{ route('results.index') }}">Results</a></li>
+			
 			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Results <span class="caret"></span></a>
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 				
 				<ul class="dropdown-menu">
-					<li class="{{ Route::currentRouteName() == 'results.index' ? 'active' : '' }}"><a href="{{ route('results.index') }}">Results</a></li>
+					<li class="{{ Route::currentRouteName() == 'users.index' ? 'active' : '' }}"><a href="{{ route('users.index') }}">Users</a></li>
+					<li class="{{ Route::currentRouteName() == 'leagues.index' ? 'active' : '' }}"><a href="{{ route('leagues.index') }}">Leagues</a></li>
 				</ul>
 			</li>
 			

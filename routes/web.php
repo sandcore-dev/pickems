@@ -56,6 +56,8 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 		'drivers'	=> 'DriversController',
 		'teams'		=> 'TeamsController',
 		'entries'	=> 'EntriesController',
+		'users'		=> 'UsersController',
+		'leagues'	=> 'LeaguesController',
 	]);
 	
 	Route::group([ 'prefix' => 'results' ], function () {

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 use App\Pivots\PickUser;
 
@@ -10,6 +11,27 @@ use App\Standing;
 
 class League extends Model
 {
+	/**
+	 * The attributes that are mass-assignable.
+	 *
+	 * @var		array
+	 */
+	protected $fillable = [ 'name' ];
+
+	/**
+	* The "booting" method of the model.
+	*
+	* @return void
+	*/
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope('sortByName', function (Builder $builder) {
+		    $builder->orderBy('name', 'asc');
+		});
+	}
+
 	/**
 	* Get users of this league.
 	*

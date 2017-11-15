@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Illuminate\Database\Eloquent\Builder;
+
 use App\Pivots\PickUser;
 
 class User extends Authenticatable
@@ -29,6 +31,20 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
     
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+    	parent::boot();
+
+	static::addGlobalScope('sortByUsername', function (Builder $builder) {
+	    $builder->orderBy('username', 'asc');
+	});
+    }
+
     /**
      * Get leagues of this user.
      *
