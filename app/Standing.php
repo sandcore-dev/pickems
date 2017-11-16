@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use App\Collections\StandingCollection;
+
 class Standing extends Model
 {
 	/**
@@ -29,6 +31,18 @@ class Standing extends Model
 	}
 
 	/**
+	* Creates a new Collection instance of this model.
+	*
+	* @param	array	$models
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
+	*/
+	public function newCollection( array $models = [] )
+	{
+		return new StandingCollection( $models );
+	}
+
+	/**
 	 * Get the race of this standings entry.
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Collection
@@ -36,6 +50,16 @@ class Standing extends Model
 	public function race()
 	{
 		return $this->belongsTo( Race::class );
+	}
+	
+	/**
+	 * Get the league of this standings entry.
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Collection
+	 */
+	public function league()
+	{
+		return $this->belongsTo( League::class, 'league_user_id' );
 	}
 	
 	/**

@@ -18,6 +18,10 @@
         		@if( $bestresult = $league->currentSeasonBestResult )
         			<p>Your best result this season was <strong>{{ $bestresult->total }}</strong> point(s) at the <strong>{{ $bestresult->race->name }}</strong>.</p>
         		@endif
+        		
+        		<div class="vue">
+	        		<user-league-results data-series="{{ $league->pivot->standings->getChartData() }}"></user-league-results>
+        		</div>
         	@endforeach
         </div>
     </div>
