@@ -89,13 +89,16 @@ class MigrateOldData extends Command
 				'id'		=> 'id',
 				'name'		=> 'name',
 			],
-		],
+		]
+	]);
+	
+	$this->migrate( $oldDatabase, [
 		[
 			'table'		=> 'seasons',
 			'model'		=> Season::class,
 			'fields'	=> [
 				'id'		=> 'id',
-				'series_id'	=> 1,
+				'series_id'	=> Series::first()->id,
 				'start_year'	=> 'start_year',
 				'end_year'	=> function ($row) { return $row->end_year ? $row->end_year : $row->start_year; },
 			],
@@ -105,6 +108,7 @@ class MigrateOldData extends Command
 			'model'		=> League::class,
 			'fields'	=> [
 				'id'		=> 'id',
+				'series_id'	=> 'id',
 				'name'		=> 'name',
 			],
 		],
@@ -177,7 +181,6 @@ class MigrateOldData extends Command
 	] );
 	
 	$this->attachAllUsersToLeagues();
-	$this->attachAllLeaguesToSeasons();
 	
 	$this->migrate( $oldDatabase, [
 		[
@@ -187,24 +190,13 @@ class MigrateOldData extends Command
 			'fields'	=> [
 				'race_id'		=> 'races_id',
 				'entry_id'		=> 'entries_id',
-				'league_user_id'	=> function ($row) { return $this->getLeagueUserId( $row->players_id, $row->races_id ); },
+				'user_id'		=> 'players_id',
 				'rank'			=> 'rank',
 				'carry_over'		=> 'carry_over',
 			],
 		],
 	] );
     }
-    
-    /**
-     * Get the ID of the league/user pivot table with the given data.
-     */
-    protected function getLeagueUserId( $userId, $raceId )
-    {
-    	$leagues = Race::find( $raceId )->season()->first()->leagues()->pluck('leagues.id');
-    	
-    	return DB::table('league_user')->whereIn( 'league_id', $leagues )->where( 'user_id', $userId )->first()->id;
-    }
-    
     
     /**
      * Is the database empty so we can migrate?
@@ -303,24 +295,6 @@ class MigrateOldData extends Command
     	foreach( $users as $user )
     	{
     		$user->leagues()->attach( $leagues );
-    	}
-    }
-    
-    /**
-     * Attach all leagues to seasons.
-     *
-     * @return	void
-    */
-    protected function attachAllLeaguesToSeasons()
-    {
-    	$this->info('Attaching all leagues to seasons.');
-    	
-    	$leagues	= League::all();
-    	$seasons	= Season::pluck('id');
-    	
-    	foreach( $leagues as $league )
-    	{
-    		$league->seasons()->attach( $seasons );
     	}
     }
 }
