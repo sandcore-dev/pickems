@@ -13,7 +13,7 @@ class Pick extends Model
 	 *
 	 * @var		array
 	 */
-	protected $fillable = [ 'race_id', 'entry_id', 'league_user_id', 'rank', 'carry_over' ];
+	protected $fillable = [ 'race_id', 'entry_id', 'user_id', 'rank', 'carry_over' ];
 	
 	/**
 	* Creates a new Collection instance of this model.
@@ -54,19 +54,9 @@ class Pick extends Model
 	 */
 	public function user()
 	{
-		return $this->belongsTo( User::class, 'league_user_id' );
+		return $this->belongsTo( User::class );
 	}
 
-	/**
-	 * Get the league of this pick.
-	 *
-	 * @return	\Illuminate\Database\Eloquent\Collection
-	 */
-	public function league()
-	{
-		return $this->belongsTo( League::class, 'league_user_id' );
-	}
-	
 	/**
 	 * Calculate the points of this pick.
 	 *

@@ -16,8 +16,11 @@ class CreateLeaguesTable extends Migration
         Schema::create('leagues', function (Blueprint $table)
 		{
 		    $table->increments('id');
+		    $table->integer('series_id')->unsigned();
 		    $table->string('name')->unique();
 		    $table->timestamps();
+
+		    $table->foreign('series_id')->references('id')->on('series');
 		}
         );
         
@@ -34,20 +37,6 @@ class CreateLeaguesTable extends Migration
 		    $table->unique( [ 'league_id', 'user_id' ] );
 		}
         );
-        
-        Schema::create('league_season', function (Blueprint $table)
-		{
-		    $table->increments('id');
-		    $table->integer('league_id')->unsigned();
-		    $table->integer('season_id')->unsigned();
-		    $table->timestamps();
-		    
-		    $table->foreign('league_id')->references('id')->on('leagues');
-		    $table->foreign('season_id')->references('id')->on('seasons');
-		    
-		    $table->unique( [ 'league_id', 'season_id' ] );
-		}
-        );
     }
 
     /**
@@ -57,7 +46,6 @@ class CreateLeaguesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('league_season');
         Schema::dropIfExists('league_user');
         
         Schema::dropIfExists('leagues');

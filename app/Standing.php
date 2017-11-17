@@ -14,7 +14,7 @@ class Standing extends Model
 	 *
 	 * @var		array
 	 */
-	protected $fillable = [ 'race_id', 'league_user_id' ];
+	protected $fillable = [ 'race_id', 'user_id' ];
 
 	/**
 	* The "booting" method of the model.
@@ -59,7 +59,7 @@ class Standing extends Model
 	 */
 	public function league()
 	{
-		return $this->belongsTo( League::class, 'league_user_id' );
+		return $this->belongsTo( League::class );
 	}
 	
 	/**
@@ -69,7 +69,7 @@ class Standing extends Model
 	 */
 	public function user()
 	{
-		return $this->belongsTo( User::class, 'league_user_id' );
+		return $this->belongsTo( User::class );
 	}
 	
 	/**

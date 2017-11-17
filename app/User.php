@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Illuminate\Database\Eloquent\Builder;
 
-use App\Pivots\PickUser;
 use App\Collections\UserCollection;
 
 class User extends Authenticatable
@@ -65,7 +64,17 @@ class User extends Authenticatable
      */
     public function leagues()
     {
-    	return $this->belongsToMany( League::class )->using(PickUser::class)->withPivot('id');
+    	return $this->belongsToMany( League::class );
+    }
+    
+    /**
+     * Get standings of this user.
+     *
+     * @return	\Illuminate\Database\Eloquent\Collection
+     */
+    public function standings()
+    {
+    	return $this->hasMany( Standing::class );
     }
     
     /**
@@ -75,6 +84,6 @@ class User extends Authenticatable
      */
     public function picks()
     {
-    	return $this->belongsToMany( Pick::class, 'league_user', 'user_id', 'id', null, 'league_user_id' );
+    	return $this->hasMany( Pick::class );
     }
 }
