@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'entries.update', [ 'entries' => $entry->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.entries.update', [ 'entries' => $entry->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
                         
@@ -92,7 +92,7 @@
 			@endcomponent
 			
 			@component('admin.form.submit')
-				@slot('cancel', route( 'entries.index', [ 'season' => $entry->season->id ] ))
+				@slot('cancel', route( 'admin.entries.index', [ 'season' => $entry->season->id ] ))
 				
 				Edit entry
 			@endcomponent

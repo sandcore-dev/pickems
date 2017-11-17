@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route('leagues.store') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('admin.leagues.store') }}">
                         {{ csrf_field() }}
                         
 			@component('admin.form.input')
@@ -33,7 +33,7 @@
 			@endcomponent
 			
 			@component('admin.form.submit')
-				@slot('cancel', route( 'leagues.index' ) )
+				@slot('cancel', route( 'admin.leagues.index' ) )
 				
 				Add league
 			@endcomponent

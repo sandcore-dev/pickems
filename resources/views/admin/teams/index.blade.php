@@ -27,7 +27,7 @@
 								Active
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('teams.create') }}" title="Add a team" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.teams.create') }}" title="Add a team" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -35,7 +35,7 @@
 						@forelse( $teams as $team )
 							<tr>
 								<td>
-									<a href="{{ route( 'teams.edit', [ 'teams' => $team->id ] ) }}">{{ $team->name }}</a>
+									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}">{{ $team->name }}</a>
 								</td>
 								<td>
 									<span class="flag-icon flag-icon-{{ strtolower( $team->country->code ) }}" title="{{ $team->country->name }}"></span>
@@ -44,11 +44,11 @@
 									<span class="glyphicon glyphicon-{{ $team->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'teams.edit', [ 'teams' => $team->id ] ) }}" title="Edit this team" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}" title="Edit this team" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$team->entries->count() )
-										<a href="{{ route( 'teams.destroy', [ 'teams' => $team->id ] ) }}" title="Delete this team" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.teams.destroy', [ 'teams' => $team->id ] ) }}" title="Delete this team" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

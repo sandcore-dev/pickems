@@ -6,7 +6,7 @@
 	<ul class="dropdown-menu" aria-labelledby="seasonDropdown">
 	@foreach( $seasons as $season )
 		<li class="{{ $currentSeason->id == $season->id ? 'active' : '' }}">
-			<a href="{{ route('races.index', [ 'season' => $season->id ] ) }}">{{ $season->name }}</a>
+			<a href="{{ route('admin.races.index', [ 'season' => $season->id ] ) }}">{{ $season->name }}</a>
 		</li>
 	@endforeach
 	</ul>

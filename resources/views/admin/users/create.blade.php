@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route('users.store') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('admin.users.store') }}">
                         {{ csrf_field() }}
                         
 			@component('admin.form.input')
@@ -75,7 +75,7 @@
 			@endcomponent
 			
 			@component('admin.form.submit')
-				@slot('cancel', route( 'users.index' ) )
+				@slot('cancel', route( 'admin.users.index' ) )
 				
 				Add user
 			@endcomponent

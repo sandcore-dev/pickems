@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route('drivers.store') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('admin.drivers.store') }}">
                         {{ csrf_field() }}
 
 			@component('admin.form.input')
@@ -45,7 +45,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('drivers.index'))
+				@slot('cancel', route('admin.drivers.index'))
 				
 				Add driver
 			@endcomponent

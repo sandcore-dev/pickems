@@ -46,7 +46,7 @@ Route::group([ 'prefix' => 'standings' ], function () {
 	Route::get('{league}/{race}', 'StandingsListController@race')->name('standings.race');
 });
 
-Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namespace' => 'Admin' ], function () {
+Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => [ 'auth', 'admin' ], 'namespace' => 'Admin' ], function () {
 	Route::resources([
 		'series'	=> 'SeriesController',
 		'seasons'	=> 'SeasonsController',
@@ -73,6 +73,12 @@ Route::group([ 'prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ], 'namesp
 		Route::get('{user}', 'UserLeaguesController@edit')->name('userleagues.edit');
 		Route::get('{user}/{league}/attach', 'UserLeaguesController@attach')->name('userleagues.attach');
 		Route::get('{user}/{league}/detach', 'UserLeaguesController@detach')->name('userleagues.detach');
+	});
+
+	Route::group([ 'prefix' => 'picks' ], function () {
+		Route::get('/', 'PicksController@index')->name('picks.index');
+		Route::post('{race}', 'PicksController@create')->name('picks.create');
+		Route::delete('{race}', 'PicksController@delete')->name('picks.delete');
 	});
 });
 

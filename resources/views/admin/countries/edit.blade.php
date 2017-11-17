@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'countries.update', [ 'countries' => $country->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.countries.update', [ 'countries' => $country->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
@@ -36,7 +36,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('circuits.index'))
+				@slot('cancel', route('admin.circuits.index'))
 				
 				Edit country
 			@endcomponent

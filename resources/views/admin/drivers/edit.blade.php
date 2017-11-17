@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'drivers.update', [ 'drivers' => $driver->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.drivers.update', [ 'drivers' => $driver->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
@@ -54,7 +54,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('drivers.index'))
+				@slot('cancel', route('admin.drivers.index'))
 				
 				Edit driver
 			@endcomponent

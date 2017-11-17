@@ -21,7 +21,7 @@
 								Name
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('series.create') }}" title="Add a series" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.series.create') }}" title="Add a series" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -29,14 +29,14 @@
 						@forelse( $series as $serie )
 							<tr>
 								<td>
-									<a href="{{ route( 'series.edit', [ 'series' => $serie->id ] ) }}">{{ $serie->name }}</a>
+									<a href="{{ route( 'admin.series.edit', [ 'series' => $serie->id ] ) }}">{{ $serie->name }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'series.edit', [ 'series' => $serie->id ] ) }}" title="Edit this series" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.series.edit', [ 'series' => $serie->id ] ) }}" title="Edit this series" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$serie->seasons->count() )
-										<a href="{{ route( 'series.destroy', [ 'series' => $serie->id ] ) }}" title="Delete this series" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.series.destroy', [ 'series' => $serie->id ] ) }}" title="Delete this series" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

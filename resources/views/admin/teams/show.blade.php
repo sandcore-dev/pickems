@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'teams.destroy', [ 'teams' => $team->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.teams.destroy', [ 'teams' => $team->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('DELETE') }}
 
@@ -16,7 +16,7 @@
                         </div>
 
 			@component('admin.form.submit')
-				@slot('cancel', route('teams.index'))
+				@slot('cancel', route('admin.teams.index'))
 				
 				@slot('context', 'danger')
 				

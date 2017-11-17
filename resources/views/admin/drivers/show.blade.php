@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'drivers.destroy', [ 'drivers' => $driver->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.drivers.destroy', [ 'drivers' => $driver->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('DELETE') }}
 
@@ -16,7 +16,7 @@
                         </div>
 
 			@component('admin.form.submit')
-				@slot('cancel', route('drivers.index'))
+				@slot('cancel', route('admin.drivers.index'))
 				
 				@slot('context', 'danger')
 				

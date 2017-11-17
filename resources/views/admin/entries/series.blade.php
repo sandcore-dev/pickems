@@ -6,7 +6,7 @@
 	<ul class="dropdown-menu" aria-labelledby="serieDropdown">
 	@foreach( $series as $serie )
 		<li class="{{ $currentSeries->id == $serie->id ? 'active' : '' }}">
-			<a href="{{ route('entries.index', [ 'series' => $serie->id ] ) }}">{{ $serie->name }}</a>
+			<a href="{{ route('admin.entries.index', [ 'series' => $serie->id ] ) }}">{{ $serie->name }}</a>
 		</li>
 	@endforeach
 	</ul>

@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'circuits.update', [ 'circuits' => $circuit->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.circuits.update', [ 'circuits' => $circuit->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
@@ -68,7 +68,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('circuits.index'))
+				@slot('cancel', route('admin.circuits.index'))
 				
 				Edit circuit
 			@endcomponent

@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'teams.update', [ 'teams' => $team->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.teams.update', [ 'teams' => $team->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
@@ -42,7 +42,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('teams.index'))
+				@slot('cancel', route('admin.teams.index'))
 				
 				Edit team
 			@endcomponent

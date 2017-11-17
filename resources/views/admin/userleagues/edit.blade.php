@@ -43,9 +43,9 @@
 								</td>
 								<td class="text-center">
 									@if( $user->leagues->contains($league) )
-										<a href="{{ route( 'userleagues.detach', [ 'user' => $user->id, 'league' => $league->id ] ) }}"><span class="glyphicon glyphicon-ok text-success"></span></a>
+										<a href="{{ route( 'admin.userleagues.detach', [ 'user' => $user->id, 'league' => $league->id ] ) }}"><span class="glyphicon glyphicon-ok text-success"></span></a>
 									@else
-										<a href="{{ route( 'userleagues.attach', [ 'user' => $user->id, 'league' => $league->id ] ) }}"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+										<a href="{{ route( 'admin.userleagues.attach', [ 'user' => $user->id, 'league' => $league->id ] ) }}"><span class="glyphicon glyphicon-remove text-danger"></span></a>
 									@endif
 								</td>
 							</tr>
@@ -62,7 +62,7 @@
 				</div>
 				
 				<div class="text-center">
-					<a class="btn btn-primary" href="{{ route('userleagues.index') }}">Go to index</a>
+					<a class="btn btn-primary" href="{{ route('admin.userleagues.index') }}">Go to index</a>
 				</div>
 			</div>
 		</div>

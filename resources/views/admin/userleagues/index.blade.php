@@ -32,7 +32,7 @@
 						@forelse( $users as $user )
 							<tr>
 								<td>
-									<a href="{{ route( 'userleagues.edit', [ 'users' => $user->id ] ) }}">{{ $user->name }}</a>
+									<a href="{{ route( 'admin.userleagues.edit', [ 'users' => $user->id ] ) }}">{{ $user->name }}</a>
 								</td>
 								<td>
 									@forelse( $user->leagues->take(3) as $league )
@@ -46,7 +46,7 @@
 									@endif
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'userleagues.edit', [ 'users' => $user->id ] ) }}" title="Edit leagues of this user" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.userleagues.edit', [ 'users' => $user->id ] ) }}" title="Edit leagues of this user" class="glyphicon glyphicon-pencil"></a>
 								</td>
 							</tr>
 						@empty

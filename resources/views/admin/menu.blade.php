@@ -5,8 +5,8 @@
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Series <span class="caret"></span></a>
 				
 				<ul class="dropdown-menu">
-					<li class="{{ Route::currentRouteName() == 'series.index' ? 'active' : '' }}"><a href="{{ route('series.index') }}">Series</a></li>
-					<li class="{{ Route::currentRouteName() == 'seasons.index' ? 'active' : '' }}"><a href="{{ route('seasons.index') }}">Seasons</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.series.index' ? 'active' : '' }}"><a href="{{ route('admin.series.index') }}">Series</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.seasons.index' ? 'active' : '' }}"><a href="{{ route('admin.seasons.index') }}">Seasons</a></li>
 				</ul>
 			</li>
 			
@@ -14,12 +14,12 @@
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Races <span class="caret"></span></a>
 				
 				<ul class="dropdown-menu">
-					<li class="{{ Route::currentRouteName() == 'races.index' ? 'active' : '' }}"><a href="{{ route('races.index') }}">Races</a></li>
-					<li class="{{ Route::currentRouteName() == 'circuits.index' ? 'active' : '' }}"><a href="{{ route('circuits.index') }}">Circuits</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.races.index' ? 'active' : '' }}"><a href="{{ route('admin.races.index') }}">Races</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.circuits.index' ? 'active' : '' }}"><a href="{{ route('admin.circuits.index') }}">Circuits</a></li>
 					
 					<li role="separator" class="divider"></li>
 
-					<li class="{{ Route::currentRouteName() == 'countries.index' ? 'active' : '' }}"><a href="{{ route('countries.index') }}">Countries</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.countries.index' ? 'active' : '' }}"><a href="{{ route('admin.countries.index') }}">Countries</a></li>
 				</ul>
 			</li>
 			
@@ -27,31 +27,38 @@
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Entries <span class="caret"></span></a>
 				
 				<ul class="dropdown-menu">
-					<li class="{{ Route::currentRouteName() == 'entries.index' ? 'active' : '' }}"><a href="{{ route('entries.index') }}">Entries</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.entries.index' ? 'active' : '' }}"><a href="{{ route('admin.entries.index') }}">Entries</a></li>
 					
 					<li role="separator" class="divider"></li>
 			
-					<li class="{{ Route::currentRouteName() == 'drivers.index' ? 'active' : '' }}"><a href="{{ route('drivers.index') }}">Drivers</a></li>
-					<li class="{{ Route::currentRouteName() == 'teams.index' ? 'active' : '' }}"><a href="{{ route('teams.index') }}">Teams</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.drivers.index' ? 'active' : '' }}"><a href="{{ route('admin.drivers.index') }}">Drivers</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.teams.index' ? 'active' : '' }}"><a href="{{ route('admin.teams.index') }}">Teams</a></li>
 					
 					<li role="separator" class="divider"></li>
 
-					<li class="{{ Route::currentRouteName() == 'countries.index' ? 'active' : '' }}"><a href="{{ route('countries.index') }}">Countries</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.countries.index' ? 'active' : '' }}"><a href="{{ route('admin.countries.index') }}">Countries</a></li>
 				</ul>
 			</li>
 			
-			<li class="{{ Route::currentRouteName() == 'results.index' ? 'active' : '' }}"><a href="{{ route('results.index') }}">Results</a></li>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Results <span class="caret"></span></a>
+				
+				<ul class="dropdown-menu">
+					<li class="{{ Route::currentRouteName() == 'admin.results.index' ? 'active' : '' }}"><a href="{{ route('admin.results.index') }}">Results</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.picks.index' ? 'active' : '' }}"><a href="{{ route('admin.picks.index') }}">Picks</a></li>
+				</ul>
+			</li>
 			
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 				
 				<ul class="dropdown-menu">
-					<li class="{{ Route::currentRouteName() == 'users.index' ? 'active' : '' }}"><a href="{{ route('users.index') }}">Users</a></li>
-					<li class="{{ Route::currentRouteName() == 'leagues.index' ? 'active' : '' }}"><a href="{{ route('leagues.index') }}">Leagues</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.users.index' ? 'active' : '' }}"><a href="{{ route('admin.users.index') }}">Users</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.leagues.index' ? 'active' : '' }}"><a href="{{ route('admin.leagues.index') }}">Leagues</a></li>
 					
 					<li role="separator" class="divider"></li>
 
-					<li class="{{ Route::currentRouteName() == 'userleagues.index' ? 'active' : '' }}"><a href="{{ route('userleagues.index') }}">User's leagues</a></li>
+					<li class="{{ Route::currentRouteName() == 'admin.userleagues.index' ? 'active' : '' }}"><a href="{{ route('admin.userleagues.index') }}">User's leagues</a></li>
 				</ul>
 			</li>
 			

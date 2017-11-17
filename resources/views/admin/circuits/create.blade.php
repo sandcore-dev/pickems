@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route('circuits.store') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('admin.circuits.store') }}">
                         {{ csrf_field() }}
 
 			@component('admin.form.input')
@@ -57,7 +57,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('circuits.index'))
+				@slot('cancel', route('admin.circuits.index'))
 				
 				Add circuit
 			@endcomponent

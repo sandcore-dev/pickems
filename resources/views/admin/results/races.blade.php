@@ -7,7 +7,7 @@
 	<ul class="dropdown-menu" aria-labelledby="raceDropdown">
 	@foreach( $races as $race )
 		<li class="{{ $currentRace->id == $race->id ? 'active' : '' }}">
-			<a href="{{ route('results.index', [ 'race' => $race->id ] ) }}">
+			<a href="{{ route('admin.results.index', [ 'race' => $race->id ] ) }}">
 				<span class="flag-icon flag-icon-{{ strtolower( $race->circuit->country->code ) }}"></span>
 				{{ $race->circuit->country->name }}
 			</a>

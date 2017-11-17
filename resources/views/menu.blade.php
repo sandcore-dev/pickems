@@ -9,7 +9,7 @@
 			<li class="{{ Route::currentRouteName() == 'standings.race' ? 'active' : '' }}" ><a href="{{ route('standings') }}">Standings</a></li>
 
 			@if( Gate::allows('admin') )
-				<li><a class="warning" href="{{ route('series.index') }}">Admin</a></li>
+				<li><a class="warning" href="{{ route('admin.results.index') }}">Admin</a></li>
 			@endif
 
 			<li><a class="danger" href="{{ route('logout') }}">Logout</a></li>

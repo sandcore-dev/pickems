@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route('seasons.store') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('admin.seasons.store') }}">
                         {{ csrf_field() }}
                         <input type="hidden" name="series_id" value="{{ $series->id }}">
 
@@ -48,7 +48,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route( 'seasons.index', [ 'series' => $series->id ] ))
+				@slot('cancel', route( 'admin.seasons.index', [ 'series' => $series->id ] ))
 				
 				Add season
 			@endcomponent

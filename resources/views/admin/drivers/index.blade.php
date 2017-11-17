@@ -30,7 +30,7 @@
 								Active
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('drivers.create') }}" title="Add a driver" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.drivers.create') }}" title="Add a driver" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -38,10 +38,10 @@
 						@forelse( $drivers as $driver )
 							<tr>
 								<td>
-									<a href="{{ route( 'drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->first_name }}</a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->first_name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->last_name }}</a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->last_name }}</a>
 								</td>
 								<td>
 									<span class="flag-icon flag-icon-{{ strtolower( $driver->country->code ) }}" title="{{ $driver->country->name }}"></span>
@@ -50,11 +50,11 @@
 									<span class="glyphicon glyphicon-{{ $driver->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'drivers.edit', [ 'drivers' => $driver->id ] ) }}" title="Edit this driver" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}" title="Edit this driver" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$driver->entries->count() )
-										<a href="{{ route( 'drivers.destroy', [ 'drivers' => $driver->id ] ) }}" title="Delete this driver" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.drivers.destroy', [ 'drivers' => $driver->id ] ) }}" title="Delete this driver" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

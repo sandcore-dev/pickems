@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route('series.store') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('admin.series.store') }}">
                         {{ csrf_field() }}
 
 			@component('admin.form.input')
@@ -21,7 +21,7 @@
 			@endcomponent
 
 			@component('admin.form.submit')
-				@slot('cancel', route('series.index'))
+				@slot('cancel', route('admin.series.index'))
 				
 				Add series
 			@endcomponent

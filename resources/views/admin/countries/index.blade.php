@@ -21,7 +21,7 @@
 								Name
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('countries.create') }}" title="Add a country" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.countries.create') }}" title="Add a country" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -29,14 +29,14 @@
 						@forelse( $countries as $country )
 							<tr>
 								<td>
-									<a href="{{ route( 'countries.edit', [ 'countries' => $country->id ] ) }}">{{ $country->name }}</a>
+									<a href="{{ route( 'admin.countries.edit', [ 'countries' => $country->id ] ) }}">{{ $country->name }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'countries.edit', [ 'countries' => $country->id ] ) }}" title="Edit this country" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.countries.edit', [ 'countries' => $country->id ] ) }}" title="Edit this country" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$country->circuit )
-										<a href="{{ route( 'countries.destroy', [ 'countries' => $country->id ] ) }}" title="Delete this country" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.countries.destroy', [ 'countries' => $country->id ] ) }}" title="Delete this country" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

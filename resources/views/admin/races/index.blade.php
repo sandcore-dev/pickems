@@ -30,7 +30,7 @@
 								Start of weekend
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'races.create', [ 'season' => $currentSeason->id ] ) }}" title="Add a race" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.races.create', [ 'season' => $currentSeason->id ] ) }}" title="Add a race" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -38,20 +38,20 @@
 						@forelse( $races as $race )
 							<tr>
 								<td>
-									<a href="{{ route( 'races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->race_day->format('F d') }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->race_day->format('F d') }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->name }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->weekend_start->format('M d, H:i') }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->weekend_start->format('M d, H:i') }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'races.edit', [ 'seasons' => $race->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$race->results()->count() )
-										<a href="{{ route( 'races.destroy', [ 'seasons' => $race->id ] ) }}" title="Delete this season" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.races.destroy', [ 'seasons' => $race->id ] ) }}" title="Delete this season" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

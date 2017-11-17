@@ -24,7 +24,7 @@
 								City
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('circuits.create') }}" title="Add a circuit" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.circuits.create') }}" title="Add a circuit" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -32,17 +32,17 @@
 						@forelse( $circuits as $circuit )
 							<tr>
 								<td>
-									<a href="{{ route( 'circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->name }}</a>
+									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->location }}</a>
+									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->location }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'circuits.edit', [ 'circuits' => $circuit->id ] ) }}" title="Edit this circuit" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}" title="Edit this circuit" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$circuit->races->count() )
-										<a href="{{ route( 'circuits.destroy', [ 'circuits' => $circuit->id ] ) }}" title="Delete this circuit" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.circuits.destroy', [ 'circuits' => $circuit->id ] ) }}" title="Delete this circuit" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

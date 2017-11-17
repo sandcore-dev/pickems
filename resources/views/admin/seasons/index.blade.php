@@ -23,7 +23,7 @@
 								Name
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'seasons.create', [ 'series' => $currentSeries->id ] ) }}" title="Add a season" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.seasons.create', [ 'series' => $currentSeries->id ] ) }}" title="Add a season" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -31,14 +31,14 @@
 						@forelse( $seasons as $season )
 							<tr>
 								<td>
-									<a href="{{ route( 'seasons.edit', [ 'seasons' => $season->id ] ) }}">{{ $season->name }}</a>
+									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}">{{ $season->name }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'seasons.edit', [ 'seasons' => $season->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$season->races->count() )
-										<a href="{{ route( 'seasons.destroy', [ 'seasons' => $season->id ] ) }}" title="Delete this season" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.seasons.destroy', [ 'seasons' => $season->id ] ) }}" title="Delete this season" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

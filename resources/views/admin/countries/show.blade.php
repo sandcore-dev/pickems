@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
-                    <form class="form-horizontal" method="POST" action="{{ route( 'countries.destroy', [ 'countries' => $country->id ] ) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.countries.destroy', [ 'countries' => $country->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('DELETE') }}
 
@@ -16,7 +16,7 @@
                         </div>
 
 			@component('admin.form.submit')
-				@slot('cancel', route('countries.index'))
+				@slot('cancel', route('admin.countries.index'))
 				
 				@slot('context', 'danger')
 				
