@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 
 use App\Pivots\PickUser;
+use App\Collections\UserCollection;
 
 class User extends Authenticatable
 {
@@ -43,6 +44,18 @@ class User extends Authenticatable
 	static::addGlobalScope('sortByUsername', function (Builder $builder) {
 	    $builder->orderBy('username', 'asc');
 	});
+    }
+    
+    /**
+    * Creates a new Collection instance of this model.
+    *
+    * @param	array	$models
+    *
+    * @return	\Illuminate\Database\Eloquent\Collection
+    */
+    public function newCollection( array $models = [] )
+    {
+	return new UserCollection( $models );
     }
 
     /**

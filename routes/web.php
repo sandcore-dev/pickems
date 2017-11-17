@@ -76,9 +76,9 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => [ 'auth', 
 	});
 
 	Route::group([ 'prefix' => 'picks' ], function () {
-		Route::get('/', 'PicksController@index')->name('picks.index');
-		Route::post('{race}', 'PicksController@create')->name('picks.create');
-		Route::delete('{race}', 'PicksController@delete')->name('picks.delete');
+		Route::get('/', 'PicksEditController@index')->name('picks.index');
+		Route::post('{race}', 'PicksEditController@create')->name('picks.create');
+		Route::delete('{race}', 'PicksEditController@delete')->name('picks.delete');
 	});
 });
 
