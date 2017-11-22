@@ -50,7 +50,7 @@ class User extends Authenticatable
      */
     public function leagues()
     {
-    	return $this->belongsToMany( League::class );
+    	return $this->belongsToMany( League::class )->withTimestamps();
     }
     
     /**
