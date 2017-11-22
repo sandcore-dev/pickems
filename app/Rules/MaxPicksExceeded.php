@@ -4,19 +4,18 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-use App\Pivots\PickUser;
+use App\User;
 use App\Race;
 use App\Pick;
-
 
 class MaxPicksExceeded implements Rule
 {
     /**
      * Required User object.
      *
-     * @var	App\Pivots\PickUser
+     * @var	App\User
      */
-    protected $pivot;
+    protected $user;
     
     /**
      * Required Race object.
@@ -37,9 +36,9 @@ class MaxPicksExceeded implements Rule
      *
      * @return void
      */
-    public function __construct( PickUser $pivot, Race $race, int $maxPicks )
+    public function __construct( User $user, Race $race, int $maxPicks )
     {
-    	$this->pivot	= $pivot;
+    	$this->user	= $user;
     	$this->race	= $race;
     	$this->maxPicks	= $maxPicks;
     }
@@ -53,7 +52,7 @@ class MaxPicksExceeded implements Rule
      */
     public function passes($attribute, $value)
     {
-        return Pick::where( 'race_id', $this->race->id )->where( 'league_user_id', $this->pivot->id )->count() < $this->maxPicks;
+        return Pick::where( 'race_id', $this->race->id )->where( 'user_id', $this->user->id )->count() < $this->maxPicks;
     }
 
     /**

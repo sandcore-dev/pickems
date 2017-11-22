@@ -30,7 +30,7 @@ class StandingsListController extends Controller
     {
     	$user		= auth()->user();
     	
-    	$league		= $user->leagues()->first();
+    	$league		= $user->leagues->first();
     	
     	return $this->league( $league );
     }
@@ -42,7 +42,7 @@ class StandingsListController extends Controller
      */
     public function league( League $league )
     {
-    	$season		= $league->seasons()->first();
+    	$season		= $league->series->seasons()->first();
     	
     	return $this->season( $league, $season );
     }
@@ -71,8 +71,6 @@ class StandingsListController extends Controller
     	if( !$user->leagues->contains($league) )
     		abort(404);
     		
-    	$leagueUserId	= $user->leagues->where( 'id', $league->id )->first()->pivot->id;
-    	
     	$standings	= $league->standings->where( 'race_id', $race->id );
     	
         return view('standings.index')->with([

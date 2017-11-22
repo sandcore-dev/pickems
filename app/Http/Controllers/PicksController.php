@@ -6,12 +6,11 @@ use Illuminate\Http\Request;
 
 use Carbon\Carbon;
 
+use App\User;
 use App\League;
 use App\Season;
 use App\Race;
 use App\Pick;
-
-use App\Pivots\PickUser;
 
 use App\Rules\NotPickedYet;
 use App\Rules\MaxPicksExceeded;
@@ -49,7 +48,7 @@ class PicksController extends Controller
      */
     public function league( League $league )
     {
-    	$season		= $league->seasons()->first();
+    	$season		= $league->series->seasons->first();
     	
     	return $this->season( $league, $season );
     }
@@ -105,23 +104,21 @@ class PicksController extends Controller
     	if( !$user->leagues->contains($league) )
     		abort(404);
     	
-    	if( !$league->seasons->contains($race->season) )
+    	if( !$league->series->seasons->contains($race->season) )
     		abort(404);
     	
     	if( $race->weekend_start->lte( Carbon::now() ) )
     		abort(404);
     	
-    	$userLeague = $user->leagues()->where( 'leagues.id', $league->id )->first();
-    	
     	$request->validate([
-    		'entry'	=> [ 'required', 'integer', 'exists:entries,id', new NotPickedYet( $userLeague->pivot, $race ), new MaxPicksExceeded( $userLeague->pivot, $race, config('picks.max') ) ],
+    		'entry'	=> [ 'required', 'integer', 'exists:entries,id', new NotPickedYet( $user, $race ), new MaxPicksExceeded( $user, $race, config('picks.max') ) ],
     	]);
     	
     	$pick = Pick::create([
     		'race_id'		=> $race->id,
     		'entry_id'		=> $request->entry,
-    		'league_user_id'	=> $userLeague->pivot->id,
-    		'rank'			=> $this->getHighestAvailableRank( $userLeague->pivot, $race ),
+    		'user_id'		=> $user->id,
+    		'rank'			=> $this->getHighestAvailableRank( $user, $race ),
     		'carry_over'		=> 0,
     	]);
     	
@@ -140,13 +137,11 @@ class PicksController extends Controller
     	if( !$user->leagues->contains($league) )
     		abort(404);
     	
-    	if( !$league->seasons->contains($race->season) )
+    	if( !$league->series->seasons->contains($race->season) )
     		abort(404);
     	
     	if( $race->weekend_start->lte( Carbon::now() ) )
     		return redirect()->back();
-    	
-    	$userLeague = $user->leagues()->where( 'leagues.id', $league->id )->first();
     	
     	$request->validate([
     		'pick'	=> [ 'required', 'integer' ],
@@ -154,7 +149,7 @@ class PicksController extends Controller
     	
     	$pick = Pick::findOrFail( $request->pick );
     	
-    	if( $pick->race_id == $race->id and $pick->league_user_id == $userLeague->pivot->id )
+    	if( $pick->race_id == $race->id and $pick->user_id == $user->id )
     		$pick->delete();
     	
     	return redirect()->back();
@@ -163,14 +158,14 @@ class PicksController extends Controller
     /**
      * Get the highest available rank for this pick.
      *
-     * @param	\App\Pivots\PickUser
+     * @param	\App\User
      * @param	\App\Race
      *
      * @return	integer
      */
-    public function getHighestAvailableRank( PickUser $pivot, Race $race )
+    public function getHighestAvailableRank( User $user, Race $race )
     {
-    	$ranks = Pick::where( 'race_id', $race->id )->where( 'league_user_id', $pivot->id )->orderBy('rank', 'asc')->pluck('rank');
+    	$ranks = Pick::byRaceAndUser( $race, $user )->orderBy('rank', 'asc')->pluck('rank');
     	
     	foreach( $ranks as $key => $rank )
     	{

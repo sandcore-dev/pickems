@@ -66,7 +66,7 @@ class StandingsController extends Controller
 		$races		= $season->races()->has('results')->get();
 		$previous	= [];
 		
-		foreach( $season->leagues as $league )
+		foreach( $season->series->leagues as $league )
 		{
 			foreach( $races as $race )
 			{
@@ -77,8 +77,9 @@ class StandingsController extends Controller
 					
 					$standing = new Standing;
 					
+					$standing->user_id		= $user->id;
+					$standing->league_id		= $league->id;
 					$standing->race_id		= $race->id;
-					$standing->league_user_id	= $user->pivot->id;
 					
 					if( isset( $previous[ $league->id ][ $user->id ] ) )
 						$standing->previous()->associate( $previous[ $league->id ][ $user->id ] );
@@ -104,7 +105,7 @@ class StandingsController extends Controller
 	 */
 	protected function calculatePoints( Standing $standing )
 	{
-		$picks				= Pick::where( 'race_id', $standing->race_id )->where( 'league_user_id', $standing->league_user_id )->get();
+		$picks				= Pick::byRaceAndUser( $standing->race, $standing->user )->get();
 		
 		$results			= $standing->race->results;
 		

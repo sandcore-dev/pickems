@@ -59,16 +59,6 @@ class Season extends Model
 	}
 
 	/**
-	* Get leagues of this season.
-	*
-	* @return	\Illuminate\Database\Eloquent\Collection
-	*/
-	public function leagues()
-	{
-		return $this->belongsToMany( League::class );
-	}
-	
-	/**
 	 * Get the season's name.
 	 *
 	 * @return 	string

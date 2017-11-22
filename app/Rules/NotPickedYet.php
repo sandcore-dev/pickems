@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-use App\Pivots\PickUser;
+use App\User;
 use App\Race;
 use App\Entry;
 use App\Pick;
@@ -14,9 +14,9 @@ class NotPickedYet implements Rule
     /**
      * Required PickUser object.
      *
-     * @var	App\Pivots\PickUser
+     * @var	App\User
      */
-    protected $pivot;
+    protected $user;
     
     /**
      * Required Race object.
@@ -37,9 +37,9 @@ class NotPickedYet implements Rule
      *
      * @return void
      */
-    public function __construct( PickUser $pivot, Race $race )
+    public function __construct( User $user, Race $race )
     {
-    	$this->pivot	= $pivot;
+    	$this->user	= $user;
     	$this->race	= $race;
     }
 
@@ -54,7 +54,7 @@ class NotPickedYet implements Rule
     {
     	$this->entry = Entry::findOrFail($value);
     	
-    	return Pick::where( 'race_id', $this->race->id )->where( 'entry_id', $this->entry->id )->where( 'league_user_id', $this->pivot->id )->count() == 0;
+    	return Pick::where( 'race_id', $this->race->id )->where( 'entry_id', $this->entry->id )->where( 'user_id', $this->user->id )->count() == 0;
     }
 
     /**

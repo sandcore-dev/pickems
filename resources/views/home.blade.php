@@ -20,7 +20,7 @@
         		@endif
         		
         		<div class="vue">
-	        		<user-league-results data-series="{{ $league->pivot->standings->getChartData() }}"></user-league-results>
+	        		<user-league-results data-series="{{ 'todo' }}"></user-league-results>
         		</div>
         	@endforeach
         </div>

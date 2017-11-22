@@ -17,6 +17,7 @@ class CreateStandingsTable extends Migration
 		{
 		    $table->increments('id');
 		    $table->integer('user_id')->unsigned();
+		    $table->integer('league_id')->unsigned();
 		    $table->integer('race_id')->unsigned();
 		    $table->smallInteger('rank')->unsigned()->default(0);
 		    $table->integer('previous_id')->unsigned()->nullable();
@@ -25,10 +26,11 @@ class CreateStandingsTable extends Migration
 		    $table->timestamps();
 		    
 		    $table->foreign('user_id')->references('id')->on('users');
+		    $table->foreign('league_id')->references('id')->on('leagues');
 		    $table->foreign('race_id')->references('id')->on('races');
 		    $table->foreign('previous_id')->references('id')->on('standings')->onDelete('set null');
 		    
-		    $table->unique( [ 'user_id', 'race_id' ] );
+		    $table->unique( [ 'user_id', 'league_id', 'race_id' ] );
 		}
         );
     }

@@ -62,13 +62,13 @@ class PicksEditController extends Controller
 		$race	= $season->races()->has('picks')->previousOrFirst();
 	}
 
-	$leagues	= $season->leagues;
+	$leagues	= $series->leagues;
 	$league		= $request->league ? League::findOrFail($request->league) : $leagues->first();
 	
-	$users		= $league->users->getUsersWithPicksByRace($race);
+	$users		= $league->users()->get();
 	$user		= $request->user ? User::findOrFail($request->user) : $users->first();
 	
-	$picks		= $user->picks()->where( 'race_id', $race->id )->get();
+	$picks		= $user->picks()->byRace($race)->get();
 	
 	$entriesByTeam	= $race->season->entries()->whereNotIn( 'id', $picks->pluck('entry_id') )->get()->getByTeam();
 	
@@ -98,9 +98,20 @@ class PicksEditController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create( Race $race, Request $request )
+    public function create( Race $race, User $user, Request $request )
     {
-    	// disabled for now
+    	$request->validate([
+    		'entry'	=> [ 'required', 'integer', 'exists:entries,id', new NotPickedYet( $user, $race ), new MaxPicksExceeded( $user, $race, config('picks.max') ) ],
+    	]);
+    	
+    	$pick = Pick::create([
+    		'race_id'		=> $race->id,
+    		'entry_id'		=> $request->entry,
+    		'user_id'		=> $user->id,
+    		'rank'			=> $this->getHighestAvailableRank( $user, $race ),
+    		'carry_over'		=> 0,
+    	]);
+
     	return redirect()->back();
     }
     
@@ -109,22 +120,31 @@ class PicksEditController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function delete( Race $race, Request $request )
+    public function delete( Race $race, User $user, Request $request )
     {
-    	// disabled for now
+    	$request->validate([
+    		'pick'	=> [ 'required', 'integer' ],
+    	]);
+    	
+    	$pick = Pick::findOrFail( $request->pick );
+    	
+    	if( $pick->race_id == $race->id and $pick->user_id == $user->id )
+    		$pick->delete();
+    	
     	return redirect()->back();
     }
     
     /**
      * Get the highest available rank for this pick.
      *
+     * @param	\App\User
      * @param	\App\Race
      *
      * @return	integer
      */
-    public function getHighestAvailableRank( Race $race )
+    public function getHighestAvailableRank( User $user, Race $race )
     {
-    	$ranks = Pick::where( 'race_id', $race->id )->orderBy('rank', 'asc')->pluck('rank');
+    	$ranks = Pick::byRaceAndUser( $race, $user )->orderBy('rank', 'asc')->pluck('rank');
     	
     	foreach( $ranks as $key => $rank )
     	{

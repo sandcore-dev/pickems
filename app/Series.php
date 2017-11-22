@@ -5,8 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-use App\Season;
-
 class Series extends Model
 {
 	/**
@@ -38,6 +36,16 @@ class Series extends Model
 	public function seasons()
 	{
 		return $this->hasMany( Season::class );
+	}
+	
+	/**
+	* Get leagues of this series.
+	*
+	* @return	\Illuminate\Database\Eloquent\Collection
+	*/
+	public function leagues()
+	{
+		return $this->hasMany( League::class );
 	}
 	
 	/**

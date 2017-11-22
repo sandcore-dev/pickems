@@ -7,8 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Illuminate\Database\Eloquent\Builder;
 
-use App\Collections\UserCollection;
-
 class User extends Authenticatable
 {
     use Notifiable;
@@ -45,18 +43,6 @@ class User extends Authenticatable
 	});
     }
     
-    /**
-    * Creates a new Collection instance of this model.
-    *
-    * @param	array	$models
-    *
-    * @return	\Illuminate\Database\Eloquent\Collection
-    */
-    public function newCollection( array $models = [] )
-    {
-	return new UserCollection( $models );
-    }
-
     /**
      * Get leagues of this user.
      *

@@ -9,7 +9,7 @@
 	</div>
 @endif
 
-	<form action="{{ route( 'admin.picks.delete', [ 'race' => $currentRace->id ] ) }}" method="post">
+	<form action="{{ route( 'admin.picks.delete', [ 'race' => $currentRace->id, 'user' => $currentUser->id ] ) }}" method="post">
 	{{ csrf_field() }}
 	{{ method_field('DELETE') }}
 	

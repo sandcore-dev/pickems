@@ -3,6 +3,10 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+
+use App\User;
+use App\Race;
 
 use App\Collections\PickCollection;
 
@@ -55,6 +59,46 @@ class Pick extends Model
 	public function user()
 	{
 		return $this->belongsTo( User::class );
+	}
+	
+	/**
+	 * Scope to race and user.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\Race				$race
+	 * @param	\App\User				$user
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByRaceAndUser( Builder $query, Race $race, User $user )
+	{
+		return $query->byRace($race)->byUser($user);
+	}
+
+	/**
+	 * Scope to race.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\Race				$race
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByRace( Builder $query, Race $race )
+	{
+		return $query->where( 'race_id', $race->id );
+	}
+
+	/**
+	 * Scope to user.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\User				$user
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByUser( Builder $query, User $user )
+	{
+		return $query->where( 'user_id', $user->id );
 	}
 
 	/**

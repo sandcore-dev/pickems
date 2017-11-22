@@ -76,7 +76,7 @@ class LeaguesController extends Controller
 		$league->save();
 	}
     	
-    	return redirect()->route( 'leagues.index' );
+    	return redirect()->route( 'admin.leagues.index' );
     }
 
     /**
@@ -117,7 +117,7 @@ class LeaguesController extends Controller
     	if( $league->update( $request->only('name') ) )
 		session()->flash( 'status', "The league '{$league->name}' has been changed." );
     	
-    	return redirect()->route( 'leagues.index' );
+    	return redirect()->route( 'admin.leagues.index' );
     }
 
     /**
@@ -136,6 +136,6 @@ class LeaguesController extends Controller
     		session()->flash( 'status', "The league '{$league->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route( 'leagues.index' );
+    	return redirect()->route( 'admin.leagues.index' );
     }
 }
