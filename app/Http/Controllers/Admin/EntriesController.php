@@ -163,7 +163,7 @@ class EntriesController extends Controller
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'abbreviation', $request->input('abbreviation') )->where( 'id', '!=', $entry->id )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => 'The abbreviation is already in use for this team.' ]);
     	
-    	if( $entry->update( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'active') ) )
+    	if( $entry->update( $request->only('season_id', 'car_number', 'abbreviation', 'color', 'team_id', 'driver_id', 'active') ) )
 		session()->flash( 'status', "The entry '{$entry->car_number}' has been changed." );
     	
     	return redirect()->route( 'admin.entries.index', [ 'season' => $entry->season->id ] );
