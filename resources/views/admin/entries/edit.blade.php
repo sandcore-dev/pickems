@@ -76,10 +76,24 @@
 				
 				@slot('field', 'color')
 				
+				@slot('value', $entry->color)
+				
 				@slot('label', 'Color')
 				
 				@slot('attributes')
 					required
+				@endslot
+			@endcomponent
+
+			@component('admin.form.input')
+				@slot('field', 'abbreviation')
+				
+				@slot('value', $entry->abbreviation)
+				
+				@slot('label', 'Abbreviation')
+				
+				@slot('attributes')
+					required maxlength="3"
 				@endslot
 			@endcomponent
 

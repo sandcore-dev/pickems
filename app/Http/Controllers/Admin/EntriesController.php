@@ -96,6 +96,7 @@ class EntriesController extends Controller
     		'car_number'		=> [ 'required', 'numeric' ],
     		'team_id'		=> [ 'required', 'integer', 'exists:teams,id' ],
     		'driver_id'		=> [ 'required', 'integer', 'exists:drivers,id' ],
+    		'abbreviation'		=> [ 'required', 'size:3' ],
     		'color'			=> [ 'required', new ValidHexValue ],
     		'active'		=> [ 'boolean' ],
     	]);
@@ -103,10 +104,13 @@ class EntriesController extends Controller
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'driver_id', $request->input('driver_id') )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'car_number' => 'This entry already exists.' ]);
     	
-    	if( $entry = Entry::create( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'active') ) )
+    	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'abbreviation', $request->input('abbreviation') )->count() )
+    		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => 'The abbreviation is already in use for this team.' ]);
+    	
+    	if( $entry = Entry::create( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'abbreviation', 'active') ) )
 		session()->flash( 'status', "The entry '{$entry->car_number}' has been added." );
     	
-    	return redirect()->route( 'entries.index', [ 'season' => $request->season_id ] );
+    	return redirect()->route( 'admin.entries.index', [ 'season' => $request->season_id ] );
     }
 
     /**
@@ -149,16 +153,20 @@ class EntriesController extends Controller
     		'team_id'		=> [ 'required', 'integer', 'exists:teams,id' ],
     		'driver_id'		=> [ 'required', 'integer', 'exists:drivers,id' ],
     		'color'			=> [ 'required', new ValidHexValue ],
+    		'abbreviation'		=> [ 'required', 'size:3' ],
     		'active'		=> [ 'boolean' ],
     	]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'driver_id', $request->input('driver_id') )->where( 'id', '!=', $entry->id )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'car_number' => 'This entry already exists.' ]);
     	
+    	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'abbreviation', $request->input('abbreviation') )->where( 'id', '!=', $entry->id )->count() )
+    		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => 'The abbreviation is already in use for this team.' ]);
+    	
     	if( $entry->update( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'active') ) )
 		session()->flash( 'status', "The entry '{$entry->car_number}' has been changed." );
     	
-    	return redirect()->route( 'entries.index', [ 'season' => $entry->season->id ] );
+    	return redirect()->route( 'admin.entries.index', [ 'season' => $entry->season->id ] );
     }
 
     /**
@@ -177,6 +185,6 @@ class EntriesController extends Controller
     		session()->flash( 'status', "The entry '{$entry->car_number}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route( 'entries.index', [ 'season' => $entry->season->id ] );
+    	return redirect()->route( 'admin.entries.index', [ 'season' => $entry->season->id ] );
     }
 }

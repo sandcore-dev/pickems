@@ -77,6 +77,16 @@
 				@endslot
 			@endcomponent
 
+			@component('admin.form.input')
+				@slot('field', 'abbreviation')
+				
+				@slot('label', 'Abbreviation')
+				
+				@slot('attributes')
+					required maxlength="3"
+				@endslot
+			@endcomponent
+
 			@component('admin.form.checkbox')
 				@slot('field', 'active')
 				

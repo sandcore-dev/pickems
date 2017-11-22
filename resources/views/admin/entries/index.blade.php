@@ -30,6 +30,9 @@
 								Driver
 							</th>
 							<th>
+								Abbrevation
+							</th>
+							<th>
 								Active
 							</th>
 							<th colspan="2" class="text-center">
@@ -54,6 +57,9 @@
 									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->driver->fullName }}</a>
 								</td>
 								<td>
+									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->abbreviation }}</a>
+								</td>
+								<td>
 									<span class="glyphicon glyphicon-{{ $entry->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
@@ -69,7 +75,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="5" class="text-center">No entries found.</td>
+								<td colspan="6" class="text-center">No entries found.</td>
 							</tr>
 						@endforelse
 					</tbody>

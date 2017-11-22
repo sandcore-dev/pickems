@@ -14,7 +14,7 @@ class Entry extends Model
 	 *
 	 * @var		array
 	 */
-	protected $fillable = [ 'season_id', 'car_number', 'color', 'team_id', 'driver_id', 'active' ];
+	protected $fillable = [ 'season_id', 'abbreviation', 'car_number', 'color', 'team_id', 'driver_id', 'active' ];
 
 	/**
 	* The "booting" method of the model.
