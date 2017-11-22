@@ -15,12 +15,8 @@
 	        		<p>Your next pickems deadline is <strong>{{ $deadline->weekend_start->format('F d, Y H:i T') }}</strong>.</p>
         		@endif
         		
-        		@if( $bestresult = $league->currentSeasonBestResult )
-        			<p>Your best result this season was <strong>{{ $bestresult->total }}</strong> point(s) at the <strong>{{ $bestresult->race->name }}</strong>.</p>
-        		@endif
-        		
         		<div class="vue">
-	        		<user-league-results data-series="{{ 'todo' }}"></user-league-results>
+	        		<user-league-results data-series="{{ App\Standing::byUser($user)->byLeague($league)->get()->getChartData() }}"></user-league-results>
         		</div>
         	@endforeach
         </div>

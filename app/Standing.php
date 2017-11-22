@@ -5,6 +5,10 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use App\User;
+use App\League;
+use App\Race;
+
 use App\Collections\StandingCollection;
 
 class Standing extends Model
@@ -82,6 +86,45 @@ class Standing extends Model
 		return $this->belongsTo( Standing::class, 'previous_id' );
 	}
 	
+	/**
+	 * Scope to race.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\Race				$race
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByRace( Builder $query, Race $race )
+	{
+		return $query->where( 'race_id', $race->id );
+	}
+
+	/**
+	 * Scope to user.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\User				$user
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByUser( Builder $query, User $user )
+	{
+		return $query->where( 'user_id', $user->id );
+	}
+
+	/**
+	 * Scope to league.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\League				$league
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByLeague( Builder $query, League $league )
+	{
+		return $query->where( 'league_id', $league->id );
+	}
+
 	/**
 	 * Get the previous rank.
 	 *

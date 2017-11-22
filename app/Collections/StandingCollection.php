@@ -55,7 +55,7 @@ class StandingCollection extends Collection
 			'type'	=> 'line',
 			'name'	=> 'Average total score',
 			'data'	=> $this->getData(function ($data) {
-				$average = Standing::where( 'race_id', $data->race_id )->whereIn( 'league_user_id', $data->league->users->pluck('id') )->get()->avg('total');
+				$average = Standing::where( 'race_id', $data->race_id )->whereIn( 'user_id', $data->league->users->pluck('id') )->get()->avg('total');
 				
 				return round( $average, 1 );
 			}),
