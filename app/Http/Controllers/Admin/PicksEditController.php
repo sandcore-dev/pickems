@@ -128,10 +128,39 @@ class PicksEditController extends Controller
     	
     	$pick = Pick::findOrFail( $request->pick );
     	
-    	if( $pick->race_id == $race->id and $pick->user_id == $user->id )
+    	if( !$pick->carry_over and $pick->race_id == $race->id and $pick->user_id == $user->id )
     		$pick->delete();
     	
     	return redirect()->back();
+    }
+    
+    /**
+     * Carry over pickems for a certain user from and to given races.
+     *
+     * @param	\App\User 	$user
+     * @param	\App\Race	$fromRace
+     * @param	\App\Race	$toRace
+     */
+    public function carryOver( User $user, Race $fromRace, Race $toRace )
+    {
+    	if( $fromRace->is ( $toRace ) )
+    		return;
+    	
+    	$picks = Pick::byRaceAndUser( $fromRace, $user )->get();
+    	
+    	foreach( $picks as $pick )
+    	{
+    		// Picks can be carried over only once.
+    		if( $pick->carry_over )
+    			continue;
+
+		$newPick = $pick->replicate();
+		
+		$newPick->race_id	= $toRace->id;
+		$newPick->carry_over	= 1;
+		
+		$newPick->save();
+    	}
     }
     
     /**

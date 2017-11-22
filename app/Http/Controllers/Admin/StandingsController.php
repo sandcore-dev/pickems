@@ -17,6 +17,13 @@ use App\Race;
 class StandingsController extends Controller
 {
 	/**
+	 * Picks editor controller.
+	 *
+	 * @var \App\Http\Controllers\Controller\Admin\PicksEditController
+	 */
+	protected $picksController;
+	 
+	/**
 	 * Create a new controller instance.
 	 *
 	 * @return void
@@ -24,6 +31,8 @@ class StandingsController extends Controller
 	public function __construct()
 	{
 		$this->middleware( [ 'auth', 'admin' ] );
+		
+		$this->picksController = new PicksEditController;
 	}
 
 	/**
@@ -72,8 +81,15 @@ class StandingsController extends Controller
 			{
 				foreach( $league->users as $user )
 				{
-					if( $user->picks->where( 'race_id', $race->id )->isEmpty() and !isset( $previous[ $league->id ][ $user->id ] ) )
-						continue;
+					if( $user->picks->where( 'race_id', $race->id )->isEmpty() )
+					{
+						if( !isset( $previous[ $league->id ][ $user->id ] ) )
+							continue;
+						
+						$previousStanding	= $previous[ $league->id ][ $user->id ];
+						
+						$this->picksController->carryOver( $user, $previousStanding->race, $race );
+					}
 					
 					$standing = new Standing;
 					

@@ -12,5 +12,9 @@
 				@endforeach
 			@endforeach
 		</form>
+	@elseif($picks->first()->carry_over)
+		<p class="alert alert-warning">
+			These picks carried over from the previous race.
+		</p>
 	@endunless
 </div>
