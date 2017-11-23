@@ -20,12 +20,7 @@
 				<div class="bracket">
 					@if( $pick->entry )
 					<button class="btn btn-primary btn-block team-color" style="border-left-color: {{ $pick->entry->color }}" type="submit" name="pick" value="{{ $pick->id }}">
-						<span class="hidden-xs">
-							<span class="first-name hidden-sm">{{ $pick->entry->driver->first_name }}</span>
-							<span class="first-letter visible-sm-inline">{{ $pick->entry->driver->first_letter }}</span>
-							<span class="last-name">{{ $pick->entry->driver->last_name }}</span>
-						</span>
-						<span class="abbreviation visible-xs-inline">{{ $pick->entry->abbreviation }}</span>
+						@include( 'common.entry', [ 'entry' => $pick->entry ] )
 						
 						@if( !is_null( $pick->points ) )
 						<span class="badge">{{ $pick->points }} pt</span>

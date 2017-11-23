@@ -1,6 +1,6 @@
 <div class="btn-group">
 	<button class="btn btn-primary dropdown-toggle" type="button" id="raceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-		<span class="flag-icon flag-icon-{{ strtolower( $currentRace->circuit->country->code ) }}"></span>
+		<span class="{{ $currentRace->circuit->country->flagClass }}"></span>
 		{{ $currentRace->circuit->country->name }} <span class="caret"></span>
 	</button>
 
@@ -8,7 +8,7 @@
 	@foreach( $races as $race )
 		<li class="{{ $currentRace->id == $race->id ? 'active' : '' }}">
 			<a href="{{ route('admin.results.index', [ 'race' => $race->id ] ) }}">
-				<span class="flag-icon flag-icon-{{ strtolower( $race->circuit->country->code ) }}"></span>
+				<span class="{{ $race->circuit->country->flagClass }}"></span>
 				{{ $race->circuit->country->name }}
 			</a>
 		</li>

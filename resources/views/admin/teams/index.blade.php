@@ -38,7 +38,7 @@
 									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}">{{ $team->name }}</a>
 								</td>
 								<td>
-									<span class="flag-icon flag-icon-{{ strtolower( $team->country->code ) }}" title="{{ $team->country->name }}"></span>
+									<span class="{{ $team->country->flagClass }}" title="{{ $team->country->name }}"></span>
 								</td>
 								<td>
 									<span class="glyphicon glyphicon-{{ $team->active ? 'ok text-success' : 'remove text-danger' }}"></span>

@@ -57,4 +57,14 @@ class Country extends Model
 	{
 		return $this->hasMany( Team::class );
 	}
+	
+	/**
+	 * Get the flag class of this country.
+	 *
+	 * @return	string
+	 */
+	public function getFlagClassAttribute()
+	{
+		return 'flag-icon flag-icon-' . strtolower( $this->code );
+	}
 }

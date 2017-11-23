@@ -44,7 +44,7 @@
 									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->last_name }}</a>
 								</td>
 								<td>
-									<span class="flag-icon flag-icon-{{ strtolower( $driver->country->code ) }}" title="{{ $driver->country->name }}"></span>
+									<span class="{{ $driver->country->flagClass }} title="{{ $driver->country->name }}"></span>
 								</td>
 								<td>
 									<span class="glyphicon glyphicon-{{ $driver->active ? 'ok text-success' : 'remove text-danger' }}"></span>

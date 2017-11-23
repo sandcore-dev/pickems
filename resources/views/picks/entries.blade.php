@@ -6,12 +6,7 @@
 			@foreach( $entriesByTeam as $entries )
 				@foreach( $entries as $entry )
 					<button class="btn btn-default team-color" style="border-left-color: {{ $entry->color }}" draggable="true" type="submit" name="entry" value="{{ $entry->id }}">
-						<span class="hidden-xs">
-							<span class="first-name hidden-sm">{{ $entry->driver->first_name }}</span>
-							<span class="first-letter visible-sm-inline">{{ $entry->driver->first_letter }}</span>
-							<span class="last-name">{{ $entry->driver->last_name }}</span>
-						</span>
-						<span class="abbreviation visible-xs-inline">{{ $entry->abbreviation }}</span>
+						@include('common.entry')
 					</button>
 				@endforeach
 			@endforeach

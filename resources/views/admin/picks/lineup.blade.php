@@ -20,8 +20,7 @@
 				<div class="bracket">
 					@if( $pick->entry )
 					<button class="btn btn-primary btn-block team-color" style="border-left-color: {{ $pick->entry->color }}" type="submit" name="pick" value="{{ $pick->id }}">
-						<span class="first-name">{{ $pick->entry->driver->first_name }}</span>
-						<span class="last-name">{{ $pick->entry->driver->last_name }}</span>
+						@include( 'common.entry', [ 'entry' => $pick->entry ] )
 					</button>
 					@else
 						&nbsp;
