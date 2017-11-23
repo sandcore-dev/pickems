@@ -13,24 +13,16 @@ class StandingCollection extends Collection
 	 *
 	 * @return	Illuminate\Database\Eloquent\Collection;
 	 */
-	public function getChartXAxis()
-	{
-		$out = [];
-		
-		$out = range( 1, $this->count() );
-		
-		return collect($out);
-	}
-	
-	/**
-	 * Output a collection compatible with Highcharts series data.
-	 *
-	 * @return	Illuminate\Database\Eloquent\Collection;
-	 */
 	public function getChartData()
 	{
 		$out = [];
 		
+		$out[] = [
+			'type'	=> 'area',
+			'name'	=> 'Ranking',
+			'data'	=> $this->getData('rank'),
+		];
+
 		$out[] = [
 			'type'	=> 'column',
 			'name'	=> 'Total',
@@ -47,13 +39,14 @@ class StandingCollection extends Collection
 		
 		$out[] = [
 			'type'	=> 'column',
-			'name'	=> 'Finishing positions correct',
+			'name'	=> 'Finish',
 			'data'	=> $this->getData('positions_correct'),
 		];
 		
 		$out[] = [
 			'type'	=> 'line',
 			'name'	=> 'Average total score',
+			'color'	=> '#ff0000',
 			'data'	=> $this->getData(function ($data) {
 				$average = Standing::where( 'race_id', $data->race_id )->whereIn( 'user_id', $data->league->users->pluck('id') )->get()->avg('total');
 				
