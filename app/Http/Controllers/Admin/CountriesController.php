@@ -58,7 +58,7 @@ class CountriesController extends Controller
     	if( $country = Country::create( $request->only('code', 'name') ) )
 		session()->flash( 'status', "The country '{$country->name}' has been added." );
     	
-    	return redirect()->route('countries.index');
+    	return redirect()->route('admin.countries.index');
     }
 
     /**
@@ -100,7 +100,7 @@ class CountriesController extends Controller
     	if( $country->update( $request->only('code', 'name') ) )
 		session()->flash( 'status', "The country '{$country->name}' has been changed." );
     	
-    	return redirect()->route('countries.index');
+    	return redirect()->route('admin.countries.index');
     }
 
     /**
@@ -119,6 +119,6 @@ class CountriesController extends Controller
     		session()->flash( 'status', "The country '{$country->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route('countries.index');
+    	return redirect()->route('admin.countries.index');
     }
 }

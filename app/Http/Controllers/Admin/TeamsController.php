@@ -60,7 +60,7 @@ class TeamsController extends Controller
     	if( $team = Team::create( $request->only('name', 'active', 'country_id') ) )
 		session()->flash( 'status', "The team '{$team->name}' has been added." );
     	
-    	return redirect()->route('teams.index');
+    	return redirect()->route('admin.teams.index');
     }
 
     /**
@@ -106,7 +106,7 @@ class TeamsController extends Controller
     	if( $team->update( $request->only('name', 'active', 'country_id') ) )
 		session()->flash( 'status', "The team '{$team->name}' has been changed." );
     	
-    	return redirect()->route('teams.index');
+    	return redirect()->route('admin.teams.index');
     }
 
     /**
@@ -125,6 +125,6 @@ class TeamsController extends Controller
     		session()->flash( 'status', "The team '{$team->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route('teams.index');
+    	return redirect()->route('admin.teams.index');
     }
 }

@@ -82,7 +82,7 @@ class SeasonsController extends Controller
 			$league->seasons()->attach( $season->id );
 	}
     	
-    	return redirect()->route( 'seasons.index', [ 'series' => $request->series_id ] );
+    	return redirect()->route( 'admin.seasons.index', [ 'series' => $request->series_id ] );
     }
 
     /**
@@ -127,7 +127,7 @@ class SeasonsController extends Controller
     	if( $season->update( $request->only('start_year', 'end_year') ) )
 		session()->flash( 'status', "The season '{$season->name}' has been changed." );
     	
-    	return redirect()->route( 'seasons.index', [ 'series' => $season->series->id ] );
+    	return redirect()->route( 'admin.seasons.index', [ 'series' => $season->series->id ] );
     }
 
     /**
@@ -146,6 +146,6 @@ class SeasonsController extends Controller
     		session()->flash( 'status', "The season '{$season->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route( 'seasons.index', [ 'series' => $season->series->id ] );
+    	return redirect()->route( 'admin.seasons.index', [ 'series' => $season->series->id ] );
     }
 }

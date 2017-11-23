@@ -80,7 +80,7 @@ class UsersController extends Controller
 		$user->save();
 	}
     	
-    	return redirect()->route( 'users.index' );
+    	return redirect()->route( 'admin.users.index' );
     }
 
     /**
@@ -136,7 +136,7 @@ class UsersController extends Controller
 		$user->save();
 	}
     	
-    	return redirect()->route( 'users.index' );
+    	return redirect()->route( 'admin.users.index' );
     }
 
     /**
@@ -155,6 +155,6 @@ class UsersController extends Controller
     		session()->flash( 'status', "The user '{$user->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route( 'users.index' );
+    	return redirect()->route( 'admin.users.index' );
     }
 }

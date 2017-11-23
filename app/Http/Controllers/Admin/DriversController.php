@@ -61,7 +61,7 @@ class DriversController extends Controller
     	if( $driver = Driver::create( $request->only('first_name', 'last_name', 'active', 'country_id') ) )
 		session()->flash( 'status', "The driver '{$driver->fullName}' has been added." );
     	
-    	return redirect()->route('drivers.index');
+    	return redirect()->route('admin.drivers.index');
     }
 
     /**
@@ -108,7 +108,7 @@ class DriversController extends Controller
     	if( $driver->update( $request->only('first_name', 'last_name', 'active', 'country_id') ) )
 		session()->flash( 'status', "The driver '{$driver->fullName}' has been changed." );
     	
-    	return redirect()->route('drivers.index');
+    	return redirect()->route('admin.drivers.index');
     }
 
     /**
@@ -127,6 +127,6 @@ class DriversController extends Controller
     		session()->flash( 'status', "The driver '{$driver->fullName}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route('drivers.index');
+    	return redirect()->route('admin.drivers.index');
     }
 }

@@ -62,7 +62,7 @@ class CircuitsController extends Controller
     	if( $circuit = Circuit::create( $request->only('name', 'length', 'city', 'area', 'country_id') ) )
 		session()->flash( 'status', "The circuit '{$circuit->name}' has been added." );
     	
-    	return redirect()->route('circuits.index');
+    	return redirect()->route('admin.circuits.index');
     }
 
     /**
@@ -110,7 +110,7 @@ class CircuitsController extends Controller
     	if( $circuit->update( $request->only('name', 'length', 'city', 'area', 'country_id') ) )
 		session()->flash( 'status', "The circuit '{$circuit->name}' has been changed." );
     	
-    	return redirect()->route('circuits.index');
+    	return redirect()->route('admin.circuits.index');
     }
 
     /**
@@ -129,6 +129,6 @@ class CircuitsController extends Controller
     		session()->flash( 'status', "The circuit '{$circuit->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route('circuits.index');
+    	return redirect()->route('admin.circuits.index');
     }
 }

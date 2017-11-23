@@ -117,7 +117,7 @@ class RacesController extends Controller
     	if( $race = Race::create($data) )
 		session()->flash( 'status', "The race '{$race->name}' has been added." );
     	
-    	return redirect()->route( 'races.index', [ 'season' => $request->season_id ] );
+    	return redirect()->route( 'admin.races.index', [ 'season' => $request->season_id ] );
     }
 
     /**
@@ -182,7 +182,7 @@ class RacesController extends Controller
     	if( $race->update($data) )
 		session()->flash( 'status', "The race '{$race->name}' has been changed." );
     	
-    	return redirect()->route( 'races.index', [ 'season' => $race->season->id ] );
+    	return redirect()->route( 'admin.races.index', [ 'season' => $race->season->id ] );
     }
 
     /**
@@ -201,6 +201,6 @@ class RacesController extends Controller
     		session()->flash( 'status', "The race '{$race->name}' could not be deleted." );
     	}
 	    	
-    	return redirect()->route( 'races.index', [ 'season' => $race->season->id ] );
+    	return redirect()->route( 'admin.races.index', [ 'season' => $race->season->id ] );
     }
 }
