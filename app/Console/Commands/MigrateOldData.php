@@ -37,6 +37,98 @@ class MigrateOldData extends Command
     protected $description = 'Migrate old database data to new database structure';
     
     /**
+     * Team color for each team (2017 only.)
+     *
+     * @var array
+     */
+    protected $teamColors = [
+    	'Ferrari'	=> '#C30000',
+    	'McLaren'	=> '#FF7B08',
+    	'Sauber'	=> '#006EFF',
+    	'Renault'	=> '#FFD800',
+    	'Toro Rosso'	=> '#0000FF',
+    	'Red Bull'	=> '#00007D',
+    	'Williams'	=> '#FFFFFF',
+    	'Force India'	=> '#FF80C7',
+    	'Mercedes GP'	=> '#00CFBA',
+    	'Haas F1 Team'	=> '#6C0000',
+    ];
+    
+    /**
+     * Country code for each driver.
+     *
+     * @var array
+     */
+    protected $driverCountry = [
+    	'Massa, Felipe'		=> 'BR',
+    	'Räikkönen, Kimi'	=> 'FI',
+    	'Hamilton, Lewis'	=> 'GB',
+    	'Alonso, Fernando'	=> 'ES',
+    	'Vettel, Sebastian'	=> 'DE',
+    	'Grosjean, Romain'	=> 'FR',
+    	'Hülkenberg, Nico'	=> 'DE',
+    	'Ericsson, Marcus'	=> 'SE',
+    	'Magnussen, Kevin'	=> 'DK',
+    	'Kvyat, Daniil'		=> 'RU',
+    	'Verstappen, Max'	=> 'NL',
+    	'Sainz Jr., Carlos'	=> 'ES',
+    	'Palmer, Jolyon'	=> 'GB',
+    	'Wehrlein, Pascal'	=> 'DE',
+    	'Vandoorne, Stoffel'	=> 'BE',
+    	'Ocon, Esteban'		=> 'FR',
+    	'Stroll, Lance'		=> 'CA',
+    	'Giovinazzi, Antonio'	=> 'IT',
+    	'Gasly, Pierre'		=> 'FR',
+    	'Hartley, Brendon'	=> 'NZ',
+    	'Ricciardo, Daniel'	=> 'AU',
+    	'Perez, Sergio'		=> 'MX',
+    	'Bottas, Valtteri'	=> 'FI',
+    	
+    	'Kovalainen, Heikki'	=> 'FI',
+    	'Kubica, Robert'	=> 'PL',
+    	'Heidfeld, Nick'	=> 'DE',
+    	'Piquet, Nelsinho'	=> 'BR',
+    	'Trulli, Jarno'		=> 'IT',
+    	'Glock, Timo'		=> 'DE',
+    	'Bourdais, Sebastien'	=> 'FR',
+    	'Buemi, Sebastien'	=> 'CH',
+    	'Webber, Mark'		=> 'AU',
+    	'Rosberg, Nico'		=> 'DE',
+    	'Nakajima, Kazuki'	=> 'JP',
+    	'Sutil, Adrian'		=> 'DE',
+    	'Fisichella, Giancarlo'	=> 'IT',
+    	'Button, Jenson'	=> 'GB',
+    	'Barrichello, Rubens'	=> 'BR',
+    	'Coulthard, David'	=> 'GB',
+    	'Sato, Takuma'		=> 'JP',
+    	'Davidson, Anthony'	=> 'GB',
+    	'Schumacher, Michael'	=> 'DE',
+    	'Alguersauri, Jaime'	=> 'ES',
+    	'Badoer, Luca'		=> 'IT',
+    	'Liuzzi, Vitantonio'	=> 'IT',
+    	'Kobayashi, Kamui'	=> 'JP',
+    	'Petrov, Vitaly'	=> 'RU',
+    	'Chandhok, Karun'	=> 'IN',
+    	'Senna, Bruno'		=> 'BR',
+    	'Rosa, Pedro de la'	=> 'ES',
+    	'Grassi, Luca di'	=> 'IT',
+    	'Maldonado, Pastor'	=> 'VE',
+    	'Resta, Paul di'	=> 'DE',
+    	'd\'Ambrosio, Jerome'	=> 'BE',
+    	'Karthikeyan, Narain'	=> 'IN',
+    	'Vergne, Jean-Eric'	=> 'FR',
+    	'Pic, Charles'		=> 'FR',
+    	'Gutierrez, Esteban'	=> 'MX',
+    	'Garde, Giedo van der'	=> 'NL',
+    	'Bianchi, Jules'	=> 'FR',
+    	'Chilton, Max'		=> 'GB',
+    	'Nasr, Felipe'		=> 'BR',
+    	'Stevens, Will'		=> 'GB',
+    	'Merhi, Roberto'	=> 'ES',
+    	'Haryanto, Rio'		=> 'ID',
+    ];
+    
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -68,6 +160,7 @@ class MigrateOldData extends Command
 				'username'	=> 'username',
 				'password'	=> function ($row) { return bcrypt($row->password); },
 				'email'		=> function ($row) { return empty($row->email) ? null: $row->email; },
+				'reminder'	=> function ($row) { return !empty($row->email); },
 				'active'	=> 'active',
 				'is_admin'	=> function ($row) { return $row->id == 1 ? 1 : 0; },
 			],
@@ -113,23 +206,26 @@ class MigrateOldData extends Command
 			],
 		],
 		[
-			'table'		=> 'drivers',
-			'model'		=> Driver::class,
-			'fields'	=> [
-				'id'		=> 'id',
-				'first_name'	=> function ($row) { return explode(',', $row->name)[1]; },
-				'last_name'	=> function ($row) { return explode(',', $row->name)[0]; },
-				'country_id'	=> null,
-				'active'	=> 'active',
-			],
-		],
-		[
 			'table'		=> 'countries',
 			'orderBy'	=> 'code',
 			'model'		=> Country::class,
 			'fields'	=> [
 				'code'		=> 'code',
 				'name'		=> 'country',
+			],
+		],
+	]);
+	
+	$this->migrate( $oldDatabase, [
+		[
+			'table'		=> 'drivers',
+			'model'		=> Driver::class,
+			'fields'	=> [
+				'id'		=> 'id',
+				'first_name'	=> function ($row) { return trim( explode(',', $row->name)[1] ); },
+				'last_name'	=> function ($row) { return trim( explode(',', $row->name)[0] ); },
+				'country_id'	=> function ($row) { return isset( $this->driverCountry[ trim($row->name) ] ) ? Country::where( 'code', $this->driverCountry[ trim($row->name) ] )->first()->id : null; },
+				'active'	=> 'active',
 			],
 		],
 		[
@@ -139,7 +235,7 @@ class MigrateOldData extends Command
 				'id'		=> 'id',
 				'name'		=> 'name',
 				'length'	=> 'length',
-				'city'		=> function ($row) { return explode(',', $row->city)[0]; },
+				'city'		=> function ($row) { return trim( explode(',', $row->city)[0] ); },
 				'area'		=> function ($row) { $pos = strpos( $row->city, ',' ); return $pos === false ? null : trim( substr( $row->city, $pos + 1 ) ); },
 				'country_id'	=> function ($row) { return Country::where( 'code', $row->country )->first()->id; },
 			],
@@ -181,6 +277,8 @@ class MigrateOldData extends Command
 	] );
 	
 	$this->attachAllUsersToLeagues();
+	
+	$this->completeEntryData();
 	
 	$this->migrate( $oldDatabase, [
 		[
@@ -295,6 +393,27 @@ class MigrateOldData extends Command
     	foreach( $users as $user )
     	{
     		$user->leagues()->attach( $leagues );
+    	}
+    }
+    
+    /**
+     * Add data to empty fields of each entry.
+     *
+     * @return void
+     */
+    protected function completeEntryData()
+    {
+    	$this->info('Completing entry data with colors and abbreviations.');
+    	
+    	$entries = Entry::all();
+    	
+    	foreach( $entries as $entry )
+    	{
+    		$entry->abbreviation	= strtoupper( substr( iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $entry->driver->last_name ), 0, 3 ) );
+    		
+    		$entry->color		= isset( $this->teamColors[ $entry->team->name ] ) ? $this->teamColors[ $entry->team->name ] : null;
+    		
+    		$entry->save();
     	}
     }
 }
