@@ -94,6 +94,11 @@ body::after
 {
 	border: 0;
 	border-left: 10px solid transparent;
+	
+	.details
+	{
+		font-size: 75%;
+	}
 }
 
 .highcharts-background

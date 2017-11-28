@@ -14,3 +14,10 @@
 							</span>
 						@endif
 
+						@if( isset($showDetails) and $showDetails )
+						<br>
+						<span class="pull-left details">
+							#{{ $entry->car_number }} {{ $entry->team->name }}
+						</span>
+						@endif
+

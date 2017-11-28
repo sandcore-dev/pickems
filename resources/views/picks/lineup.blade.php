@@ -20,10 +20,12 @@
 				<div class="bracket">
 					@if( $pick->entry )
 					<button class="btn btn-primary btn-block team-color" style="border-left-color: {{ $pick->entry->color }}" type="submit" name="pick" value="{{ $pick->id }}">
-						@include( 'common.entry', [ 'entry' => $pick->entry ] )
+						@include( 'common.entry', [ 'entry' => $pick->entry, 'showDetails' => true ] )
 						
-						@if( !is_null( $pick->points ) )
-						<span class="badge">{{ $pick->points }} pt</span>
+						@if( $pick->points )
+						<span class="pull-right badge">
+							{{ $pick->points }} pt
+						</span>
 						@endif
 					</button>
 					@else
