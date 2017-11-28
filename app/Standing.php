@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use App\User;
 use App\League;
+use App\Season;
 use App\Race;
 
 use App\Collections\StandingCollection;
@@ -97,6 +98,19 @@ class Standing extends Model
 	public function scopeByRace( Builder $query, Race $race )
 	{
 		return $query->where( 'race_id', $race->id );
+	}
+
+	/**
+	 * Scope to season.
+	 *
+	 * @param	\Illuminate\Database\Eloquent\Builder	$query
+	 * @param	\App\Season				$season
+	 *
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeBySeason( Builder $query, Season $season )
+	{
+		return $query->whereIn( 'race_id', $season->races->pluck('id') );
 	}
 
 	/**

@@ -57,4 +57,14 @@ class Circuit extends Model
 	{
 		return $this->city . ', ' . ( $this->area ? $this->area . ', ' : '' ) . $this->country->name;
 	}
+
+	/**
+	 * Get the short noation of the place of this circuit.
+	 *
+	 * @return 	string
+	 */
+	public function getLocationShortAttribute()
+	{
+		return $this->city . ', ' . $this->country->name;
+	}
 }

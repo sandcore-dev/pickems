@@ -9,9 +9,21 @@ use App\Standing;
 class StandingCollection extends Collection
 {
 	/**
+	 * Return all (unique) users of this collection.
+	 *
+	 * @return	Illuminate\Database\Eloquent\Collection
+	 */
+	public function users()
+	{
+		return $this->map(function ($item, $key) {
+			return $item->user;
+		})->unique()->sortBy('name');
+	}
+	
+	/**
 	 * Output a collection compatible with Highcharts series data.
 	 *
-	 * @return	Illuminate\Database\Eloquent\Collection;
+	 * @return	Illuminate\Database\Eloquent\Collection
 	 */
 	public function getChartData()
 	{
@@ -25,16 +37,16 @@ class StandingCollection extends Collection
 
 		$out[] = [
 			'type'	=> 'column',
-			'name'	=> 'Total',
-			'data'	=> $this->getData(function ($data) {
-					return $data->picked + $data->positions_correct;
-			}),
+			'name'	=> 'Top ' . config('picks.max'),
+			'data'	=> $this->getData('picked'),
 		];
 		
 		$out[] = [
 			'type'	=> 'column',
-			'name'	=> 'Top ' . config('picks.max'),
-			'data'	=> $this->getData('picked'),
+			'name'	=> 'Total',
+			'data'	=> $this->getData(function ($data) {
+					return $data->picked + $data->positions_correct;
+			}),
 		];
 		
 		$out[] = [
@@ -68,7 +80,7 @@ class StandingCollection extends Collection
 		$out = [];
 		
 		foreach( $this as $standing )
-			$out[] = [ 'name' => $standing->race->circuit->country->name, 'y' => is_callable($field) ? $field($standing) : $standing->{ $field } ];
+			$out[] = [ 'name' => $standing->race->circuit->locationShort, 'y' => is_callable($field) ? $field($standing) : $standing->{ $field } ];
 		
 		return collect($out);
 	}

@@ -52,10 +52,14 @@
     			</tr>
     		</thead>
     		<tbody>
+    		<?php $previousRank = 0; ?>
     		@forelse( $standings as $standing )
     			<tr>
     				<td class="text-right">
+    					@if( $previousRank != $standing->rank )
     					{{ $standing->rank }}
+    					@endif
+    					<?php $previousRank = $standing->rank; ?>
     				</td>
     				<td class="text-right">
     					{{ $standing->rankMoved }}

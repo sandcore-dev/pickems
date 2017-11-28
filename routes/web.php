@@ -26,8 +26,6 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
-Route::get('home', 'HomeController@index')->name('home');
-
 Route::get('profile', 'ProfileController@index')->name('profile');
 Route::post('profile/save', 'ProfileController@saveProfile')->name('profile.save');
 Route::post('profile/password', 'ProfileController@savePassword')->name('profile.password');
@@ -44,6 +42,10 @@ Route::group([ 'prefix' => 'standings' ], function () {
 	Route::get('{league}', 'StandingsListController@league')->name('standings.league');
 	Route::get('{league}/season/{season}', 'StandingsListController@season')->name('standings.season');
 	Route::get('{league}/{race}', 'StandingsListController@race')->name('standings.race');
+});
+
+Route::group([ 'prefix' => 'statistics', 'as' => 'statistics.', 'namespace' => 'Statistics' ], function () {
+	Route::get('season/{league?}/{season?}/{user?}', 'SeasonGraphController@index')->name('season');
 });
 
 Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => [ 'auth', 'admin' ], 'namespace' => 'Admin' ], function () {
