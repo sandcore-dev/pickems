@@ -1,5 +1,7 @@
 @extends('admin.index')
 
+@section('title', 'Delete league - Admin -')
+
 @section('content')
 <div class="container">
     <div class="row">

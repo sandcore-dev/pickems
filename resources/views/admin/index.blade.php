@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('secondary')
-	Admin
-@endsection
+@section('title', 'Admin -')
+
+@section('secondary', 'Admin')
 
 @section('menu')
 	@include('admin.menu')

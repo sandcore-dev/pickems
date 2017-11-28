@@ -1,5 +1,7 @@
 @extends('admin.index')
 
+@section('title', "Edit leagues of user - Admin -")
+
 @section('content')
 	<div class="container">
 		<div class="row">

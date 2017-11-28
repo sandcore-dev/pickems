@@ -1,5 +1,7 @@
 @extends('admin.index')
 
+@section('title', 'Edit country - Admin -')
+
 @section('content')
 <div class="container">
     <div class="row">
