@@ -58,7 +58,7 @@
 				</ul>
 			</li>
 			
-			<li><a class="warning" href="{{ route('home') }}">Return</a></li>
+			<li><a class="warning" href="{{ route('picks') }}">Return</a></li>
 
 			<li><a class="danger" href="{{ route('logout') }}">Logout</a></li>
 		@endif
