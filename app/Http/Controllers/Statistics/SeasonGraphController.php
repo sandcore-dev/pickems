@@ -30,7 +30,7 @@ class SeasonGraphController extends Controller
      */
     public function index( League $league, Season $season, User $user )
     {
-    	if( !$league->id )
+    	if( !$league->id or !auth()->user()->leagues->contains($league) )
     		$league = auth()->user()->leagues->first();
     	
     	if( !$season->id or !$league->series->seasons->contains($season) )

@@ -45,6 +45,7 @@ Route::group([ 'prefix' => 'standings' ], function () {
 });
 
 Route::group([ 'prefix' => 'statistics', 'as' => 'statistics.', 'namespace' => 'Statistics' ], function () {
+	Route::get('history/{league?}', 'HistoryController@index')->name('history');
 	Route::get('season/{league?}/{season?}/{user?}', 'SeasonGraphController@index')->name('season');
 });
 
@@ -83,4 +84,3 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => [ 'auth', 
 		Route::delete('{race}/{user}', 'PicksEditController@delete')->name('picks.delete');
 	});
 });
-
