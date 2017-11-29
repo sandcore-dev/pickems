@@ -97,7 +97,7 @@ class StandingsController extends Controller
 						$previousStanding	= $previous[ $league->id ][ $user->id ];
 					}
 					
-					$standing->carry_over		= $user->picks->max('carry_over') > 0;
+					$standing->carry_over		= $user->picks->where( 'race_id', $race->id )->max('carry_over') > 0;
 					
 					if( isset( $previous[ $league->id ][ $user->id ] ) )
 						$standing->previous()->associate( $previous[ $league->id ][ $user->id ] );
