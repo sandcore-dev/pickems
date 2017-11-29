@@ -53,6 +53,20 @@
 				@endslot
 			@endcomponent
 
+			@component('admin.form.input')
+				@slot('type', 'number')
+				
+				@slot('field', 'picks_max')
+				
+				@slot('value', $season->picks_max)
+				
+				@slot('label', 'Picks maximum')
+				
+				@slot('attributes')
+					required min="{{ config('picks.min') }}" max="{{ config('picks.max') }}"
+				@endslot
+			@endcomponent
+			
 			@component('admin.form.submit')
 				@slot('cancel', route( 'admin.seasons.index', [ 'series' => $season->series->id ] ))
 				

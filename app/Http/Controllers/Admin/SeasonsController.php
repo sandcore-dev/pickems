@@ -4,14 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Validation\Rule;
 
 use App\Http\Controllers\Controller;
 
 use App\Series;
 use App\Season;
-
-use App\Rules\GreaterThanEqual;
 
 class SeasonsController extends Controller
 {
@@ -69,12 +66,13 @@ class SeasonsController extends Controller
     		'series_id'	=> [ 'bail', 'required', 'exists:series,id' ],
     		'start_year'	=> [ 'required', 'integer', 'between:1970,9999' ],
     		'end_year'	=> [ 'required', 'integer', 'between:1970,9999', 'gte:start_year' ],
+    		'picks_max'	=> [ 'required', 'integer', 'between:' . config('picks.min') . ',' . config('picks.max') ],
     	]);
     	
     	if( Season::where( 'series_id', $request->input('series_id') )->where( 'start_year', $request->input('start_year') )->where( 'end_year', $request->input('end_year') )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'start_year' => 'This season already exists.' ]);
     	
-    	if( $season = Season::create( $request->only('series_id', 'start_year', 'end_year') ) )
+    	if( $season = Season::create( $request->only('series_id', 'start_year', 'end_year', 'picks_max') ) )
     	{
 		session()->flash( 'status', "The season '{$season->name}' has been added." );
 		
@@ -119,12 +117,13 @@ class SeasonsController extends Controller
     	$request->validate([
     		'start_year'	=> [ 'required', 'integer', 'between:1970,9999' ],
     		'end_year'	=> [ 'required', 'integer', 'between:1970,9999', 'gte:start_year' ],
+    		'picks_max'	=> [ 'required', 'integer', 'between:' . config('picks.min') . ',' . config('picks.max') ],
     	]);
     	
     	if( Season::where( 'series_id', $season->series->id )->where( 'start_year', $request->input('start_year') )->where( 'end_year', $request->input('end_year') )->where( 'id', '!=', $season->id )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'start_year' => 'This season already exists.' ]);
     	
-    	if( $season->update( $request->only('start_year', 'end_year') ) )
+    	if( $season->update( $request->only('start_year', 'end_year', 'picks_max') ) )
 		session()->flash( 'status', "The season '{$season->name}' has been changed." );
     	
     	return redirect()->route( 'admin.seasons.index', [ 'series' => $season->series->id ] );

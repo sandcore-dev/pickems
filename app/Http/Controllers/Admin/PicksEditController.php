@@ -89,7 +89,7 @@ class PicksEditController extends Controller
         	'users'		=> $users,
         	
         	'entriesByTeam'	=> $entriesByTeam,
-        	'picks'		=> $picks->padMissing(),
+        	'picks'		=> $picks->padMissing( $season->picks_max ),
         ]);
     }
 
@@ -101,7 +101,7 @@ class PicksEditController extends Controller
     public function create( Race $race, User $user, Request $request )
     {
     	$request->validate([
-    		'entry'	=> [ 'required', 'integer', 'exists:entries,id', new NotPickedYet( $user, $race ), new MaxPicksExceeded( $user, $race, config('picks.max') ) ],
+    		'entry'	=> [ 'required', 'integer', 'exists:entries,id', new NotPickedYet( $user, $race ), new MaxPicksExceeded( $user, $race, $race->season->picks_max ) ],
     	]);
     	
     	$pick = Pick::create([

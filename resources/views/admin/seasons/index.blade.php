@@ -24,6 +24,9 @@
 							<th>
 								Name
 							</th>
+							<th>
+								Picks
+							</th>
 							<th colspan="2" class="text-center">
 								<a href="{{ route( 'admin.seasons.create', [ 'series' => $currentSeries->id ] ) }}" title="Add a season" class="glyphicon glyphicon-plus"></a>
 							</th>
@@ -34,6 +37,9 @@
 							<tr>
 								<td>
 									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}">{{ $season->name }}</a>
+								</td>
+								<td>
+									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}">{{ $season->picks_max }}</a>
 								</td>
 								<td class="text-center">
 									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
@@ -48,7 +54,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="3" class="text-center">No seasons found.</td>
+								<td colspan="4" class="text-center">No seasons found.</td>
 							</tr>
 						@endforelse
 					</tbody>

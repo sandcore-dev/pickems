@@ -26,11 +26,14 @@ class PickCollection extends Collection
 	 *
 	 * @return	\App\Collections\PickCollection
 	 */
-	public function padMissing()
+	public function padMissing( int $picksMax = null )
 	{
+		if( !$picksMax )
+			$picksMax = config('picks.max');
+		
 		$picks = $this->keyBy('rank')->all();
 		
-		foreach( range( 1, config('picks.max') ) as $index )
+		foreach( range( 1, $picksMax ) as $index )
 			if( !isset( $picks[$index] ) )
 			{
 				$picks[$index] = $this->getNewObject();

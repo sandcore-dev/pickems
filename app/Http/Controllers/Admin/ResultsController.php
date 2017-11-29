@@ -71,8 +71,8 @@ class ResultsController extends Controller
         	'currentRace'	=> $race,
         	'races'		=> $season->races,
         	'entriesByTeam'	=> $entriesByTeam,
-        	'results'	=> $results->padMissing(),
-        	'showRecalcBut'	=> $results->count() >= config('picks.max'),
+        	'results'	=> $results->padMissing( $season->picks_max ),
+        	'showRecalcBut'	=> $results->count() >= $season->picks_max,
         ]);
     }
 

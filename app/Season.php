@@ -12,7 +12,7 @@ class Season extends Model
 	 *
 	 * @var		array
 	 */
-	protected $fillable = [ 'start_year', 'end_year' ];
+	protected $fillable = [ 'start_year', 'end_year', 'picks_max' ];
 
 	/**
 	* The "booting" method of the model.
