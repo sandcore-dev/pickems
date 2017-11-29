@@ -44,6 +44,8 @@ class StandingsController extends Controller
 	 */
 	public function recalculate( Season $season )
 	{
+		# ini_set('max_execution_time', 60);
+		
 		$this->clear($season);
 		
 		$this->add($season);
@@ -81,21 +83,21 @@ class StandingsController extends Controller
 			{
 				foreach( $league->users as $user )
 				{
+					$standing = new Standing;
+
+					$standing->user_id		= $user->id;
+					$standing->league_id		= $league->id;
+					$standing->race_id		= $race->id;
+					
 					if( $user->picks->where( 'race_id', $race->id )->isEmpty() )
 					{
 						if( !isset( $previous[ $league->id ][ $user->id ] ) )
 							continue;
 						
 						$previousStanding	= $previous[ $league->id ][ $user->id ];
-						
-						$this->picksController->carryOver( $user, $previousStanding->race, $race );
 					}
 					
-					$standing = new Standing;
-					
-					$standing->user_id		= $user->id;
-					$standing->league_id		= $league->id;
-					$standing->race_id		= $race->id;
+					$standing->carry_over		= $user->picks->max('carry_over') > 0;
 					
 					if( isset( $previous[ $league->id ][ $user->id ] ) )
 						$standing->previous()->associate( $previous[ $league->id ][ $user->id ] );
@@ -131,6 +133,19 @@ class StandingsController extends Controller
 			return $picks->where( 'rank', $result->rank )->where( 'entry_id', $result->entry_id )->count();
 		});
 		
+		$standing->total		= $standing->picked + $standing->positions_correct;
+		
+		$standing->total_overall		= $standing->total;
+		$standing->total_picked			= $standing->picked;
+		$standing->total_positions_correct	= $standing->positions_correct;
+		
+		while( $previous = isset($previous) ? $previous->previous : $standing->previous )
+		{
+			$standing->total_overall		+= $previous->total;
+			$standing->total_picked			+= $previous->picked;
+			$standing->total_positions_correct	+= $previous->positions_correct;
+		}
+		
 		$standing->save();
 	}
 	
@@ -144,21 +159,12 @@ class StandingsController extends Controller
 	 */
 	protected function setRankings( League $league, Race $race )
 	{
-		$standings = $league->standings()->where( 'race_id', $race->id )->get()->sort(function ($a, $b) {
-			 foreach( [ 'totalOverall', 'totalPositionsCorrect', 'totalPicked', 'previousRank' ] as $attr )
-			 {
-			 	switch( $b->{$attr} <=> $a->{$attr} )
-			 	{
-			 		case -1;
-			 			return -1;
-			 		
-			 		case 1;
-			 			return 1;
-			 	}
-			 }
-			 
-			 return 0;
-		});
+		$standings = $league->standings()
+			->where( 'race_id', $race->id )
+			->orderBy('total_overall', 'desc')
+			->orderBy('total_positions_correct', 'desc')
+			->orderBy('total_picked', 'desc')
+			->get();
 		
 		$previous	= new Standing;
 		$currentRank	= 1;
@@ -166,7 +172,7 @@ class StandingsController extends Controller
 		
 		foreach( $standings as $standing )
 		{
-			if( $previous->totalOverall == $standing->totalOverall and $previous->totalPositionsCorrect == $standing->totalPositionsCorrect and $previous->totalPicked == $standing->totalPicked )
+			if( $previous->total_overall == $standing->total_overall and $previous->total_positions_correct == $standing->total_positions_correct and $previous->total_picked == $standing->total_picked )
 			{
 				$standing->rank = $previousRank;
 			}
@@ -177,6 +183,9 @@ class StandingsController extends Controller
 				$previousRank = $currentRank;
 			}
 			
+			if( $standing->previous )
+				$standing->previous_rank = $standing->previous->rank;
+
 			$standing->save();
 			
 			$currentRank++;

@@ -140,6 +140,8 @@ class PicksEditController extends Controller
      * @param	\App\User 	$user
      * @param	\App\Race	$fromRace
      * @param	\App\Race	$toRace
+     *
+     * @return	void
      */
     public function carryOver( User $user, Race $fromRace, Race $toRace )
     {

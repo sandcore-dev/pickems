@@ -29,7 +29,7 @@ class Standing extends Model
 	protected static function boot()
 	{
 		parent::boot();
-
+		
 		static::addGlobalScope('sortByRaceRank', function (Builder $builder) {
 		    $builder->orderBy('race_id', 'asc')->orderBy('rank', 'asc');
 		});
@@ -140,26 +140,16 @@ class Standing extends Model
 	}
 
 	/**
-	 * Get the previous rank.
-	 *
-	 * @return	integer|null
-	 */
-	public function getPreviousRankAttribute()
-	{
-		return $this->previous ? $this->previous->rank : null;
-	}
-	
-	/**
 	 * Get the difference between current rank and previous rank
 	 *
 	 * @return	integer|null
 	 */
 	public function getRankMovedAttribute()
 	{
-		if( is_null( $this->previousRank ) )
+		if( is_null( $this->previous_rank ) )
 			return null;
 		
-		return $this->previousRank - $this->rank;
+		return $this->previous_rank - $this->rank;
 	}
 	
 	/**
@@ -179,55 +169,5 @@ class Standing extends Model
 			return 'glyphicon-arrow-up text-success';
 		
 		return 'glyphicon-pause text-info';
-	}
-	
-	/**
-	 * Get the sum of both picked and positions correct attributes.
-	 *
-	 * @return	integer
-	 */
-	public function getTotalAttribute()
-	{
-		return $this->picked + $this->positions_correct;
-	}
-	
-	/**
-	 * Get the sum of both total picked and total positions correct attributes.
-	 *
-	 * @return	integer
-	 */
-	public function getTotalOverallAttribute()
-	{
-		return $this->totalPicked + $this->totalPositionsCorrect;
-	}
-	
-	/**
-	 * Get the sum of the 'picked' attribute of itself and its previous standings.
-	 *
-	 * @return	integer
-	 */
-	public function getTotalPickedAttribute()
-	{
-		$picked = $this->picked;
-		
-		if( $this->previous )
-			$picked += $this->previous->totalPicked;
-		
-		return $picked;
-	}
-	
-	/**
-	 * Get the sum of the 'picked' attribute of itself and its previous standings.
-	 *
-	 * @return	integer
-	 */
-	public function getTotalPositionsCorrectAttribute()
-	{
-		$positionsCorrect = $this->positions_correct;
-		
-		if( $this->previous )
-			$positionsCorrect += $this->previous->totalPositionsCorrect;
-		
-		return $positionsCorrect;
 	}
 }

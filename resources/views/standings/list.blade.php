@@ -52,14 +52,14 @@
     			</tr>
     		</thead>
     		<tbody>
-    		<?php $previousRank = 0; ?>
+    		<?php $previous_rank = 0; ?>
     		@forelse( $standings as $standing )
     			<tr>
     				<td class="text-right">
-    					@if( $previousRank != $standing->rank )
+    					@if( $previous_rank != $standing->rank )
     					{{ $standing->rank }}
     					@endif
-    					<?php $previousRank = $standing->rank; ?>
+    					<?php $previous_rank = $standing->rank; ?>
     				</td>
     				<td class="text-right">
     					{{ $standing->rankMoved }}
@@ -69,13 +69,13 @@
     					{{ $standing->user->name }}
     				</td>
     				<td class="text-right">
-    					{{ $standing->totalOverall }}
+    					{{ $standing->total_overall }}
     				</td>
     				<td class="text-right">
-    					{{ $standing->totalPositionsCorrect }}
+    					{{ $standing->total_positions_correct }}
     				</td>
     				<td class="text-right">
-    					{{ $standing->totalPicked }}
+    					{{ $standing->total_picked }}
     				</td>
     				<td class="text-right">
     					{{ $standing->total }}

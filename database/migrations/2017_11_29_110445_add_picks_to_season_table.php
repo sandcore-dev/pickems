@@ -14,7 +14,7 @@ class AddPicksToSeasonTable extends Migration
     public function up()
     {
         Schema::table('seasons', function (Blueprint $table) {
-        	$table->tinyInteger('picks_max')->after('end_year')->default( config('picks.max') );
+        	$table->tinyInteger('picks_max')->unsigned()->after('end_year')->default( config('picks.max') );
         });
     }
 
