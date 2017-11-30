@@ -1,5 +1,5 @@
-<div class="col-xs-3">
-	@if( $currentRace->weekend_start->gte( \Carbon\Carbon::now() ) )
+@if( $currentRace->weekend_start->gte( \Carbon\Carbon::now() ) )
+	<div class="col-xs-3">
 		<form class="btn-group-vertical btn-block drivers" role="group" aria-label="Drivers" method="post" action="{{ route( 'picks.create', [ 'league' => $currentLeague->id, 'race' => $currentRace->id ] ) }}">
 			{{ csrf_field() }}
 	
@@ -11,9 +11,13 @@
 				@endforeach
 			@endforeach
 		</form>
-	@elseif($picks->first()->carry_over)
+	</div>
+@elseif($picks->first()->carry_over)
+	<div class="col-xs-12 col-sm-3">
 		<p class="alert alert-warning">
 			These picks carried over from the previous race.
 		</p>
-	@endunless
-</div>
+	</div>
+	<div class="col-xs-1 visible-xs-block"></div>
+@endunless
+

@@ -2,9 +2,9 @@
     <div class="row">
         <div class="col-md-12">
 
-	<table class="table table-striped table-hover table-responsive">
+	<table class="table table-striped table-hover">
     		<thead>
-    			<tr>
+    			<tr class="hidden-xs">
     				<th colspan="3">
     					&nbsp;
     				</th>
@@ -23,9 +23,9 @@
     			</tr>
     			<tr>
     				<th class="text-right">
-    					Rank
+    					<span class="hidden-xs hidden-sm">Rank</span>
     				</th>
-    				<th>
+    				<th class="hidden-xs">
     					&nbsp;
     				</th>
     				<th>
@@ -38,16 +38,16 @@
     					Finish
     				</th>
     				<th class="text-right">
-    					Top {{ config('picks.max') }}
+    					Top&nbsp;{{ $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') }}
     				</th>
-    				<th class="text-right">
+    				<th class="text-right hidden-xs">
     					Total
     				</th>
-    				<th class="text-right">
+    				<th class="text-right hidden-xs">
     					Finish
     				</th>
-    				<th class="text-right">
-    					Top {{ config('picks.max') }}
+    				<th class="text-right hidden-xs">
+    					Top&nbsp;{{ $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') }}
     				</th>
     			</tr>
     		</thead>
@@ -61,8 +61,8 @@
     					@endif
     					<?php $previous_rank = $standing->rank; ?>
     				</td>
-    				<td class="text-right">
-    					{{ $standing->rankMoved }}
+    				<td class="text-right hidden-xs">
+    					<span class="hidden-sm">{{ $standing->rankMoved }}</span>
     					<span class="glyphicon {{ $standing->rankMovedGlyphicon }}"></span>
     				</td>
     				<td>
@@ -77,13 +77,13 @@
     				<td class="text-right">
     					{{ $standing->total_picked }}
     				</td>
-    				<td class="text-right">
+    				<td class="text-right hidden-xs">
     					{{ $standing->total }}
     				</td>
-    				<td class="text-right">
+    				<td class="text-right hidden-xs">
     					{{ $standing->positions_correct }}
     				</td>
-    				<td class="text-right">
+    				<td class="text-right hidden-xs">
     					{{ $standing->picked }}
     				</td>
     			</tr>

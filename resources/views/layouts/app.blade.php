@@ -17,7 +17,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12">
-				<h1>{{ config('app.name', 'Laravel') }} @yield('secondary')</h1>
+				<h1 class="hidden-xs">{{ config('app.name', 'Laravel') }} @yield('secondary')</h1>
 
 				@section('menu')		
 					@include('menu')

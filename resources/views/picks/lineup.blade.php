@@ -15,7 +15,7 @@
 	
 	@foreach( $picks as $pick )
 		<div class="row">
-			<div class="col-xs-4 col-xs-offset-{{ $pick->rank % 2 == 0 ? 7 : 1 }}">
+			<div class="col-xs-5 col-lg-4 col-xs-offset-{{ $pick->rank % 2 == 0 ? 7 : 1 }}">
 				<div class="rank text-center">{{ $pick->rank }}</div>
 				<div class="bracket">
 					@if( $pick->entry )
@@ -23,7 +23,7 @@
 						@include( 'common.entry', [ 'entry' => $pick->entry, 'showDetails' => true ] )
 						
 						@if( $pick->points )
-						<span class="pull-right badge">
+						<span class="pull-right badge hidden-xs hidden-sm">
 							{{ $pick->points }} pt
 						</span>
 						@endif

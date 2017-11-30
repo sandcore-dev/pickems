@@ -1,4 +1,4 @@
-<div class="col-md-3">
+<div class="col-xs-3">
 	@if( $currentRace->weekend_start->lte( \Carbon\Carbon::now() ) )
 		<form class="btn-group-vertical btn-block drivers" role="group" aria-label="Drivers" method="post" action="{{ route( 'admin.results.create', [ 'race' => $currentRace->id ] ) }}">
 			{{ csrf_field() }}

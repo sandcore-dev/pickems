@@ -55,7 +55,7 @@ class Driver extends Model
 	 */
 	public function getFirstLetterAttribute()
 	{
-		return substr( $this->first_name, 1, 1 ) . '.';
+		return substr( $this->first_name, 0, 1 ) . '.';
 	}
 	
 	/**

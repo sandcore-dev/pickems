@@ -1,7 +1,7 @@
-<div class="col-md-9">
+<div class="col-xs-9">
 @if ($errors->has('entry'))
 	<div class="row">
-		<div class="col-md-10 col-md-offset-1">
+		<div class="col-xs-10 col-xs-offset-1">
 			<p class="text-danger text-center">
 				<strong>{{ $errors->first('entry') }}</strong>
 			</p>
@@ -15,7 +15,7 @@
 	
 	@foreach( $results as $result )
 		<div class="row">
-			<div class="col-md-4 col-md-offset-{{ $result->rank % 2 == 0 ? 7 : 1 }}">
+			<div class="col-xs-5 col-lg-4 col-xs-offset-{{ $result->rank % 2 == 0 ? 7 : 1 }}">
 				<div class="rank text-center">{{ $result->rank }}</div>
 				<div class="bracket">
 					@if( $result->entry )
