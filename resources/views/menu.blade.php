@@ -26,8 +26,9 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Statistics <span class="caret"></span></a>
 				
 					<ul class="dropdown-menu">
-						<li class="@routeActive('/^statistics\.history$/')"><a href="{{ route('statistics.history') }}">Historical records</a></li>
 						<li class="@routeActive('/^statistics\.season$/') hidden-xs"><a href="{{ route('statistics.season') }}">Season performance</a></li>
+						<li class="@routeActive('/^statistics\.history$/')"><a href="{{ route('statistics.history') }}">Historical records</a></li>
+						<li class="@routeActive('/^statistics\.fame$/')"><a href="{{ route('statistics.fame') }}">Hall of Fame</a></li>
 					</ul>
 				</li>
 
