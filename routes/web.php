@@ -47,6 +47,7 @@ Route::group([ 'prefix' => 'standings' ], function () {
 Route::group([ 'prefix' => 'statistics', 'as' => 'statistics.', 'namespace' => 'Statistics' ], function () {
 	Route::get('season/{league?}/{season?}/{user?}', 'SeasonGraphController@index')->name('season');
 	Route::get('history/{league?}', 'HistoryController@index')->name('history');
+	Route::get('all-time/{league?}', 'AllTimeController@index')->name('alltime');
 	Route::get('hall-of-fame/{league?}', 'FameController@index')->name('fame');
 });
 
