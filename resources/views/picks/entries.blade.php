@@ -19,5 +19,9 @@
 		</p>
 	</div>
 	<div class="col-xs-1 visible-xs-block"></div>
+	<div class="col-xs-3 hidden-xs"></div>
+@else
+	<div class="col-xs-1 visible-xs-block"></div>
+	<div class="col-xs-3 hidden-xs"></div>
 @endunless
 
