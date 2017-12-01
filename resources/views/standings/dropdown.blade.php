@@ -39,7 +39,7 @@
 	            		</button>
 	            		
 	            		<ul class="dropdown-menu" aria-labelledby="raceDropdown">
-	            		@foreach( $currentRace->season->races()->has('standings')->get() as $race )
+	            		@foreach( $currentRace->season->races()->with('circuit.country')->has('standings')->get() as $race )
 	            			<li class="{{ $currentRace->id == $race->id ? 'active' : '' }}">
 	            				<a href="{{ route('standings.race', [ 'league' => $currentLeague->id, 'race' => $race->id ] ) }}">
 	            					<span class="{{ $race->circuit->country->flagClass }}"></span>

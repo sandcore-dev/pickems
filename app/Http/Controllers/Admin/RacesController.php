@@ -59,7 +59,7 @@ class RacesController extends Controller
         	'series'	=> Series::has('seasons')->get(),
         	'currentSeason'	=> $season,
         	'seasons'	=> $series->seasons,
-        	'races'		=> Race::where( 'season_id', $season->id )->paginate(30),
+        	'races'		=> Race::with('results')->where( 'season_id', $season->id )->paginate(30),
         ]);
     }
 

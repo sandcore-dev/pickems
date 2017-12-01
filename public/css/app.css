@@ -10484,3 +10484,12 @@ body::after {
   font-size: 75%;
 }
 
+footer {
+  margin-top: 1em;
+}
+
+footer p {
+  color: #bfbfbf;
+  font-size: 75%;
+}
+

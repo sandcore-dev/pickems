@@ -60,8 +60,10 @@ class ResultsController extends Controller
 		$race	= $season->races()->previousOrFirst();
 	}
 	
-	$results	= Result::where( 'race_id', $race->id )->get();
-	$entriesByTeam	= $race->season->entries()->whereNotIn( 'id', $results->pluck('entry_id') )->get()->getByTeam();
+	$season->load( 'races.circuit.country' );
+	
+	$results	= Result::with([ 'entry.driver.country', 'entry.team' ])->where( 'race_id', $race->id )->get();
+	$entriesByTeam	= $race->season->entries()->with([ 'driver.country', 'team' ])->whereNotIn( 'id', $results->pluck('entry_id') )->get()->getByTeam();
 	
         return view('admin.results.index')->with([
         	'currentSeries'	=> $series,

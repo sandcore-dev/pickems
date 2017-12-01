@@ -65,12 +65,12 @@ class PicksEditController extends Controller
 	$leagues	= $series->leagues;
 	$league		= $request->league ? League::findOrFail($request->league) : $leagues->first();
 	
-	$users		= $league->users()->get();
+	$users		= $league->users;
 	$user		= $request->user ? User::findOrFail($request->user) : $users->first();
 	
-	$picks		= $user->picks()->byRace($race)->get();
+	$picks		= Pick::with([ 'entry.driver.country', 'entry.team', 'race.results' ])->byUser($user)->byRace($race)->get();
 	
-	$entriesByTeam	= $race->season->entries()->whereNotIn( 'id', $picks->pluck('entry_id') )->get()->getByTeam();
+	$entriesByTeam	= $race->season->entries()->with([ 'driver.country', 'team' ])->whereNotIn( 'id', $picks->pluck('entry_id') )->get()->getByTeam();
 	
         return view('admin.picks.index')->with([
         	'currentSeries'	=> $series,
@@ -80,7 +80,7 @@ class PicksEditController extends Controller
         	'seasons'	=> $series->seasons()->has('races.picks')->get(),
         	
         	'currentRace'	=> $race,
-        	'races'		=> $season->races()->has('picks')->get(),
+        	'races'		=> $season->races()->with('circuit.country')->has('picks')->get(),
         	
         	'currentLeague'	=> $league,
         	'leagues'	=> $leagues,

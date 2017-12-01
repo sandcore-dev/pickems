@@ -70,7 +70,9 @@ class StandingsListController extends Controller
     	
     	if( !$user->leagues->contains($league) )
     		abort(404);
-    		
+    	
+    	$league->load( 'standings.user' );
+    	
     	$standings	= $league->standings->where( 'race_id', $race->id );
     	
         return view('standings.index')->with([

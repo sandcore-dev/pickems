@@ -57,7 +57,7 @@ class HistoryController extends Controller
 
     	$maxPositionsCorrect	= Standing::byLeague($league)->whereIn( 'carry_over', $carryOver )->max('total');
     	
-    	return Standing::byLeague($league)
+    	return Standing::with([ 'user', 'race.season', 'race.circuit.country' ])->byLeague($league)
     		->where( 'total', $maxPositionsCorrect )
     		->whereIn( 'carry_over', $carryOver )
     		->orderBy( 'positions_correct', 'desc' )
@@ -76,7 +76,7 @@ class HistoryController extends Controller
     {
     	$maxPoints	= Standing::byLeague($league)->max('total_overall');
     	
-    	return Standing::byLeague($league)
+    	return Standing::with([ 'user', 'race.season', 'race.circuit.country' ])->byLeague($league)
     		->where( 'total_overall', $maxPoints )
     		->orderBy( 'total_positions_correct', 'desc' )
     		->orderBy( 'total_picked', 'desc' )

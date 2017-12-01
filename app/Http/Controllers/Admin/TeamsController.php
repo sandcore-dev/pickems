@@ -30,7 +30,7 @@ class TeamsController extends Controller
      */
     public function index()
     {
-        return view('admin.teams.index')->with( 'teams', Team::paginate() );
+        return view('admin.teams.index')->with( 'teams', Team::with([ 'country', 'entries' ])->paginate() );
     }
 
     /**

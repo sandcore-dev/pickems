@@ -52,7 +52,7 @@
 									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
-									@if( !$race->results()->count() )
+									@if( !$race->results->count() )
 										<a href="{{ route( 'admin.races.destroy', [ 'seasons' => $race->id ] ) }}" title="Delete this season" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;

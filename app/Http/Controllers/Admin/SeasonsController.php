@@ -33,10 +33,12 @@ class SeasonsController extends Controller
     {
     	$series = $request->series ? Series::findOrFail($request->series) : Series::first();
     	
+    	$series->load('seasons.races');
+    	
         return view('admin.seasons.index')->with([
         	'currentSeries'	=> $series,
         	'series'	=> Series::all(),
-        	'seasons'	=> Season::where( 'series_id', $series->id )->paginate(),
+        	'seasons'	=> Season::with('races')->where( 'series_id', $series->id )->paginate(),
         ]);
     }
 

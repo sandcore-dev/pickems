@@ -36,7 +36,7 @@ class PicksController extends Controller
     {
     	$user		= auth()->user();
     	
-    	$league		= $user->leagues()->first();
+    	$league		= $user->leagues->first();
     	
     	return $this->league( $league );
     }
@@ -77,15 +77,15 @@ class PicksController extends Controller
     	if( !$user->leagues->contains($league) )
     		abort(404);
     	
-    	$picks		= auth()->user()->picks->getByRace($race);
+    	$picks		= Pick::with([ 'entry.driver.country', 'entry.team', 'race.results' ])->byUser($user)->byRace($race)->get();
     	
-    	$entriesByTeam	= $race->season->entries()->whereNotIn( 'id', $picks->pluck('entry_id') )->get()->getByTeam();
+    	$entriesByTeam	= $race->season->entries()->with([ 'driver.country', 'team' ])->whereNotIn( 'id', $picks->pluck('entry_id') )->get()->getByTeam();
     		
         return view('picks.index')->with([
         	'leagues'	=> $user->leagues,
         	
         	'currentLeague'	=> $league,
-        	'currentRace'	=> $race,
+        	'currentRace'	=> $race->load('season.races.circuit.country'),
         	
         	'entriesByTeam'	=> $entriesByTeam,
         	'picks'		=> $picks->padMissing( $race->season->picks_max ),

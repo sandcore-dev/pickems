@@ -31,7 +31,7 @@ class UserLeaguesController extends Controller
      */
     public function index()
     {
-        return view('admin.userleagues.index')->with( 'users', User::paginate() );
+        return view('admin.userleagues.index')->with( 'users', User::with('leagues')->paginate() );
     }
  
     /**

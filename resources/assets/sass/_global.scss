@@ -101,7 +101,13 @@ body::after
 	}
 }
 
-.highcharts-background
+footer
 {
-//	fill: $btn-default-bg;
+	margin-top: 1em;
+	
+	 p
+	 {
+	 	color: darken($text-color, 25%);
+	 	font-size: 75%;
+	 }
 }

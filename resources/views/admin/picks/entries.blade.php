@@ -10,7 +10,7 @@
 					</button>
 				@endforeach
 			@endforeach
-		</form>\
+		</form>
 	</div>
 @elseif( $picks->first()->carry_over )
 	<div class="col-xs-12 col-sm-3">

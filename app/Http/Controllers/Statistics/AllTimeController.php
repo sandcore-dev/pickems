@@ -86,6 +86,8 @@ class AllTimeController extends Controller
     {
     	$out = [];
     	
+    	$league->loadMissing('series.seasons.races');
+    	
     	foreach( $league->series->seasons as $season )
     		$out[] = $season->races->last()->id;
     	

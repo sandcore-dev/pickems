@@ -9,7 +9,7 @@
         	@include('statistics.season.dropdown')
 
 		<div class="vue">
-        		<user-league-results data-series="{{ App\Standing::byLeague($currentLeague)->bySeason($currentSeason)->byUser($currentUser)->get()->getChartData() }}"></user-league-results>
+        		<user-league-results data-series="{{ App\Standing::with(['league.users', 'race.circuit.country'])->byLeague($currentLeague)->bySeason($currentSeason)->byUser($currentUser)->get()->getChartData() }}"></user-league-results>
 		</div>
         </div>
     </div>

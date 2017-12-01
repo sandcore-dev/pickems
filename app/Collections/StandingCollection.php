@@ -23,7 +23,7 @@ class StandingCollection extends Collection
 	/**
 	 * Output a collection compatible with Highcharts series data.
 	 *
-	 * @return	Illuminate\Database\Eloquent\Collection
+	 * @return	Illuminate\Support\Collection
 	 */
 	public function getChartData()
 	{
@@ -44,9 +44,7 @@ class StandingCollection extends Collection
 		$out[] = [
 			'type'	=> 'column',
 			'name'	=> 'Total',
-			'data'	=> $this->getData(function ($data) {
-					return $data->picked + $data->positions_correct;
-			}),
+			'data'	=> $this->getData('total'),
 		];
 		
 		$out[] = [
@@ -60,7 +58,7 @@ class StandingCollection extends Collection
 			'name'	=> 'Average total score',
 			'color'	=> '#ff0000',
 			'data'	=> $this->getData(function ($data) {
-				$average = Standing::where( 'race_id', $data->race_id )->whereIn( 'user_id', $data->league->users->pluck('id') )->get()->avg('total');
+				$average = Standing::where( 'race_id', $data->race_id )->whereIn( 'user_id', $data->league->users->pluck('id') )->avg('total');
 				
 				return round( $average, 1 );
 			}),
@@ -73,7 +71,7 @@ class StandingCollection extends Collection
 	 * Get data from field or callable.
 	 *
 	 * @param	string|callable	$field
-	 * @return	Illuminate\Database\Eloquent\Collection;
+	 * @return	Illuminate\Support\Collection;
 	 */
 	protected function getData( $field )
 	{

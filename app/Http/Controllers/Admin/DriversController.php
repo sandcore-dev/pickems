@@ -30,7 +30,7 @@ class DriversController extends Controller
      */
     public function index()
     {
-        return view('admin.drivers.index')->with( 'drivers', Driver::paginate() );
+        return view('admin.drivers.index')->with( 'drivers', Driver::with([ 'country', 'entries' ])->paginate() );
     }
 
     /**

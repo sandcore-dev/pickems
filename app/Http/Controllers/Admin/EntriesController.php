@@ -61,7 +61,7 @@ class EntriesController extends Controller
         	'series'	=> Series::has('seasons')->get(),
         	'currentSeason'	=> $season,
         	'seasons'	=> $series->seasons,
-        	'entries'	=> Entry::where( 'season_id', $season->id )->paginate(30),
+        	'entries'	=> Entry::with([ 'team', 'driver', 'results', 'picks' ])->where( 'season_id', $season->id )->paginate(30),
         ]);
     }
 

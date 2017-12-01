@@ -30,7 +30,7 @@ class CircuitsController extends Controller
      */
     public function index()
     {
-        return view('admin.circuits.index')->with( 'circuits', Circuit::paginate() );
+        return view('admin.circuits.index')->with( 'circuits', Circuit::with([ 'races', 'country' ])->paginate() );
     }
 
     /**

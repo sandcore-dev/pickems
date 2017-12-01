@@ -51,7 +51,7 @@ class FameController extends Controller
     {
     	$lastRaces = $this->getLastRaceEachSeason($league);
     	
-    	return Standing::byLeague($league)
+    	return Standing::with([ 'user', 'race.season' ])->byLeague($league)
     		->where( 'rank', 1 )
     		->whereIn( 'race_id', $lastRaces )
     		->get()->mapToGroups(function ($item, $key) {
@@ -69,6 +69,8 @@ class FameController extends Controller
     protected function getLastRaceEachSeason( League $league )
     {
     	$out = [];
+    	
+    	$league->loadMissing('series.seasons.races');
     	
     	foreach( $league->series->seasons as $season )
     		$out[] = $season->races->last()->id;
