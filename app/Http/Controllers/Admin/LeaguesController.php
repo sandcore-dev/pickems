@@ -57,24 +57,20 @@ class LeaguesController extends Controller
     public function store(Request $request)
     {
     	$request->validate([
-    		'name'		=> [ 'required', 'min:2', 'unique:leagues' ],
-    		'series'	=> [ 'required', 'array', 'min:1' ],
-    		'series.*'	=> [ 'required', 'exists:series,id' ],
+    		'name'				=> [ 'required', 'min:2', 'unique:leagues' ],
+    		'series_id'			=> [ 'required', 'exists:series,id' ],
+    		'generate_token'	=> [ 'boolean' ],
     	]);
     	
-    	if( $league = League::create( $request->only('name') ) )
+    	if( $league = League::create( $request->only('name', 'series_id') ) )
     	{
-		session()->flash( 'status', "The league '{$league->name}' has been added." );
+			session()->flash( 'status', "The league '{$league->name}' has been added." );
 		
-		foreach( $request->input('series') as $series )
-		{
-			$series = Series::findOrFail($series);
+			if( $request->input('generate_token') )
+				$league->access_token = str_random(10);
 			
-			$league->seasons()->attach( $series->latestSeason->id );
+			$league->save();
 		}
-		
-		$league->save();
-	}
     	
     	return redirect()->route( 'admin.leagues.index' );
     }
@@ -111,11 +107,15 @@ class LeaguesController extends Controller
     public function update(Request $request, League $league)
     {
     	$request->validate([
-    		'name'	=> [ 'required', 'min:2', 'unique:leagues,name,' . $league->id ],
+    		'name'				=> [ 'required', 'min:2', 'unique:leagues,name,' . $league->id ],
+    		'generate_token'	=> [ 'boolean' ],
     	]);
     	
     	if( $league->update( $request->only('name') ) )
 			session()->flash( 'status', "The league '{$league->name}' has been changed." );
+			
+		if( $request->input('generate_token') )
+			$league->update([ 'access_token' => str_random(10) ]);
     	
     	return redirect()->route( 'admin.leagues.index' );
     }

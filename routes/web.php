@@ -26,6 +26,10 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
+// Registration Routes...
+Route::get('invite/{token}', 'Auth\RegisterController@showRegistrationForm')->name('register');
+Route::post('register', 'Auth\RegisterController@register');
+
 Route::get('profile', 'ProfileController@index')->name('profile');
 Route::post('profile/save', 'ProfileController@saveProfile')->name('profile.save');
 Route::post('profile/password', 'ProfileController@savePassword')->name('profile.password');

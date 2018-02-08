@@ -13,35 +13,55 @@
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
                         
-			@component('admin.form.input')
-				@slot('field', 'name')
-				
-				@slot('label', 'Name')
-				
-				@slot('value', $league->name)
-				
-				@slot('attributes')
-					required autofocus
-				@endslot
-			@endcomponent
-			
-			@component('admin.form.input')
-				@slot('field', 'series')
-				
-				@slot('label', 'Series')
-				
-				@slot('value', $league->series->name)
-				
-				@slot('attributes')
-					disabled
-				@endslot
-			@endcomponent
+						@component('admin.form.input')
+							@slot('field', 'name')
+							
+							@slot('label', 'Name')
+							
+							@slot('value', $league->name)
+							
+							@slot('attributes')
+								required autofocus
+							@endslot
+						@endcomponent
+						
+						@component('admin.form.input')
+							@slot('field', 'series')
+							
+							@slot('label', 'Series')
+							
+							@slot('value', $league->series->name)
+							
+							@slot('attributes')
+								disabled
+							@endslot
+						@endcomponent
 
-			@component('admin.form.submit')
-				@slot('cancel', route( 'admin.leagues.index' ))
-				
-				Edit league
-			@endcomponent
+						@if( $league->access_token )
+							@component('admin.form.input')
+								@slot('field', 'invite_url')
+								
+								@slot('label', 'Invitation URL')
+								
+								@slot('value', route('register', [ 'token' => $league->access_token ]))
+								
+								@slot('attributes')
+									readonly
+								@endslot
+							@endcomponent
+						@endif
+
+						@component('admin.form.checkbox')
+							@slot('field', 'generate_token')
+							
+							@slot('label', 'Generate a (new) access token')
+						@endcomponent
+
+						@component('admin.form.submit')
+							@slot('cancel', route( 'admin.leagues.index' ))
+							
+							Edit league
+						@endcomponent
                     </form>
 
                 </div>

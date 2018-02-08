@@ -12,7 +12,7 @@ class League extends Model
 	 *
 	 * @var		array
 	 */
-	protected $fillable = [ 'series_id', 'name' ];
+	protected $fillable = [ 'series_id', 'name', 'access_token' ];
 
 	/**
 	* The "booting" method of the model.
