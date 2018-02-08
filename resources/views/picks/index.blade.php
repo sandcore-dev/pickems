@@ -13,7 +13,7 @@
                 </div>
             @endif
             
-		@include('picks.dropdown')
+			@include('picks.dropdown')
     
         </div>
     </div>

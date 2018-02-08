@@ -65,22 +65,17 @@ class SeasonsController extends Controller
     public function store(Request $request)
     {
     	$request->validate([
-    		'series_id'	=> [ 'bail', 'required', 'exists:series,id' ],
+    		'series_id'		=> [ 'bail', 'required', 'exists:series,id' ],
     		'start_year'	=> [ 'required', 'integer', 'between:1970,9999' ],
-    		'end_year'	=> [ 'required', 'integer', 'between:1970,9999', 'gte:start_year' ],
-    		'picks_max'	=> [ 'required', 'integer', 'between:' . config('picks.min') . ',' . config('picks.max') ],
+    		'end_year'		=> [ 'required', 'integer', 'between:1970,9999', 'gte:start_year' ],
+    		'picks_max'		=> [ 'required', 'integer', 'between:' . config('picks.min') . ',' . config('picks.max') ],
     	]);
     	
     	if( Season::where( 'series_id', $request->input('series_id') )->where( 'start_year', $request->input('start_year') )->where( 'end_year', $request->input('end_year') )->count() )
     		return redirect()->back()->withInput()->withErrors([ 'start_year' => 'This season already exists.' ]);
-    	
+    		
     	if( $season = Season::create( $request->only('series_id', 'start_year', 'end_year', 'picks_max') ) )
-    	{
-		session()->flash( 'status', "The season '{$season->name}' has been added." );
-		
-		foreach( $season->previous->leagues as $league )
-			$league->seasons()->attach( $season->id );
-	}
+			session()->flash( 'status', "The season '{$season->name}' has been added." );
     	
     	return redirect()->route( 'admin.seasons.index', [ 'series' => $request->series_id ] );
     }

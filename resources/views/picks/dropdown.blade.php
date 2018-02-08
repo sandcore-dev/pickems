@@ -16,7 +16,7 @@
 	            	</div>
 	            	@endif
 	            	
-	            	@if( $currentLeague->series->seasons->count() > 1 )
+	            	@if( $seasons->count() > 1 )
 	            	<div class="btn-group">
 	            		<button class="btn btn-primary dropdown-toggle" type="button" id="seasonDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 	            			{{ $currentRace->season->name }} <span class="caret"></span>

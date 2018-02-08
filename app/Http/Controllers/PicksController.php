@@ -17,6 +17,13 @@ use App\Rules\MaxPicksExceeded;
 
 class PicksController extends Controller
 {
+	/**
+	 * Cache the result of getSeasons.
+	 * 
+	 * @var array of \Illuminate\Support\Collection
+	 */
+	protected $seasons;
+	
     /**
      * Create a new controller instance.
      *
@@ -51,12 +58,46 @@ class PicksController extends Controller
      */
     public function league( League $league )
     {
-    	$season		= $league->series->seasons->first();
+    	# $season		= $league->series->seasons->first();
+    	$season		= $this->getSeasons( $league )->first();
     	
     	if( !$season )
 			return view('picks.error')->with( 'error', "There are no seasons available." );
 
     	return $this->season( $league, $season );
+    }
+    
+    /**
+     * Get seasons for the current user and given league.
+     * Those should be only future ones or the ones the user participated in.
+     * 
+     * @param	\App\League	$league
+     * @return	\Illuminate\Database\Eloquent\Collection
+     */
+    protected function getSeasons( League $league )
+    {
+		if( $this->seasons[ $league->id ] )
+			return $this->seasons[ $league->id ];
+		
+		$seasons	= [];
+		$user		= auth()->user();
+		
+		foreach( $league->series->seasons as $season )
+		{
+			if( $season->end_year < date('Y') )
+			{
+				if( Pick::byUser( $user )->whereIn( 'race_id', $season->races->pluck('id') )->count() )
+					$seasons[ $season->id ] = $season;
+			}
+			else
+			{
+				$seasons[] = $season;
+			}
+		}
+		
+		$this->seasons[ $league->id ] = collect($seasons);
+		
+		return $this->seasons[ $league->id ];
     }
     
     /**
@@ -91,13 +132,14 @@ class PicksController extends Controller
     	$entriesByTeam	= $race->season->entries()->with([ 'driver.country', 'team' ])->whereNotIn( 'id', $picks->pluck('entry_id') )->get()->getByTeam();
     		
         return view('picks.index')->with([
-        	'leagues'	=> $user->leagues,
+        	'leagues'		=> $user->leagues,
+        	'seasons'		=> $this->getSeasons( $league ),
         	
         	'currentLeague'	=> $league,
         	'currentRace'	=> $race->load('season.races.circuit.country'),
         	
         	'entriesByTeam'	=> $entriesByTeam,
-        	'picks'		=> $picks->padMissing( $race->season->picks_max ),
+        	'picks'			=> $picks->padMissing( $race->season->picks_max ),
         ]);
     }
 
