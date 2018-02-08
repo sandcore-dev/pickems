@@ -115,7 +115,7 @@ class LeaguesController extends Controller
     	]);
     	
     	if( $league->update( $request->only('name') ) )
-		session()->flash( 'status', "The league '{$league->name}' has been changed." );
+			session()->flash( 'status', "The league '{$league->name}' has been changed." );
     	
     	return redirect()->route( 'admin.leagues.index' );
     }

@@ -25,6 +25,18 @@
 				@endslot
 			@endcomponent
 			
+			@component('admin.form.input')
+				@slot('field', 'series')
+				
+				@slot('label', 'Series')
+				
+				@slot('value', $league->series->name)
+				
+				@slot('attributes')
+					disabled
+				@endslot
+			@endcomponent
+
 			@component('admin.form.submit')
 				@slot('cancel', route( 'admin.leagues.index' ))
 				
