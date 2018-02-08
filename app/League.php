@@ -59,6 +59,17 @@ class League extends Model
 	}
 	
 	/**
+	 * Scope query by token.
+	 * 
+	 * @param	string	$token
+	 * @return	\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeByToken( $query, $token )
+	{
+		return $query->whereNotNull( 'access_token' )->where( 'access_token', $token );
+	}
+	
+	/**
 	 * Get next race according to weekend_start.
 	 *
 	 * @return	\App\Race|null

@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
 use App\Http\Controllers\Controller;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+
+use App\League;
+use App\User;
 
 class RegisterController extends Controller
 {
@@ -48,9 +52,11 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+			'token'		=> 'required|exists:leagues,access_token',
+            'name'		=> 'required|string|max:255|unique:users',
+            'username'	=> 'required|string|max:255|unique:users',
+            'email'		=> 'required|string|email|max:255|unique:users',
+            'password'	=> 'required|string|min:6|confirmed',
         ]);
     }
 
@@ -64,24 +70,56 @@ class RegisterController extends Controller
     {
         return User::create([
             'name' => $data['name'],
+            'username' => $data['username'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'active' => 1,
         ]);
     }
     
     /**
-     * Block the registration form.
+     * Show the registration form if the token is valid.
+     * 
+     * @param	string	$token
+     * @return	\Illuminate\Http\Response
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm( $token )
     {
-    	return response('Forbidden', 403);
+		$league = $this->getLeagueByTokenOrFail( $token );
+		
+    	return view('auth.register')->with( 'league', $league );
     }
     
     /**
-     * Block the registration.
+     * Find the league with this token.
+     * If not found, abort immediately.
+     * 
+     * @param	string	$token
+     * @return	\App\League
      */
-    public function register()
+    protected function getLeagueByTokenOrFail( $token )
     {
-    	return response('Forbidden', 403);
+		$league = League::byToken( $token )->get();
+		
+		if( $league->isEmpty() )
+			abort(404, 'Forbidden');
+		
+		return $league->first();
+    }
+    
+    /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        $league = $this->getLeagueByTokenOrFail( $request->input('token') );
+        
+        $user->leagues()->sync( $league->id );
+        
+        $user->save();
     }
 }

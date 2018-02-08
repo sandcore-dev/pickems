@@ -19,7 +19,7 @@
 
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Nickname</label>
+                            <label for="name" class="col-md-4 control-label">Display name</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control" name="name" value="{{ old('name', $user->name) }}" required>

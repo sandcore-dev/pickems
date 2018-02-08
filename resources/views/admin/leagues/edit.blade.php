@@ -43,7 +43,7 @@
 								
 								@slot('label', 'Invitation URL')
 								
-								@slot('value', route('register', [ 'token' => $league->access_token ]))
+								@slot('value', route('invite', [ 'token' => $league->access_token ]))
 								
 								@slot('attributes')
 									readonly

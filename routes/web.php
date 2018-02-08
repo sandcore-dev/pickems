@@ -27,8 +27,8 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 // Registration Routes...
-Route::get('invite/{token}', 'Auth\RegisterController@showRegistrationForm')->name('register');
-Route::post('register', 'Auth\RegisterController@register');
+Route::get('invite/{token}', 'Auth\RegisterController@showRegistrationForm')->name('invite');
+Route::post('register', 'Auth\RegisterController@register')->name('register');
 
 Route::get('profile', 'ProfileController@index')->name('profile');
 Route::post('profile/save', 'ProfileController@saveProfile')->name('profile.save');

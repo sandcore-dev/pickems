@@ -38,6 +38,9 @@ class PicksController extends Controller
     	
     	$league		= $user->leagues->first();
     	
+    	if( !$league )
+			return view('picks.error')->with( 'error', "You haven't joined any leagues." );
+    	
     	return $this->league( $league );
     }
     
@@ -50,6 +53,9 @@ class PicksController extends Controller
     {
     	$season		= $league->series->seasons->first();
     	
+    	if( !$season )
+			return view('picks.error')->with( 'error', "There are no seasons available." );
+
     	return $this->season( $league, $season );
     }
     
@@ -62,6 +68,9 @@ class PicksController extends Controller
     {
     	$race		= $season->races()->nextOrLast();
     	
+    	if( !$race )
+			return view('picks.error')->with( 'error', "There are no races available." );
+
     	return redirect()->route( 'picks.race', [ 'league' => $league->id, 'race' => $race->id ] );
     }
     
