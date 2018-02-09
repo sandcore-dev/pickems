@@ -46,6 +46,27 @@
                             </div>
                         </div>
 
+                        <div class="form-group{{ $errors->has('locale') ? ' has-error' : '' }}">
+                            <label class="col-md-4 control-label">Language</label>
+
+                            <div class="col-md-6">
+								@foreach( config('app.locales') as $locale => $language )
+									<div class="radio">
+										<label>
+											<input type="radio" name="locale" value="{{ $locale }}"{{ old('locale', $user->locale) == $locale ? ' checked' : '' }}>
+											{{ $language }}
+										</label>
+									</div>
+								@endforeach
+
+                                @if ($errors->has('locale'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('locale') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                             <label for="email" class="col-md-4 control-label">E-mail address</label>
 

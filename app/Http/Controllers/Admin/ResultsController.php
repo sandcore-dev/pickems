@@ -38,42 +38,42 @@ class ResultsController extends Controller
     	if( $request->series )
     	{
 	    	$series	= Series::has('seasons')->findOrFail($request->series);
-	    	$season = $series->seasons()->first();
+	    	$season = $series->seasons()->has('races')->first();
 	    	$race	= $season->races()->previousOrFirst();
-	}
-	elseif( $request->season )
-	{
-	    	$season	= Season::findOrFail($request->season);
-	    	$series = $season->series;
-	    	$race	= $season->races()->previousOrFirst();
-	}
-	elseif( $request->race )
-	{
-		$race	= Race::findOrFail($request->race);
-		$season	= $race->season;
-		$series	= $season->series;
-	}
-	else
-	{
-		$series	= Series::has('seasons')->first();
-		$season	= $series->seasons()->first();
-		$race	= $season->races()->previousOrFirst();
-	}
-	
-	$season->load( 'races.circuit.country' );
-	
-	$results	= Result::with([ 'entry.driver.country', 'entry.team' ])->where( 'race_id', $race->id )->get();
-	$entriesByTeam	= $race->season->entries()->with([ 'driver.country', 'team' ])->whereNotIn( 'id', $results->pluck('entry_id') )->get()->getByTeam();
+		}
+		elseif( $request->season )
+		{
+				$season	= Season::findOrFail($request->season);
+				$series = $season->series;
+				$race	= $season->races()->previousOrFirst();
+		}
+		elseif( $request->race )
+		{
+			$race	= Race::findOrFail($request->race);
+			$season	= $race->season;
+			$series	= $season->series;
+		}
+		else
+		{
+			$series	= Series::has('seasons')->first();
+			$season	= $series->seasons()->has('races')->first();
+			$race	= $season->races()->previousOrFirst();
+		}
+		
+		$season->load( 'races.circuit.country' );
+		
+		$results		= Result::with([ 'entry.driver.country', 'entry.team' ])->where( 'race_id', $race->id )->get();
+		$entriesByTeam	= $race->season->entries()->with([ 'driver.country', 'team' ])->whereNotIn( 'id', $results->pluck('entry_id') )->get()->getByTeam();
 	
         return view('admin.results.index')->with([
         	'currentSeries'	=> $series,
-        	'series'	=> Series::has('seasons')->get(),
+        	'series'		=> Series::has('seasons')->get(),
         	'currentSeason'	=> $season,
-        	'seasons'	=> $series->seasons,
+        	'seasons'		=> $series->seasons,
         	'currentRace'	=> $race,
-        	'races'		=> $season->races,
+        	'races'			=> $season->races,
         	'entriesByTeam'	=> $entriesByTeam,
-        	'results'	=> $results->padMissing( $season->picks_max ),
+        	'results'		=> $results->padMissing( $season->picks_max ),
         	'showRecalcBut'	=> $results->count() >= $season->picks_max,
         ]);
     }

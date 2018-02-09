@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 use App\Http\Requests\SaveProfileRequest;
 use App\Http\Requests\SavePasswordRequest;
@@ -38,17 +39,25 @@ class ProfileController extends Controller
      */
     public function saveProfile( SaveProfileRequest $request )
     {
-    	$user = auth()->user();
+		$user = auth()->user();
+		
+		$request->validate([
+			'name'		=> [ 'required', 'unique:users,name,' . $user->id ],
+			'username'	=> [ 'required', 'unique:users,username,' . $user->id ],
+			'email'		=> [ 'required', 'email', 'unique:users,email,' . $user->id ],
+			'locale'	=> [ 'required', Rule::in( array_keys(config('app.locales')) ) ],
+		]);
     	
-    	$user->name	= $request->name;
+    	$user->name		= $request->name;
     	$user->username	= $request->username;
     	$user->email	= $request->email;
+    	$user->locale	= $request->locale;
     	$user->reminder	= $request->filled('reminder');
     	
     	if( $user->save() )
 	    	return redirect()->route('profile')->with( 'status', 'Your profile has been changed succesfully.' );
 	    
-	return redirect()->route('profile');
+		return redirect()->route('profile');
     }
     
     /**

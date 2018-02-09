@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Controller;
@@ -57,6 +58,7 @@ class UsersController extends Controller
     {
     	$request->validate([
     		'name'			=> [ 'required', 'min:2', 'unique:users' ],
+    		'locale'		=> [ 'required', Rule::in( array_keys(config('app.locales')) ) ],
     		'email'			=> [ 'required', 'email' ],
     		'username'		=> [ 'required', 'min:2', 'unique:users' ],
     		'password'		=> [ 'required', 'min:3' ],
@@ -65,20 +67,20 @@ class UsersController extends Controller
     		'is_admin'		=> [ 'boolean' ],
     	]);
     	
-    	$data			= $request->only('name', 'email', 'username', 'reminder', 'active');
-    	$data['password']	= '';
+    	$data				= $request->only('name', 'locale', 'email', 'username', 'reminder', 'active');
+    	$data['password']	= bcrypt(str_random(10));
     	
     	if( $user = User::create( $data ) )
     	{
-		session()->flash( 'status', "The user '{$user->name}' has been added." );
-	
-		$user->is_admin = $request->input('is_admin');
-	
-		if( $password = $request->input('password') )
-			$user->password = bcrypt( $password );
-	
-		$user->save();
-	}
+			session()->flash( 'status', "The user '{$user->name}' has been added." );
+		
+			$user->is_admin = $request->input('is_admin');
+		
+			if( $password = $request->input('password') )
+				$user->password = bcrypt( $password );
+		
+			$user->save();
+		}
     	
     	return redirect()->route( 'admin.users.index' );
     }
@@ -116,6 +118,7 @@ class UsersController extends Controller
     {
     	$request->validate([
     		'name'			=> [ 'required', 'min:2', 'unique:users,name,' . $user->id ],
+    		'locale'		=> [ 'required', Rule::in( array_keys(config('app.locales')) ) ],
     		'email'			=> [ 'required', 'email' ],
     		'username'		=> [ 'required', 'min:2', 'unique:users,username,' . $user->id ],
     		'password'		=> [ 'min:3', 'nullable' ],
@@ -124,7 +127,7 @@ class UsersController extends Controller
     		'is_admin'		=> [ 'boolean' ],
     	]);
     	
-    	if( $user->update( $request->only('name', 'email', 'username', 'reminder', 'active') ) )
+    	if( $user->update( $request->only('name', 'locale', 'email', 'username', 'reminder', 'active') ) )
     	{
 		session()->flash( 'status', "The user '{$user->name}' has been changed." );
 	
