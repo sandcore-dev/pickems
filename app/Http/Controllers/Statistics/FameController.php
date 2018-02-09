@@ -73,7 +73,8 @@ class FameController extends Controller
     	$league->loadMissing('series.seasons.races');
     	
     	foreach( $league->series->seasons as $season )
-    		$out[] = $season->races->last()->id;
+			if( $last = $season->races->last() )
+				$out[] = $last->id;
     	
     	return $out;
     }
