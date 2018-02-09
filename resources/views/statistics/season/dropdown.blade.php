@@ -16,14 +16,14 @@
 	            	</div>
 	            	@endif
 	            	
-	            	@if( $currentLeague->series->seasons->count() > 1 )
+	            	@if( $seasons->count() > 1 )
 	            	<div class="btn-group">
 	            		<button class="btn btn-primary dropdown-toggle" type="button" id="seasonDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 	            			{{ $currentSeason->name }} <span class="caret"></span>
 	            		</button>
 	            		
 	            		<ul class="dropdown-menu" aria-labelledby="seasonDropdown">
-	            		@foreach( $currentLeague->series->seasons as $season )
+	            		@foreach( $seasons as $season )
 	            			<li class="{{ $currentSeason->id == $season->id ? 'active' : '' }}">
 	            				<a href="{{ route('statistics.season', [ 'league' => $currentLeague->id, 'season' => $season->id, 'user' => $currentUser->id ] ) }}">{{ $season->name }}</a>
 	            			</li>

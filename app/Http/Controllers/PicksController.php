@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use Carbon\Carbon;
 
+use App\Traits\UserSeasonsList;
+
 use App\User;
 use App\League;
 use App\Season;
@@ -17,12 +19,7 @@ use App\Rules\MaxPicksExceeded;
 
 class PicksController extends Controller
 {
-	/**
-	 * Cache the result of getSeasons.
-	 * 
-	 * @var array of \Illuminate\Support\Collection
-	 */
-	protected $seasons;
+	use UserSeasonsList;
 	
     /**
      * Create a new controller instance.
@@ -35,81 +32,15 @@ class PicksController extends Controller
     }
     
     /**
-     * Go to the default race.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-    	$user		= auth()->user();
-    	
-    	$league		= $user->leagues->first();
-    	
-    	if( !$league )
-			return view('picks.error')->with( 'error', "You haven't joined any leagues." );
-    	
-    	return $this->league( $league );
-    }
-    
-    /**
-     * Use league data to go to the default race.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function league( League $league )
-    {
-    	# $season		= $league->series->seasons->first();
-    	$season		= $this->getSeasons( $league )->first();
-    	
-    	if( !$season )
-			return view('picks.error')->with( 'error', "There are no seasons available." );
-
-    	return $this->season( $league, $season );
-    }
-    
-    /**
-     * Get seasons for the current user and given league.
-     * Those should be only future ones or the ones the user participated in.
-     * 
-     * @param	\App\League	$league
-     * @return	\Illuminate\Database\Eloquent\Collection
-     */
-    protected function getSeasons( League $league )
-    {
-		if( $this->seasons[ $league->id ] )
-			return $this->seasons[ $league->id ];
-		
-		$seasons	= [];
-		$user		= auth()->user();
-		
-		foreach( $league->series->seasons as $season )
-		{
-			if( $season->end_year < date('Y') )
-			{
-				if( Pick::byUser( $user )->whereIn( 'race_id', $season->races->pluck('id') )->count() )
-					$seasons[ $season->id ] = $season;
-			}
-			else
-			{
-				$seasons[] = $season;
-			}
-		}
-		
-		$this->seasons[ $league->id ] = collect($seasons);
-		
-		return $this->seasons[ $league->id ];
-    }
-    
-    /**
      * Use season data to go to the default race.
      *
      * @return \Illuminate\Http\Response
      */
     public function season( League $league, Season $season )
     {
-    	$race		= $season->races()->nextOrLast();
+    	$race = $season->races()->nextOrLast();
     	
-    	if( !$race )
+    	if( !$race->count() )
 			return view('picks.error')->with( 'error', "There are no races available." );
 
     	return redirect()->route( 'picks.race', [ 'league' => $league->id, 'race' => $race->id ] );

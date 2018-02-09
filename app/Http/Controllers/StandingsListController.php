@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Traits\UserSeasonsList;
+
 use App\League;
 use App\Season;
 use App\Race;
@@ -11,6 +13,8 @@ use App\Standing;
 
 class StandingsListController extends Controller
 {
+	use UserSeasonsList;
+	
     /**
      * Create a new controller instance.
      *
@@ -22,32 +26,6 @@ class StandingsListController extends Controller
     }
 
     /**
-     * Go to the default race.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-    	$user		= auth()->user();
-    	
-    	$league		= $user->leagues->first();
-    	
-    	return $this->league( $league );
-    }
-    
-    /**
-     * Use league data to go to the default race.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function league( League $league )
-    {
-    	$season		= $league->series->seasons()->first();
-    	
-    	return $this->season( $league, $season );
-    }
-    
-    /**
      * Use season data to go to the default race.
      *
      * @return \Illuminate\Http\Response
@@ -56,6 +34,9 @@ class StandingsListController extends Controller
     {
     	$race		= $season->races()->previousOrFirst();
     	
+    	if( !$race->count() )
+			return view('picks.error')->with( 'error', "There are no races available." );
+
     	return redirect()->route( 'standings.race', [ 'league' => $league->id, 'race' => $race->id ] );
     }
     
