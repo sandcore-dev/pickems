@@ -20,7 +20,7 @@
 			@else
 				<li class="@routeActive('/^profile$/')" ><a href="{{ route('profile') }}">Profile</a></li>
 				<li class="@routeActive('/^picks/')" ><a href="{{ route('picks') }}">Picks</a></li>
-				<li class="@routeActive('/^standings\./')" ><a href="{{ route('standings') }}">Standings</a></li>
+				<li class="@routeActive('/^standings/')" ><a href="{{ route('standings') }}">Standings</a></li>
 
 				<li class="dropdown @routeActive('/^statistics\./')">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Statistics <span class="caret"></span></a>
