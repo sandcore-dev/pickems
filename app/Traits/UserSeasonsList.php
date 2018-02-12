@@ -2,9 +2,12 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\DB;
+
 use App\League;
 use App\Pick;
 use App\User;
+use App\Season;
 
 trait UserSeasonsList
 {
@@ -70,32 +73,37 @@ trait UserSeasonsList
      * @param	\App\User|null	$user
      * @param	boolean			$includeFutureSeasons
      * 
-     * @return	\Illuminate\Database\Eloquent\Collection
+     * @return	\Illuminate\Database\Eloquent\Collection of App\Season
      */
     protected function getSeasons( League $league, User $user = null, bool $includeFutureSeasons = true )
     {
 		if( $this->seasons[ $league->id ] )
 			return $this->seasons[ $league->id ];
 		
-		$seasons	= [];
+		$seasons = [];
 		
 		if( !$user )
 			$user = auth()->user();
 		
-		foreach( $league->series->seasons as $season )
-		{
-			if( $season->end_year < date('Y') )
-			{
-				if( Pick::byUser( $user )->whereIn( 'race_id', $season->races->pluck('id') )->count() )
-					$seasons[ $season->id ] = $season;
-			}
-			elseif( $includeFutureSeasons )
-			{
-				$seasons[] = $season;
-			}
-		}
+		$season_ids = DB::table('picks')
+			->join( 'races', 'picks.race_id', '=', 'races.id' )
+			->join( 'seasons', 'races.season_id', '=', 'seasons.id' )
+			->where( 'seasons.series_id', $league->series_id )
+			->where( 'seasons.end_year', '<', date('Y') )
+			->where( 'picks.user_id', $user->id )
+			->select('seasons.id')->distinct()->pluck('seasons.id');
 		
-		$this->seasons[ $league->id ] = collect($seasons);
+		if( $includeFutureSeasons )
+			$season_ids = $season_ids->concat(
+				DB::table('seasons')
+					->where( 'seasons.series_id', $league->series_id )
+					->where( 'seasons.end_year', '>=', date('Y') )
+					->select('seasons.id')->distinct()->pluck('seasons.id')
+			);
+			
+		$seasons = Season::has('races')->whereIn( 'id', $season_ids )->get();
+		
+		$this->seasons[ $league->id ] = $seasons;
 		
 		return $this->seasons[ $league->id ];
     }
