@@ -1,0 +1,47 @@
+{
+	"Profile": "Profiel",
+	"Picks": "Keuzes",
+	"Standings": "Stand",
+	"Statistics": "Statistieken",
+	"Season performance": "Seizoenprestatie",
+	"Historical records": "Records",
+	"All-time rankings": "Eeuwige ranglijst",
+	"Hall of Fame": "Voorgaande winnaars",
+	"Admin": "Administratie",
+	"Login": "Inloggen",
+	"Logout": "Uitloggen",
+	"Logged in as :name": "Ingelogd als :name",
+	"Toggle navigation": "Toon of verberg navigatie",
+	
+	"Series": "Raceklasse",
+	"Seasons": "Seizoenen",
+	"Races": "Races",
+	"Circuits": "Circuits",
+	"Entries": "Deelnemers",
+	"Drivers": "Coureurs",
+	"Teams": "Teams",
+	"Countries": "Landen",
+	"Results": "Resultaten",
+	"Users": "Gebruikers",
+	"Leagues": "Subleagues",
+	"User's leagues": "Subleagues van gebruikers",
+	"Return": "Terug",
+	
+	"Display name": "Naam",
+	"Username": "Gebruikersnaam",
+	"Language": "Taal",
+	"E-mail address": "E-mailadres",
+	"Send me a reminder if I haven't picked yet": "Stuur me een herinnering als ik mijn keuzes nog niet gemaakt heb",
+	"Save profile": "Profiel opslaan",
+	
+	"Current password": "Huidig wachtwoord",
+	"New password" : "Nieuw wachtwoord",
+	"Confirm new password" : "Herhaal nieuw wachtwoord",
+	"Change password" : "Wijzig wachtwoord",
+	
+	"Your profile has been changed succesfully." : "Je profiel is succesvol gewijzigd.",
+	"Your password has been changed succesfully." : "Je wachtwoord is succesvol gewijzigd.",
+
+	"" : "",
+	"" : ""
+}

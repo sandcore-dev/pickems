@@ -55,7 +55,11 @@ class ProfileController extends Controller
     	$user->reminder	= $request->filled('reminder');
     	
     	if( $user->save() )
-	    	return redirect()->route('profile')->with( 'status', 'Your profile has been changed succesfully.' );
+    	{
+			app()->setLocale( $user->locale );
+			
+	    	return redirect()->route('profile')->with( 'status', __('Your profile has been changed succesfully.') );
+	    }
 	    
 		return redirect()->route('profile');
     }
@@ -74,7 +78,7 @@ class ProfileController extends Controller
     	$user->password	= bcrypt( $request->newpassword );
     	
     	if( $user->save() )
-	    	return redirect()->route('profile')->with( 'status', 'Your password has been changed succesfully.' );
+	    	return redirect()->route('profile')->with( 'status', __('Your password has been changed succesfully.') );
 	    
 	return redirect()->route('profile');
     }

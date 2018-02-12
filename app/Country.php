@@ -5,6 +5,9 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use Monarobase\CountryList\CountryListFacade as Countries;
+use Monarobase\CountryList\CountryNotFoundException;
+
 class Country extends Model
 {
 	/**
@@ -66,5 +69,22 @@ class Country extends Model
 	public function getFlagClassAttribute()
 	{
 		return 'flag-icon flag-icon-' . strtolower( $this->code );
+	}
+
+	/**
+	 * Get the name of this country in the current locale.
+	 *
+	 * @return	string
+	 */
+	public function getLocalNameAttribute()
+	{
+		try {
+			return Countries::getOne( $this->code, app()->getLocale() );
+		}
+		catch( CountryNotFoundException $e ) {
+			error_log( 'CountryNotFoundException: ' . $e->getMessage() );
+		}
+		
+		return $this->name;
 	}
 }

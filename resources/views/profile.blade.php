@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Profile -')
+@section('title', __('Profile') . ' - ')
 
 @section('content')
 <div class="container">
@@ -17,9 +17,8 @@
                     <form class="form-horizontal" method="POST" action="{{ route('profile.save') }}">
                         {{ csrf_field() }}
 
-
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Display name</label>
+                            <label for="name" class="col-md-4 control-label">@lang('Display name')</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control" name="name" value="{{ old('name', $user->name) }}" required>
@@ -33,7 +32,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
-                            <label for="username" class="col-md-4 control-label">Username</label>
+                            <label for="username" class="col-md-4 control-label">@lang('Username')</label>
 
                             <div class="col-md-6">
                                 <input id="username" type="text" class="form-control" name="username" value="{{ old('username', $user->username) }}" required>
@@ -47,7 +46,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('locale') ? ' has-error' : '' }}">
-                            <label class="col-md-4 control-label">Language</label>
+                            <label class="col-md-4 control-label">@lang('Language')</label>
 
                             <div class="col-md-6">
 								@foreach( config('app.locales') as $locale => $language )
@@ -68,7 +67,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-mail address</label>
+                            <label for="email" class="col-md-4 control-label">@lang('E-mail address')</label>
 
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control" name="email" value="{{ old('email', $user->email) }}">
@@ -85,7 +84,7 @@
                             <div class="col-md-offset-4 col-md-6">
                         	<div class="checkbox">
                         		<label>
-                        			<input type="checkbox" name="reminder" value="1"{{ old('reminder', $user->reminder) ? ' checked' : '' }}> Send me a reminder if I haven't picked yet
+                        			<input type="checkbox" name="reminder" value="1"{{ old('reminder', $user->reminder) ? ' checked' : '' }}> @lang("Send me a reminder if I haven't picked yet")
                         		</label>
                         	</div>
                             </div>
@@ -94,7 +93,7 @@
                         <div class="form-group">
                             <div class="col-md-8 col-md-offset-4">
                                 <button type="submit" class="btn btn-primary">
-                                    Save profile
+                                    @lang('Save profile')
                                 </button>
                             </div>
                         </div>
@@ -106,7 +105,7 @@
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Current password</label>
+                            <label for="password" class="col-md-4 control-label">@lang('Current password')</label>
 
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control" name="password" value="" required>
@@ -120,7 +119,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('newpassword') ? ' has-error' : '' }}">
-                            <label for="newpassword" class="col-md-4 control-label">New password</label>
+                            <label for="newpassword" class="col-md-4 control-label">@lang('New password')</label>
 
                             <div class="col-md-6">
                                 <input id="newpassword" type="password" class="form-control" name="newpassword" value="" required>
@@ -134,7 +133,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('newpassword_confirmation') ? ' has-error' : '' }}">
-                            <label for="newpassword_confirmation" class="col-md-4 control-label">Confirm new password</label>
+                            <label for="newpassword_confirmation" class="col-md-4 control-label">@lang('Confirm new password')</label>
 
                             <div class="col-md-6">
                                 <input id="newpassword_confirmation" type="password" class="form-control" name="newpassword_confirmation" value="" required>
@@ -150,7 +149,7 @@
                         <div class="form-group">
                             <div class="col-md-8 col-md-offset-4">
                                 <button type="submit" class="btn btn-primary">
-                                    Change password
+                                    @lang('Change password')
                                 </button>
                             </div>
                         </div>
