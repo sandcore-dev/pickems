@@ -71,6 +71,28 @@
 	"Lowest" : "Laagste",
 	"Championships" : "Kampioenschappen",
 	
+	"Do you want to delete the series :name?" : "Wilt u echt de raceklasse :name verwijderen?",
+	"Delete series" : "Verwijder raceklasse",
+	"Cancel" : "Annuleren",
+	"Add a series" : "Voeg raceklasse toe",
+	"Edit this series" : "Bewerk deze raceklasse",
+	"Delete this series" : "Verwijder deze raceklasse",
+	"No series found." : "Geen raceklassen gevonden.",
+	"Edit series" : "Bewerk raceklasse",
+	"Add series" : "Voeg raceklasse toe",
+
+	"Do you want to delete the season :season from the series :series?" : "Wilt u het seizoen :season van de raceklasse :series verwijderen?",
+	"Delete season" : "Verwijder seizoen",
+	"No seasons found." : "Geen seizoenen gevonden.",
+	"Start year" : "Beginjaar",
+	"End year" : "Eindjaar",
+	"Picks maximum" : "Maximaal aantal keuzes",
+	"Edit season" : "Bewerk seizoen",
+	"Add season" : "Voeg seizoen toe",
+	"Add a season" : "Voeg een seizoen toe",
+	"Edit this season" : "Bewerk dit seizoen",
+	"Delete this season" : "Verwijder dit seizoen",
+
 	"" : "",
 	"" : ""
 }

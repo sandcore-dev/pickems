@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete series - Admin -')
+@section('title', __('Delete series') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,16 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the series <strong>{{ $series->name }}</strong>?
+                        	@lang('Do you want to delete the series :name?', [ 'name' => '<strong>' . $series->name . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.series.index'))
-				
-				@slot('context', 'danger')
-				
-				Delete series
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.series.index'))
+							
+							@slot('context', 'danger')
+							
+							Delete series
+						@endcomponent
                     </form>
 
                 </div>

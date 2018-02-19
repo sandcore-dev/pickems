@@ -1,5 +1,5 @@
 <div class="form-group{{ $errors->has($field . '*') ? ' has-error' : '' }}">
-    <label for="{{ $field }}_day" class="col-md-4 control-label">{{ $label }}</label>
+    <label for="{{ $field }}_day" class="col-md-4 control-label">@lang($label)</label>
 
     <div class="col-md-6">
     	<div class="row">

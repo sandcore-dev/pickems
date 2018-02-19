@@ -1,5 +1,5 @@
 <div class="form-group{{ $errors->has($field) ? ' has-error' : '' }}">
-	<label class="col-md-4 control-label">{{ $label }}</label>
+	<label class="col-md-4 control-label">@lang($label)</label>
 	
 	<?php $value = isset($value) ? $value : ''; ?>
 

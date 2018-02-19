@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Edit series - Admin -')
+@section('title', __('Edit series') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -13,23 +13,23 @@
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
-			@component('admin.form.input')
-				@slot('field', 'name')
-				
-				@slot('value', $series->name)
-				
-				@slot('label', 'Name')
-				
-				@slot('attributes')
-					required autofocus
-				@endslot
-			@endcomponent
+						@component('admin.form.input')
+							@slot('field', 'name')
+							
+							@slot('value', $series->name)
+							
+							@slot('label', 'Name')
+							
+							@slot('attributes')
+								required autofocus
+							@endslot
+						@endcomponent
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.series.index'))
-				
-				Edit series
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.series.index'))
+							
+							Edit series
+						@endcomponent
                     </form>
 
                 </div>

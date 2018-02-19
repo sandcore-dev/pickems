@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete season - Admin -')
+@section('title', __('Delete season') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,16 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the season <strong>{{ $season->name }}</strong> from the series <strong>{{ $season->series->name }}</strong>?
+                        	@lang('Do you want to delete the season :season from the series :series?', [ 'season' => '<strong>' . $season->name . '</strong>', 'series' => '<strong>' . $season->series->name . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route( 'admin.seasons.index', [ 'series' => $season->series->id ] ))
-				
-				@slot('context', 'danger')
-				
-				Delete season
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route( 'admin.seasons.index', [ 'series' => $season->series->id ] ))
+							
+							@slot('context', 'danger')
+							
+							Delete season
+						@endcomponent
                     </form>
 
                 </div>

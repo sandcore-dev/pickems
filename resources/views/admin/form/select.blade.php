@@ -1,5 +1,5 @@
 <div class="form-group{{ $errors->has($field) ? ' has-error' : '' }}">
-    <label for="{{ $field }}" class="col-md-4 control-label">{{ $label }}</label>
+    <label for="{{ $field }}" class="col-md-4 control-label">@lang($label)</label>
 
     <div class="col-md-6">
         <select id="{{ $field }}" class="form-control" name="{{ $field }}" {{ isset($attributes) ? $attributes : '' }}>

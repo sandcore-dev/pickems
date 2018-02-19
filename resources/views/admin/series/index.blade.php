@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Series - Admin -')
+@section('title', __('Series') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,10 +20,10 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('admin.series.create') }}" title="Add a series" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.series.create') }}" title="@lang('Add a series')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -34,11 +34,11 @@
 									<a href="{{ route( 'admin.series.edit', [ 'series' => $serie->id ] ) }}">{{ $serie->name }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.series.edit', [ 'series' => $serie->id ] ) }}" title="Edit this series" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.series.edit', [ 'series' => $serie->id ] ) }}" title="@lang('Edit this series')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$serie->seasons->count() )
-										<a href="{{ route( 'admin.series.destroy', [ 'series' => $serie->id ] ) }}" title="Delete this series" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.series.destroy', [ 'series' => $serie->id ] ) }}" title="@lang('Delete this series')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -46,7 +46,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="3" class="text-center">No series found.</td>
+								<td colspan="3" class="text-center">@lang('No series found.')</td>
 							</tr>
 						@endforelse
 					</tbody>
