@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete circuit - Admin -')
+@section('title', __('Delete circuit') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,16 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the circuit <strong>{{ $circuit->name }}</strong>?
+                        	@lang('Do you want to delete the circuit :name?', [ 'name' => '<strong>' . $circuit->name . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.circuits.index'))
-				
-				@slot('context', 'danger')
-				
-				Delete circuit
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.circuits.index'))
+							
+							@slot('context', 'danger')
+							
+							Delete circuit
+						@endcomponent
                     </form>
 
                 </div>

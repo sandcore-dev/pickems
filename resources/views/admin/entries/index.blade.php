@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Entries - Admin -')
+@section('title', __('Entries') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -23,22 +23,22 @@
 					<thead>
 						<tr>
 							<th>
-								Car number
+								@lang('Car number')
 							</th>
 							<th>
-								Team
+								@lang('Team')
 							</th>
 							<th>
-								Driver
+								@lang('Driver')
 							</th>
 							<th>
-								Abbrevation
+								@lang('Abbreviation')
 							</th>
 							<th>
-								Active
+								@lang('Active')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.entries.create', [ 'season' => $currentSeason->id ] ) }}" title="Add a entry" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.entries.create', [ 'season' => $currentSeason->id ] ) }}" title="@lang('Add an entry')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -65,11 +65,11 @@
 									<span class="glyphicon glyphicon-{{ $entry->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}" title="Edit this entry" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}" title="@lang('Edit this entry')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( $entry->results->isEmpty() and $entry->picks->isEmpty() )
-										<a href="{{ route( 'admin.entries.destroy', [ 'entries' => $entry->id ] ) }}" title="Delete this entry" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.entries.destroy', [ 'entries' => $entry->id ] ) }}" title="@lang('Delete this entry')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -77,7 +77,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="6" class="text-center">No entries found.</td>
+								<td colspan="6" class="text-center">@lang('No entries found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Circuits - Admin -')
+@section('title', __('Circuits') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,13 +20,13 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th>
-								City
+								@lang('City')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('admin.circuits.create') }}" title="Add a circuit" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.circuits.create') }}" title="@lang('Add a circuit')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -37,14 +37,14 @@
 									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->location }}</a>
+									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}">{{ $circuit->localLocation }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}" title="Edit this circuit" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.circuits.edit', [ 'circuits' => $circuit->id ] ) }}" title="@lang('Edit this circuit')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$circuit->races->count() )
-										<a href="{{ route( 'admin.circuits.destroy', [ 'circuits' => $circuit->id ] ) }}" title="Delete this circuit" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.circuits.destroy', [ 'circuits' => $circuit->id ] ) }}" title="@lang('Delete this circuit')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -52,7 +52,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="3" class="text-center">No circuits found.</td>
+								<td colspan="3" class="text-center">@lang('No circuits found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

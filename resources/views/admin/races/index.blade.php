@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Races - Admin -')
+@section('title', __('Races') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -23,16 +23,16 @@
 					<thead>
 						<tr>
 							<th>
-								Race day
+								@lang('Race day')
 							</th>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th>
-								Start of weekend
+								@lang('Start of weekend')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.races.create', [ 'season' => $currentSeason->id ] ) }}" title="Add a race" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.races.create', [ 'season' => $currentSeason->id ] ) }}" title="@lang('Add a race')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -40,20 +40,20 @@
 						@forelse( $races as $race )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->race_day->format('F d') }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->race_day->formatLocalized('%d %B') }}</a>
 								</td>
 								<td>
 									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->weekend_start->format('M d, H:i') }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->weekend_start->formatLocalized('%d %B %H:%M') }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}" title="Edit this season" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}" title="@lang('Edit this race')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$race->results->count() )
-										<a href="{{ route( 'admin.races.destroy', [ 'seasons' => $race->id ] ) }}" title="Delete this season" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.races.destroy', [ 'seasons' => $race->id ] ) }}" title="@lang('Delete this race')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif

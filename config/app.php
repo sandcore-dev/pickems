@@ -109,6 +109,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Time localization
+    |--------------------------------------------------------------------------
+    |
+    | Provide setlocale() localization strings for Laravel's locales (see above.)
+    | You need to have the specified locale installed on the system.
+    |
+    */
+
+	'time_locales' => [
+		'en' => 'en_GB.utf8',
+		'nl' => 'nl_NL.utf8',
+	],
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |

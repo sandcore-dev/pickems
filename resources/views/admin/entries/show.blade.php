@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete entry - Admin -')
+@section('title', __('Delete entry') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,17 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the entry <strong>{{ $entry->car_number }}</strong> with driver <strong>{{ $entry->driver->fullName }}</strong> at <strong>{{ $entry->team->name }}</strong><br>
-                        	from the season <strong>{{ $entry->season->name }}</strong> of the series <strong>{{ $entry->season->series->name }}</strong>?
+							@lang('Do you want to delete the entry :entry with driver :driver at :team from the season :season of the series :series?', [ 'entry' => '<strong>' . $entry->car_number . '</strong>', 'driver' => '<strong>' . $entry->driver->fullName . '</strong>', 'team' => '<strong>' . $entry->team->name . '</strong>', 'season' => '<strong>' . $entry->season->name . '</strong>', 'series' => '<strong>' . $entry->season->series->name . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route( 'admin.entries.index', [ 'entries' => $entry->season->id ] ))
-				
-				@slot('context', 'danger')
-				
-				Delete entry
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route( 'admin.entries.index', [ 'entries' => $entry->season->id ] ))
+							
+							@slot('context', 'danger')
+							
+							Delete entry
+						@endcomponent
                     </form>
 
                 </div>
