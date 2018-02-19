@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'All-time rankings - Statistics -')
+@section('title', __('All-time rankings') . ' - ' . __('Statistics') . ' -')
 
 @section('content')
 <div class="container">
@@ -8,14 +8,14 @@
         <div class="col-xs-12">
         	@include('statistics.alltime.dropdown')
 
-		<h3>All-time rankings (minimum 5 seasons)</h3>
+		<h3>@lang('All-time rankings (minimum 5 seasons)')</h3>
 		<table class="table table-striped">
 		<thead>
 			<tr>
-				<th class="col-xs-3">Name</th>
-				<th class="col-xs-3 text-right">Average final ranking</th>
-				<th class="col-xs-3 text-right hidden-xs">Highest</th>
-				<th class="col-xs-3 text-right hidden-xs">Lowest</th>
+				<th class="col-xs-3">@lang('Name')</th>
+				<th class="col-xs-3 text-right">@lang('Average final ranking')</th>
+				<th class="col-xs-3 text-right hidden-xs">@lang('Highest')</th>
+				<th class="col-xs-3 text-right hidden-xs">@lang('Lowest')</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -28,7 +28,7 @@
 				</tr>
 			@empty
 				<tr>
-					<td colspan="4">Standings probably have not been built yet.</td>
+					<td colspan="4">@lang('Standings probably have not been built yet.')</td>
 				</tr>
 			@endforelse
 		</tbody>

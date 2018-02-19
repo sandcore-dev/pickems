@@ -21,6 +21,12 @@
 					type: 'category',
 				},
 				
+				yAxis: {
+					title: {
+						text: null,
+					},
+				},
+				
 				series: this.dataSeries ? JSON.parse(this.dataSeries) : null,
 			});
 		}

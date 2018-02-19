@@ -59,12 +59,32 @@ class Circuit extends Model
 	}
 
 	/**
-	 * Get the short noation of the place of this circuit.
+	 * Get the short notation of the place of this circuit.
 	 *
 	 * @return 	string
 	 */
 	public function getLocationShortAttribute()
 	{
 		return $this->city . ', ' . $this->country->name;
+	}
+
+	/**
+	 * Get the localized place of this circuit.
+	 *
+	 * @return 	string
+	 */
+	public function getLocalLocationAttribute()
+	{
+		return $this->city . ', ' . ( $this->area ? $this->area . ', ' : '' ) . $this->country->localName;
+	}
+
+	/**
+	 * Get the short localized notation of the place of this circuit.
+	 *
+	 * @return 	string
+	 */
+	public function getLocalLocationShortAttribute()
+	{
+		return $this->city . ', ' . $this->country->localName;
 	}
 }

@@ -9,13 +9,13 @@
     					&nbsp;
     				</th>
     				<th class="text-right">
-    					Overall
+    					@lang('Overall')
     				</th>
     				<th colspan="2">
     					&nbsp;
     				</th>
     				<th class="text-right">
-    					Race
+    					@lang('Race')
     				</th>
     				<th colspan="2">
     					&nbsp;
@@ -23,31 +23,33 @@
     			</tr>
     			<tr>
     				<th class="text-right">
-    					<span class="hidden-xs hidden-sm">Rank</span>
+    					<span class="hidden-xs hidden-sm">
+							@lang('Rank')
+						</span>
     				</th>
     				<th class="hidden-xs">
     					&nbsp;
     				</th>
     				<th>
-    					Name
+    					@lang('Name')
     				</th>
     				<th class="text-right">
-    					Total
+    					@lang('Total')
     				</th>
     				<th class="text-right">
-    					Finish
+    					@lang('Finish')
     				</th>
     				<th class="text-right">
-    					Top&nbsp;{{ $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') }}
+    					@lang('Top :number', [ 'number' => $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') ])
     				</th>
     				<th class="text-right hidden-xs">
-    					Total
+    					@lang('Total')
     				</th>
     				<th class="text-right hidden-xs">
-    					Finish
+    					@lang('Finish')
     				</th>
     				<th class="text-right hidden-xs">
-    					Top&nbsp;{{ $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') }}
+    					@lang('Top :number', [ 'number' => $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') ])
     				</th>
     			</tr>
     		</thead>
@@ -57,7 +59,7 @@
     			<tr>
     				<td class="text-right">
     					@if( $previous_rank != $standing->rank )
-    					{{ $standing->rank }}
+							{{ $standing->rank }}
     					@endif
     					<?php $previous_rank = $standing->rank; ?>
     				</td>
@@ -90,7 +92,7 @@
     		@empty
     			<tr>
     				<td colspan="9" class="text-center">
-    					No standings found for this race.
+    					@lang('No standings found for this race.')
     				</td>
     			</tr>
     		@endforelse

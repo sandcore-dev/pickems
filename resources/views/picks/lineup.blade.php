@@ -24,7 +24,7 @@
 						
 						@if( $pick->points )
 						<span class="pull-right badge hidden-xs hidden-sm">
-							{{ $pick->points }} pt
+							{{ $pick->points }} @lang('pt')
 						</span>
 						@endif
 					</button>

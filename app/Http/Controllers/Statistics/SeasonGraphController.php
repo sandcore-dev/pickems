@@ -43,7 +43,7 @@ class SeasonGraphController extends Controller
 	    $seasons = $this->getSeasons( $league, $user, false );
 	    
     	if( $seasons->isEmpty() )
-			return view('picks.error')->with( 'error', "There are no seasons available." );
+			return view('picks.error')->with( 'error', __("There are no seasons available.") );
 
     	if( !$season->id or !$league->series->seasons->contains($season) )
     		$season = $seasons->first();
@@ -55,6 +55,7 @@ class SeasonGraphController extends Controller
         	'currentLeague'	=> $league,
         	'currentSeason'	=> $season,
         	'currentUser'	=> $user,
+        	'chartData'		=> Standing::with(['league.users', 'race.circuit.country'])->byLeague($league)->bySeason($season)->byUser($user)->get()->getChartData(),
         ]);
     }
 }

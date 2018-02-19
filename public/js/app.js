@@ -42698,6 +42698,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				type: 'category'
 			},
 
+			yAxis: {
+				title: {
+					text: null
+				}
+			},
+
 			series: this.dataSeries ? JSON.parse(this.dataSeries) : null
 		});
 	}

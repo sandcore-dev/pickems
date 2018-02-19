@@ -31,31 +31,31 @@ class StandingCollection extends Collection
 		
 		$out[] = [
 			'type'	=> 'area',
-			'name'	=> 'Ranking',
+			'name'	=> __('Ranking'),
 			'data'	=> $this->getData('rank'),
 		];
 
 		$out[] = [
 			'type'	=> 'column',
-			'name'	=> 'Top ' . config('picks.max'),
+			'name'	=> __('Top :number', [ 'number' => config('picks.max') ]),
 			'data'	=> $this->getData('picked'),
 		];
 		
 		$out[] = [
 			'type'	=> 'column',
-			'name'	=> 'Total',
+			'name'	=> __('Total'),
 			'data'	=> $this->getData('total'),
 		];
 		
 		$out[] = [
 			'type'	=> 'column',
-			'name'	=> 'Finish',
+			'name'	=> __('Finish'),
 			'data'	=> $this->getData('positions_correct'),
 		];
 		
 		$out[] = [
 			'type'	=> 'line',
-			'name'	=> 'Average total score',
+			'name'	=> __('Average total score'),
 			'color'	=> '#ff0000',
 			'data'	=> $this->getData(function ($data) {
 				$average = Standing::where( 'race_id', $data->race_id )->whereIn( 'user_id', $data->league->users->pluck('id') )->avg('total');
@@ -78,7 +78,7 @@ class StandingCollection extends Collection
 		$out = [];
 		
 		foreach( $this as $standing )
-			$out[] = [ 'name' => $standing->race->circuit->locationShort, 'y' => is_callable($field) ? $field($standing) : $standing->{ $field } ];
+			$out[] = [ 'name' => $standing->race->circuit->localLocationShort, 'y' => is_callable($field) ? $field($standing) : $standing->{ $field } ];
 		
 		return collect($out);
 	}

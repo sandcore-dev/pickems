@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Standings -')
+@section('title', __('Standings') . ' -')
 
 @section('content')
 <div class="container">

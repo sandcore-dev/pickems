@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Hall of Fame - Statistics -')
+@section('title', __('Hall of Fame') . ' - ' . __('Statistics') . ' -')
 
 @section('content')
 <div class="container">
@@ -8,12 +8,12 @@
         <div class="col-xs-12">
         	@include('statistics.fame.dropdown')
 
-		<h3>Hall of Fame</h3>
+		<h3>@lang('Hall of Fame')</h3>
 		<table class="table table-striped">
 		<thead>
 			<tr>
-				<th class="col-xs-4">Name</th>
-				<th class="col-xs-3">Championships</th>
+				<th class="col-xs-4">@lang('Name')</th>
+				<th class="col-xs-3">@lang('Championships')</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -24,7 +24,7 @@
 				</tr>
 			@empty
 				<tr>
-					<td colspan="4">Standings probably have not been built yet.</td>
+					<td colspan="4">@lang('Standings probably have not been built yet.')</td>
 				</tr>
 			@endforelse
 		</tbody>
