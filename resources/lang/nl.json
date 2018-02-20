@@ -1,6 +1,6 @@
 {
 	"Profile": "Profiel",
-	"Picks": "Keuzes",
+	"Picks": "Voorspellingen",
 	"Standings": "Stand",
 	"Statistics": "Statistieken",
 	"Season performance": "Seizoenprestatie",
@@ -31,7 +31,7 @@
 	"Username": "Gebruikersnaam",
 	"Language": "Taal",
 	"E-mail address": "E-mailadres",
-	"Send me a reminder if I haven't picked yet": "Stuur me een herinnering als ik mijn keuzes nog niet gemaakt heb",
+	"Send me a reminder if I haven't picked yet": "Stuur me een herinnering als ik mijn voorspellingen nog niet gemaakt heb",
 	"Save profile": "Profiel opslaan",
 	
 	"Current password": "Huidig wachtwoord",
@@ -43,7 +43,7 @@
 	"Your password has been changed succesfully." : "Je wachtwoord is succesvol gewijzigd.",
 
 	"pt" : "pt",
-	"These picks carried over from the previous race." : "Deze keuzes zijn gekopieerd van de vorige race.",
+	"These picks carried over from the previous race." : "Deze voorspellingen zijn gekopieerd van de vorige race.",
 	
 	"Overall" : "Algemeen",
 	"Race": "Race",
@@ -59,10 +59,10 @@
 	"Average total score" : "Gemiddeld totaal aantal punten",
 	"There are no seasons available." : "Er zijn geen seizoenen beschikbaar.",
 	
-	"Best pickems" : "Beste keuzes ooit",
+	"Best pickems" : "Beste voorspellingen ooit",
 	"Points" : "Punten",
 	"Season" : "Seizoen",
-	"Best carry-over pickems" : "Beste gekopieerde keuzes",
+	"Best carry-over pickems" : "Beste gekopieerde voorspellingen",
 	"Highest points total in a season" : "Hoogste aantal punten in een seizoen",
 	
 	"All-time rankings (minimum 5 seasons)" : "Eeuwige ranglijst (minimaal 5 seizoenen)",
@@ -86,7 +86,7 @@
 	"No seasons found." : "Geen seizoenen gevonden.",
 	"Start year" : "Beginjaar",
 	"End year" : "Eindjaar",
-	"Picks maximum" : "Maximaal aantal keuzes",
+	"Picks maximum" : "Maximaal aantal voorspellingen",
 	"Edit season" : "Bewerk seizoen",
 	"Add season" : "Voeg seizoen toe",
 	"Add a season" : "Voeg een seizoen toe",
@@ -174,7 +174,7 @@
 	"Add user": "Voeg gebruiker toe",
 	
 	"reminder": "herinnering",
-	"Remind user to pick": "Herinner gebruiker om keuzes te maken",
+	"Remind user to pick": "Herinner gebruiker om voorspellingen te maken",
 	"Password": "Wachtwoord",
 	"Administrator access": "Administratie-rechten",	
 
@@ -195,8 +195,7 @@
 	"Edit leagues of this user": "Bewerk subleagues van deze gebruiker",
 	
 	"Add or remove leagues for user :name:": "Toevoegen of verwijderen van subleagues van gebruiker :name:",
-	"Thanks to :name for making the Glyphicon Halflings set free of use.": ":name, bedankt voor het gratis beschikbaar stellen van de Glyphicons Halflings-set.",
-
-	"" : "",
-	"" : ""
+	"Thanks to :name for making the Glyphicon Halflings set free of use.": "Bedankt aan :name voor het gratis beschikbaar stellen van de Glyphicons Halflings-set.",
+	
+	"Rules": "Spelregels"
 }

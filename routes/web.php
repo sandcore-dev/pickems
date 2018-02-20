@@ -55,6 +55,8 @@ Route::group([ 'prefix' => 'statistics', 'as' => 'statistics.', 'namespace' => '
 	Route::get('hall-of-fame/{league?}', 'FameController@index')->name('fame');
 });
 
+Route::get('rules', 'RulesPageController@index')->name('rules');
+
 Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => [ 'auth', 'admin' ], 'namespace' => 'Admin' ], function () {
 	Route::resources([
 		'series'	=> 'SeriesController',

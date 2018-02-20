@@ -32,6 +32,8 @@
 						<li class="@routeActive('/^statistics\.fame$/')"><a href="{{ route('statistics.fame') }}">@lang('Hall of Fame')</a></li>
 					</ul>
 				</li>
+				
+				<li class="@routeActive('/^rules/')" ><a href="{{ route('rules') }}">@lang('Rules')</a></li>
 
 				@if( Gate::allows('admin') )
 					<li><a class="warning" href="{{ route('admin.results.index') }}">@lang('Admin')</a></li>
