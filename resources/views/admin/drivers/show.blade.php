@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete driver - Admin -')
+@section('title', __('Delete driver') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,16 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the driver <strong>{{ $driver->fullName }}</strong>?
+                        	@lang('Do you want to delete the driver :name?', [ 'name' => '<strong>' . $driver->fullName . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.drivers.index'))
-				
-				@slot('context', 'danger')
-				
-				Delete driver
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.drivers.index'))
+							
+							@slot('context', 'danger')
+							
+							Delete driver
+						@endcomponent
                     </form>
 
                 </div>

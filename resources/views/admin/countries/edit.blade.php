@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Edit country - Admin -')
+@section('title', __('Edit country') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -13,35 +13,35 @@
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
-			@component('admin.form.input')
-				@slot('field', 'code')
-				
-				@slot('value', $country->code)
-				
-				@slot('label', 'Code')
-				
-				@slot('attributes')
-					required autofocus
-				@endslot
-			@endcomponent
-			
-			@component('admin.form.input')
-				@slot('field', 'name')
-				
-				@slot('value', $country->name)
+						@component('admin.form.input')
+							@slot('field', 'code')
+							
+							@slot('value', $country->code)
+							
+							@slot('label', 'Code')
+							
+							@slot('attributes')
+								required autofocus
+							@endslot
+						@endcomponent
+						
+						@component('admin.form.input')
+							@slot('field', 'name')
+							
+							@slot('value', $country->name)
 
-				@slot('label', 'Name')
-				
-				@slot('attributes')
-					required
-				@endslot
-			@endcomponent
+							@slot('label', 'Name')
+							
+							@slot('attributes')
+								required
+							@endslot
+						@endcomponent
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.circuits.index'))
-				
-				Edit country
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.countries.index'))
+							
+							Edit country
+						@endcomponent
                     </form>
 
                 </div>

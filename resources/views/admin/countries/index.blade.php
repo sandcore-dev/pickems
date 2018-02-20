@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Countries - Admin -')
+@section('title', __('Countries') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,10 +20,10 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('admin.countries.create') }}" title="Add a country" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.countries.create') }}" title="@lang('Add a country')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -34,11 +34,11 @@
 									<a href="{{ route( 'admin.countries.edit', [ 'countries' => $country->id ] ) }}">{{ $country->name }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.countries.edit', [ 'countries' => $country->id ] ) }}" title="Edit this country" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.countries.edit', [ 'countries' => $country->id ] ) }}" title="@lang('Edit this country')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$country->circuit )
-										<a href="{{ route( 'admin.countries.destroy', [ 'countries' => $country->id ] ) }}" title="Delete this country" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.countries.destroy', [ 'countries' => $country->id ] ) }}" title="@lang('Delete this country')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -46,7 +46,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="3" class="text-center">No countries found.</td>
+								<td colspan="3" class="text-center">@lang('No countries found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

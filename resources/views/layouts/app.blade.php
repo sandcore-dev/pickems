@@ -32,7 +32,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="text-center">
-					Thanks to <a href="http://glyphicons.com/" target="_blank">Glyphicons</a> for making the Glyphicon Halflings set free of use.<br>
+					@lang('Thanks to :name for making the Glyphicon Halflings set free of use.', [ 'name' => '<a href="http://glyphicons.com/" target="_blank">Glyphicons</a>' ])
 				</p>
 				
 				@if( env('APP_DEBUG') )

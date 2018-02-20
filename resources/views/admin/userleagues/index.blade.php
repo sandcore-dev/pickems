@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', "User's leagues - Admin -")
+@section('title', __("User's leagues") . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,10 +20,10 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th>
-								League(s)
+								@lang('League(s)')
 							</th>
 							<th class="text-center">
 								&nbsp;
@@ -48,12 +48,12 @@
 									@endif
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.userleagues.edit', [ 'users' => $user->id ] ) }}" title="Edit leagues of this user" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.userleagues.edit', [ 'users' => $user->id ] ) }}" title="@lang('Edit leagues of this user')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="5" class="text-center">No users found.</td>
+								<td colspan="5" class="text-center">@lang('No users found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

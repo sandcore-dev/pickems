@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Users - Admin -')
+@section('title', __('Users') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,19 +20,19 @@
 					<thead>
 						<tr>
 							<th>
-								Name (admin)
+								@lang('Name') (@lang('admin'))
 							</th>
 							<th>
-								E-mail (reminder)
+								@lang('E-mail') (@lang('reminder'))
 							</th>
 							<th>
-								Username
+								@lang('Username')
 							</th>
 							<th>
-								Active
+								@lang('Active')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.users.create' ) }}" title="Add a user" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.users.create' ) }}" title="@lang('Add a user')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -59,17 +59,17 @@
 									<span class="glyphicon glyphicon-{{ $user->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.users.edit', [ 'users' => $user->id ] ) }}" title="Edit this user" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.users.edit', [ 'users' => $user->id ] ) }}" title="@lang('Edit this user')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@unless( $user->is_admin )
-									<a href="{{ route( 'admin.users.destroy', [ 'users' => $user->id ] ) }}" title="Delete this user" class="glyphicon glyphicon-trash"></a>
+									<a href="{{ route( 'admin.users.destroy', [ 'users' => $user->id ] ) }}" title="@lang('Delete this user')" class="glyphicon glyphicon-trash"></a>
 									@endunless
 								</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="5" class="text-center">No users found.</td>
+								<td colspan="5" class="text-center">@lang('No users found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

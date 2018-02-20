@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete country - Admin -')
+@section('title', __('Delete country') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,16 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the country <strong>{{ $country->name }}</strong>?
+                        	@lang('Do you want to delete the country :name?', [ 'name' => '<strong>' . $country->name . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.countries.index'))
-				
-				@slot('context', 'danger')
-				
-				Delete country
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.countries.index'))
+							
+							@slot('context', 'danger')
+							
+							Delete country
+						@endcomponent
                     </form>
 
                 </div>

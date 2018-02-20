@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', "Edit leagues of user - Admin -")
+@section('title', __('Edit leagues of user') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -19,7 +19,7 @@
 				@endif
 
 				<div class="text-center">
-					Add or remove leagues for user <strong>{{ $user->name }}</strong>:
+					@lang('Add or remove leagues for user :name:', [ 'name' => '<strong>' . $user->name . '</strong>' ])
 				</div>
 				
 				<div class="text-center">
@@ -30,7 +30,7 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th>
 								&nbsp;
@@ -53,7 +53,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="2" class="text-center">No leagues found.</td>
+								<td colspan="2" class="text-center">@lang('No leagues found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

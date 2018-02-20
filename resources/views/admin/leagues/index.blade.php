@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Leagues - Admin -')
+@section('title', __('Leagues') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,10 +20,10 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.leagues.create' ) }}" title="Add a league" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.leagues.create' ) }}" title="@lang('Add a league')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -34,17 +34,17 @@
 									<a href="{{ route( 'admin.leagues.edit', [ 'leagues' => $league->id ] ) }}">{{ $league->name }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.leagues.edit', [ 'leagues' => $league->id ] ) }}" title="Edit this league" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.leagues.edit', [ 'leagues' => $league->id ] ) }}" title="@lang('Edit this league')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( $league->users->isEmpty() )
-									<a href="{{ route( 'admin.leagues.destroy', [ 'leagues' => $league->id ] ) }}" title="Delete this league" class="glyphicon glyphicon-trash"></a>
+									<a href="{{ route( 'admin.leagues.destroy', [ 'leagues' => $league->id ] ) }}" title="@lang('Delete this league')" class="glyphicon glyphicon-trash"></a>
 									@endif
 								</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="5" class="text-center">No leagues found.</td>
+								<td colspan="5" class="text-center">@lang('No leagues found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

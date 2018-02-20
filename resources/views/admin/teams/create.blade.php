@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Add team - Admin -')
+@section('title', __('Add team') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -12,35 +12,35 @@
                     <form class="form-horizontal" method="POST" action="{{ route('admin.teams.store') }}">
                         {{ csrf_field() }}
 
-			@component('admin.form.input')
-				@slot('field', 'name')
-				
-				@slot('label', 'Name')
-				
-				@slot('attributes')
-					required autofocus
-				@endslot
-			@endcomponent
+						@component('admin.form.input')
+							@slot('field', 'name')
+							
+							@slot('label', 'Name')
+							
+							@slot('attributes')
+								required autofocus
+							@endslot
+						@endcomponent
 
-			@component('admin.form.select')
-				@slot('field', 'country_id')
-				
-				@slot('label', 'Country')
-				
-				@slot('options', $countries)
-			@endcomponent
+						@component('admin.form.select')
+							@slot('field', 'country_id')
+							
+							@slot('label', 'Country')
+							
+							@slot('options', $countries)
+						@endcomponent
 
-			@component('admin.form.checkbox')
-				@slot('field', 'active')
-				
-				@slot('label', 'Active')
-			@endcomponent
+						@component('admin.form.checkbox')
+							@slot('field', 'active')
+							
+							@slot('label', 'Active')
+						@endcomponent
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.teams.index'))
-				
-				Add team
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.teams.index'))
+							
+							Add team
+						@endcomponent
                     </form>
 
                 </div>

@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Teams - Admin -')
+@section('title', __('Teams') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">
@@ -20,16 +20,16 @@
 					<thead>
 						<tr>
 							<th>
-								Name
+								@lang('Name')
 							</th>
 							<th>
-								Country
+								@lang('Country')
 							</th>
 							<th>
-								Active
+								@lang('Active')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route('admin.teams.create') }}" title="Add a team" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route('admin.teams.create') }}" title="@lang('Add a team')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -46,11 +46,11 @@
 									<span class="glyphicon glyphicon-{{ $team->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}" title="Edit this team" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}" title="@lang('Edit this team')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$team->entries->count() )
-										<a href="{{ route( 'admin.teams.destroy', [ 'teams' => $team->id ] ) }}" title="Delete this team" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.teams.destroy', [ 'teams' => $team->id ] ) }}" title="@lang('Delete this team')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -58,7 +58,7 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="3" class="text-center">No teams found.</td>
+								<td colspan="3" class="text-center">@lang('No teams found.')</td>
 							</tr>
 						@endforelse
 					</tbody>

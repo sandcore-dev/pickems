@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete team - Admin -')
+@section('title', __('Delete team') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,16 +14,16 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the team <strong>{{ $team->name }}</strong>?
+                        	@lang('Do you want to delete the team :name?', [ 'name' => '<strong>' . $team->name . '</strong>' ])
                         </div>
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.teams.index'))
-				
-				@slot('context', 'danger')
-				
-				Delete team
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.teams.index'))
+							
+							@slot('context', 'danger')
+							
+							Delete team
+						@endcomponent
                     </form>
 
                 </div>

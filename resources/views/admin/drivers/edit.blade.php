@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Edit driver - Admin -')
+@section('title', __('Edit driver') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -13,53 +13,53 @@
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
-			@component('admin.form.input')
-				@slot('field', 'first_name')
+						@component('admin.form.input')
+							@slot('field', 'first_name')
 
-				@slot('value', $driver->first_name)
-				
-				@slot('label', 'First name')
-				
-				@slot('attributes')
-					required autofocus
-				@endslot
-			@endcomponent
+							@slot('value', $driver->first_name)
+							
+							@slot('label', 'First name')
+							
+							@slot('attributes')
+								required autofocus
+							@endslot
+						@endcomponent
 
-			@component('admin.form.input')
-				@slot('field', 'last_name')
-				
-				@slot('value', $driver->last_name)
+						@component('admin.form.input')
+							@slot('field', 'last_name')
+							
+							@slot('value', $driver->last_name)
 
-				@slot('label', 'Last name')
-				
-				@slot('attributes')
-					required
-				@endslot
-			@endcomponent
+							@slot('label', 'Last name')
+							
+							@slot('attributes')
+								required
+							@endslot
+						@endcomponent
 
-			@component('admin.form.select')
-				@slot('field', 'country_id')
-				
-				@slot('value', $driver->country_id)
+						@component('admin.form.select')
+							@slot('field', 'country_id')
+							
+							@slot('value', $driver->country_id)
 
-				@slot('label', 'Country')
-				
-				@slot('options', $countries)
-			@endcomponent
+							@slot('label', 'Country')
+							
+							@slot('options', $countries)
+						@endcomponent
 
-			@component('admin.form.checkbox')
-				@slot('field', 'active')
-				
-				@slot('value', $driver->active)
+						@component('admin.form.checkbox')
+							@slot('field', 'active')
+							
+							@slot('value', $driver->active)
 
-				@slot('label', 'Active')
-			@endcomponent
+							@slot('label', 'Active')
+						@endcomponent
 
-			@component('admin.form.submit')
-				@slot('cancel', route('admin.drivers.index'))
-				
-				Edit driver
-			@endcomponent
+						@component('admin.form.submit')
+							@slot('cancel', route('admin.drivers.index'))
+							
+							Edit driver
+						@endcomponent
                     </form>
 
                 </div>

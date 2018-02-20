@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Delete user - Admin -')
+@section('title', __('Delete user') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
@@ -14,7 +14,7 @@
                         {{ method_field('DELETE') }}
 
                         <div class="form-group text-center">
-                        	Do you want to delete the user <strong>{{ $user->name }}</strong>?
+                        	@lang('Do you want to delete the user :name?', [ 'name' => '<strong>' . $user->name . '</strong>' ])
                         </div>
 
 			@component('admin.form.submit')

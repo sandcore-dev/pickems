@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Picks - Admin -')
+@section('title', __('Picks') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 	<div class="container">

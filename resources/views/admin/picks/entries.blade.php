@@ -15,7 +15,7 @@
 @elseif( $picks->first()->carry_over )
 	<div class="col-xs-12 col-sm-3">
 		<p class="alert alert-warning">
-			These picks carried over from the previous race.
+			@lang('These picks carried over from the previous race.')
 		</p>
 	</div>
 	<div class="col-xs-1 visible-xs-block"></div>

@@ -1,6 +1,6 @@
 @extends('admin.index')
 
-@section('title', 'Add league - Admin -')
+@section('title', __('Add league') . ' - ' . __('Admin') . ' -')
 
 @section('content')
 <div class="container">
