@@ -197,5 +197,67 @@
 	"Add or remove leagues for user :name:": "Toevoegen of verwijderen van subleagues van gebruiker :name:",
 	"Thanks to :name for making the Glyphicon Halflings set free of use.": "Bedankt aan :name voor het gratis beschikbaar stellen van de Glyphicons Halflings-set.",
 	
-	"Rules": "Spelregels"
+	"Rules": "Spelregels",
+	
+	"There are no races available.": "Er zijn geen races beschikbaar.",
+	
+	"The user :name has been added.": "De gebruiker :name is toegevoegd.",
+	"The user :name has been changed.": "De gebruiker :name is aangepast.",
+	"The user :name has been deleted.": "De gebruiker :name is verwijderd.",
+	"The user :name could not be deleted.": "De gebruiker :name kon niet verwijderd worden.",
+	
+	"League :name attached.": "Subleague :name is gekoppeld.",
+	"League :name detached.": "Subleague :name is losgekoppeld.",
+	"Cannot detach league :name.": "Kan subleague :name niet loskoppelen.",
+
+	"The team :name has been added.": "Het team :name is toegevoegd.",
+	"The team :name has been changed.": "Het team :name is aangepast.",
+	"The team :name has been deleted.": "Het team :name is verwijderd.",
+	"The team :name could not be deleted.": "Het team :name kon niet verwijderd worden.",
+
+	"The series :name has been added.": "De raceklasse :name is toegevoegd.",
+	"The series :name has been changed.": "De raceklasse :name is aangepast.",
+	"The series :name has been deleted.": "De raceklasse :name is verwijderd.",
+	"The series :name could not be deleted.": "De raceklasse :name kon niet verwijderd worden.",
+
+	"The season :name has been added.": "Het seizoen :name is toegevoegd.",
+	"The season :name has been changed.": "Het seizoen :name is aangepast.",
+	"The season :name has been deleted.": "Het seizoen :name is verwijderd.",
+	"The season :name could not be deleted.": "Het seizoen :name kon niet verwijderd worden.",
+	
+	"The weekend start cannot be after race day.": "De start van het weekeinde mag niet ná de dag van de race zijn.",
+	"This race already exists.": "Deze race bestaat al.",
+	"The race :name has been added.": "De race :name is toegevoegd.",
+	"The race :name has been changed.": "De race :name is aangepast.",
+	"The race :name has been deleted.": "De race :name is verwijderd.",
+	"The race :name could not be deleted.": "De race :name kon niet verwijderd worden.",
+
+	"The league :name has been added.": "De subleague :name is toegevoegd.",
+	"The league :name has been changed.": "De subleague :name is aangepast.",
+	"The league :name has been deleted.": "De subleague :name is verwijderd.",
+	"The league :name could not be deleted.": "De subleague :name kon niet verwijderd worden.",
+	
+	"This entry already exists.": "Deze deelname bestaat al.",
+	"The abbreviation is already in use for this team.": "Deze afkorting is al in gebruik voor dit team.",
+	"The entry :name has been added.": "De deelname :name is toegevoegd.",
+	"The entry :name has been changed.": "De deelname :name is aangepast.",
+	"The entry :name has been deleted.": "De deelname :name is verwijderd.",
+	"The entry :name could not be deleted.": "De deelname :name kon niet verwijderd worden.",
+
+	"The driver :name has been added.": "De coureur :name is toegevoegd.",
+	"The driver :name has been changed.": "De coureur :name is aangepast.",
+	"The driver :name has been deleted.": "De coureur :name is verwijderd.",
+	"The driver :name could not be deleted.": "De coureur :name kon niet verwijderd worden.",
+
+	"The country :name has been added.": "Het land :name is toegevoegd.",
+	"The country :name has been changed.": "Het land :name is aangepast.",
+	"The country :name has been deleted.": "Het land :name is verwijderd.",
+	"The country :name could not be deleted.": "Het land :name kon niet verwijderd worden.",
+	
+	"The circuit :name has been added.": "Het circuit :name is toegevoegd.",
+	"The circuit :name has been changed.": "Het circuit :name is aangepast.",
+	"The circuit :name has been deleted.": "Het circuit :name is verwijderd.",
+	"The circuit :name could not be deleted.": "Het circuit :name kon niet verwijderd worden.",
+
+	"": ""
 }

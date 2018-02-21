@@ -61,7 +61,7 @@ class UserLeaguesController extends Controller
     {
     	$user->leagues()->attach( $league->id );
     	
-    	session()->flash( 'status', "League '{$league->name}' attached." );
+    	session()->flash( 'status', __( "League :name attached.", [ 'name' => $league->name ] ) );
     	
     	return redirect()->back();
     }
@@ -79,10 +79,10 @@ class UserLeaguesController extends Controller
     	try {
 	    	$user->leagues()->detach( $league->id );
 	    	
-	    	session()->flash( 'status', "League '{$league->name}' detached." );
+	    	session()->flash( 'status', __( "League :name detached.", [ 'name' => $league->name ] ) );
 	}
 	catch( QueryException $e ) {
-		session()->flash( 'error', "Cannot detach league '{$league->name}'." );
+		session()->flash( 'error', __( "Cannot detach league :name.", [ 'name' => $league->name ] ) );
 	}
     	
     	return redirect()->back();

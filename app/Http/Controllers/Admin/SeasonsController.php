@@ -75,7 +75,7 @@ class SeasonsController extends Controller
     		return redirect()->back()->withInput()->withErrors([ 'start_year' => 'This season already exists.' ]);
     		
     	if( $season = Season::create( $request->only('series_id', 'start_year', 'end_year', 'picks_max') ) )
-			session()->flash( 'status', "The season '{$season->name}' has been added." );
+			session()->flash( 'status', __( "The season :name has been added.", [ 'name' => $season->name ] ) );
     	
     	return redirect()->route( 'admin.seasons.index', [ 'series' => $request->series_id ] );
     }
@@ -121,7 +121,7 @@ class SeasonsController extends Controller
     		return redirect()->back()->withInput()->withErrors([ 'start_year' => 'This season already exists.' ]);
     	
     	if( $season->update( $request->only('start_year', 'end_year', 'picks_max') ) )
-		session()->flash( 'status', "The season '{$season->name}' has been changed." );
+		session()->flash( 'status', __( "The season :name has been changed.", [ 'name' => $season->name ] ) );
     	
     	return redirect()->route( 'admin.seasons.index', [ 'series' => $season->series->id ] );
     }
@@ -137,9 +137,9 @@ class SeasonsController extends Controller
     	try {
     		$season->delete();
     		
-    		session()->flash( 'status', "The season '{$season->name}' has been deleted." );
+    		session()->flash( 'status', __( "The season :name has been deleted.", [ 'name' => $season->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The season '{$season->name}' could not be deleted." );
+    		session()->flash( 'status', __( "The season :name could not be deleted.", [ 'name' => $season->name ] ) );
     	}
 	    	
     	return redirect()->route( 'admin.seasons.index', [ 'series' => $season->series->id ] );

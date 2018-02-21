@@ -72,7 +72,7 @@ class UsersController extends Controller
     	
     	if( $user = User::create( $data ) )
     	{
-			session()->flash( 'status', "The user '{$user->name}' has been added." );
+			session()->flash( 'status', __("The user :name has been added.", [ 'name' > $user->name ] ) );
 		
 			$user->is_admin = $request->input('is_admin');
 		
@@ -129,7 +129,7 @@ class UsersController extends Controller
     	
     	if( $user->update( $request->only('name', 'locale', 'email', 'username', 'reminder', 'active') ) )
     	{
-		session()->flash( 'status', "The user '{$user->name}' has been changed." );
+		session()->flash( 'status', __("The user :name has been changed.", [ 'name' => $user->name ] ) );
 	
 		$user->is_admin = $request->input('is_admin');
 	
@@ -153,9 +153,9 @@ class UsersController extends Controller
     	try {
     		$user->delete();
     		
-    		session()->flash( 'status', "The user '{$user->name}' has been deleted." );
+    		session()->flash( 'status', __("The user :name has been deleted.", [ 'name' => $user->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The user '{$user->name}' could not be deleted." );
+    		session()->flash( 'status', __("The user :name could not be deleted.", [ 'name' => $user->name ] ) );
     	}
 	    	
     	return redirect()->route( 'admin.users.index' );

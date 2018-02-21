@@ -64,7 +64,7 @@ class LeaguesController extends Controller
     	
     	if( $league = League::create( $request->only('name', 'series_id') ) )
     	{
-			session()->flash( 'status', "The league '{$league->name}' has been added." );
+			session()->flash( 'status', __( "The league :name has been added.", [ 'name' => $league->name ] ) );
 		
 			if( $request->input('generate_token') )
 				$league->access_token = str_random(10);
@@ -112,7 +112,7 @@ class LeaguesController extends Controller
     	]);
     	
     	if( $league->update( $request->only('name') ) )
-			session()->flash( 'status', "The league '{$league->name}' has been changed." );
+			session()->flash( 'status', __( "The league :name has been changed.", [ 'name' => $league->name ] ) );
 			
 		if( $request->input('generate_token') )
 			$league->update([ 'access_token' => str_random(10) ]);
@@ -131,9 +131,9 @@ class LeaguesController extends Controller
     	try {
     		$league->delete();
     		
-    		session()->flash( 'status', "The league '{$league->name}' has been deleted." );
+    		session()->flash( 'status', __( "The league :name has been deleted.", [ 'name' => $league->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The league '{$league->name}' could not be deleted." );
+    		session()->flash( 'status', __( "The league :name could not be deleted.", [ 'name' => $league->name ] ) );
     	}
 	    	
     	return redirect()->route( 'admin.leagues.index' );

@@ -56,10 +56,10 @@ class RacesController extends Controller
 	
         return view('admin.races.index')->with([
         	'currentSeries'	=> $series,
-        	'series'	=> Series::has('seasons')->get(),
+        	'series'		=> Series::has('seasons')->get(),
         	'currentSeason'	=> $season,
-        	'seasons'	=> $series->seasons,
-        	'races'		=> Race::with('results')->where( 'season_id', $season->id )->paginate(30),
+        	'seasons'		=> $series->seasons,
+        	'races'			=> Race::with('results')->where( 'season_id', $season->id )->paginate(30),
         ]);
     }
 
@@ -89,13 +89,13 @@ class RacesController extends Controller
     public function store(Request $request)
     {
     	$request->validate([
-    		'season_id'		=> [ 'bail', 'required', 'integer', 'exists:seasons,id' ],
-    		'name'			=> [ 'required', 'min:2' ],
-    		'circuit_id'		=> [ 'required', 'integer', 'exists:circuits,id' ],
-    		'race_day_day'		=> [ 'required', 'numeric', 'between:1,31' ],
-    		'race_day_month'	=> [ 'required', 'numeric', 'between:1,12' ],
-    		'race_day_year'		=> [ 'required', 'numeric' ],
-    		'weekend_start_day'	=> [ 'required', 'numeric', 'between:1,31' ],
+    		'season_id'				=> [ 'bail', 'required', 'integer', 'exists:seasons,id' ],
+    		'name'					=> [ 'required', 'min:2' ],
+    		'circuit_id'			=> [ 'required', 'integer', 'exists:circuits,id' ],
+    		'race_day_day'			=> [ 'required', 'numeric', 'between:1,31' ],
+    		'race_day_month'		=> [ 'required', 'numeric', 'between:1,12' ],
+    		'race_day_year'			=> [ 'required', 'numeric' ],
+    		'weekend_start_day'		=> [ 'required', 'numeric', 'between:1,31' ],
     		'weekend_start_month'	=> [ 'required', 'numeric', 'between:1,12' ],
     		'weekend_start_year'	=> [ 'required', 'numeric' ],
     	]);
@@ -104,18 +104,18 @@ class RacesController extends Controller
     	$weekend_start	= Carbon::create( $request->input('weekend_start_year'), $request->input('weekend_start_month'), $request->input('weekend_start_day'), $request->input('weekend_start_hour'), $request->input('weekend_start_minute'), 0 );
     	
     	if( $weekend_start->greaterThan($race_day) )
-    		return redirect()->back()->withInput()->withErrors([ 'weekend_start' => 'The weekend start cannot be after race day.' ]);
+    		return redirect()->back()->withInput()->withErrors([ 'weekend_start' => __('The weekend start cannot be after race day.') ]);
     	
     	if( Race::where( 'season_id', $request->input('season_id') )->where( 'circuit_id', $request->input('circuit_id') )->where( 'race_day', $race_day )->count() )
-    		return redirect()->back()->withInput()->withErrors([ 'name' => 'This race already exists.' ]);
+    		return redirect()->back()->withInput()->withErrors([ 'name' => __('This race already exists.') ]);
     	
-    	$data			= $request->only('season_id', 'name', 'circuit_id');
+    	$data					= $request->only('season_id', 'name', 'circuit_id');
     	
-    	$data['race_day']	= $race_day;
+    	$data['race_day']		= $race_day;
     	$data['weekend_start']	= $weekend_start;
     	
     	if( $race = Race::create($data) )
-		session()->flash( 'status', "The race '{$race->name}' has been added." );
+			session()->flash( 'status', __( "The race :name has been added.", [ 'name' => $race->name ] ) );
     	
     	return redirect()->route( 'admin.races.index', [ 'season' => $request->season_id ] );
     }
@@ -180,7 +180,7 @@ class RacesController extends Controller
     	$data['weekend_start']	= $weekend_start;
     	
     	if( $race->update($data) )
-		session()->flash( 'status', "The race '{$race->name}' has been changed." );
+		session()->flash( 'status', __( "The race :name has been changed.", [ 'name' => $race->name ] ) );
     	
     	return redirect()->route( 'admin.races.index', [ 'season' => $race->season->id ] );
     }
@@ -196,9 +196,9 @@ class RacesController extends Controller
     	try {
     		$race->delete();
     		
-    		session()->flash( 'status', "The race '{$race->name}' has been deleted." );
+    		session()->flash( 'status', __( "The race :name has been deleted.", [ 'name' => $race->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The race '{$race->name}' could not be deleted." );
+    		session()->flash( 'status', __( "The race :name could not be deleted.", [ 'name' => $race->name ] ) );
     	}
 	    	
     	return redirect()->route( 'admin.races.index', [ 'season' => $race->season->id ] );

@@ -55,7 +55,7 @@ class SeriesController extends Controller
     	]);
     	
     	if( $series = Series::create( $request->only('name') ) )
-		session()->flash( 'status', "The series '{$series->name}' has been added." );
+		session()->flash( 'status', __( "The series :name has been added.", [ 'name' => $series->name ] ) );
     	
     	return redirect()->route('admin.series.index');
     }
@@ -96,7 +96,7 @@ class SeriesController extends Controller
     	]);
     	
     	if( $series->update( $request->only('name') ) )
-		session()->flash( 'status', "The series '{$series->name}' has been changed." );
+			session()->flash( 'status', __( "The series :name has been changed.", [ 'name' => $series->name ] ) );
     	
     	return redirect()->route('admin.series.index');
     }
@@ -112,9 +112,9 @@ class SeriesController extends Controller
     	try {
     		$series->delete();
     		
-    		session()->flash( 'status', "The series '{$series->name}' has been deleted." );
+    		session()->flash( 'status', __( "The series :name has been deleted.", [ 'name' => $series->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The series '{$series->name}' could not be deleted." );
+    		session()->flash( 'status', __( "The series :name could not be deleted.", [ 'name' => $series->name ] ) );
     	}
 	    	
     	return redirect()->route('admin.series.index');

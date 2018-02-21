@@ -109,7 +109,7 @@ class PicksEditController extends Controller
     		'entry_id'		=> $request->entry,
     		'user_id'		=> $user->id,
     		'rank'			=> $this->getHighestAvailableRank( $user, $race ),
-    		'carry_over'		=> 0,
+    		'carry_over'	=> 0,
     	]);
 
     	return redirect()->back();
@@ -158,7 +158,7 @@ class PicksEditController extends Controller
 
 		$newPick = $pick->replicate();
 		
-		$newPick->race_id	= $toRace->id;
+		$newPick->race_id		= $toRace->id;
 		$newPick->carry_over	= 1;
 		
 		$newPick->save();

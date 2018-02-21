@@ -35,7 +35,7 @@ class StandingsListController extends Controller
     	$race		= $season->races()->previousOrFirst();
     	
     	if( !$race->count() )
-			return view('picks.error')->with( 'error', "There are no races available." );
+			return view('picks.error')->with( 'error', __("There are no races available.") );
 
     	return redirect()->route( 'standings.race', [ 'league' => $league->id, 'race' => $race->id ] );
     }

@@ -56,7 +56,7 @@ class CountriesController extends Controller
     	]);
     	
     	if( $country = Country::create( $request->only('code', 'name') ) )
-		session()->flash( 'status', "The country '{$country->name}' has been added." );
+		session()->flash( 'status', __( "The country :name has been added.", [ 'name' => $country->name ] ) );
     	
     	return redirect()->route('admin.countries.index');
     }
@@ -98,7 +98,7 @@ class CountriesController extends Controller
     	]);
     	
     	if( $country->update( $request->only('code', 'name') ) )
-		session()->flash( 'status', "The country '{$country->name}' has been changed." );
+		session()->flash( 'status', __( "The country :name has been changed.", [ 'name' => $country->name ] ) );
     	
     	return redirect()->route('admin.countries.index');
     }
@@ -114,9 +114,9 @@ class CountriesController extends Controller
     	try {
     		$country->delete();
     		
-    		session()->flash( 'status', "The country '{$country->name}' has been deleted." );
+    		session()->flash( 'status', __( "The country :name has been deleted.", [ 'name' => $country->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The country '{$country->name}' could not be deleted." );
+    		session()->flash( 'status', __( "The country :name could not be deleted.", [ 'name' => $country->name ] ) );
     	}
 	    	
     	return redirect()->route('admin.countries.index');

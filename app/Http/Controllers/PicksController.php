@@ -41,7 +41,7 @@ class PicksController extends Controller
     	$race = $season->races()->nextOrLast();
     	
     	if( !$race->count() )
-			return view('picks.error')->with( 'error', "There are no races available." );
+			return view('picks.error')->with( 'error', __("There are no races available.") );
 
     	return redirect()->route( 'picks.race', [ 'league' => $league->id, 'race' => $race->id ] );
     }

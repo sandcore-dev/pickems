@@ -58,7 +58,7 @@ class TeamsController extends Controller
     	]);
     	
     	if( $team = Team::create( $request->only('name', 'active', 'country_id') ) )
-		session()->flash( 'status', "The team '{$team->name}' has been added." );
+		session()->flash( 'status', __( "The team :name has been added.", [ 'name' => $team->name ] ) );
     	
     	return redirect()->route('admin.teams.index');
     }
@@ -104,7 +104,7 @@ class TeamsController extends Controller
     	]);
     	
     	if( $team->update( $request->only('name', 'active', 'country_id') ) )
-		session()->flash( 'status', "The team '{$team->name}' has been changed." );
+		session()->flash( 'status', __( "The team :name has been changed.", [ 'name' => $team->name ] ) );
     	
     	return redirect()->route('admin.teams.index');
     }
@@ -120,9 +120,9 @@ class TeamsController extends Controller
     	try {
     		$team->delete();
     		
-    		session()->flash( 'status', "The team '{$team->name}' has been deleted." );
+    		session()->flash( 'status', __( "The team :name has been deleted.", [ 'name' => $team->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The team '{$team->name}' could not be deleted." );
+    		session()->flash( 'status',__( "The team :name could not be deleted.", [ 'name' => $team->name ] ) );
     	}
 	    	
     	return redirect()->route('admin.teams.index');

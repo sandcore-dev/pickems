@@ -102,13 +102,13 @@ class EntriesController extends Controller
     	]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'driver_id', $request->input('driver_id') )->count() )
-    		return redirect()->back()->withInput()->withErrors([ 'car_number' => 'This entry already exists.' ]);
+    		return redirect()->back()->withInput()->withErrors([ 'car_number' => __('This entry already exists.') ]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'abbreviation', $request->input('abbreviation') )->count() )
-    		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => 'The abbreviation is already in use for this team.' ]);
+    		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => __('The abbreviation is already in use for this team.') ]);
     	
     	if( $entry = Entry::create( $request->only('season_id', 'car_number', 'color', 'team_id', 'driver_id', 'abbreviation', 'active') ) )
-		session()->flash( 'status', "The entry '{$entry->car_number}' has been added." );
+		session()->flash( 'status', __( "The entry :name has been added.", [ 'name' => $entry->car_number ] ) );
     	
     	return redirect()->route( 'admin.entries.index', [ 'season' => $request->season_id ] );
     }
@@ -158,13 +158,13 @@ class EntriesController extends Controller
     	]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'driver_id', $request->input('driver_id') )->where( 'id', '!=', $entry->id )->count() )
-    		return redirect()->back()->withInput()->withErrors([ 'car_number' => 'This entry already exists.' ]);
+    		return redirect()->back()->withInput()->withErrors([ 'car_number' => __('This entry already exists.') ]);
     	
     	if( Entry::where( 'season_id', $request->input('season_id') )->where( 'team_id', $request->input('team_id') )->where( 'abbreviation', $request->input('abbreviation') )->where( 'id', '!=', $entry->id )->count() )
-    		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => 'The abbreviation is already in use for this team.' ]);
+    		return redirect()->back()->withInput()->withErrors([ 'abbreviation' => __('The abbreviation is already in use for this team.') ]);
     	
     	if( $entry->update( $request->only('season_id', 'car_number', 'abbreviation', 'color', 'team_id', 'driver_id', 'active') ) )
-		session()->flash( 'status', "The entry '{$entry->car_number}' has been changed." );
+		session()->flash( 'status', __( "The entry :name has been changed.", [ 'name' => $entry->car_number ] ) );
     	
     	return redirect()->route( 'admin.entries.index', [ 'season' => $entry->season->id ] );
     }
@@ -180,9 +180,9 @@ class EntriesController extends Controller
     	try {
     		$entry->delete();
     		
-    		session()->flash( 'status', "The entry '{$entry->car_number}' has been deleted." );
+    		session()->flash( 'status', __( "The entry :name has been deleted.", [ 'name' => $entry->car_number ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The entry '{$entry->car_number}' could not be deleted." );
+    		session()->flash( 'status', __( "The entry :name could not be deleted.", [ 'name' => $entry->car_number ] ) );
     	}
 	    	
     	return redirect()->route( 'admin.entries.index', [ 'season' => $entry->season->id ] );

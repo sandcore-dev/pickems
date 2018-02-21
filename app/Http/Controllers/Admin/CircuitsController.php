@@ -60,7 +60,7 @@ class CircuitsController extends Controller
     	]);
     	
     	if( $circuit = Circuit::create( $request->only('name', 'length', 'city', 'area', 'country_id') ) )
-		session()->flash( 'status', "The circuit '{$circuit->name}' has been added." );
+		session()->flash( 'status', __( "The circuit :name has been added.", [ 'name' => $circuit->name ] ) );
     	
     	return redirect()->route('admin.circuits.index');
     }
@@ -108,7 +108,7 @@ class CircuitsController extends Controller
     	]);
     	
     	if( $circuit->update( $request->only('name', 'length', 'city', 'area', 'country_id') ) )
-		session()->flash( 'status', "The circuit '{$circuit->name}' has been changed." );
+		session()->flash( 'status', __( "The circuit :name has been changed.", [ 'name' => $circuit->name ] ) );
     	
     	return redirect()->route('admin.circuits.index');
     }
@@ -124,9 +124,9 @@ class CircuitsController extends Controller
     	try {
     		$circuit->delete();
     		
-    		session()->flash( 'status', "The circuit '{$circuit->name}' has been deleted." );
+    		session()->flash( 'status', __( "The circuit :name has been deleted.", [ 'name' => $circuit->name ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The circuit '{$circuit->name}' could not be deleted." );
+    		session()->flash( 'status', __( "The circuit :name could not be deleted.", [ 'name' => $circuit->name ] ) );
     	}
 	    	
     	return redirect()->route('admin.circuits.index');

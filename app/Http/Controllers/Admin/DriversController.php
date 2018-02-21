@@ -53,13 +53,13 @@ class DriversController extends Controller
     {
     	$request->validate([
     		'first_name'	=> [ 'required', 'min:2' ],
-    		'last_name'	=> [ 'required', 'min:2', Rule::unique('drivers')->where('first_name', $request->input('first_name'))->where('country_id', $request->input('country_id')) ],
+    		'last_name'		=> [ 'required', 'min:2', Rule::unique('drivers')->where('first_name', $request->input('first_name'))->where('country_id', $request->input('country_id')) ],
     		'country_id'	=> [ 'required', 'integer', 'exists:countries,id' ],
-    		'active'	=> [ 'boolean' ],
+    		'active'		=> [ 'boolean' ],
     	]);
     	
     	if( $driver = Driver::create( $request->only('first_name', 'last_name', 'active', 'country_id') ) )
-		session()->flash( 'status', "The driver '{$driver->fullName}' has been added." );
+		session()->flash( 'status', __( "The driver :name has been added.", [ 'name' => $driver->fullName ] ) );
     	
     	return redirect()->route('admin.drivers.index');
     }
@@ -106,7 +106,7 @@ class DriversController extends Controller
     	]);
     	
     	if( $driver->update( $request->only('first_name', 'last_name', 'active', 'country_id') ) )
-		session()->flash( 'status', "The driver '{$driver->fullName}' has been changed." );
+		session()->flash( 'status', __( "The driver :name has been changed.", [ 'name' => $driver->fullName ] ) );
     	
     	return redirect()->route('admin.drivers.index');
     }
@@ -122,9 +122,9 @@ class DriversController extends Controller
     	try {
     		$driver->delete();
     		
-    		session()->flash( 'status', "The driver '{$driver->fullName}' has been deleted." );
+    		session()->flash( 'status', __( "The driver :name has been deleted.", [ 'name' => $driver->fullName ] ) );
     	} catch( QueryException $e ) {
-    		session()->flash( 'status', "The driver '{$driver->fullName}' could not be deleted." );
+    		session()->flash( 'status', __( "The driver :name could not be deleted.", [ 'name' => $driver->fullName ] ) );
     	}
 	    	
     	return redirect()->route('admin.drivers.index');
