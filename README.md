@@ -47,7 +47,5 @@ Superuser components include:
 
 ## Todo
 
-* Probably add a page to explain the rules and points system
-* Implement multiple languages
 * Add timezone to profile
 
