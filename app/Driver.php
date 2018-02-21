@@ -12,7 +12,7 @@ class Driver extends Model
 	 *
 	 * @var		array
 	 */
-	protected $fillable = [ 'first_name', 'last_name', 'country_id', 'active' ];
+	protected $fillable = [ 'first_name', 'surname_prefix', 'last_name', 'country_id', 'active' ];
 
 	/**
 	* The "booting" method of the model.
@@ -59,13 +59,23 @@ class Driver extends Model
 	}
 	
 	/**
+	 * Get full last name of this driver.
+	 *
+	 * @return	string
+	 */
+	public function getFullLastNameAttribute()
+	{
+		return ($this->surname_prefix ? $this->surname_prefix . ' ' : '') . $this->last_name;
+	}
+	
+	/**
 	 * Get full name of this driver.
 	 *
 	 * @return	string
 	 */
 	public function getFullNameAttribute()
 	{
-		return $this->first_name . ' ' . $this->last_name;
+		return $this->first_name . ' ' . $this->fullLastName;
 	}
 	
 	/**
@@ -75,6 +85,6 @@ class Driver extends Model
 	 */
 	public function getLastFirstAttribute()
 	{
-		return $this->last_name . ', ' . $this->first_name;
+		return $this->last_name . ', ' . $this->first_name . ($this->surname_prefix ? ' ' . $this->surname_prefix : '');
 	}
 }

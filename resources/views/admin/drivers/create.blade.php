@@ -23,6 +23,12 @@
 						@endcomponent
 
 						@component('admin.form.input')
+							@slot('field', 'surname_prefix')
+							
+							@slot('label', 'Surname prefix')
+						@endcomponent
+
+						@component('admin.form.input')
 							@slot('field', 'last_name')
 							
 							@slot('label', 'Last name')

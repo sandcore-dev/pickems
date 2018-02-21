@@ -52,13 +52,14 @@ class DriversController extends Controller
     public function store(Request $request)
     {
     	$request->validate([
-    		'first_name'	=> [ 'required', 'min:2' ],
-    		'last_name'		=> [ 'required', 'min:2', Rule::unique('drivers')->where('first_name', $request->input('first_name'))->where('country_id', $request->input('country_id')) ],
-    		'country_id'	=> [ 'required', 'integer', 'exists:countries,id' ],
-    		'active'		=> [ 'boolean' ],
+    		'first_name'		=> [ 'required', 'min:2' ],
+    		'surname_prefix'	=> [ 'string', 'nullable' ],
+    		'last_name'			=> [ 'required', 'min:2', Rule::unique('drivers')->where('first_name', $request->input('first_name'))->where('country_id', $request->input('country_id')) ],
+    		'country_id'		=> [ 'required', 'integer', 'exists:countries,id' ],
+    		'active'			=> [ 'boolean' ],
     	]);
     	
-    	if( $driver = Driver::create( $request->only('first_name', 'last_name', 'active', 'country_id') ) )
+    	if( $driver = Driver::create( $request->only('first_name', 'surname_prefix', 'last_name', 'active', 'country_id') ) )
 		session()->flash( 'status', __( "The driver :name has been added.", [ 'name' => $driver->fullName ] ) );
     	
     	return redirect()->route('admin.drivers.index');
@@ -99,13 +100,14 @@ class DriversController extends Controller
     public function update(Request $request, Driver $driver)
     {
     	$request->validate([
-    		'first_name'	=> [ 'required', 'min:2' ],
-    		'last_name'	=> [ 'required', 'min:2', Rule::unique('drivers')->where('first_name', $request->input('first_name'))->where('country_id', $request->input('country_id'))->ignore($driver->id) ],
-    		'country_id'	=> [ 'required', 'integer', 'exists:countries,id' ],
-    		'active'	=> [ 'boolean' ],
+    		'first_name'		=> [ 'required', 'min:2' ],
+    		'surname_prefix'	=> [ 'string', 'nullable' ],
+    		'last_name'			=> [ 'required', 'min:2', Rule::unique('drivers')->where('first_name', $request->input('first_name'))->where('country_id', $request->input('country_id'))->ignore($driver->id) ],
+    		'country_id'		=> [ 'required', 'integer', 'exists:countries,id' ],
+    		'active'			=> [ 'boolean' ],
     	]);
     	
-    	if( $driver->update( $request->only('first_name', 'last_name', 'active', 'country_id') ) )
+    	if( $driver->update( $request->only('first_name', 'surname_prefix', 'last_name', 'active', 'country_id') ) )
 		session()->flash( 'status', __( "The driver :name has been changed.", [ 'name' => $driver->fullName ] ) );
     	
     	return redirect()->route('admin.drivers.index');

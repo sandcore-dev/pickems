@@ -43,7 +43,7 @@
 									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->first_name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->last_name }}</a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->fullLastName }}</a>
 								</td>
 								<td>
 									<span class="{{ $driver->country->flagClass }} title="{{ $driver->country->localName }}"></span>
