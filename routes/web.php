@@ -71,6 +71,9 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => [ 'auth', 
 		'leagues'	=> 'LeaguesController',
 	]);
 	
+	Route::get('races/populate/{season}', 'RacesController@populate')->name('races.populate');
+	Route::get('entries/populate/{season}', 'EntriesController@populate')->name('entries.populate');
+	
 	Route::group([ 'prefix' => 'results' ], function () {
 		Route::get('/', 'ResultsController@index')->name('results.index');
 		Route::post('{race}', 'ResultsController@create')->name('results.create');

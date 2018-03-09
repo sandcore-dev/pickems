@@ -9,7 +9,13 @@
 				@include('admin.races.series')
 				@include('admin.races.seasons')
 
-				@if (session('status'))
+				@if(session('error'))
+					<div class="alert alert-warning">
+						{{ session('error') }}
+					</div>
+				@endif
+
+				@if(session('status'))
 					<div class="alert alert-success">
 						{{ session('status') }}
 					</div>
@@ -61,7 +67,14 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="5" class="text-center">No races found.</td>
+								<td colspan="5" class="text-center">
+									<p>
+										@lang('No races found.')
+									</p>
+									<p>
+										<a class="btn btn-primary" href="{{ route('admin.races.populate', [ 'season' => $currentSeason ]) }}">@lang('Populate with races from previous season (:year)', [ 'year' => $currentSeason->previous->name ])</a>
+									</p>
+								</td>
 							</tr>
 						@endforelse
 					</tbody>

@@ -10,6 +10,8 @@ use Carbon\Carbon;
 
 use App\Http\Controllers\Controller;
 
+use App\Helpers\Date;
+
 use App\Series;
 use App\Season;
 use App\Circuit;
@@ -26,7 +28,7 @@ class RacesController extends Controller
      */
     public function __construct()
     {
-	$this->middleware( [ 'auth', 'admin' ] );
+		$this->middleware( [ 'auth', 'admin' ] );
     }
  
     /**
@@ -42,17 +44,17 @@ class RacesController extends Controller
     	{
 	    	$series	= Series::has('seasons')->findOrFail($request->series);
 	    	$season = $series->seasons()->first();
-	}
-	elseif( $request->season )
-	{
+		}
+		elseif( $request->season )
+		{
 	    	$season	= Season::findOrFail($request->season);
 	    	$series = $season->series;
-	}
-	else
-	{
-		$series	= Series::has('seasons')->first();
-		$season	= $series->seasons()->first();
-	}
+		}
+		else
+		{
+			$series	= Series::has('seasons')->first();
+			$season	= $series->seasons()->first();
+		}
 	
         return view('admin.races.index')->with([
         	'currentSeries'	=> $series,
@@ -202,5 +204,49 @@ class RacesController extends Controller
     	}
 	    	
     	return redirect()->route( 'admin.races.index', [ 'season' => $race->season->id ] );
+    }
+    
+    
+    /**
+     * Populate season with races from previous season.
+     * 
+     * @param	\App\Season	$season			Current season
+     * @return	\Illuminate\Http\Response
+     */
+    public function populate( Season $season )
+    {
+		if( $this->copyRacesFromPreviousSeasonTo( $season ) )
+			return redirect()->route('admin.races.index')->with( 'status', __('The races from :from are copied to :to.', [ 'from' => $season->previous->name, 'to' => $season->name ]) );
+		else
+			return redirect()->route('admin.races.index')->with( 'error', __('An error occurred when trying to copy races. Is the destination season empty?') );
+    }
+    
+    /**
+     * Copy races to the given season from the previous one.
+     * 
+     * @param	\App\Season	$season
+     * @return	boolean
+     */
+    protected function copyRacesFromPreviousSeasonTo( Season $season )
+    {
+		if( !$season->races->isEmpty() )
+			return false;
+		
+		if( $season->previous->races->isEmpty() )
+			return false;
+		
+		foreach( $season->previous->races as $race )
+		{
+			$newRace = $race->replicate();
+			
+			$newRace->season_id		= $season->id;
+			
+			$newRace->weekend_start	= Date::getClosestWeekdayNextYear( $newRace->weekend_start );
+			$newRace->race_day		= Date::getClosestWeekdayNextYear( $newRace->race_day );
+			
+			$newRace->save();
+		}
+		
+		return true;
     }
 }

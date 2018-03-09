@@ -187,4 +187,47 @@ class EntriesController extends Controller
 	    	
     	return redirect()->route( 'admin.entries.index', [ 'season' => $entry->season->id ] );
     }
+
+    /**
+     * Populate season with entries from previous season.
+     * 
+     * @param	\App\Season	$season			Current season
+     * @return	\Illuminate\Http\Response
+     */
+    public function populate( Season $season )
+    {
+		if( $this->copyEntriesFromPreviousSeasonTo( $season ) )
+			return redirect()->route('admin.entries.index')->with( 'status', __('The entries from :from are copied to :to.', [ 'from' => $season->previous->name, 'to' => $season->name ]) );
+		else
+			return redirect()->route('admin.entries.index')->with( 'error', __('An error occurred when trying to copy entries. Is the destination season empty?') );
+    }
+    
+    /**
+     * Copy races to the given season from the previous one.
+     * 
+     * @param	\App\Season	$season
+     * @return	boolean
+     */
+    protected function copyEntriesFromPreviousSeasonTo( Season $season )
+    {
+		if( !$season->entries->isEmpty() )
+			return false;
+		
+		if( $season->previous->entries->isEmpty() )
+			return false;
+		
+		foreach( $season->previous->entries as $entry )
+		{
+			if( !$entry->active )
+				continue;
+				
+			$newEntry = $entry->replicate();
+			
+			$newEntry->season_id = $season->id;
+			
+			$newEntry->save();
+		}
+		
+		return true;
+    }
 }

@@ -201,6 +201,14 @@
 	"Rules": "Spelregels",
 	
 	"There are no races available.": "Er zijn geen races beschikbaar.",
+	"No races found.": "Geen races gevonden.",
+	"Populate with races from previous season (:year)": "Kopieer races van vorig seizoen (:year)",
+	"The races from :from are copied to :to.": "De races van :from zijn gekopieerd naar :to.",
+	"An error occurred when trying to copy races. Is the destination season empty?": "Er is een fout opgetreden tijdens het kopiëren van races. Is het seizoen wel leeg?",
+	
+	"Populate with entries from previous season (:year)": "Kopieer deelnemers van vorig seizoen (:year)",
+	"The entries from :from are copied to :to.": "De deelnemers van :from zijn gekopieerd naar :to.",
+	"An error occurred when trying to copy entries. Is the destination season empty?": "Er is een fout opgetreden tijdens het kopiëren van deelnemers. Is het seizoen wel leeg?",
 	
 	"The user :name has been added.": "De gebruiker :name is toegevoegd.",
 	"The user :name has been changed.": "De gebruiker :name is aangepast.",

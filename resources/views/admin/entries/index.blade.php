@@ -77,7 +77,14 @@
 							</tr>
 						@empty
 							<tr>
-								<td colspan="6" class="text-center">@lang('No entries found.')</td>
+								<td colspan="6" class="text-center">
+									<p>
+										@lang('No entries found.')
+									</p>
+									<p>
+										<a class="btn btn-primary" href="{{ route('admin.entries.populate', [ 'season' => $currentSeason ]) }}">@lang('Populate with entries from previous season (:year)', [ 'year' => $currentSeason->previous->name ])</a>
+									</p>
+								</td>
 							</tr>
 						@endforelse
 					</tbody>
