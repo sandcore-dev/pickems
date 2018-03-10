@@ -22,6 +22,9 @@
 							<th>
 								@lang('Name')
 							</th>
+							<th class="text-center">
+								@lang('Users')
+							</th>
 							<th colspan="2" class="text-center">
 								<a href="{{ route( 'admin.leagues.create' ) }}" title="@lang('Add a league')" class="glyphicon glyphicon-plus"></a>
 							</th>
@@ -32,6 +35,9 @@
 							<tr>
 								<td>
 									<a href="{{ route( 'admin.leagues.edit', [ 'leagues' => $league->id ] ) }}">{{ $league->name }}</a>
+								</td>
+								<td class="text-center">
+									{{ $league->users->count() }}
 								</td>
 								<td class="text-center">
 									<a href="{{ route( 'admin.leagues.edit', [ 'leagues' => $league->id ] ) }}" title="@lang('Edit this league')" class="glyphicon glyphicon-pencil"></a>
