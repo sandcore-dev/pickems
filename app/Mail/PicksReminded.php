@@ -13,7 +13,7 @@ use App\Race;
 class PicksReminded extends Mailable
 {
     use Queueable, SerializesModels;
-    
+
     /**
      * The user instance.
      *
@@ -46,6 +46,6 @@ class PicksReminded extends Mailable
      */
     public function build()
     {
-        return $this->from( env('MAIL_FROM', 'pickems') )->view('mail.picksreminded.html')->text('mail.picksreminded.plain');
+        return $this->view('mail.picksreminded.html')->text('mail.picksreminded.text');
     }
 }
