@@ -12,7 +12,7 @@
 	"Logout": "Uitloggen",
 	"Logged in as :name": "Ingelogd als :name",
 	"Toggle navigation": "Toon of verberg navigatie",
-	
+
 	"Series": "Raceklasse",
 	"Seasons": "Seizoenen",
 	"Races": "Races",
@@ -26,25 +26,25 @@
 	"Leagues": "Subleagues",
 	"User's leagues": "Subleagues van gebruikers",
 	"Return": "Terug",
-	
+
 	"Display name": "Naam",
 	"Username": "Gebruikersnaam",
 	"Language": "Taal",
 	"E-mail address": "E-mailadres",
 	"Send me a reminder if I haven't picked yet": "Stuur me een herinnering als ik mijn voorspellingen nog niet gemaakt heb",
 	"Save profile": "Profiel opslaan",
-	
+
 	"Current password": "Huidig wachtwoord",
 	"New password" : "Nieuw wachtwoord",
 	"Confirm new password" : "Herhaal nieuw wachtwoord",
 	"Change password" : "Wijzig wachtwoord",
-	
+
 	"Your profile has been changed succesfully." : "Je profiel is succesvol gewijzigd.",
 	"Your password has been changed succesfully." : "Je wachtwoord is succesvol gewijzigd.",
 
 	"pt" : "pt",
 	"These picks carried over from the previous race." : "Deze voorspellingen zijn gekopieerd van de vorige race.",
-	
+
 	"Overall" : "Algemeen",
 	"Race": "Race",
 	"Rank": "Plaats",
@@ -54,23 +54,23 @@
 	"Top :number" : "Top :number",
 	"Race" : "Race",
 	"No standings found for this race." : "Er is geen stand gevonden voor deze race.",
-	
+
 	"Ranking" : "Stand",
 	"Average total score" : "Gemiddeld totaal aantal punten",
 	"There are no seasons available." : "Er zijn geen seizoenen beschikbaar.",
-	
+
 	"Best pickems" : "Beste voorspellingen ooit",
 	"Points" : "Punten",
 	"Season" : "Seizoen",
 	"Best carry-over pickems" : "Beste gekopieerde voorspellingen",
 	"Highest points total in a season" : "Hoogste aantal punten in een seizoen",
-	
+
 	"All-time rankings (minimum 5 seasons)" : "Eeuwige ranglijst (minimaal 5 seizoenen)",
 	"Average final ranking" : "Gemiddelde eindrangschikking",
 	"Highest" : "Hoogste",
 	"Lowest" : "Laagste",
 	"Championships" : "Kampioenschappen",
-	
+
 	"Do you want to delete the series :name?" : "Wilt u echt de raceklasse :name verwijderen?",
 	"Delete series" : "Verwijder raceklasse",
 	"Cancel" : "Annuleren",
@@ -92,19 +92,19 @@
 	"Add a season" : "Voeg een seizoen toe",
 	"Edit this season" : "Bewerk dit seizoen",
 	"Delete this season" : "Verwijder dit seizoen",
-	
+
 	"Do you want to delete the race :race from the season :season of the series :series?": "Wilt u de race :race van het seizoen :season van de raceklasse :series verwijderen?",
 	"Delete race": "Verwijder race",
 	"Race day": "Dag van de race",
 	"Start of weekend": "Start van het race-weekeinde",
 	"Weekend start": "Start weekeinde",
-	
+
 	"Add a race": "Voeg een race toe",
 	"Edit this race": "Bewerk deze race",
 	"Delete this race": "Verwijder deze race",
 	"Edit race": "Bewerk race",
 	"Add race": "Voeg race toe",
-	
+
 	"Do you want to delete the circuit :name?": "Wilt u het circuit :name verwijderen?",
 	"Delete circuit": "Verwijder circuit",
 	"City": "Stad",
@@ -117,7 +117,7 @@
 	"Country": "Land",
 	"Edit circuit": "Bewerk circuit",
 	"Add circuit": "Voeg circuit toe",
-	
+
 	"Do you want to delete the entry :entry with driver :driver at :team from the season :season of the series :series?": "Wilt u deelnemer :entry met coureur :driver bij :team van het seizoen :season van de raceklasse :series verwijderen?",
 	"Delete entry": "Verwijder deelnemer",
 	"No entries found.": "Geen deelnemers gevonden.",
@@ -132,7 +132,7 @@
 	"Color": "Kleur",
 	"Edit entry": "Bewerk deelnemer",
 	"Add entry": "Voeg deelnemer toe",
-	
+
 	"Delete driver": "Verwijder coureur",
 	"Do you want to delete the driver :name?": "Wilt u de coureur :name verwijderen?",
 	"First name": "Voornaam",
@@ -144,7 +144,7 @@
 	"No drivers found.": "Geen coureurs gevonden.",
 	"Edit driver": "Bewerk coureur",
 	"Add driver": "Voeg coureur toe",
-	
+
 	"Delete team": "Verwijder team",
 	"Do you want to delete the team :name?": "Wilt u het team :name verwijderen?",
 	"Add a team": "Voeg een team toe",
@@ -153,7 +153,7 @@
 	"No teams found.": "Geen teams gevonden.",
 	"Edit team": "Bewerk team",
 	"Add team": "Voeg team toe",
-	
+
 	"Delete country": "Verwijder land",
 	"Do you want to delete the country :name?": "Wilt u het land :name verwijderen?",
 	"Add a country": "Voeg een land toe",
@@ -162,9 +162,9 @@
 	"No countries found.": "Geen landen gevonden.",
 	"Edit country": "Bewerk land",
 	"Add country": "Voeg land toe",
-	
+
 	"Recalculate standings": "Maak stand opnieuw op",
-	
+
 	"Delete user": "Verwijder gebruiker",
 	"Do you want to delete the user :name?": "Wilt u de gebruiker :name verwijderen?",
 	"Add a user": "Voeg een gebruiker toe",
@@ -173,11 +173,11 @@
 	"No users found.": "Geen gebruikers gevonden.",
 	"Edit user": "Bewerk gebruiker",
 	"Add user": "Voeg gebruiker toe",
-	
+
 	"reminder": "herinnering",
 	"Remind user to pick": "Herinner gebruiker om voorspellingen te maken",
 	"Password": "Wachtwoord",
-	"Administrator access": "Administratie-rechten",	
+	"Administrator access": "Administratie-rechten",
 
 	"Delete league": "Verwijder subleague",
 	"Do you want to delete the league :name?": "Wilt u de subleague :name verwijderen?",
@@ -187,34 +187,34 @@
 	"No leagues found.": "Geen subleagues gevonden.",
 	"Edit league": "Bewerk subleague",
 	"Add league": "Voeg subleague toe",
-	
+
 	"Invitation URL": "Uitnodigingslink",
 	"Generate a (new) access token": "(Nieuwe) uitnodigingslink genereren",
 	"Generate an access token": "Maak een uitnodigingslink aan",
-	
+
 	"League(s)": "Subleague(s)",
 	"Edit leagues of this user": "Bewerk subleagues van deze gebruiker",
-	
+
 	"Add or remove leagues for user :name:": "Toevoegen of verwijderen van subleagues van gebruiker :name:",
 	"Thanks to :name for making the Glyphicon Halflings set free of use.": "Bedankt aan :name voor het gratis beschikbaar stellen van de Glyphicons Halflings-set.",
-	
+
 	"Rules": "Spelregels",
-	
+
 	"There are no races available.": "Er zijn geen races beschikbaar.",
 	"No races found.": "Geen races gevonden.",
 	"Populate with races from previous season (:year)": "Kopieer races van vorig seizoen (:year)",
 	"The races from :from are copied to :to.": "De races van :from zijn gekopieerd naar :to.",
 	"An error occurred when trying to copy races. Is the destination season empty?": "Er is een fout opgetreden tijdens het kopiëren van races. Is het seizoen wel leeg?",
-	
+
 	"Populate with entries from previous season (:year)": "Kopieer deelnemers van vorig seizoen (:year)",
 	"The entries from :from are copied to :to.": "De deelnemers van :from zijn gekopieerd naar :to.",
 	"An error occurred when trying to copy entries. Is the destination season empty?": "Er is een fout opgetreden tijdens het kopiëren van deelnemers. Is het seizoen wel leeg?",
-	
+
 	"The user :name has been added.": "De gebruiker :name is toegevoegd.",
 	"The user :name has been changed.": "De gebruiker :name is aangepast.",
 	"The user :name has been deleted.": "De gebruiker :name is verwijderd.",
 	"The user :name could not be deleted.": "De gebruiker :name kon niet verwijderd worden.",
-	
+
 	"League :name attached.": "Subleague :name is gekoppeld.",
 	"League :name detached.": "Subleague :name is losgekoppeld.",
 	"Cannot detach league :name.": "Kan subleague :name niet loskoppelen.",
@@ -233,7 +233,7 @@
 	"The season :name has been changed.": "Het seizoen :name is aangepast.",
 	"The season :name has been deleted.": "Het seizoen :name is verwijderd.",
 	"The season :name could not be deleted.": "Het seizoen :name kon niet verwijderd worden.",
-	
+
 	"The weekend start cannot be after race day.": "De start van het weekeinde mag niet ná de dag van de race zijn.",
 	"This race already exists.": "Deze race bestaat al.",
 	"The race :name has been added.": "De race :name is toegevoegd.",
@@ -245,7 +245,7 @@
 	"The league :name has been changed.": "De subleague :name is aangepast.",
 	"The league :name has been deleted.": "De subleague :name is verwijderd.",
 	"The league :name could not be deleted.": "De subleague :name kon niet verwijderd worden.",
-	
+
 	"This entry already exists.": "Deze deelname bestaat al.",
 	"The abbreviation is already in use for this team.": "Deze afkorting is al in gebruik voor dit team.",
 	"The entry :name has been added.": "De deelname :name is toegevoegd.",
@@ -262,11 +262,13 @@
 	"The country :name has been changed.": "Het land :name is aangepast.",
 	"The country :name has been deleted.": "Het land :name is verwijderd.",
 	"The country :name could not be deleted.": "Het land :name kon niet verwijderd worden.",
-	
+
 	"The circuit :name has been added.": "Het circuit :name is toegevoegd.",
 	"The circuit :name has been changed.": "Het circuit :name is aangepast.",
 	"The circuit :name has been deleted.": "Het circuit :name is verwijderd.",
 	"The circuit :name could not be deleted.": "Het circuit :name kon niet verwijderd worden.",
+
+	":appname reminder: :race": "Herinnering :appname: :race",
 
 	"": ""
 }

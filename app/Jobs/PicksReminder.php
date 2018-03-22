@@ -47,6 +47,8 @@ class PicksReminder implements ShouldQueue
     			if( Pick::byRace($race)->byUser($user)->count() )
     				continue;
 
+                app()->setLocale( $user->locale );
+
     			Mail::to( $user->email )->send( new PicksReminded( $user, $race ) );
     		}
     	}

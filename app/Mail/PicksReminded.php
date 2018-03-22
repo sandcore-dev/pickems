@@ -37,6 +37,8 @@ class PicksReminded extends Mailable
     {
     	$this->user	= $user;
     	$this->race	= $race;
+
+        $this->subject( __(':appname reminder: :race', [ 'appname' => config('app.name'), 'race' => $this->race->circuit->country->localName ]) );
     }
 
     /**
