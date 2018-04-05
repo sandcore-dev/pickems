@@ -36,7 +36,7 @@ class PicksReminder implements ShouldQueue
      */
     public function handle()
     {
-    	$races = Race::with('season.series.leagues.users')->whereRaw( '(weekend_start - INTERVAL 1 DAY) BETWEEN UTC_TIMESTAMP() AND UTC_TIMESTAMP() + INTERVAL 1 HOUR' )->get();
+    	$races = Race::with('season.series.leagues.users')->whereRaw( '(weekend_start - INTERVAL 1 DAY) BETWEEN UTC_TIMESTAMP() - INTERVAL 1 MINUTE AND UTC_TIMESTAMP() + INTERVAL 1 HOUR' )->get();
 
     	foreach( $races as $race )
     	{
