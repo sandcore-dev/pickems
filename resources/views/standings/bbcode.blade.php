@@ -1,0 +1,43 @@
+[table]
+[tr]
+    [td][/td]
+    [td][/td]
+    [td][/td]
+    [td][right][b]@lang('Overall')[/b][/right][/td]
+    [td][/td]
+    [td][/td]
+    [td][right][b]@lang('Race')[/b][/right][/td]
+    [td][/td]
+    [td][/td]
+[/tr]
+[tr]
+    [td][right][b]@lang('Rank')[/b][/right][/td]
+    [td][right][b]+/-[/b][/right][/td]
+    [td][b]@lang('Name')[/b][/td]
+    [td][right][b]@lang('Total')[/b][/right][/td]
+    [td][right][b]@lang('Finish')[/b][/right][/td]
+    [td][right][b]@lang('Top :number', [ 'number' => $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') ])[/b][/right][/td]
+    [td][right][b]@lang('Total')[/b][/right][/td]
+    [td][right][b]@lang('Finish')[/b][/right][/td]
+    [td][right][b]@lang('Top :number', [ 'number' => $standings->count() ? $standings->first()->race->season->picks_max : config('picks.max') ])[/b][/right][/td]
+[/tr]
+<?php $previous_rank = 0; ?>
+@foreach( $standings as $standing )
+    [tr]
+        [td][right]
+            @if( $previous_rank != $standing->rank )
+                {{ $standing->rank }}
+            @endif
+            <?php $previous_rank = $standing->rank; ?>
+        [/right][/td]
+        [td][right]{{ $standing->rankMoved }}[/right][/td]
+        [td]{{ $standing->user->name }}[/td]
+        [td][right]{{ $standing->total_overall }}[/right][/td]
+        [td][right]{{ $standing->total_positions_correct }}[/right][/td]
+        [td][right]{{ $standing->total_picked }}[/right][/td]
+        [td][right]{{ $standing->total }}[/right][/td]
+        [td][right]{{ $standing->positions_correct }}[/right][/td]
+        [td][right]{{ $standing->picked }}[/right][/td]
+    [/tr]
+@endforeach
+[/table]
