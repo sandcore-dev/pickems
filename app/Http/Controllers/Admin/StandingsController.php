@@ -22,7 +22,7 @@ class StandingsController extends Controller
 	 * @var \App\Http\Controllers\Controller\Admin\PicksEditController
 	 */
 	protected $picksController;
-	 
+
 	/**
 	 * Create a new controller instance.
 	 *
@@ -31,7 +31,7 @@ class StandingsController extends Controller
 	public function __construct()
 	{
 		$this->middleware( [ 'auth', 'admin' ] );
-		
+
 		$this->picksController = new PicksEditController;
 	}
 
@@ -44,15 +44,13 @@ class StandingsController extends Controller
 	 */
 	public function recalculate( Season $season )
 	{
-		# ini_set('max_execution_time', 60);
-		
 		$this->clear($season);
-		
+
 		$this->add($season);
-		
+
 		return redirect()->back();
 	}
-	
+
 	/**
 	 * Clear standings of this season.
 	 *
@@ -64,7 +62,7 @@ class StandingsController extends Controller
 	{
 		Standing::whereIn( 'race_id', $season->races->pluck('id') )->delete();
 	}
-	
+
 	/**
 	 * Add standings of this season.
 	 *
@@ -76,7 +74,7 @@ class StandingsController extends Controller
 	{
 		$races		= $season->races()->has('results')->get();
 		$previous	= [];
-		
+
 		foreach( $season->series->leagues as $league )
 		{
 			foreach( $races as $race )
@@ -86,34 +84,36 @@ class StandingsController extends Controller
 					$standing = new Standing;
 
 					$standing->user_id		= $user->id;
-					$standing->league_id		= $league->id;
+					$standing->league_id	= $league->id;
 					$standing->race_id		= $race->id;
-					
+
 					if( $user->picks->where( 'race_id', $race->id )->isEmpty() )
 					{
 						if( !isset( $previous[ $league->id ][ $user->id ] ) )
 							continue;
-						
+
 						$previousStanding	= $previous[ $league->id ][ $user->id ];
+
+						$this->picksController->carryOver($user, $previousStanding->race()->first(), $race);
 					}
-					
-					$standing->carry_over		= $user->picks->where( 'race_id', $race->id )->max('carry_over') > 0;
-					
+
+					$standing->carry_over	= $user->picks->where( 'race_id', $race->id )->max('carry_over') > 0;
+
 					if( isset( $previous[ $league->id ][ $user->id ] ) )
 						$standing->previous()->associate( $previous[ $league->id ][ $user->id ] );
-					
+
 					$this->calculatePoints($standing);
-					
+
 					$standing->save();
 
 					$previous[ $league->id ][ $user->id ] = $standing;
 				}
-				
+
 				$this->setRankings($league, $race);
 			}
 		}
 	}
-	
+
 	/**
 	 * Calculate points for this standing.
 	 *
@@ -124,31 +124,31 @@ class StandingsController extends Controller
 	protected function calculatePoints( Standing $standing )
 	{
 		$picks				= Pick::byRaceAndUser( $standing->race, $standing->user )->get();
-		
+
 		$results			= $standing->race->results;
-		
+
 		$standing->picked		= $results->where( 'rank', '<=', config('picks.max') )->whereIn( 'entry_id', $picks->pluck('entry_id') )->count();
-		
+
 		$standing->positions_correct	= $results->sum(function ($result) use($picks) {
 			return $picks->where( 'rank', $result->rank )->where( 'entry_id', $result->entry_id )->count();
 		});
-		
+
 		$standing->total		= $standing->picked + $standing->positions_correct;
-		
+
 		$standing->total_overall		= $standing->total;
 		$standing->total_picked			= $standing->picked;
 		$standing->total_positions_correct	= $standing->positions_correct;
-		
+
 		while( $previous = isset($previous) ? $previous->previous : $standing->previous )
 		{
 			$standing->total_overall		+= $previous->total;
 			$standing->total_picked			+= $previous->picked;
 			$standing->total_positions_correct	+= $previous->positions_correct;
 		}
-		
+
 		$standing->save();
 	}
-	
+
 	/**
 	 * Set the rank of a standing.
 	 *
@@ -165,11 +165,11 @@ class StandingsController extends Controller
 			->orderBy('total_positions_correct', 'desc')
 			->orderBy('total_picked', 'desc')
 			->get();
-		
+
 		$previous	= new Standing;
 		$currentRank	= 1;
 		$previousRank	= 1;
-		
+
 		foreach( $standings as $standing )
 		{
 			if( $previous->total_overall == $standing->total_overall and $previous->total_positions_correct == $standing->total_positions_correct and $previous->total_picked == $standing->total_picked )
@@ -179,15 +179,15 @@ class StandingsController extends Controller
 			else
 			{
 				$standing->rank = $currentRank;
-				
+
 				$previousRank = $currentRank;
 			}
-			
+
 			if( $standing->previous )
 				$standing->previous_rank = $standing->previous->rank;
 
 			$standing->save();
-			
+
 			$currentRank++;
 			$previous = $standing;
 		}

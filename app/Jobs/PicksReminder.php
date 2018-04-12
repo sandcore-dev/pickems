@@ -38,14 +38,18 @@ class PicksReminder implements ShouldQueue
     {
     	$races = Race::with('season.series.leagues.users')->whereRaw( '(weekend_start - INTERVAL ' . env('REMINDER_BEFORE', '1 DAY') . ') BETWEEN UTC_TIMESTAMP() - INTERVAL 1 MINUTE AND UTC_TIMESTAMP() + INTERVAL 59 MINUTE' )->get();
 
+        $usersSent = [];
+
     	foreach( $races as $race )
     	{
     		$users = $race->season->series->leagues->pluck('users')->flatten(1)->unique()->where( 'active', 1 )->where( 'reminder', 1 );
 
     		foreach( $users as $user )
     		{
-    			if( Pick::byRace($race)->byUser($user)->count() )
+    			if( in_array($user, $usersSent, true) or Pick::byRace($race)->byUser($user)->count() )
     				continue;
+
+                $usersSent[] = $user;
 
                 app()->setLocale( $user->locale );
 
