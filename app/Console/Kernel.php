@@ -27,7 +27,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
     	$schedule->job(new PicksReminder)->wednesdays()->hourly();
-    	$schedule->job(new PicksReminder)->thursdays()->hourly();
+        $schedule->job(new PicksReminder)->thursdays()->hourly();
+        $schedule->job(new PicksReminder)->fridays()->hourly();
     }
 
     /**
