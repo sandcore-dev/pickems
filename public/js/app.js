@@ -963,7 +963,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(10);
-module.exports = __webpack_require__(43);
+module.exports = __webpack_require__(44);
 
 
 /***/ }),
@@ -988,7 +988,7 @@ window.Vue = __webpack_require__(35);
  */
 
 // Vue.component('example', require('./components/Example.vue'));
-Vue.component('user-league-results', __webpack_require__(38));
+Vue.component('user-league-results', __webpack_require__(39));
 
 var app = new Vue({
   el: '.vue'
@@ -1070,7 +1070,7 @@ if (token) {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.5';
+  var VERSION = '4.17.11';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -1334,7 +1334,7 @@ if (token) {
   var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
 
   /** Used to detect strings that need a more robust regexp to match words. */
-  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
 
   /** Used to assign default `context` object properties. */
   var contextProps = [
@@ -1494,6 +1494,14 @@ if (token) {
   /** Used to access faster Node.js helpers. */
   var nodeUtil = (function() {
     try {
+      // Use `util.types` for Node.js 10+.
+      var types = freeModule && freeModule.require && freeModule.require('util').types;
+
+      if (types) {
+        return types;
+      }
+
+      // Legacy `process.binding('util')` for Node.js < 10.
       return freeProcess && freeProcess.binding && freeProcess.binding('util');
     } catch (e) {}
   }());
@@ -2272,20 +2280,6 @@ if (token) {
       }
     }
     return result;
-  }
-
-  /**
-   * Gets the value at `key`, unless `key` is "__proto__".
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {string} key The key of the property to get.
-   * @returns {*} Returns the property value.
-   */
-  function safeGet(object, key) {
-    return key == '__proto__'
-      ? undefined
-      : object[key];
   }
 
   /**
@@ -4745,7 +4739,7 @@ if (token) {
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
           }
-          else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+          else if (!isObject(objValue) || isFunction(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         }
@@ -7666,6 +7660,22 @@ if (token) {
         array[length] = isIndex(index, arrLength) ? oldArray[index] : undefined;
       }
       return array;
+    }
+
+    /**
+     * Gets the value at `key`, unless `key` is "__proto__".
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @param {string} key The key of the property to get.
+     * @returns {*} Returns the property value.
+     */
+    function safeGet(object, key) {
+      if (key == '__proto__') {
+        return;
+      }
+
+      return object[key];
     }
 
     /**
@@ -18190,7 +18200,7 @@ module.exports = function(module) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery JavaScript Library v3.3.1
+ * jQuery JavaScript Library v3.4.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -18200,7 +18210,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2018-01-20T17:24Z
+ * Date: 2019-05-01T21:04Z
  */
 ( function( global, factory ) {
 
@@ -18282,20 +18292,33 @@ var isWindow = function isWindow( obj ) {
 	var preservedScriptAttributes = {
 		type: true,
 		src: true,
+		nonce: true,
 		noModule: true
 	};
 
-	function DOMEval( code, doc, node ) {
+	function DOMEval( code, node, doc ) {
 		doc = doc || document;
 
-		var i,
+		var i, val,
 			script = doc.createElement( "script" );
 
 		script.text = code;
 		if ( node ) {
 			for ( i in preservedScriptAttributes ) {
-				if ( node[ i ] ) {
-					script[ i ] = node[ i ];
+
+				// Support: Firefox 64+, Edge 18+
+				// Some browsers don't support the "nonce" property on scripts.
+				// On the other hand, just using `getAttribute` is not enough as
+				// the `nonce` attribute is reset to an empty string whenever it
+				// becomes browsing-context connected.
+				// See https://github.com/whatwg/html/issues/2369
+				// See https://html.spec.whatwg.org/#nonce-attributes
+				// The `node.getAttribute` check was added for the sake of
+				// `jQuery.globalEval` so that it can fake a nonce-containing node
+				// via an object.
+				val = node[ i ] || node.getAttribute && node.getAttribute( i );
+				if ( val ) {
+					script.setAttribute( i, val );
 				}
 			}
 		}
@@ -18320,7 +18343,7 @@ function toType( obj ) {
 
 
 var
-	version = "3.3.1",
+	version = "3.4.1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -18449,25 +18472,28 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 			// Extend the base object
 			for ( name in options ) {
-				src = target[ name ];
 				copy = options[ name ];
 
+				// Prevent Object.prototype pollution
 				// Prevent never-ending loop
-				if ( target === copy ) {
+				if ( name === "__proto__" || target === copy ) {
 					continue;
 				}
 
 				// Recurse if we're merging plain objects or arrays
 				if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
 					( copyIsArray = Array.isArray( copy ) ) ) ) {
+					src = target[ name ];
 
-					if ( copyIsArray ) {
-						copyIsArray = false;
-						clone = src && Array.isArray( src ) ? src : [];
-
+					// Ensure proper type for the source value
+					if ( copyIsArray && !Array.isArray( src ) ) {
+						clone = [];
+					} else if ( !copyIsArray && !jQuery.isPlainObject( src ) ) {
+						clone = {};
 					} else {
-						clone = src && jQuery.isPlainObject( src ) ? src : {};
+						clone = src;
 					}
+					copyIsArray = false;
 
 					// Never move original objects, clone them
 					target[ name ] = jQuery.extend( deep, clone, copy );
@@ -18520,9 +18546,6 @@ jQuery.extend( {
 	},
 
 	isEmptyObject: function( obj ) {
-
-		/* eslint-disable no-unused-vars */
-		// See https://github.com/eslint/eslint/issues/6125
 		var name;
 
 		for ( name in obj ) {
@@ -18532,8 +18555,8 @@ jQuery.extend( {
 	},
 
 	// Evaluates a script in a global context
-	globalEval: function( code ) {
-		DOMEval( code );
+	globalEval: function( code, options ) {
+		DOMEval( code, { nonce: options && options.nonce } );
 	},
 
 	each: function( obj, callback ) {
@@ -18689,14 +18712,14 @@ function isArrayLike( obj ) {
 }
 var Sizzle =
 /*!
- * Sizzle CSS Selector Engine v2.3.3
+ * Sizzle CSS Selector Engine v2.3.4
  * https://sizzlejs.com/
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright JS Foundation and other contributors
  * Released under the MIT license
- * http://jquery.org/license
+ * https://js.foundation/
  *
- * Date: 2016-08-08
+ * Date: 2019-04-08
  */
 (function( window ) {
 
@@ -18730,6 +18753,7 @@ var i,
 	classCache = createCache(),
 	tokenCache = createCache(),
 	compilerCache = createCache(),
+	nonnativeSelectorCache = createCache(),
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -18791,8 +18815,7 @@ var i,
 
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
-
-	rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
+	rdescend = new RegExp( whitespace + "|>" ),
 
 	rpseudo = new RegExp( pseudos ),
 	ridentifier = new RegExp( "^" + identifier + "$" ),
@@ -18813,6 +18836,7 @@ var i,
 			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 	},
 
+	rhtml = /HTML$/i,
 	rinputs = /^(?:input|select|textarea|button)$/i,
 	rheader = /^h\d$/i,
 
@@ -18867,9 +18891,9 @@ var i,
 		setDocument();
 	},
 
-	disabledAncestor = addCombinator(
+	inDisabledFieldset = addCombinator(
 		function( elem ) {
-			return elem.disabled === true && ("form" in elem || "label" in elem);
+			return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
 		},
 		{ dir: "parentNode", next: "legend" }
 	);
@@ -18982,18 +19006,22 @@ function Sizzle( selector, context, results, seed ) {
 
 			// Take advantage of querySelectorAll
 			if ( support.qsa &&
-				!compilerCache[ selector + " " ] &&
-				(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+				!nonnativeSelectorCache[ selector + " " ] &&
+				(!rbuggyQSA || !rbuggyQSA.test( selector )) &&
 
-				if ( nodeType !== 1 ) {
-					newContext = context;
-					newSelector = selector;
-
-				// qSA looks outside Element context, which is not what we want
-				// Thanks to Andrew Dupont for this workaround technique
-				// Support: IE <=8
+				// Support: IE 8 only
 				// Exclude object elements
-				} else if ( context.nodeName.toLowerCase() !== "object" ) {
+				(nodeType !== 1 || context.nodeName.toLowerCase() !== "object") ) {
+
+				newSelector = selector;
+				newContext = context;
+
+				// qSA considers elements outside a scoping root when evaluating child or
+				// descendant combinators, which is not what we want.
+				// In such cases, we work around the behavior by prefixing every selector in the
+				// list with an ID selector referencing the scope context.
+				// Thanks to Andrew Dupont for this technique.
+				if ( nodeType === 1 && rdescend.test( selector ) ) {
 
 					// Capture the context ID, setting it first if necessary
 					if ( (nid = context.getAttribute( "id" )) ) {
@@ -19015,17 +19043,16 @@ function Sizzle( selector, context, results, seed ) {
 						context;
 				}
 
-				if ( newSelector ) {
-					try {
-						push.apply( results,
-							newContext.querySelectorAll( newSelector )
-						);
-						return results;
-					} catch ( qsaError ) {
-					} finally {
-						if ( nid === expando ) {
-							context.removeAttribute( "id" );
-						}
+				try {
+					push.apply( results,
+						newContext.querySelectorAll( newSelector )
+					);
+					return results;
+				} catch ( qsaError ) {
+					nonnativeSelectorCache( selector, true );
+				} finally {
+					if ( nid === expando ) {
+						context.removeAttribute( "id" );
 					}
 				}
 			}
@@ -19189,7 +19216,7 @@ function createDisabledPseudo( disabled ) {
 					// Where there is no isDisabled, check manually
 					/* jshint -W018 */
 					elem.isDisabled !== !disabled &&
-						disabledAncestor( elem ) === disabled;
+						inDisabledFieldset( elem ) === disabled;
 			}
 
 			return elem.disabled === disabled;
@@ -19246,10 +19273,13 @@ support = Sizzle.support = {};
  * @returns {Boolean} True iff elem is a non-HTML XML node
  */
 isXML = Sizzle.isXML = function( elem ) {
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833)
-	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
+	var namespace = elem.namespaceURI,
+		docElem = (elem.ownerDocument || elem).documentElement;
+
+	// Support: IE <=8
+	// Assume HTML when documentElement doesn't yet exist, such as inside loading iframes
+	// https://bugs.jquery.com/ticket/4833
+	return !rhtml.test( namespace || docElem && docElem.nodeName || "HTML" );
 };
 
 /**
@@ -19671,11 +19701,8 @@ Sizzle.matchesSelector = function( elem, expr ) {
 		setDocument( elem );
 	}
 
-	// Make sure that attribute selectors are quoted
-	expr = expr.replace( rattributeQuotes, "='$1']" );
-
 	if ( support.matchesSelector && documentIsHTML &&
-		!compilerCache[ expr + " " ] &&
+		!nonnativeSelectorCache[ expr + " " ] &&
 		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
 		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 
@@ -19689,7 +19716,9 @@ Sizzle.matchesSelector = function( elem, expr ) {
 					elem.document && elem.document.nodeType !== 11 ) {
 				return ret;
 			}
-		} catch (e) {}
+		} catch (e) {
+			nonnativeSelectorCache( expr, true );
+		}
 	}
 
 	return Sizzle( expr, document, null, [ elem ] ).length > 0;
@@ -20148,7 +20177,7 @@ Expr = Sizzle.selectors = {
 		"contains": markFunction(function( text ) {
 			text = text.replace( runescape, funescape );
 			return function( elem ) {
-				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+				return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
 			};
 		}),
 
@@ -20287,7 +20316,11 @@ Expr = Sizzle.selectors = {
 		}),
 
 		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
+			var i = argument < 0 ?
+				argument + length :
+				argument > length ?
+					length :
+					argument;
 			for ( ; --i >= 0; ) {
 				matchIndexes.push( i );
 			}
@@ -21337,18 +21370,18 @@ jQuery.each( {
 		return siblings( elem.firstChild );
 	},
 	contents: function( elem ) {
-        if ( nodeName( elem, "iframe" ) ) {
-            return elem.contentDocument;
-        }
+		if ( typeof elem.contentDocument !== "undefined" ) {
+			return elem.contentDocument;
+		}
 
-        // Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
-        // Treat the template element as a regular one in browsers that
-        // don't support it.
-        if ( nodeName( elem, "template" ) ) {
-            elem = elem.content || elem;
-        }
+		// Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
+		// Treat the template element as a regular one in browsers that
+		// don't support it.
+		if ( nodeName( elem, "template" ) ) {
+			elem = elem.content || elem;
+		}
 
-        return jQuery.merge( [], elem.childNodes );
+		return jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
 	jQuery.fn[ name ] = function( until, selector ) {
@@ -22657,6 +22690,26 @@ var rcssNum = new RegExp( "^(?:([+-])=|)(" + pnum + ")([a-z%]*)$", "i" );
 
 var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
 
+var documentElement = document.documentElement;
+
+
+
+	var isAttached = function( elem ) {
+			return jQuery.contains( elem.ownerDocument, elem );
+		},
+		composed = { composed: true };
+
+	// Support: IE 9 - 11+, Edge 12 - 18+, iOS 10.0 - 10.2 only
+	// Check attachment across shadow DOM boundaries when possible (gh-3504)
+	// Support: iOS 10.0-10.2 only
+	// Early iOS 10 versions support `attachShadow` but not `getRootNode`,
+	// leading to errors. We need to check for `getRootNode`.
+	if ( documentElement.getRootNode ) {
+		isAttached = function( elem ) {
+			return jQuery.contains( elem.ownerDocument, elem ) ||
+				elem.getRootNode( composed ) === elem.ownerDocument;
+		};
+	}
 var isHiddenWithinTree = function( elem, el ) {
 
 		// isHiddenWithinTree might be called from jQuery#filter function;
@@ -22671,7 +22724,7 @@ var isHiddenWithinTree = function( elem, el ) {
 			// Support: Firefox <=43 - 45
 			// Disconnected elements can have computed display: none, so first confirm that elem is
 			// in the document.
-			jQuery.contains( elem.ownerDocument, elem ) &&
+			isAttached( elem ) &&
 
 			jQuery.css( elem, "display" ) === "none";
 	};
@@ -22713,7 +22766,8 @@ function adjustCSS( elem, prop, valueParts, tween ) {
 		unit = valueParts && valueParts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
 
 		// Starting value computation is required for potential unit mismatches
-		initialInUnit = ( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
+		initialInUnit = elem.nodeType &&
+			( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
 			rcssNum.exec( jQuery.css( elem, prop ) );
 
 	if ( initialInUnit && initialInUnit[ 3 ] !== unit ) {
@@ -22860,7 +22914,7 @@ jQuery.fn.extend( {
 } );
 var rcheckableType = ( /^(?:checkbox|radio)$/i );
 
-var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]+)/i );
+var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]*)/i );
 
 var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
@@ -22932,7 +22986,7 @@ function setGlobalEval( elems, refElements ) {
 var rhtml = /<|&#?\w+;/;
 
 function buildFragment( elems, context, scripts, selection, ignored ) {
-	var elem, tmp, tag, wrap, contains, j,
+	var elem, tmp, tag, wrap, attached, j,
 		fragment = context.createDocumentFragment(),
 		nodes = [],
 		i = 0,
@@ -22996,13 +23050,13 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 			continue;
 		}
 
-		contains = jQuery.contains( elem.ownerDocument, elem );
+		attached = isAttached( elem );
 
 		// Append to fragment
 		tmp = getAll( fragment.appendChild( elem ), "script" );
 
 		// Preserve script evaluation history
-		if ( contains ) {
+		if ( attached ) {
 			setGlobalEval( tmp );
 		}
 
@@ -23045,8 +23099,6 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 	div.innerHTML = "<textarea>x</textarea>";
 	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 } )();
-var documentElement = document.documentElement;
-
 
 
 var
@@ -23062,8 +23114,19 @@ function returnFalse() {
 	return false;
 }
 
+// Support: IE <=9 - 11+
+// focus() and blur() are asynchronous, except when they are no-op.
+// So expect focus to be synchronous when the element is already active,
+// and blur to be synchronous when the element is not already active.
+// (focus and blur are always synchronous in other supported browsers,
+// this just defines when we can count on it).
+function expectSync( elem, type ) {
+	return ( elem === safeActiveElement() ) === ( type === "focus" );
+}
+
 // Support: IE <=9 only
-// See #13393 for more info
+// Accessing document.activeElement can throw unexpectedly
+// https://bugs.jquery.com/ticket/13393
 function safeActiveElement() {
 	try {
 		return document.activeElement;
@@ -23363,9 +23426,10 @@ jQuery.event = {
 			while ( ( handleObj = matched.handlers[ j++ ] ) &&
 				!event.isImmediatePropagationStopped() ) {
 
-				// Triggered event must either 1) have no namespace, or 2) have namespace(s)
-				// a subset or equal to those in the bound event (both can have no namespace).
-				if ( !event.rnamespace || event.rnamespace.test( handleObj.namespace ) ) {
+				// If the event is namespaced, then each handler is only invoked if it is
+				// specially universal or its namespaces are a superset of the event's.
+				if ( !event.rnamespace || handleObj.namespace === false ||
+					event.rnamespace.test( handleObj.namespace ) ) {
 
 					event.handleObj = handleObj;
 					event.data = handleObj.data;
@@ -23489,39 +23553,51 @@ jQuery.event = {
 			// Prevent triggered image.load events from bubbling to window.load
 			noBubble: true
 		},
-		focus: {
-
-			// Fire native event if possible so blur/focus sequence is correct
-			trigger: function() {
-				if ( this !== safeActiveElement() && this.focus ) {
-					this.focus();
-					return false;
-				}
-			},
-			delegateType: "focusin"
-		},
-		blur: {
-			trigger: function() {
-				if ( this === safeActiveElement() && this.blur ) {
-					this.blur();
-					return false;
-				}
-			},
-			delegateType: "focusout"
-		},
 		click: {
 
-			// For checkbox, fire native event so checked state will be right
-			trigger: function() {
-				if ( this.type === "checkbox" && this.click && nodeName( this, "input" ) ) {
-					this.click();
-					return false;
+			// Utilize native event to ensure correct state for checkable inputs
+			setup: function( data ) {
+
+				// For mutual compressibility with _default, replace `this` access with a local var.
+				// `|| data` is dead code meant only to preserve the variable through minification.
+				var el = this || data;
+
+				// Claim the first handler
+				if ( rcheckableType.test( el.type ) &&
+					el.click && nodeName( el, "input" ) ) {
+
+					// dataPriv.set( el, "click", ... )
+					leverageNative( el, "click", returnTrue );
 				}
+
+				// Return false to allow normal processing in the caller
+				return false;
+			},
+			trigger: function( data ) {
+
+				// For mutual compressibility with _default, replace `this` access with a local var.
+				// `|| data` is dead code meant only to preserve the variable through minification.
+				var el = this || data;
+
+				// Force setup before triggering a click
+				if ( rcheckableType.test( el.type ) &&
+					el.click && nodeName( el, "input" ) ) {
+
+					leverageNative( el, "click" );
+				}
+
+				// Return non-false to allow normal event-path propagation
+				return true;
 			},
 
-			// For cross-browser consistency, don't fire native .click() on links
+			// For cross-browser consistency, suppress native .click() on links
+			// Also prevent it if we're currently inside a leveraged native-event stack
 			_default: function( event ) {
-				return nodeName( event.target, "a" );
+				var target = event.target;
+				return rcheckableType.test( target.type ) &&
+					target.click && nodeName( target, "input" ) &&
+					dataPriv.get( target, "click" ) ||
+					nodeName( target, "a" );
 			}
 		},
 
@@ -23537,6 +23613,93 @@ jQuery.event = {
 		}
 	}
 };
+
+// Ensure the presence of an event listener that handles manually-triggered
+// synthetic events by interrupting progress until reinvoked in response to
+// *native* events that it fires directly, ensuring that state changes have
+// already occurred before other listeners are invoked.
+function leverageNative( el, type, expectSync ) {
+
+	// Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
+	if ( !expectSync ) {
+		if ( dataPriv.get( el, type ) === undefined ) {
+			jQuery.event.add( el, type, returnTrue );
+		}
+		return;
+	}
+
+	// Register the controller as a special universal handler for all event namespaces
+	dataPriv.set( el, type, false );
+	jQuery.event.add( el, type, {
+		namespace: false,
+		handler: function( event ) {
+			var notAsync, result,
+				saved = dataPriv.get( this, type );
+
+			if ( ( event.isTrigger & 1 ) && this[ type ] ) {
+
+				// Interrupt processing of the outer synthetic .trigger()ed event
+				// Saved data should be false in such cases, but might be a leftover capture object
+				// from an async native handler (gh-4350)
+				if ( !saved.length ) {
+
+					// Store arguments for use when handling the inner native event
+					// There will always be at least one argument (an event object), so this array
+					// will not be confused with a leftover capture object.
+					saved = slice.call( arguments );
+					dataPriv.set( this, type, saved );
+
+					// Trigger the native event and capture its result
+					// Support: IE <=9 - 11+
+					// focus() and blur() are asynchronous
+					notAsync = expectSync( this, type );
+					this[ type ]();
+					result = dataPriv.get( this, type );
+					if ( saved !== result || notAsync ) {
+						dataPriv.set( this, type, false );
+					} else {
+						result = {};
+					}
+					if ( saved !== result ) {
+
+						// Cancel the outer synthetic event
+						event.stopImmediatePropagation();
+						event.preventDefault();
+						return result.value;
+					}
+
+				// If this is an inner synthetic event for an event with a bubbling surrogate
+				// (focus or blur), assume that the surrogate already propagated from triggering the
+				// native event and prevent that from happening again here.
+				// This technically gets the ordering wrong w.r.t. to `.trigger()` (in which the
+				// bubbling surrogate propagates *after* the non-bubbling base), but that seems
+				// less bad than duplication.
+				} else if ( ( jQuery.event.special[ type ] || {} ).delegateType ) {
+					event.stopPropagation();
+				}
+
+			// If this is a native event triggered above, everything is now in order
+			// Fire an inner synthetic event with the original arguments
+			} else if ( saved.length ) {
+
+				// ...and capture the result
+				dataPriv.set( this, type, {
+					value: jQuery.event.trigger(
+
+						// Support: IE <=9 - 11+
+						// Extend with the prototype to reset the above stopImmediatePropagation()
+						jQuery.extend( saved[ 0 ], jQuery.Event.prototype ),
+						saved.slice( 1 ),
+						this
+					)
+				} );
+
+				// Abort handling of the native event
+				event.stopImmediatePropagation();
+			}
+		}
+	} );
+}
 
 jQuery.removeEvent = function( elem, type, handle ) {
 
@@ -23650,6 +23813,7 @@ jQuery.each( {
 	shiftKey: true,
 	view: true,
 	"char": true,
+	code: true,
 	charCode: true,
 	key: true,
 	keyCode: true,
@@ -23695,6 +23859,33 @@ jQuery.each( {
 		return event.which;
 	}
 }, jQuery.event.addProp );
+
+jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateType ) {
+	jQuery.event.special[ type ] = {
+
+		// Utilize native event if possible so blur/focus sequence is correct
+		setup: function() {
+
+			// Claim the first handler
+			// dataPriv.set( this, "focus", ... )
+			// dataPriv.set( this, "blur", ... )
+			leverageNative( this, type, expectSync );
+
+			// Return false to allow normal processing in the caller
+			return false;
+		},
+		trigger: function() {
+
+			// Force setup before trigger
+			leverageNative( this, type );
+
+			// Return non-false to allow normal event-path propagation
+			return true;
+		},
+
+		delegateType: delegateType
+	};
+} );
 
 // Create mouseenter/leave events using mouseover/out and event-time checks
 // so that event delegation works in jQuery.
@@ -23946,11 +24137,13 @@ function domManip( collection, args, callback, ignored ) {
 						if ( node.src && ( node.type || "" ).toLowerCase()  !== "module" ) {
 
 							// Optional AJAX dependency, but won't run scripts if not present
-							if ( jQuery._evalUrl ) {
-								jQuery._evalUrl( node.src );
+							if ( jQuery._evalUrl && !node.noModule ) {
+								jQuery._evalUrl( node.src, {
+									nonce: node.nonce || node.getAttribute( "nonce" )
+								} );
 							}
 						} else {
-							DOMEval( node.textContent.replace( rcleanScript, "" ), doc, node );
+							DOMEval( node.textContent.replace( rcleanScript, "" ), node, doc );
 						}
 					}
 				}
@@ -23972,7 +24165,7 @@ function remove( elem, selector, keepData ) {
 		}
 
 		if ( node.parentNode ) {
-			if ( keepData && jQuery.contains( node.ownerDocument, node ) ) {
+			if ( keepData && isAttached( node ) ) {
 				setGlobalEval( getAll( node, "script" ) );
 			}
 			node.parentNode.removeChild( node );
@@ -23990,7 +24183,7 @@ jQuery.extend( {
 	clone: function( elem, dataAndEvents, deepDataAndEvents ) {
 		var i, l, srcElements, destElements,
 			clone = elem.cloneNode( true ),
-			inPage = jQuery.contains( elem.ownerDocument, elem );
+			inPage = isAttached( elem );
 
 		// Fix IE cloning issues
 		if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
@@ -24286,8 +24479,10 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 
 		// Support: IE 9 only
 		// Detect overflow:scroll screwiness (gh-3699)
+		// Support: Chrome <=64
+		// Don't get tricked when zoom affects offsetWidth (gh-4029)
 		div.style.position = "absolute";
-		scrollboxSizeVal = div.offsetWidth === 36 || "absolute";
+		scrollboxSizeVal = roundPixelMeasures( div.offsetWidth / 3 ) === 12;
 
 		documentElement.removeChild( container );
 
@@ -24358,7 +24553,7 @@ function curCSS( elem, name, computed ) {
 	if ( computed ) {
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 
-		if ( ret === "" && !jQuery.contains( elem.ownerDocument, elem ) ) {
+		if ( ret === "" && !isAttached( elem ) ) {
 			ret = jQuery.style( elem, name );
 		}
 
@@ -24414,29 +24609,12 @@ function addGetHookIf( conditionFn, hookFn ) {
 }
 
 
-var
+var cssPrefixes = [ "Webkit", "Moz", "ms" ],
+	emptyStyle = document.createElement( "div" ).style,
+	vendorProps = {};
 
-	// Swappable if display is none or starts with table
-	// except "table", "table-cell", or "table-caption"
-	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-	rcustomProp = /^--/,
-	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
-	cssNormalTransform = {
-		letterSpacing: "0",
-		fontWeight: "400"
-	},
-
-	cssPrefixes = [ "Webkit", "Moz", "ms" ],
-	emptyStyle = document.createElement( "div" ).style;
-
-// Return a css property mapped to a potentially vendor prefixed property
+// Return a vendor-prefixed property or undefined
 function vendorPropName( name ) {
-
-	// Shortcut for names that are not vendor prefixed
-	if ( name in emptyStyle ) {
-		return name;
-	}
 
 	// Check for vendor prefixed names
 	var capName = name[ 0 ].toUpperCase() + name.slice( 1 ),
@@ -24450,15 +24628,32 @@ function vendorPropName( name ) {
 	}
 }
 
-// Return a property mapped along what jQuery.cssProps suggests or to
-// a vendor prefixed property.
+// Return a potentially-mapped jQuery.cssProps or vendor prefixed property
 function finalPropName( name ) {
-	var ret = jQuery.cssProps[ name ];
-	if ( !ret ) {
-		ret = jQuery.cssProps[ name ] = vendorPropName( name ) || name;
+	var final = jQuery.cssProps[ name ] || vendorProps[ name ];
+
+	if ( final ) {
+		return final;
 	}
-	return ret;
+	if ( name in emptyStyle ) {
+		return name;
+	}
+	return vendorProps[ name ] = vendorPropName( name ) || name;
 }
+
+
+var
+
+	// Swappable if display is none or starts with table
+	// except "table", "table-cell", or "table-caption"
+	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+	rcustomProp = /^--/,
+	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
+	cssNormalTransform = {
+		letterSpacing: "0",
+		fontWeight: "400"
+	};
 
 function setPositiveNumber( elem, value, subtract ) {
 
@@ -24531,7 +24726,10 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 			delta -
 			extra -
 			0.5
-		) );
+
+		// If offsetWidth/offsetHeight is unknown, then we can't determine content-box scroll gutter
+		// Use an explicit zero to avoid NaN (gh-3964)
+		) ) || 0;
 	}
 
 	return delta;
@@ -24541,9 +24739,16 @@ function getWidthOrHeight( elem, dimension, extra ) {
 
 	// Start with computed style
 	var styles = getStyles( elem ),
+
+		// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-4322).
+		// Fake content-box until we know it's needed to know the true value.
+		boxSizingNeeded = !support.boxSizingReliable() || extra,
+		isBorderBox = boxSizingNeeded &&
+			jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+		valueIsBorderBox = isBorderBox,
+
 		val = curCSS( elem, dimension, styles ),
-		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-		valueIsBorderBox = isBorderBox;
+		offsetProp = "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 );
 
 	// Support: Firefox <=54
 	// Return a confounding non-pixel value or feign ignorance, as appropriate.
@@ -24554,22 +24759,29 @@ function getWidthOrHeight( elem, dimension, extra ) {
 		val = "auto";
 	}
 
-	// Check for style in case a browser which returns unreliable values
-	// for getComputedStyle silently falls back to the reliable elem.style
-	valueIsBorderBox = valueIsBorderBox &&
-		( support.boxSizingReliable() || val === elem.style[ dimension ] );
 
 	// Fall back to offsetWidth/offsetHeight when value is "auto"
 	// This happens for inline elements with no explicit setting (gh-3571)
 	// Support: Android <=4.1 - 4.3 only
 	// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
-	if ( val === "auto" ||
-		!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) {
+	// Support: IE 9-11 only
+	// Also use offsetWidth/offsetHeight for when box sizing is unreliable
+	// We use getClientRects() to check for hidden/disconnected.
+	// In those cases, the computed value can be trusted to be border-box
+	if ( ( !support.boxSizingReliable() && isBorderBox ||
+		val === "auto" ||
+		!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) &&
+		elem.getClientRects().length ) {
 
-		val = elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ];
+		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
-		// offsetWidth/offsetHeight provide border-box values
-		valueIsBorderBox = true;
+		// Where available, offsetWidth/offsetHeight approximate border box dimensions.
+		// Where not available (e.g., SVG), assume unreliable box-sizing and interpret the
+		// retrieved value as a content box dimension.
+		valueIsBorderBox = offsetProp in elem;
+		if ( valueIsBorderBox ) {
+			val = elem[ offsetProp ];
+		}
 	}
 
 	// Normalize "" and auto
@@ -24615,6 +24827,13 @@ jQuery.extend( {
 		"flexGrow": true,
 		"flexShrink": true,
 		"fontWeight": true,
+		"gridArea": true,
+		"gridColumn": true,
+		"gridColumnEnd": true,
+		"gridColumnStart": true,
+		"gridRow": true,
+		"gridRowEnd": true,
+		"gridRowStart": true,
 		"lineHeight": true,
 		"opacity": true,
 		"order": true,
@@ -24670,7 +24889,9 @@ jQuery.extend( {
 			}
 
 			// If a number was passed in, add the unit (except for certain CSS properties)
-			if ( type === "number" ) {
+			// The isCustomProp check can be removed in jQuery 4.0 when we only auto-append
+			// "px" to a few hardcoded values.
+			if ( type === "number" && !isCustomProp ) {
 				value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
 			}
 
@@ -24770,18 +24991,29 @@ jQuery.each( [ "height", "width" ], function( i, dimension ) {
 		set: function( elem, value, extra ) {
 			var matches,
 				styles = getStyles( elem ),
-				isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-				subtract = extra && boxModelAdjustment(
-					elem,
-					dimension,
-					extra,
-					isBorderBox,
-					styles
-				);
+
+				// Only read styles.position if the test has a chance to fail
+				// to avoid forcing a reflow.
+				scrollboxSizeBuggy = !support.scrollboxSize() &&
+					styles.position === "absolute",
+
+				// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-3991)
+				boxSizingNeeded = scrollboxSizeBuggy || extra,
+				isBorderBox = boxSizingNeeded &&
+					jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+				subtract = extra ?
+					boxModelAdjustment(
+						elem,
+						dimension,
+						extra,
+						isBorderBox,
+						styles
+					) :
+					0;
 
 			// Account for unreliable border-box dimensions by comparing offset* to computed and
 			// faking a content-box to get border and padding (gh-3699)
-			if ( isBorderBox && support.scrollboxSize() === styles.position ) {
+			if ( isBorderBox && scrollboxSizeBuggy ) {
 				subtract -= Math.ceil(
 					elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ] -
 					parseFloat( styles[ dimension ] ) -
@@ -24949,9 +25181,9 @@ Tween.propHooks = {
 			// Use .style if available and use plain properties where available.
 			if ( jQuery.fx.step[ tween.prop ] ) {
 				jQuery.fx.step[ tween.prop ]( tween );
-			} else if ( tween.elem.nodeType === 1 &&
-				( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null ||
-					jQuery.cssHooks[ tween.prop ] ) ) {
+			} else if ( tween.elem.nodeType === 1 && (
+					jQuery.cssHooks[ tween.prop ] ||
+					tween.elem.style[ finalPropName( tween.prop ) ] != null ) ) {
 				jQuery.style( tween.elem, tween.prop, tween.now + tween.unit );
 			} else {
 				tween.elem[ tween.prop ] = tween.now;
@@ -26658,6 +26890,10 @@ jQuery.param = function( a, traditional ) {
 				encodeURIComponent( value == null ? "" : value );
 		};
 
+	if ( a == null ) {
+		return "";
+	}
+
 	// If an array was passed in, assume that it is an array of form elements.
 	if ( Array.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
 
@@ -27160,12 +27396,14 @@ jQuery.extend( {
 						if ( !responseHeaders ) {
 							responseHeaders = {};
 							while ( ( match = rheaders.exec( responseHeadersString ) ) ) {
-								responseHeaders[ match[ 1 ].toLowerCase() ] = match[ 2 ];
+								responseHeaders[ match[ 1 ].toLowerCase() + " " ] =
+									( responseHeaders[ match[ 1 ].toLowerCase() + " " ] || [] )
+										.concat( match[ 2 ] );
 							}
 						}
-						match = responseHeaders[ key.toLowerCase() ];
+						match = responseHeaders[ key.toLowerCase() + " " ];
 					}
-					return match == null ? null : match;
+					return match == null ? null : match.join( ", " );
 				},
 
 				// Raw string
@@ -27554,7 +27792,7 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 } );
 
 
-jQuery._evalUrl = function( url ) {
+jQuery._evalUrl = function( url, options ) {
 	return jQuery.ajax( {
 		url: url,
 
@@ -27564,7 +27802,16 @@ jQuery._evalUrl = function( url ) {
 		cache: true,
 		async: false,
 		global: false,
-		"throws": true
+
+		// Only evaluate the response if it is successful (gh-4126)
+		// dataFilter is not invoked for failure responses, so using it instead
+		// of the default converter is kludgy but it works.
+		converters: {
+			"text script": function() {}
+		},
+		dataFilter: function( response ) {
+			jQuery.globalEval( response, options );
+		}
 	} );
 };
 
@@ -27847,24 +28094,21 @@ jQuery.ajaxPrefilter( "script", function( s ) {
 // Bind script tag hack transport
 jQuery.ajaxTransport( "script", function( s ) {
 
-	// This transport only deals with cross domain requests
-	if ( s.crossDomain ) {
+	// This transport only deals with cross domain or forced-by-attrs requests
+	if ( s.crossDomain || s.scriptAttrs ) {
 		var script, callback;
 		return {
 			send: function( _, complete ) {
-				script = jQuery( "<script>" ).prop( {
-					charset: s.scriptCharset,
-					src: s.url
-				} ).on(
-					"load error",
-					callback = function( evt ) {
+				script = jQuery( "<script>" )
+					.attr( s.scriptAttrs || {} )
+					.prop( { charset: s.scriptCharset, src: s.url } )
+					.on( "load error", callback = function( evt ) {
 						script.remove();
 						callback = null;
 						if ( evt ) {
 							complete( evt.type === "error" ? 404 : 200, evt.type );
 						}
-					}
-				);
+					} );
 
 				// Use native DOM manipulation to avoid our domManip AJAX trickery
 				document.head.appendChild( script[ 0 ] );
@@ -28561,8 +28805,8 @@ return jQuery;
 /***/ (function(module, exports) {
 
 /*!
- * Bootstrap v3.3.7 (http://getbootstrap.com)
- * Copyright 2011-2016 Twitter, Inc.
+ * Bootstrap v3.4.1 (https://getbootstrap.com/)
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under the MIT license
  */
 
@@ -28579,10 +28823,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: transition.js v3.3.7
- * http://getbootstrap.com/javascript/#transitions
+ * Bootstrap: transition.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -28590,7 +28834,7 @@ if (typeof jQuery === 'undefined') {
 +function ($) {
   'use strict';
 
-  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // CSS TRANSITION SUPPORT (Shoutout: https://modernizr.com/)
   // ============================================================
 
   function transitionEnd() {
@@ -28612,7 +28856,7 @@ if (typeof jQuery === 'undefined') {
     return false // explicit for ie8 (  ._.)
   }
 
-  // http://blog.alexmaccaw.com/css-transitions
+  // https://blog.alexmaccaw.com/css-transitions
   $.fn.emulateTransitionEnd = function (duration) {
     var called = false
     var $el = this
@@ -28639,10 +28883,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: alert.js v3.3.7
- * http://getbootstrap.com/javascript/#alerts
+ * Bootstrap: alert.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -28658,7 +28902,7 @@ if (typeof jQuery === 'undefined') {
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.7'
+  Alert.VERSION = '3.4.1'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -28671,7 +28915,8 @@ if (typeof jQuery === 'undefined') {
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector === '#' ? [] : selector)
+    selector    = selector === '#' ? [] : selector
+    var $parent = $(document).find(selector)
 
     if (e) e.preventDefault()
 
@@ -28734,10 +28979,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: button.js v3.3.7
- * http://getbootstrap.com/javascript/#buttons
+ * Bootstrap: button.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -28754,7 +28999,7 @@ if (typeof jQuery === 'undefined') {
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.7'
+  Button.VERSION  = '3.4.1'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -28860,10 +29105,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.7
- * http://getbootstrap.com/javascript/#carousel
+ * Bootstrap: carousel.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -28891,7 +29136,7 @@ if (typeof jQuery === 'undefined') {
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.7'
+  Carousel.VERSION  = '3.4.1'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -29005,7 +29250,9 @@ if (typeof jQuery === 'undefined') {
     var slidEvent = $.Event('slid.bs.carousel', { relatedTarget: relatedTarget, direction: direction }) // yes, "slid"
     if ($.support.transition && this.$element.hasClass('slide')) {
       $next.addClass(type)
-      $next[0].offsetWidth // force reflow
+      if (typeof $next === 'object' && $next.length) {
+        $next[0].offsetWidth // force reflow
+      }
       $active.addClass(direction)
       $next.addClass(direction)
       $active
@@ -29067,10 +29314,17 @@ if (typeof jQuery === 'undefined') {
   // =================
 
   var clickHandler = function (e) {
-    var href
     var $this   = $(this)
-    var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) // strip for ie7
+    var href    = $this.attr('href')
+    if (href) {
+      href = href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+    }
+
+    var target  = $this.attr('data-target') || href
+    var $target = $(document).find(target)
+
     if (!$target.hasClass('carousel')) return
+
     var options = $.extend({}, $target.data(), $this.data())
     var slideIndex = $this.attr('data-slide-to')
     if (slideIndex) options.interval = false
@@ -29098,10 +29352,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.7
- * http://getbootstrap.com/javascript/#collapse
+ * Bootstrap: collapse.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -29129,7 +29383,7 @@ if (typeof jQuery === 'undefined') {
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.7'
+  Collapse.VERSION  = '3.4.1'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -29236,7 +29490,7 @@ if (typeof jQuery === 'undefined') {
   }
 
   Collapse.prototype.getParent = function () {
-    return $(this.options.parent)
+    return $(document).find(this.options.parent)
       .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
       .each($.proxy(function (i, element) {
         var $element = $(element)
@@ -29259,7 +29513,7 @@ if (typeof jQuery === 'undefined') {
     var target = $trigger.attr('data-target')
       || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
 
-    return $(target)
+    return $(document).find(target)
   }
 
 
@@ -29311,10 +29565,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.7
- * http://getbootstrap.com/javascript/#dropdowns
+ * Bootstrap: dropdown.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -29331,7 +29585,7 @@ if (typeof jQuery === 'undefined') {
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.7'
+  Dropdown.VERSION = '3.4.1'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -29341,7 +29595,7 @@ if (typeof jQuery === 'undefined') {
       selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = selector && $(selector)
+    var $parent = selector !== '#' ? $(document).find(selector) : null
 
     return $parent && $parent.length ? $parent : $this.parent()
   }
@@ -29477,10 +29731,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: modal.js v3.3.7
- * http://getbootstrap.com/javascript/#modals
+ * Bootstrap: modal.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#modals
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -29492,15 +29746,16 @@ if (typeof jQuery === 'undefined') {
   // ======================
 
   var Modal = function (element, options) {
-    this.options             = options
-    this.$body               = $(document.body)
-    this.$element            = $(element)
-    this.$dialog             = this.$element.find('.modal-dialog')
-    this.$backdrop           = null
-    this.isShown             = null
-    this.originalBodyPad     = null
-    this.scrollbarWidth      = 0
+    this.options = options
+    this.$body = $(document.body)
+    this.$element = $(element)
+    this.$dialog = this.$element.find('.modal-dialog')
+    this.$backdrop = null
+    this.isShown = null
+    this.originalBodyPad = null
+    this.scrollbarWidth = 0
     this.ignoreBackdropClick = false
+    this.fixedContent = '.navbar-fixed-top, .navbar-fixed-bottom'
 
     if (this.options.remote) {
       this.$element
@@ -29511,7 +29766,7 @@ if (typeof jQuery === 'undefined') {
     }
   }
 
-  Modal.VERSION  = '3.3.7'
+  Modal.VERSION = '3.4.1'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -29528,7 +29783,7 @@ if (typeof jQuery === 'undefined') {
 
   Modal.prototype.show = function (_relatedTarget) {
     var that = this
-    var e    = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
+    var e = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
 
     this.$element.trigger(e)
 
@@ -29619,8 +29874,8 @@ if (typeof jQuery === 'undefined') {
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
         if (document !== e.target &&
-            this.$element[0] !== e.target &&
-            !this.$element.has(e.target).length) {
+          this.$element[0] !== e.target &&
+          !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -29722,7 +29977,7 @@ if (typeof jQuery === 'undefined') {
     var modalIsOverflowing = this.$element[0].scrollHeight > document.documentElement.clientHeight
 
     this.$element.css({
-      paddingLeft:  !this.bodyIsOverflowing && modalIsOverflowing ? this.scrollbarWidth : '',
+      paddingLeft: !this.bodyIsOverflowing && modalIsOverflowing ? this.scrollbarWidth : '',
       paddingRight: this.bodyIsOverflowing && !modalIsOverflowing ? this.scrollbarWidth : ''
     })
   }
@@ -29747,11 +30002,26 @@ if (typeof jQuery === 'undefined') {
   Modal.prototype.setScrollbar = function () {
     var bodyPad = parseInt((this.$body.css('padding-right') || 0), 10)
     this.originalBodyPad = document.body.style.paddingRight || ''
-    if (this.bodyIsOverflowing) this.$body.css('padding-right', bodyPad + this.scrollbarWidth)
+    var scrollbarWidth = this.scrollbarWidth
+    if (this.bodyIsOverflowing) {
+      this.$body.css('padding-right', bodyPad + scrollbarWidth)
+      $(this.fixedContent).each(function (index, element) {
+        var actualPadding = element.style.paddingRight
+        var calculatedPadding = $(element).css('padding-right')
+        $(element)
+          .data('padding-right', actualPadding)
+          .css('padding-right', parseFloat(calculatedPadding) + scrollbarWidth + 'px')
+      })
+    }
   }
 
   Modal.prototype.resetScrollbar = function () {
     this.$body.css('padding-right', this.originalBodyPad)
+    $(this.fixedContent).each(function (index, element) {
+      var padding = $(element).data('padding-right')
+      $(element).removeData('padding-right')
+      element.style.paddingRight = padding ? padding : ''
+    })
   }
 
   Modal.prototype.measureScrollbar = function () { // thx walsh
@@ -29769,8 +30039,8 @@ if (typeof jQuery === 'undefined') {
 
   function Plugin(option, _relatedTarget) {
     return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.modal')
+      var $this = $(this)
+      var data = $this.data('bs.modal')
       var options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option == 'object' && option)
 
       if (!data) $this.data('bs.modal', (data = new Modal(this, options)))
@@ -29781,7 +30051,7 @@ if (typeof jQuery === 'undefined') {
 
   var old = $.fn.modal
 
-  $.fn.modal             = Plugin
+  $.fn.modal = Plugin
   $.fn.modal.Constructor = Modal
 
 
@@ -29798,10 +30068,13 @@ if (typeof jQuery === 'undefined') {
   // ==============
 
   $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
-    var $this   = $(this)
-    var href    = $this.attr('href')
-    var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7
-    var option  = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
+    var $this = $(this)
+    var href = $this.attr('href')
+    var target = $this.attr('data-target') ||
+      (href && href.replace(/.*(?=#[^\s]+$)/, '')) // strip for ie7
+
+    var $target = $(document).find(target)
+    var option = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
 
     if ($this.is('a')) e.preventDefault()
 
@@ -29817,17 +30090,147 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.7
- * http://getbootstrap.com/javascript/#tooltip
+ * Bootstrap: tooltip.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
-
 +function ($) {
   'use strict';
+
+  var DISALLOWED_ATTRIBUTES = ['sanitize', 'whiteList', 'sanitizeFn']
+
+  var uriAttrs = [
+    'background',
+    'cite',
+    'href',
+    'itemtype',
+    'longdesc',
+    'poster',
+    'src',
+    'xlink:href'
+  ]
+
+  var ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i
+
+  var DefaultWhitelist = {
+    // Global attributes allowed on any supplied element below.
+    '*': ['class', 'dir', 'id', 'lang', 'role', ARIA_ATTRIBUTE_PATTERN],
+    a: ['target', 'href', 'title', 'rel'],
+    area: [],
+    b: [],
+    br: [],
+    col: [],
+    code: [],
+    div: [],
+    em: [],
+    hr: [],
+    h1: [],
+    h2: [],
+    h3: [],
+    h4: [],
+    h5: [],
+    h6: [],
+    i: [],
+    img: ['src', 'alt', 'title', 'width', 'height'],
+    li: [],
+    ol: [],
+    p: [],
+    pre: [],
+    s: [],
+    small: [],
+    span: [],
+    sub: [],
+    sup: [],
+    strong: [],
+    u: [],
+    ul: []
+  }
+
+  /**
+   * A pattern that recognizes a commonly useful subset of URLs that are safe.
+   *
+   * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
+   */
+  var SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi
+
+  /**
+   * A pattern that matches safe data URLs. Only matches image, video and audio types.
+   *
+   * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
+   */
+  var DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+/]+=*$/i
+
+  function allowedAttribute(attr, allowedAttributeList) {
+    var attrName = attr.nodeName.toLowerCase()
+
+    if ($.inArray(attrName, allowedAttributeList) !== -1) {
+      if ($.inArray(attrName, uriAttrs) !== -1) {
+        return Boolean(attr.nodeValue.match(SAFE_URL_PATTERN) || attr.nodeValue.match(DATA_URL_PATTERN))
+      }
+
+      return true
+    }
+
+    var regExp = $(allowedAttributeList).filter(function (index, value) {
+      return value instanceof RegExp
+    })
+
+    // Check if a regular expression validates the attribute.
+    for (var i = 0, l = regExp.length; i < l; i++) {
+      if (attrName.match(regExp[i])) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  function sanitizeHtml(unsafeHtml, whiteList, sanitizeFn) {
+    if (unsafeHtml.length === 0) {
+      return unsafeHtml
+    }
+
+    if (sanitizeFn && typeof sanitizeFn === 'function') {
+      return sanitizeFn(unsafeHtml)
+    }
+
+    // IE 8 and below don't support createHTMLDocument
+    if (!document.implementation || !document.implementation.createHTMLDocument) {
+      return unsafeHtml
+    }
+
+    var createdDocument = document.implementation.createHTMLDocument('sanitization')
+    createdDocument.body.innerHTML = unsafeHtml
+
+    var whitelistKeys = $.map(whiteList, function (el, i) { return i })
+    var elements = $(createdDocument.body).find('*')
+
+    for (var i = 0, len = elements.length; i < len; i++) {
+      var el = elements[i]
+      var elName = el.nodeName.toLowerCase()
+
+      if ($.inArray(elName, whitelistKeys) === -1) {
+        el.parentNode.removeChild(el)
+
+        continue
+      }
+
+      var attributeList = $.map(el.attributes, function (el) { return el })
+      var whitelistedAttributes = [].concat(whiteList['*'] || [], whiteList[elName] || [])
+
+      for (var j = 0, len2 = attributeList.length; j < len2; j++) {
+        if (!allowedAttribute(attributeList[j], whitelistedAttributes)) {
+          el.removeAttribute(attributeList[j].nodeName)
+        }
+      }
+    }
+
+    return createdDocument.body.innerHTML
+  }
 
   // TOOLTIP PUBLIC CLASS DEFINITION
   // ===============================
@@ -29844,7 +30247,7 @@ if (typeof jQuery === 'undefined') {
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.7'
+  Tooltip.VERSION  = '3.4.1'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -29861,7 +30264,10 @@ if (typeof jQuery === 'undefined') {
     viewport: {
       selector: 'body',
       padding: 0
-    }
+    },
+    sanitize : true,
+    sanitizeFn : null,
+    whiteList : DefaultWhitelist
   }
 
   Tooltip.prototype.init = function (type, element, options) {
@@ -29869,7 +30275,7 @@ if (typeof jQuery === 'undefined') {
     this.type      = type
     this.$element  = $(element)
     this.options   = this.getOptions(options)
-    this.$viewport = this.options.viewport && $($.isFunction(this.options.viewport) ? this.options.viewport.call(this, this.$element) : (this.options.viewport.selector || this.options.viewport))
+    this.$viewport = this.options.viewport && $(document).find($.isFunction(this.options.viewport) ? this.options.viewport.call(this, this.$element) : (this.options.viewport.selector || this.options.viewport))
     this.inState   = { click: false, hover: false, focus: false }
 
     if (this.$element[0] instanceof document.constructor && !this.options.selector) {
@@ -29902,13 +30308,25 @@ if (typeof jQuery === 'undefined') {
   }
 
   Tooltip.prototype.getOptions = function (options) {
-    options = $.extend({}, this.getDefaults(), this.$element.data(), options)
+    var dataAttributes = this.$element.data()
+
+    for (var dataAttr in dataAttributes) {
+      if (dataAttributes.hasOwnProperty(dataAttr) && $.inArray(dataAttr, DISALLOWED_ATTRIBUTES) !== -1) {
+        delete dataAttributes[dataAttr]
+      }
+    }
+
+    options = $.extend({}, this.getDefaults(), dataAttributes, options)
 
     if (options.delay && typeof options.delay == 'number') {
       options.delay = {
         show: options.delay,
         hide: options.delay
       }
+    }
+
+    if (options.sanitize) {
+      options.template = sanitizeHtml(options.template, options.whiteList, options.sanitizeFn)
     }
 
     return options
@@ -30022,7 +30440,7 @@ if (typeof jQuery === 'undefined') {
         .addClass(placement)
         .data('bs.' + this.type, this)
 
-      this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
+      this.options.container ? $tip.appendTo($(document).find(this.options.container)) : $tip.insertAfter(this.$element)
       this.$element.trigger('inserted.bs.' + this.type)
 
       var pos          = this.getPosition()
@@ -30124,7 +30542,16 @@ if (typeof jQuery === 'undefined') {
     var $tip  = this.tip()
     var title = this.getTitle()
 
-    $tip.find('.tooltip-inner')[this.options.html ? 'html' : 'text'](title)
+    if (this.options.html) {
+      if (this.options.sanitize) {
+        title = sanitizeHtml(title, this.options.whiteList, this.options.sanitizeFn)
+      }
+
+      $tip.find('.tooltip-inner').html(title)
+    } else {
+      $tip.find('.tooltip-inner').text(title)
+    }
+
     $tip.removeClass('fade in top bottom left right')
   }
 
@@ -30305,6 +30732,9 @@ if (typeof jQuery === 'undefined') {
     })
   }
 
+  Tooltip.prototype.sanitizeHtml = function (unsafeHtml) {
+    return sanitizeHtml(unsafeHtml, this.options.whiteList, this.options.sanitizeFn)
+  }
 
   // TOOLTIP PLUGIN DEFINITION
   // =========================
@@ -30338,10 +30768,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: popover.js v3.3.7
- * http://getbootstrap.com/javascript/#popovers
+ * Bootstrap: popover.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -30358,7 +30788,7 @@ if (typeof jQuery === 'undefined') {
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.7'
+  Popover.VERSION  = '3.4.1'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -30384,10 +30814,25 @@ if (typeof jQuery === 'undefined') {
     var title   = this.getTitle()
     var content = this.getContent()
 
-    $tip.find('.popover-title')[this.options.html ? 'html' : 'text'](title)
-    $tip.find('.popover-content').children().detach().end()[ // we use append for html objects to maintain js events
-      this.options.html ? (typeof content == 'string' ? 'html' : 'append') : 'text'
-    ](content)
+    if (this.options.html) {
+      var typeContent = typeof content
+
+      if (this.options.sanitize) {
+        title = this.sanitizeHtml(title)
+
+        if (typeContent === 'string') {
+          content = this.sanitizeHtml(content)
+        }
+      }
+
+      $tip.find('.popover-title').html(title)
+      $tip.find('.popover-content').children().detach().end()[
+        typeContent === 'string' ? 'html' : 'append'
+      ](content)
+    } else {
+      $tip.find('.popover-title').text(title)
+      $tip.find('.popover-content').children().detach().end().text(content)
+    }
 
     $tip.removeClass('fade top bottom left right in')
 
@@ -30406,8 +30851,8 @@ if (typeof jQuery === 'undefined') {
 
     return $e.attr('data-content')
       || (typeof o.content == 'function' ?
-            o.content.call($e[0]) :
-            o.content)
+        o.content.call($e[0]) :
+        o.content)
   }
 
   Popover.prototype.arrow = function () {
@@ -30447,10 +30892,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.7
- * http://getbootstrap.com/javascript/#scrollspy
+ * Bootstrap: scrollspy.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -30476,7 +30921,7 @@ if (typeof jQuery === 'undefined') {
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.7'
+  ScrollSpy.VERSION  = '3.4.1'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -30620,10 +31065,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: tab.js v3.3.7
- * http://getbootstrap.com/javascript/#tabs
+ * Bootstrap: tab.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -30640,7 +31085,7 @@ if (typeof jQuery === 'undefined') {
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.7'
+  Tab.VERSION = '3.4.1'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -30669,7 +31114,7 @@ if (typeof jQuery === 'undefined') {
 
     if (showEvent.isDefaultPrevented() || hideEvent.isDefaultPrevented()) return
 
-    var $target = $(selector)
+    var $target = $(document).find(selector)
 
     this.activate($this.closest('li'), $ul)
     this.activate($target, $target.parent(), function () {
@@ -30694,15 +31139,15 @@ if (typeof jQuery === 'undefined') {
       $active
         .removeClass('active')
         .find('> .dropdown-menu > .active')
-          .removeClass('active')
+        .removeClass('active')
         .end()
         .find('[data-toggle="tab"]')
-          .attr('aria-expanded', false)
+        .attr('aria-expanded', false)
 
       element
         .addClass('active')
         .find('[data-toggle="tab"]')
-          .attr('aria-expanded', true)
+        .attr('aria-expanded', true)
 
       if (transition) {
         element[0].offsetWidth // reflow for transition
@@ -30714,10 +31159,10 @@ if (typeof jQuery === 'undefined') {
       if (element.parent('.dropdown-menu').length) {
         element
           .closest('li.dropdown')
-            .addClass('active')
+          .addClass('active')
           .end()
           .find('[data-toggle="tab"]')
-            .attr('aria-expanded', true)
+          .attr('aria-expanded', true)
       }
 
       callback && callback()
@@ -30776,10 +31221,10 @@ if (typeof jQuery === 'undefined') {
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: affix.js v3.3.7
- * http://getbootstrap.com/javascript/#affix
+ * Bootstrap: affix.js v3.4.1
+ * https://getbootstrap.com/docs/3.4/javascript/#affix
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -30793,7 +31238,9 @@ if (typeof jQuery === 'undefined') {
   var Affix = function (element, options) {
     this.options = $.extend({}, Affix.DEFAULTS, options)
 
-    this.$target = $(this.options.target)
+    var target = this.options.target === Affix.DEFAULTS.target ? $(this.options.target) : $(document).find(this.options.target)
+
+    this.$target = target
       .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
       .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
 
@@ -30805,7 +31252,7 @@ if (typeof jQuery === 'undefined') {
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.7'
+  Affix.VERSION  = '3.4.1'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -31817,10 +32264,21 @@ module.exports = function spread(callback) {
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
+if (false) {
+  module.exports = require('./vue.common.prod.js')
+} else {
+  module.exports = __webpack_require__(36)
+}
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
- * Vue.js v2.5.13
- * (c) 2014-2017 Evan You
+ * Vue.js v2.6.10
+ * (c) 2014-2019 Evan You
  * Released under the MIT License.
  */
 
@@ -31829,8 +32287,8 @@ module.exports = function spread(callback) {
 
 var emptyObject = Object.freeze({});
 
-// these helpers produces better vm code in JS engines due to their
-// explicitness and function inlining
+// These helpers produce better VM code in JS engines due to their
+// explicitness and function inlining.
 function isUndef (v) {
   return v === undefined || v === null
 }
@@ -31848,7 +32306,7 @@ function isFalse (v) {
 }
 
 /**
- * Check if value is primitive
+ * Check if value is primitive.
  */
 function isPrimitive (value) {
   return (
@@ -31870,7 +32328,7 @@ function isObject (obj) {
 }
 
 /**
- * Get the raw type string of a value e.g. [object Object]
+ * Get the raw type string of a value, e.g., [object Object].
  */
 var _toString = Object.prototype.toString;
 
@@ -31898,19 +32356,27 @@ function isValidArrayIndex (val) {
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
 
+function isPromise (val) {
+  return (
+    isDef(val) &&
+    typeof val.then === 'function' &&
+    typeof val.catch === 'function'
+  )
+}
+
 /**
  * Convert a value to a string that is actually rendered.
  */
 function toString (val) {
   return val == null
     ? ''
-    : typeof val === 'object'
+    : Array.isArray(val) || (isPlainObject(val) && val.toString === _toString)
       ? JSON.stringify(val, null, 2)
       : String(val)
 }
 
 /**
- * Convert a input value to a number for persistence.
+ * Convert an input value to a number for persistence.
  * If the conversion fails, return original string.
  */
 function toNumber (val) {
@@ -31942,12 +32408,12 @@ function makeMap (
 var isBuiltInTag = makeMap('slot,component', true);
 
 /**
- * Check if a attribute is a reserved attribute.
+ * Check if an attribute is a reserved attribute.
  */
 var isReservedAttribute = makeMap('key,ref,slot,slot-scope,is');
 
 /**
- * Remove an item from an array
+ * Remove an item from an array.
  */
 function remove (arr, item) {
   if (arr.length) {
@@ -31959,7 +32425,7 @@ function remove (arr, item) {
 }
 
 /**
- * Check whether the object has the property.
+ * Check whether an object has the property.
  */
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 function hasOwn (obj, key) {
@@ -32001,9 +32467,15 @@ var hyphenate = cached(function (str) {
 });
 
 /**
- * Simple bind, faster than native
+ * Simple bind polyfill for environments that do not support it,
+ * e.g., PhantomJS 1.x. Technically, we don't need this anymore
+ * since native bind is now performant enough in most browsers.
+ * But removing it would mean breaking code that was able to run in
+ * PhantomJS 1.x, so this must be kept for backward compatibility.
  */
-function bind (fn, ctx) {
+
+/* istanbul ignore next */
+function polyfillBind (fn, ctx) {
   function boundFn (a) {
     var l = arguments.length;
     return l
@@ -32012,10 +32484,18 @@ function bind (fn, ctx) {
         : fn.call(ctx, a)
       : fn.call(ctx)
   }
-  // record original fn length
+
   boundFn._length = fn.length;
   return boundFn
 }
+
+function nativeBind (fn, ctx) {
+  return fn.bind(ctx)
+}
+
+var bind = Function.prototype.bind
+  ? nativeBind
+  : polyfillBind;
 
 /**
  * Convert an Array-like object to a real Array.
@@ -32053,10 +32533,12 @@ function toObject (arr) {
   return res
 }
 
+/* eslint-disable no-unused-vars */
+
 /**
  * Perform no operation.
  * Stubbing args to make Flow happy without leaving useless transpiled code
- * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/)
+ * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/).
  */
 function noop (a, b, c) {}
 
@@ -32065,13 +32547,15 @@ function noop (a, b, c) {}
  */
 var no = function (a, b, c) { return false; };
 
+/* eslint-enable no-unused-vars */
+
 /**
- * Return same value
+ * Return the same value.
  */
 var identity = function (_) { return _; };
 
 /**
- * Generate a static keys string from compiler modules.
+ * Generate a string containing static keys from compiler modules.
  */
 function genStaticKeys (modules) {
   return modules.reduce(function (keys, m) {
@@ -32095,6 +32579,8 @@ function looseEqual (a, b) {
         return a.length === b.length && a.every(function (e, i) {
           return looseEqual(e, b[i])
         })
+      } else if (a instanceof Date && b instanceof Date) {
+        return a.getTime() === b.getTime()
       } else if (!isArrayA && !isArrayB) {
         var keysA = Object.keys(a);
         var keysB = Object.keys(b);
@@ -32116,6 +32602,11 @@ function looseEqual (a, b) {
   }
 }
 
+/**
+ * Return the first index at which a loosely equal value can be
+ * found in the array (if value is a plain object, the array must
+ * contain an object of the same shape), or -1 if it is not present.
+ */
 function looseIndexOf (arr, val) {
   for (var i = 0; i < arr.length; i++) {
     if (looseEqual(arr[i], val)) { return i }
@@ -32155,10 +32646,13 @@ var LIFECYCLE_HOOKS = [
   'destroyed',
   'activated',
   'deactivated',
-  'errorCaptured'
+  'errorCaptured',
+  'serverPrefetch'
 ];
 
 /*  */
+
+
 
 var config = ({
   /**
@@ -32243,12 +32737,25 @@ var config = ({
   mustUseProp: no,
 
   /**
+   * Perform updates asynchronously. Intended to be used by Vue Test Utils
+   * This will significantly reduce performance if set to false.
+   */
+  async: true,
+
+  /**
    * Exposed for legacy reasons
    */
   _lifecycleHooks: LIFECYCLE_HOOKS
 });
 
 /*  */
+
+/**
+ * unicode letters used for parsing html tags, component names and property paths.
+ * using https://www.w3.org/TR/html53/semantics-scripting.html#potentialcustomelementname
+ * skipping \u10000-\uEFFFF due to it freezing up PhantomJS
+ */
+var unicodeRegExp = /a-zA-Z\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD/;
 
 /**
  * Check if a string starts with $ or _
@@ -32273,7 +32780,7 @@ function def (obj, key, val, enumerable) {
 /**
  * Parse simple path.
  */
-var bailRE = /[^\w.$]/;
+var bailRE = new RegExp(("[^" + (unicodeRegExp.source) + ".$_\\d]"));
 function parsePath (path) {
   if (bailRE.test(path)) {
     return
@@ -32290,7 +32797,6 @@ function parsePath (path) {
 
 /*  */
 
-
 // can we use __proto__?
 var hasProto = '__proto__' in {};
 
@@ -32305,6 +32811,8 @@ var isEdge = UA && UA.indexOf('edge/') > 0;
 var isAndroid = (UA && UA.indexOf('android') > 0) || (weexPlatform === 'android');
 var isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || (weexPlatform === 'ios');
 var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
+var isPhantomJS = UA && /phantomjs/.test(UA);
+var isFF = UA && UA.match(/firefox\/(\d+)/);
 
 // Firefox has a "watch" function on Object.prototype...
 var nativeWatch = ({}).watch;
@@ -32329,10 +32837,10 @@ var _isServer;
 var isServerRendering = function () {
   if (_isServer === undefined) {
     /* istanbul ignore if */
-    if (!inBrowser && typeof global !== 'undefined') {
+    if (!inBrowser && !inWeex && typeof global !== 'undefined') {
       // detect presence of vue-server-renderer and avoid
       // Webpack shimming the process
-      _isServer = global['process'].env.VUE_ENV === 'server';
+      _isServer = global['process'] && global['process'].env.VUE_ENV === 'server';
     } else {
       _isServer = false;
     }
@@ -32359,7 +32867,7 @@ if (typeof Set !== 'undefined' && isNative(Set)) {
   _Set = Set;
 } else {
   // a non-standard Set polyfill that only works with primitive keys.
-  _Set = (function () {
+  _Set = /*@__PURE__*/(function () {
     function Set () {
       this.set = Object.create(null);
     }
@@ -32384,7 +32892,7 @@ var tip = noop;
 var generateComponentTrace = (noop); // work around flow check
 var formatComponentName = (noop);
 
-if (true) {
+{
   var hasConsole = typeof console !== 'undefined';
   var classifyRE = /(?:^|[-_])(\w)/g;
   var classify = function (str) { return str
@@ -32417,7 +32925,7 @@ if (true) {
       ? vm.options
       : vm._isVue
         ? vm.$options || vm.constructor.options
-        : vm || {};
+        : vm;
     var name = options.name || options._componentTag;
     var file = options.__file;
     if (!name && file) {
@@ -32473,7 +32981,6 @@ if (true) {
 
 /*  */
 
-
 var uid = 0;
 
 /**
@@ -32502,24 +33009,31 @@ Dep.prototype.depend = function depend () {
 Dep.prototype.notify = function notify () {
   // stabilize the subscriber list first
   var subs = this.subs.slice();
+  if (!config.async) {
+    // subs aren't sorted in scheduler if not running async
+    // we need to sort them now to make sure they fire in correct
+    // order
+    subs.sort(function (a, b) { return a.id - b.id; });
+  }
   for (var i = 0, l = subs.length; i < l; i++) {
     subs[i].update();
   }
 };
 
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
+// The current target watcher being evaluated.
+// This is globally unique because only one watcher
+// can be evaluated at a time.
 Dep.target = null;
 var targetStack = [];
 
-function pushTarget (_target) {
-  if (Dep.target) { targetStack.push(Dep.target); }
-  Dep.target = _target;
+function pushTarget (target) {
+  targetStack.push(target);
+  Dep.target = target;
 }
 
 function popTarget () {
-  Dep.target = targetStack.pop();
+  targetStack.pop();
+  Dep.target = targetStack[targetStack.length - 1];
 }
 
 /*  */
@@ -32586,16 +33100,18 @@ function createTextVNode (val) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
-function cloneVNode (vnode, deep) {
-  var componentOptions = vnode.componentOptions;
+function cloneVNode (vnode) {
   var cloned = new VNode(
     vnode.tag,
     vnode.data,
-    vnode.children,
+    // #7975
+    // clone children array to avoid mutating original in case of cloning
+    // a child.
+    vnode.children && vnode.children.slice(),
     vnode.text,
     vnode.elm,
     vnode.context,
-    componentOptions,
+    vnode.componentOptions,
     vnode.asyncFactory
   );
   cloned.ns = vnode.ns;
@@ -32605,25 +33121,9 @@ function cloneVNode (vnode, deep) {
   cloned.fnContext = vnode.fnContext;
   cloned.fnOptions = vnode.fnOptions;
   cloned.fnScopeId = vnode.fnScopeId;
+  cloned.asyncMeta = vnode.asyncMeta;
   cloned.isCloned = true;
-  if (deep) {
-    if (vnode.children) {
-      cloned.children = cloneVNodes(vnode.children, true);
-    }
-    if (componentOptions && componentOptions.children) {
-      componentOptions.children = cloneVNodes(componentOptions.children, true);
-    }
-  }
   return cloned
-}
-
-function cloneVNodes (vnodes, deep) {
-  var len = vnodes.length;
-  var res = new Array(len);
-  for (var i = 0; i < len; i++) {
-    res[i] = cloneVNode(vnodes[i], deep);
-  }
-  return res
 }
 
 /*
@@ -32632,7 +33132,9 @@ function cloneVNodes (vnodes, deep) {
  */
 
 var arrayProto = Array.prototype;
-var arrayMethods = Object.create(arrayProto);[
+var arrayMethods = Object.create(arrayProto);
+
+var methodsToPatch = [
   'push',
   'pop',
   'shift',
@@ -32640,7 +33142,12 @@ var arrayMethods = Object.create(arrayProto);[
   'splice',
   'sort',
   'reverse'
-].forEach(function (method) {
+];
+
+/**
+ * Intercept mutating methods and emit events
+ */
+methodsToPatch.forEach(function (method) {
   // cache original method
   var original = arrayProto[method];
   def(arrayMethods, method, function mutator () {
@@ -32671,20 +33178,20 @@ var arrayMethods = Object.create(arrayProto);[
 var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 /**
- * By default, when a reactive property is set, the new value is
- * also converted to become reactive. However when passing down props,
- * we don't want to force conversion because the value may be a nested value
- * under a frozen data structure. Converting it would defeat the optimization.
+ * In some cases we may want to disable observation inside a component's
+ * update computation.
  */
-var observerState = {
-  shouldConvert: true
-};
+var shouldObserve = true;
+
+function toggleObserving (value) {
+  shouldObserve = value;
+}
 
 /**
- * Observer class that are attached to each observed
- * object. Once attached, the observer converts target
+ * Observer class that is attached to each observed
+ * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
- * collect dependencies and dispatches updates.
+ * collect dependencies and dispatch updates.
  */
 var Observer = function Observer (value) {
   this.value = value;
@@ -32692,10 +33199,11 @@ var Observer = function Observer (value) {
   this.vmCount = 0;
   def(value, '__ob__', this);
   if (Array.isArray(value)) {
-    var augment = hasProto
-      ? protoAugment
-      : copyAugment;
-    augment(value, arrayMethods, arrayKeys);
+    if (hasProto) {
+      protoAugment(value, arrayMethods);
+    } else {
+      copyAugment(value, arrayMethods, arrayKeys);
+    }
     this.observeArray(value);
   } else {
     this.walk(value);
@@ -32703,14 +33211,14 @@ var Observer = function Observer (value) {
 };
 
 /**
- * Walk through each property and convert them into
+ * Walk through all properties and convert them into
  * getter/setters. This method should only be called when
  * value type is Object.
  */
 Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
   for (var i = 0; i < keys.length; i++) {
-    defineReactive(obj, keys[i], obj[keys[i]]);
+    defineReactive$$1(obj, keys[i]);
   }
 };
 
@@ -32726,17 +33234,17 @@ Observer.prototype.observeArray = function observeArray (items) {
 // helpers
 
 /**
- * Augment an target Object or Array by intercepting
+ * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
  */
-function protoAugment (target, src, keys) {
+function protoAugment (target, src) {
   /* eslint-disable no-proto */
   target.__proto__ = src;
   /* eslint-enable no-proto */
 }
 
 /**
- * Augment an target Object or Array by defining
+ * Augment a target Object or Array by defining
  * hidden properties.
  */
 /* istanbul ignore next */
@@ -32760,7 +33268,7 @@ function observe (value, asRootData) {
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__;
   } else if (
-    observerState.shouldConvert &&
+    shouldObserve &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
     Object.isExtensible(value) &&
@@ -32777,7 +33285,7 @@ function observe (value, asRootData) {
 /**
  * Define a reactive property on an Object.
  */
-function defineReactive (
+function defineReactive$$1 (
   obj,
   key,
   val,
@@ -32794,6 +33302,9 @@ function defineReactive (
   // cater for pre-defined getter/setters
   var getter = property && property.get;
   var setter = property && property.set;
+  if ((!getter || setter) && arguments.length === 2) {
+    val = obj[key];
+  }
 
   var childOb = !shallow && observe(val);
   Object.defineProperty(obj, key, {
@@ -32819,9 +33330,11 @@ function defineReactive (
         return
       }
       /* eslint-enable no-self-compare */
-      if ("development" !== 'production' && customSetter) {
+      if (customSetter) {
         customSetter();
       }
+      // #7981: for accessor properties without setter
+      if (getter && !setter) { return }
       if (setter) {
         setter.call(obj, newVal);
       } else {
@@ -32839,6 +33352,10 @@ function defineReactive (
  * already exist.
  */
 function set (target, key, val) {
+  if (isUndef(target) || isPrimitive(target)
+  ) {
+    warn(("Cannot set reactive property on undefined, null, or primitive value: " + ((target))));
+  }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key);
     target.splice(key, 1, val);
@@ -32850,7 +33367,7 @@ function set (target, key, val) {
   }
   var ob = (target).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
-    "development" !== 'production' && warn(
+    warn(
       'Avoid adding reactive properties to a Vue instance or its root $data ' +
       'at runtime - declare it upfront in the data option.'
     );
@@ -32860,7 +33377,7 @@ function set (target, key, val) {
     target[key] = val;
     return val
   }
-  defineReactive(ob.value, key, val);
+  defineReactive$$1(ob.value, key, val);
   ob.dep.notify();
   return val
 }
@@ -32869,13 +33386,17 @@ function set (target, key, val) {
  * Delete a property and trigger change if necessary.
  */
 function del (target, key) {
+  if (isUndef(target) || isPrimitive(target)
+  ) {
+    warn(("Cannot delete reactive property on undefined, null, or primitive value: " + ((target))));
+  }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.splice(key, 1);
     return
   }
   var ob = (target).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
-    "development" !== 'production' && warn(
+    warn(
       'Avoid deleting properties on a Vue instance or its root $data ' +
       '- just set it to null.'
     );
@@ -32917,7 +33438,7 @@ var strats = config.optionMergeStrategies;
 /**
  * Options with restrictions
  */
-if (true) {
+{
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
       warn(
@@ -32935,14 +33456,24 @@ if (true) {
 function mergeData (to, from) {
   if (!from) { return to }
   var key, toVal, fromVal;
-  var keys = Object.keys(from);
+
+  var keys = hasSymbol
+    ? Reflect.ownKeys(from)
+    : Object.keys(from);
+
   for (var i = 0; i < keys.length; i++) {
     key = keys[i];
+    // in case the object is already observed...
+    if (key === '__ob__') { continue }
     toVal = to[key];
     fromVal = from[key];
     if (!hasOwn(to, key)) {
       set(to, key, fromVal);
-    } else if (isPlainObject(toVal) && isPlainObject(fromVal)) {
+    } else if (
+      toVal !== fromVal &&
+      isPlainObject(toVal) &&
+      isPlainObject(fromVal)
+    ) {
       mergeData(toVal, fromVal);
     }
   }
@@ -33001,7 +33532,7 @@ strats.data = function (
 ) {
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
-      "development" !== 'production' && warn(
+      warn(
         'The "data" option should be a function ' +
         'that returns a per-instance value in component ' +
         'definitions.',
@@ -33023,13 +33554,26 @@ function mergeHook (
   parentVal,
   childVal
 ) {
-  return childVal
+  var res = childVal
     ? parentVal
       ? parentVal.concat(childVal)
       : Array.isArray(childVal)
         ? childVal
         : [childVal]
-    : parentVal
+    : parentVal;
+  return res
+    ? dedupeHooks(res)
+    : res
+}
+
+function dedupeHooks (hooks) {
+  var res = [];
+  for (var i = 0; i < hooks.length; i++) {
+    if (res.indexOf(hooks[i]) === -1) {
+      res.push(hooks[i]);
+    }
+  }
+  return res
 }
 
 LIFECYCLE_HOOKS.forEach(function (hook) {
@@ -33051,7 +33595,7 @@ function mergeAssets (
 ) {
   var res = Object.create(parentVal || null);
   if (childVal) {
-    "development" !== 'production' && assertObjectType(key, childVal, vm);
+    assertObjectType(key, childVal, vm);
     return extend(res, childVal)
   } else {
     return res
@@ -33079,7 +33623,7 @@ strats.watch = function (
   if (childVal === nativeWatch) { childVal = undefined; }
   /* istanbul ignore if */
   if (!childVal) { return Object.create(parentVal || null) }
-  if (true) {
+  {
     assertObjectType(key, childVal, vm);
   }
   if (!parentVal) { return childVal }
@@ -33140,11 +33684,10 @@ function checkComponents (options) {
 }
 
 function validateComponentName (name) {
-  if (!/^[a-zA-Z][\w-]*$/.test(name)) {
+  if (!new RegExp(("^[a-zA-Z][\\-\\.0-9_" + (unicodeRegExp.source) + "]*$")).test(name)) {
     warn(
       'Invalid component name: "' + name + '". Component names ' +
-      'can only contain alphanumeric characters and the hyphen, ' +
-      'and must start with a letter.'
+      'should conform to valid custom element name in html5 specification.'
     );
   }
   if (isBuiltInTag(name) || config.isReservedTag(name)) {
@@ -33171,7 +33714,7 @@ function normalizeProps (options, vm) {
       if (typeof val === 'string') {
         name = camelize(val);
         res[name] = { type: null };
-      } else if (true) {
+      } else {
         warn('props must be strings when using array syntax.');
       }
     }
@@ -33183,7 +33726,7 @@ function normalizeProps (options, vm) {
         ? val
         : { type: val };
     }
-  } else if (true) {
+  } else {
     warn(
       "Invalid value for option \"props\": expected an Array or an Object, " +
       "but got " + (toRawType(props)) + ".",
@@ -33211,7 +33754,7 @@ function normalizeInject (options, vm) {
         ? extend({ from: key }, val)
         : { from: val };
     }
-  } else if (true) {
+  } else {
     warn(
       "Invalid value for option \"inject\": expected an Array or an Object, " +
       "but got " + (toRawType(inject)) + ".",
@@ -33227,9 +33770,9 @@ function normalizeDirectives (options) {
   var dirs = options.directives;
   if (dirs) {
     for (var key in dirs) {
-      var def = dirs[key];
-      if (typeof def === 'function') {
-        dirs[key] = { bind: def, update: def };
+      var def$$1 = dirs[key];
+      if (typeof def$$1 === 'function') {
+        dirs[key] = { bind: def$$1, update: def$$1 };
       }
     }
   }
@@ -33254,7 +33797,7 @@ function mergeOptions (
   child,
   vm
 ) {
-  if (true) {
+  {
     checkComponents(child);
   }
 
@@ -33265,15 +33808,22 @@ function mergeOptions (
   normalizeProps(child, vm);
   normalizeInject(child, vm);
   normalizeDirectives(child);
-  var extendsFrom = child.extends;
-  if (extendsFrom) {
-    parent = mergeOptions(parent, extendsFrom, vm);
-  }
-  if (child.mixins) {
-    for (var i = 0, l = child.mixins.length; i < l; i++) {
-      parent = mergeOptions(parent, child.mixins[i], vm);
+
+  // Apply extends and mixins on the child options,
+  // but only if it is a raw options object that isn't
+  // the result of another mergeOptions call.
+  // Only merged options has the _base property.
+  if (!child._base) {
+    if (child.extends) {
+      parent = mergeOptions(parent, child.extends, vm);
+    }
+    if (child.mixins) {
+      for (var i = 0, l = child.mixins.length; i < l; i++) {
+        parent = mergeOptions(parent, child.mixins[i], vm);
+      }
     }
   }
+
   var options = {};
   var key;
   for (key in parent) {
@@ -33315,7 +33865,7 @@ function resolveAsset (
   if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
   // fallback to prototype chain
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
-  if ("development" !== 'production' && warnMissing && !res) {
+  if (warnMissing && !res) {
     warn(
       'Failed to resolve ' + type.slice(0, -1) + ': ' + id,
       options
@@ -33326,6 +33876,8 @@ function resolveAsset (
 
 /*  */
 
+
+
 function validateProp (
   key,
   propOptions,
@@ -33335,12 +33887,18 @@ function validateProp (
   var prop = propOptions[key];
   var absent = !hasOwn(propsData, key);
   var value = propsData[key];
-  // handle boolean props
-  if (isType(Boolean, prop.type)) {
+  // boolean casting
+  var booleanIndex = getTypeIndex(Boolean, prop.type);
+  if (booleanIndex > -1) {
     if (absent && !hasOwn(prop, 'default')) {
       value = false;
-    } else if (!isType(String, prop.type) && (value === '' || value === hyphenate(key))) {
-      value = true;
+    } else if (value === '' || value === hyphenate(key)) {
+      // only cast empty string / same name to boolean if
+      // boolean has higher priority
+      var stringIndex = getTypeIndex(String, prop.type);
+      if (stringIndex < 0 || booleanIndex < stringIndex) {
+        value = true;
+      }
     }
   }
   // check default value
@@ -33348,14 +33906,12 @@ function validateProp (
     value = getPropDefaultValue(vm, prop, key);
     // since the default value is a fresh copy,
     // make sure to observe it.
-    var prevShouldConvert = observerState.shouldConvert;
-    observerState.shouldConvert = true;
+    var prevShouldObserve = shouldObserve;
+    toggleObserving(true);
     observe(value);
-    observerState.shouldConvert = prevShouldConvert;
+    toggleObserving(prevShouldObserve);
   }
-  if (
-    true
-  ) {
+  {
     assertProp(prop, key, value, vm, absent);
   }
   return value
@@ -33371,7 +33927,7 @@ function getPropDefaultValue (vm, prop, key) {
   }
   var def = prop.default;
   // warn against non-factory defaults for Object & Array
-  if ("development" !== 'production' && isObject(def)) {
+  if (isObject(def)) {
     warn(
       'Invalid default value for prop "' + key + '": ' +
       'Props with type Object/Array must use a factory function ' +
@@ -33427,11 +33983,10 @@ function assertProp (
       valid = assertedType.valid;
     }
   }
+
   if (!valid) {
     warn(
-      "Invalid prop: type check failed for prop \"" + name + "\"." +
-      " Expected " + (expectedTypes.map(capitalize).join(', ')) +
-      ", got " + (toRawType(value)) + ".",
+      getInvalidTypeMessage(name, value, expectedTypes),
       vm
     );
     return
@@ -33482,39 +34037,114 @@ function getType (fn) {
   return match ? match[1] : ''
 }
 
-function isType (type, fn) {
-  if (!Array.isArray(fn)) {
-    return getType(fn) === getType(type)
+function isSameType (a, b) {
+  return getType(a) === getType(b)
+}
+
+function getTypeIndex (type, expectedTypes) {
+  if (!Array.isArray(expectedTypes)) {
+    return isSameType(expectedTypes, type) ? 0 : -1
   }
-  for (var i = 0, len = fn.length; i < len; i++) {
-    if (getType(fn[i]) === getType(type)) {
-      return true
+  for (var i = 0, len = expectedTypes.length; i < len; i++) {
+    if (isSameType(expectedTypes[i], type)) {
+      return i
     }
   }
-  /* istanbul ignore next */
-  return false
+  return -1
+}
+
+function getInvalidTypeMessage (name, value, expectedTypes) {
+  var message = "Invalid prop: type check failed for prop \"" + name + "\"." +
+    " Expected " + (expectedTypes.map(capitalize).join(', '));
+  var expectedType = expectedTypes[0];
+  var receivedType = toRawType(value);
+  var expectedValue = styleValue(value, expectedType);
+  var receivedValue = styleValue(value, receivedType);
+  // check if we need to specify expected value
+  if (expectedTypes.length === 1 &&
+      isExplicable(expectedType) &&
+      !isBoolean(expectedType, receivedType)) {
+    message += " with value " + expectedValue;
+  }
+  message += ", got " + receivedType + " ";
+  // check if we need to specify received value
+  if (isExplicable(receivedType)) {
+    message += "with value " + receivedValue + ".";
+  }
+  return message
+}
+
+function styleValue (value, type) {
+  if (type === 'String') {
+    return ("\"" + value + "\"")
+  } else if (type === 'Number') {
+    return ("" + (Number(value)))
+  } else {
+    return ("" + value)
+  }
+}
+
+function isExplicable (value) {
+  var explicitTypes = ['string', 'number', 'boolean'];
+  return explicitTypes.some(function (elem) { return value.toLowerCase() === elem; })
+}
+
+function isBoolean () {
+  var args = [], len = arguments.length;
+  while ( len-- ) args[ len ] = arguments[ len ];
+
+  return args.some(function (elem) { return elem.toLowerCase() === 'boolean'; })
 }
 
 /*  */
 
 function handleError (err, vm, info) {
-  if (vm) {
-    var cur = vm;
-    while ((cur = cur.$parent)) {
-      var hooks = cur.$options.errorCaptured;
-      if (hooks) {
-        for (var i = 0; i < hooks.length; i++) {
-          try {
-            var capture = hooks[i].call(cur, err, vm, info) === false;
-            if (capture) { return }
-          } catch (e) {
-            globalHandleError(e, cur, 'errorCaptured hook');
+  // Deactivate deps tracking while processing error handler to avoid possible infinite rendering.
+  // See: https://github.com/vuejs/vuex/issues/1505
+  pushTarget();
+  try {
+    if (vm) {
+      var cur = vm;
+      while ((cur = cur.$parent)) {
+        var hooks = cur.$options.errorCaptured;
+        if (hooks) {
+          for (var i = 0; i < hooks.length; i++) {
+            try {
+              var capture = hooks[i].call(cur, err, vm, info) === false;
+              if (capture) { return }
+            } catch (e) {
+              globalHandleError(e, cur, 'errorCaptured hook');
+            }
           }
         }
       }
     }
+    globalHandleError(err, vm, info);
+  } finally {
+    popTarget();
   }
-  globalHandleError(err, vm, info);
+}
+
+function invokeWithErrorHandling (
+  handler,
+  context,
+  args,
+  vm,
+  info
+) {
+  var res;
+  try {
+    res = args ? handler.apply(context, args) : handler.call(context);
+    if (res && !res._isVue && isPromise(res) && !res._handled) {
+      res.catch(function (e) { return handleError(e, vm, info + " (Promise/async)"); });
+      // issue #9511
+      // avoid catch triggering multiple times when nested calls
+      res._handled = true;
+    }
+  } catch (e) {
+    handleError(e, vm, info);
+  }
+  return res
 }
 
 function globalHandleError (err, vm, info) {
@@ -33522,14 +34152,18 @@ function globalHandleError (err, vm, info) {
     try {
       return config.errorHandler.call(null, err, vm, info)
     } catch (e) {
-      logError(e, null, 'config.errorHandler');
+      // if the user intentionally throws the original error in the handler,
+      // do not log it twice
+      if (e !== err) {
+        logError(e, null, 'config.errorHandler');
+      }
     }
   }
   logError(err, vm, info);
 }
 
 function logError (err, vm, info) {
-  if (true) {
+  {
     warn(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
   }
   /* istanbul ignore else */
@@ -33541,7 +34175,8 @@ function logError (err, vm, info) {
 }
 
 /*  */
-/* globals MessageChannel */
+
+var isUsingMicroTask = false;
 
 var callbacks = [];
 var pending = false;
@@ -33555,74 +34190,69 @@ function flushCallbacks () {
   }
 }
 
-// Here we have async deferring wrappers using both micro and macro tasks.
-// In < 2.4 we used micro tasks everywhere, but there are some scenarios where
-// micro tasks have too high a priority and fires in between supposedly
-// sequential events (e.g. #4521, #6690) or even between bubbling of the same
-// event (#6566). However, using macro tasks everywhere also has subtle problems
-// when state is changed right before repaint (e.g. #6813, out-in transitions).
-// Here we use micro task by default, but expose a way to force macro task when
-// needed (e.g. in event handlers attached by v-on).
-var microTimerFunc;
-var macroTimerFunc;
-var useMacroTask = false;
+// Here we have async deferring wrappers using microtasks.
+// In 2.5 we used (macro) tasks (in combination with microtasks).
+// However, it has subtle problems when state is changed right before repaint
+// (e.g. #6813, out-in transitions).
+// Also, using (macro) tasks in event handler would cause some weird behaviors
+// that cannot be circumvented (e.g. #7109, #7153, #7546, #7834, #8109).
+// So we now use microtasks everywhere, again.
+// A major drawback of this tradeoff is that there are some scenarios
+// where microtasks have too high a priority and fire in between supposedly
+// sequential events (e.g. #4521, #6690, which have workarounds)
+// or even between bubbling of the same event (#6566).
+var timerFunc;
 
-// Determine (macro) Task defer implementation.
-// Technically setImmediate should be the ideal choice, but it's only available
-// in IE. The only polyfill that consistently queues the callback after all DOM
-// events triggered in the same loop is by using MessageChannel.
-/* istanbul ignore if */
-if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
-  macroTimerFunc = function () {
-    setImmediate(flushCallbacks);
-  };
-} else if (typeof MessageChannel !== 'undefined' && (
-  isNative(MessageChannel) ||
-  // PhantomJS
-  MessageChannel.toString() === '[object MessageChannelConstructor]'
-)) {
-  var channel = new MessageChannel();
-  var port = channel.port2;
-  channel.port1.onmessage = flushCallbacks;
-  macroTimerFunc = function () {
-    port.postMessage(1);
-  };
-} else {
-  /* istanbul ignore next */
-  macroTimerFunc = function () {
-    setTimeout(flushCallbacks, 0);
-  };
-}
-
-// Determine MicroTask defer implementation.
+// The nextTick behavior leverages the microtask queue, which can be accessed
+// via either native Promise.then or MutationObserver.
+// MutationObserver has wider support, however it is seriously bugged in
+// UIWebView in iOS >= 9.3.3 when triggered in touch event handlers. It
+// completely stops working after triggering a few times... so, if native
+// Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   var p = Promise.resolve();
-  microTimerFunc = function () {
+  timerFunc = function () {
     p.then(flushCallbacks);
-    // in problematic UIWebViews, Promise.then doesn't completely break, but
+    // In problematic UIWebViews, Promise.then doesn't completely break, but
     // it can get stuck in a weird state where callbacks are pushed into the
     // microtask queue but the queue isn't being flushed, until the browser
     // needs to do some other work, e.g. handle a timer. Therefore we can
     // "force" the microtask queue to be flushed by adding an empty timer.
     if (isIOS) { setTimeout(noop); }
   };
+  isUsingMicroTask = true;
+} else if (!isIE && typeof MutationObserver !== 'undefined' && (
+  isNative(MutationObserver) ||
+  // PhantomJS and iOS 7.x
+  MutationObserver.toString() === '[object MutationObserverConstructor]'
+)) {
+  // Use MutationObserver where native Promise is not available,
+  // e.g. PhantomJS, iOS7, Android 4.4
+  // (#6466 MutationObserver is unreliable in IE11)
+  var counter = 1;
+  var observer = new MutationObserver(flushCallbacks);
+  var textNode = document.createTextNode(String(counter));
+  observer.observe(textNode, {
+    characterData: true
+  });
+  timerFunc = function () {
+    counter = (counter + 1) % 2;
+    textNode.data = String(counter);
+  };
+  isUsingMicroTask = true;
+} else if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+  // Fallback to setImmediate.
+  // Techinically it leverages the (macro) task queue,
+  // but it is still a better choice than setTimeout.
+  timerFunc = function () {
+    setImmediate(flushCallbacks);
+  };
 } else {
-  // fallback to macro
-  microTimerFunc = macroTimerFunc;
-}
-
-/**
- * Wrap a function so that if any code inside triggers state change,
- * the changes are queued using a Task instead of a MicroTask.
- */
-function withMacroTask (fn) {
-  return fn._withTask || (fn._withTask = function () {
-    useMacroTask = true;
-    var res = fn.apply(null, arguments);
-    useMacroTask = false;
-    return res
-  })
+  // Fallback to setTimeout.
+  timerFunc = function () {
+    setTimeout(flushCallbacks, 0);
+  };
 }
 
 function nextTick (cb, ctx) {
@@ -33640,11 +34270,7 @@ function nextTick (cb, ctx) {
   });
   if (!pending) {
     pending = true;
-    if (useMacroTask) {
-      macroTimerFunc();
-    } else {
-      microTimerFunc();
-    }
+    timerFunc();
   }
   // $flow-disable-line
   if (!cb && typeof Promise !== 'undefined') {
@@ -33659,7 +34285,7 @@ function nextTick (cb, ctx) {
 var mark;
 var measure;
 
-if (true) {
+{
   var perf = inBrowser && window.performance;
   /* istanbul ignore if */
   if (
@@ -33674,7 +34300,7 @@ if (true) {
       perf.measure(name, startTag, endTag);
       perf.clearMarks(startTag);
       perf.clearMarks(endTag);
-      perf.clearMeasures(name);
+      // perf.clearMeasures(name)
     };
   }
 }
@@ -33683,7 +34309,7 @@ if (true) {
 
 var initProxy;
 
-if (true) {
+{
   var allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
     'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
@@ -33702,9 +34328,18 @@ if (true) {
     );
   };
 
+  var warnReservedPrefix = function (target, key) {
+    warn(
+      "Property \"" + key + "\" must be accessed with \"$data." + key + "\" because " +
+      'properties starting with "$" or "_" are not proxied in the Vue instance to ' +
+      'prevent conflicts with Vue internals' +
+      'See: https://vuejs.org/v2/api/#data',
+      target
+    );
+  };
+
   var hasProxy =
-    typeof Proxy !== 'undefined' &&
-    Proxy.toString().match(/native code/);
+    typeof Proxy !== 'undefined' && isNative(Proxy);
 
   if (hasProxy) {
     var isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact');
@@ -33724,9 +34359,11 @@ if (true) {
   var hasHandler = {
     has: function has (target, key) {
       var has = key in target;
-      var isAllowed = allowedGlobals(key) || key.charAt(0) === '_';
+      var isAllowed = allowedGlobals(key) ||
+        (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data));
       if (!has && !isAllowed) {
-        warnNonPresent(target, key);
+        if (key in target.$data) { warnReservedPrefix(target, key); }
+        else { warnNonPresent(target, key); }
       }
       return has || !isAllowed
     }
@@ -33735,7 +34372,8 @@ if (true) {
   var getHandler = {
     get: function get (target, key) {
       if (typeof key === 'string' && !(key in target)) {
-        warnNonPresent(target, key);
+        if (key in target.$data) { warnReservedPrefix(target, key); }
+        else { warnNonPresent(target, key); }
       }
       return target[key]
     }
@@ -33772,7 +34410,7 @@ function traverse (val) {
 function _traverse (val, seen) {
   var i, keys;
   var isA = Array.isArray(val);
-  if ((!isA && !isObject(val)) || Object.isFrozen(val)) {
+  if ((!isA && !isObject(val)) || Object.isFrozen(val) || val instanceof VNode) {
     return
   }
   if (val.__ob__) {
@@ -33809,7 +34447,7 @@ var normalizeEvent = cached(function (name) {
   }
 });
 
-function createFnInvoker (fns) {
+function createFnInvoker (fns, vm) {
   function invoker () {
     var arguments$1 = arguments;
 
@@ -33817,11 +34455,11 @@ function createFnInvoker (fns) {
     if (Array.isArray(fns)) {
       var cloned = fns.slice();
       for (var i = 0; i < cloned.length; i++) {
-        cloned[i].apply(null, arguments$1);
+        invokeWithErrorHandling(cloned[i], null, arguments$1, vm, "v-on handler");
       }
     } else {
       // return handler return value for single handlers
-      return fns.apply(null, arguments)
+      return invokeWithErrorHandling(fns, null, arguments, vm, "v-on handler")
     }
   }
   invoker.fns = fns;
@@ -33833,24 +34471,27 @@ function updateListeners (
   oldOn,
   add,
   remove$$1,
+  createOnceHandler,
   vm
 ) {
-  var name, def, cur, old, event;
+  var name, def$$1, cur, old, event;
   for (name in on) {
-    def = cur = on[name];
+    def$$1 = cur = on[name];
     old = oldOn[name];
     event = normalizeEvent(name);
-    /* istanbul ignore if */
     if (isUndef(cur)) {
-      "development" !== 'production' && warn(
+      warn(
         "Invalid handler for event \"" + (event.name) + "\": got " + String(cur),
         vm
       );
     } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
-        cur = on[name] = createFnInvoker(cur);
+        cur = on[name] = createFnInvoker(cur, vm);
       }
-      add(event.name, cur, event.once, event.capture, event.passive, event.params);
+      if (isTrue(event.once)) {
+        cur = on[name] = createOnceHandler(event.name, cur, event.capture);
+      }
+      add(event.name, cur, event.capture, event.passive, event.params);
     } else if (cur !== old) {
       old.fns = cur;
       on[name] = old;
@@ -33919,7 +34560,7 @@ function extractPropsFromVNodeData (
   if (isDef(attrs) || isDef(props)) {
     for (var key in propOptions) {
       var altKey = hyphenate(key);
-      if (true) {
+      {
         var keyInLowerCase = key.toLowerCase();
         if (
           key !== keyInLowerCase &&
@@ -34056,6 +34697,1167 @@ function normalizeArrayChildren (children, nestedIndex) {
 
 /*  */
 
+function initProvide (vm) {
+  var provide = vm.$options.provide;
+  if (provide) {
+    vm._provided = typeof provide === 'function'
+      ? provide.call(vm)
+      : provide;
+  }
+}
+
+function initInjections (vm) {
+  var result = resolveInject(vm.$options.inject, vm);
+  if (result) {
+    toggleObserving(false);
+    Object.keys(result).forEach(function (key) {
+      /* istanbul ignore else */
+      {
+        defineReactive$$1(vm, key, result[key], function () {
+          warn(
+            "Avoid mutating an injected value directly since the changes will be " +
+            "overwritten whenever the provided component re-renders. " +
+            "injection being mutated: \"" + key + "\"",
+            vm
+          );
+        });
+      }
+    });
+    toggleObserving(true);
+  }
+}
+
+function resolveInject (inject, vm) {
+  if (inject) {
+    // inject is :any because flow is not smart enough to figure out cached
+    var result = Object.create(null);
+    var keys = hasSymbol
+      ? Reflect.ownKeys(inject)
+      : Object.keys(inject);
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      // #6574 in case the inject object is observed...
+      if (key === '__ob__') { continue }
+      var provideKey = inject[key].from;
+      var source = vm;
+      while (source) {
+        if (source._provided && hasOwn(source._provided, provideKey)) {
+          result[key] = source._provided[provideKey];
+          break
+        }
+        source = source.$parent;
+      }
+      if (!source) {
+        if ('default' in inject[key]) {
+          var provideDefault = inject[key].default;
+          result[key] = typeof provideDefault === 'function'
+            ? provideDefault.call(vm)
+            : provideDefault;
+        } else {
+          warn(("Injection \"" + key + "\" not found"), vm);
+        }
+      }
+    }
+    return result
+  }
+}
+
+/*  */
+
+
+
+/**
+ * Runtime helper for resolving raw children VNodes into a slot object.
+ */
+function resolveSlots (
+  children,
+  context
+) {
+  if (!children || !children.length) {
+    return {}
+  }
+  var slots = {};
+  for (var i = 0, l = children.length; i < l; i++) {
+    var child = children[i];
+    var data = child.data;
+    // remove slot attribute if the node is resolved as a Vue slot node
+    if (data && data.attrs && data.attrs.slot) {
+      delete data.attrs.slot;
+    }
+    // named slots should only be respected if the vnode was rendered in the
+    // same context.
+    if ((child.context === context || child.fnContext === context) &&
+      data && data.slot != null
+    ) {
+      var name = data.slot;
+      var slot = (slots[name] || (slots[name] = []));
+      if (child.tag === 'template') {
+        slot.push.apply(slot, child.children || []);
+      } else {
+        slot.push(child);
+      }
+    } else {
+      (slots.default || (slots.default = [])).push(child);
+    }
+  }
+  // ignore slots that contains only whitespace
+  for (var name$1 in slots) {
+    if (slots[name$1].every(isWhitespace)) {
+      delete slots[name$1];
+    }
+  }
+  return slots
+}
+
+function isWhitespace (node) {
+  return (node.isComment && !node.asyncFactory) || node.text === ' '
+}
+
+/*  */
+
+function normalizeScopedSlots (
+  slots,
+  normalSlots,
+  prevSlots
+) {
+  var res;
+  var hasNormalSlots = Object.keys(normalSlots).length > 0;
+  var isStable = slots ? !!slots.$stable : !hasNormalSlots;
+  var key = slots && slots.$key;
+  if (!slots) {
+    res = {};
+  } else if (slots._normalized) {
+    // fast path 1: child component re-render only, parent did not change
+    return slots._normalized
+  } else if (
+    isStable &&
+    prevSlots &&
+    prevSlots !== emptyObject &&
+    key === prevSlots.$key &&
+    !hasNormalSlots &&
+    !prevSlots.$hasNormal
+  ) {
+    // fast path 2: stable scoped slots w/ no normal slots to proxy,
+    // only need to normalize once
+    return prevSlots
+  } else {
+    res = {};
+    for (var key$1 in slots) {
+      if (slots[key$1] && key$1[0] !== '$') {
+        res[key$1] = normalizeScopedSlot(normalSlots, key$1, slots[key$1]);
+      }
+    }
+  }
+  // expose normal slots on scopedSlots
+  for (var key$2 in normalSlots) {
+    if (!(key$2 in res)) {
+      res[key$2] = proxyNormalSlot(normalSlots, key$2);
+    }
+  }
+  // avoriaz seems to mock a non-extensible $scopedSlots object
+  // and when that is passed down this would cause an error
+  if (slots && Object.isExtensible(slots)) {
+    (slots)._normalized = res;
+  }
+  def(res, '$stable', isStable);
+  def(res, '$key', key);
+  def(res, '$hasNormal', hasNormalSlots);
+  return res
+}
+
+function normalizeScopedSlot(normalSlots, key, fn) {
+  var normalized = function () {
+    var res = arguments.length ? fn.apply(null, arguments) : fn({});
+    res = res && typeof res === 'object' && !Array.isArray(res)
+      ? [res] // single vnode
+      : normalizeChildren(res);
+    return res && (
+      res.length === 0 ||
+      (res.length === 1 && res[0].isComment) // #9658
+    ) ? undefined
+      : res
+  };
+  // this is a slot using the new v-slot syntax without scope. although it is
+  // compiled as a scoped slot, render fn users would expect it to be present
+  // on this.$slots because the usage is semantically a normal slot.
+  if (fn.proxy) {
+    Object.defineProperty(normalSlots, key, {
+      get: normalized,
+      enumerable: true,
+      configurable: true
+    });
+  }
+  return normalized
+}
+
+function proxyNormalSlot(slots, key) {
+  return function () { return slots[key]; }
+}
+
+/*  */
+
+/**
+ * Runtime helper for rendering v-for lists.
+ */
+function renderList (
+  val,
+  render
+) {
+  var ret, i, l, keys, key;
+  if (Array.isArray(val) || typeof val === 'string') {
+    ret = new Array(val.length);
+    for (i = 0, l = val.length; i < l; i++) {
+      ret[i] = render(val[i], i);
+    }
+  } else if (typeof val === 'number') {
+    ret = new Array(val);
+    for (i = 0; i < val; i++) {
+      ret[i] = render(i + 1, i);
+    }
+  } else if (isObject(val)) {
+    if (hasSymbol && val[Symbol.iterator]) {
+      ret = [];
+      var iterator = val[Symbol.iterator]();
+      var result = iterator.next();
+      while (!result.done) {
+        ret.push(render(result.value, ret.length));
+        result = iterator.next();
+      }
+    } else {
+      keys = Object.keys(val);
+      ret = new Array(keys.length);
+      for (i = 0, l = keys.length; i < l; i++) {
+        key = keys[i];
+        ret[i] = render(val[key], key, i);
+      }
+    }
+  }
+  if (!isDef(ret)) {
+    ret = [];
+  }
+  (ret)._isVList = true;
+  return ret
+}
+
+/*  */
+
+/**
+ * Runtime helper for rendering <slot>
+ */
+function renderSlot (
+  name,
+  fallback,
+  props,
+  bindObject
+) {
+  var scopedSlotFn = this.$scopedSlots[name];
+  var nodes;
+  if (scopedSlotFn) { // scoped slot
+    props = props || {};
+    if (bindObject) {
+      if (!isObject(bindObject)) {
+        warn(
+          'slot v-bind without argument expects an Object',
+          this
+        );
+      }
+      props = extend(extend({}, bindObject), props);
+    }
+    nodes = scopedSlotFn(props) || fallback;
+  } else {
+    nodes = this.$slots[name] || fallback;
+  }
+
+  var target = props && props.slot;
+  if (target) {
+    return this.$createElement('template', { slot: target }, nodes)
+  } else {
+    return nodes
+  }
+}
+
+/*  */
+
+/**
+ * Runtime helper for resolving filters
+ */
+function resolveFilter (id) {
+  return resolveAsset(this.$options, 'filters', id, true) || identity
+}
+
+/*  */
+
+function isKeyNotMatch (expect, actual) {
+  if (Array.isArray(expect)) {
+    return expect.indexOf(actual) === -1
+  } else {
+    return expect !== actual
+  }
+}
+
+/**
+ * Runtime helper for checking keyCodes from config.
+ * exposed as Vue.prototype._k
+ * passing in eventKeyName as last argument separately for backwards compat
+ */
+function checkKeyCodes (
+  eventKeyCode,
+  key,
+  builtInKeyCode,
+  eventKeyName,
+  builtInKeyName
+) {
+  var mappedKeyCode = config.keyCodes[key] || builtInKeyCode;
+  if (builtInKeyName && eventKeyName && !config.keyCodes[key]) {
+    return isKeyNotMatch(builtInKeyName, eventKeyName)
+  } else if (mappedKeyCode) {
+    return isKeyNotMatch(mappedKeyCode, eventKeyCode)
+  } else if (eventKeyName) {
+    return hyphenate(eventKeyName) !== key
+  }
+}
+
+/*  */
+
+/**
+ * Runtime helper for merging v-bind="object" into a VNode's data.
+ */
+function bindObjectProps (
+  data,
+  tag,
+  value,
+  asProp,
+  isSync
+) {
+  if (value) {
+    if (!isObject(value)) {
+      warn(
+        'v-bind without argument expects an Object or Array value',
+        this
+      );
+    } else {
+      if (Array.isArray(value)) {
+        value = toObject(value);
+      }
+      var hash;
+      var loop = function ( key ) {
+        if (
+          key === 'class' ||
+          key === 'style' ||
+          isReservedAttribute(key)
+        ) {
+          hash = data;
+        } else {
+          var type = data.attrs && data.attrs.type;
+          hash = asProp || config.mustUseProp(tag, type, key)
+            ? data.domProps || (data.domProps = {})
+            : data.attrs || (data.attrs = {});
+        }
+        var camelizedKey = camelize(key);
+        var hyphenatedKey = hyphenate(key);
+        if (!(camelizedKey in hash) && !(hyphenatedKey in hash)) {
+          hash[key] = value[key];
+
+          if (isSync) {
+            var on = data.on || (data.on = {});
+            on[("update:" + key)] = function ($event) {
+              value[key] = $event;
+            };
+          }
+        }
+      };
+
+      for (var key in value) loop( key );
+    }
+  }
+  return data
+}
+
+/*  */
+
+/**
+ * Runtime helper for rendering static trees.
+ */
+function renderStatic (
+  index,
+  isInFor
+) {
+  var cached = this._staticTrees || (this._staticTrees = []);
+  var tree = cached[index];
+  // if has already-rendered static tree and not inside v-for,
+  // we can reuse the same tree.
+  if (tree && !isInFor) {
+    return tree
+  }
+  // otherwise, render a fresh tree.
+  tree = cached[index] = this.$options.staticRenderFns[index].call(
+    this._renderProxy,
+    null,
+    this // for render fns generated for functional component templates
+  );
+  markStatic(tree, ("__static__" + index), false);
+  return tree
+}
+
+/**
+ * Runtime helper for v-once.
+ * Effectively it means marking the node as static with a unique key.
+ */
+function markOnce (
+  tree,
+  index,
+  key
+) {
+  markStatic(tree, ("__once__" + index + (key ? ("_" + key) : "")), true);
+  return tree
+}
+
+function markStatic (
+  tree,
+  key,
+  isOnce
+) {
+  if (Array.isArray(tree)) {
+    for (var i = 0; i < tree.length; i++) {
+      if (tree[i] && typeof tree[i] !== 'string') {
+        markStaticNode(tree[i], (key + "_" + i), isOnce);
+      }
+    }
+  } else {
+    markStaticNode(tree, key, isOnce);
+  }
+}
+
+function markStaticNode (node, key, isOnce) {
+  node.isStatic = true;
+  node.key = key;
+  node.isOnce = isOnce;
+}
+
+/*  */
+
+function bindObjectListeners (data, value) {
+  if (value) {
+    if (!isPlainObject(value)) {
+      warn(
+        'v-on without argument expects an Object value',
+        this
+      );
+    } else {
+      var on = data.on = data.on ? extend({}, data.on) : {};
+      for (var key in value) {
+        var existing = on[key];
+        var ours = value[key];
+        on[key] = existing ? [].concat(existing, ours) : ours;
+      }
+    }
+  }
+  return data
+}
+
+/*  */
+
+function resolveScopedSlots (
+  fns, // see flow/vnode
+  res,
+  // the following are added in 2.6
+  hasDynamicKeys,
+  contentHashKey
+) {
+  res = res || { $stable: !hasDynamicKeys };
+  for (var i = 0; i < fns.length; i++) {
+    var slot = fns[i];
+    if (Array.isArray(slot)) {
+      resolveScopedSlots(slot, res, hasDynamicKeys);
+    } else if (slot) {
+      // marker for reverse proxying v-slot without scope on this.$slots
+      if (slot.proxy) {
+        slot.fn.proxy = true;
+      }
+      res[slot.key] = slot.fn;
+    }
+  }
+  if (contentHashKey) {
+    (res).$key = contentHashKey;
+  }
+  return res
+}
+
+/*  */
+
+function bindDynamicKeys (baseObj, values) {
+  for (var i = 0; i < values.length; i += 2) {
+    var key = values[i];
+    if (typeof key === 'string' && key) {
+      baseObj[values[i]] = values[i + 1];
+    } else if (key !== '' && key !== null) {
+      // null is a speical value for explicitly removing a binding
+      warn(
+        ("Invalid value for dynamic directive argument (expected string or null): " + key),
+        this
+      );
+    }
+  }
+  return baseObj
+}
+
+// helper to dynamically append modifier runtime markers to event names.
+// ensure only append when value is already string, otherwise it will be cast
+// to string and cause the type check to miss.
+function prependModifier (value, symbol) {
+  return typeof value === 'string' ? symbol + value : value
+}
+
+/*  */
+
+function installRenderHelpers (target) {
+  target._o = markOnce;
+  target._n = toNumber;
+  target._s = toString;
+  target._l = renderList;
+  target._t = renderSlot;
+  target._q = looseEqual;
+  target._i = looseIndexOf;
+  target._m = renderStatic;
+  target._f = resolveFilter;
+  target._k = checkKeyCodes;
+  target._b = bindObjectProps;
+  target._v = createTextVNode;
+  target._e = createEmptyVNode;
+  target._u = resolveScopedSlots;
+  target._g = bindObjectListeners;
+  target._d = bindDynamicKeys;
+  target._p = prependModifier;
+}
+
+/*  */
+
+function FunctionalRenderContext (
+  data,
+  props,
+  children,
+  parent,
+  Ctor
+) {
+  var this$1 = this;
+
+  var options = Ctor.options;
+  // ensure the createElement function in functional components
+  // gets a unique context - this is necessary for correct named slot check
+  var contextVm;
+  if (hasOwn(parent, '_uid')) {
+    contextVm = Object.create(parent);
+    // $flow-disable-line
+    contextVm._original = parent;
+  } else {
+    // the context vm passed in is a functional context as well.
+    // in this case we want to make sure we are able to get a hold to the
+    // real context instance.
+    contextVm = parent;
+    // $flow-disable-line
+    parent = parent._original;
+  }
+  var isCompiled = isTrue(options._compiled);
+  var needNormalization = !isCompiled;
+
+  this.data = data;
+  this.props = props;
+  this.children = children;
+  this.parent = parent;
+  this.listeners = data.on || emptyObject;
+  this.injections = resolveInject(options.inject, parent);
+  this.slots = function () {
+    if (!this$1.$slots) {
+      normalizeScopedSlots(
+        data.scopedSlots,
+        this$1.$slots = resolveSlots(children, parent)
+      );
+    }
+    return this$1.$slots
+  };
+
+  Object.defineProperty(this, 'scopedSlots', ({
+    enumerable: true,
+    get: function get () {
+      return normalizeScopedSlots(data.scopedSlots, this.slots())
+    }
+  }));
+
+  // support for compiled functional template
+  if (isCompiled) {
+    // exposing $options for renderStatic()
+    this.$options = options;
+    // pre-resolve slots for renderSlot()
+    this.$slots = this.slots();
+    this.$scopedSlots = normalizeScopedSlots(data.scopedSlots, this.$slots);
+  }
+
+  if (options._scopeId) {
+    this._c = function (a, b, c, d) {
+      var vnode = createElement(contextVm, a, b, c, d, needNormalization);
+      if (vnode && !Array.isArray(vnode)) {
+        vnode.fnScopeId = options._scopeId;
+        vnode.fnContext = parent;
+      }
+      return vnode
+    };
+  } else {
+    this._c = function (a, b, c, d) { return createElement(contextVm, a, b, c, d, needNormalization); };
+  }
+}
+
+installRenderHelpers(FunctionalRenderContext.prototype);
+
+function createFunctionalComponent (
+  Ctor,
+  propsData,
+  data,
+  contextVm,
+  children
+) {
+  var options = Ctor.options;
+  var props = {};
+  var propOptions = options.props;
+  if (isDef(propOptions)) {
+    for (var key in propOptions) {
+      props[key] = validateProp(key, propOptions, propsData || emptyObject);
+    }
+  } else {
+    if (isDef(data.attrs)) { mergeProps(props, data.attrs); }
+    if (isDef(data.props)) { mergeProps(props, data.props); }
+  }
+
+  var renderContext = new FunctionalRenderContext(
+    data,
+    props,
+    children,
+    contextVm,
+    Ctor
+  );
+
+  var vnode = options.render.call(null, renderContext._c, renderContext);
+
+  if (vnode instanceof VNode) {
+    return cloneAndMarkFunctionalResult(vnode, data, renderContext.parent, options, renderContext)
+  } else if (Array.isArray(vnode)) {
+    var vnodes = normalizeChildren(vnode) || [];
+    var res = new Array(vnodes.length);
+    for (var i = 0; i < vnodes.length; i++) {
+      res[i] = cloneAndMarkFunctionalResult(vnodes[i], data, renderContext.parent, options, renderContext);
+    }
+    return res
+  }
+}
+
+function cloneAndMarkFunctionalResult (vnode, data, contextVm, options, renderContext) {
+  // #7817 clone node before setting fnContext, otherwise if the node is reused
+  // (e.g. it was from a cached normal slot) the fnContext causes named slots
+  // that should not be matched to match.
+  var clone = cloneVNode(vnode);
+  clone.fnContext = contextVm;
+  clone.fnOptions = options;
+  {
+    (clone.devtoolsMeta = clone.devtoolsMeta || {}).renderContext = renderContext;
+  }
+  if (data.slot) {
+    (clone.data || (clone.data = {})).slot = data.slot;
+  }
+  return clone
+}
+
+function mergeProps (to, from) {
+  for (var key in from) {
+    to[camelize(key)] = from[key];
+  }
+}
+
+/*  */
+
+/*  */
+
+/*  */
+
+/*  */
+
+// inline hooks to be invoked on component VNodes during patch
+var componentVNodeHooks = {
+  init: function init (vnode, hydrating) {
+    if (
+      vnode.componentInstance &&
+      !vnode.componentInstance._isDestroyed &&
+      vnode.data.keepAlive
+    ) {
+      // kept-alive components, treat as a patch
+      var mountedNode = vnode; // work around flow
+      componentVNodeHooks.prepatch(mountedNode, mountedNode);
+    } else {
+      var child = vnode.componentInstance = createComponentInstanceForVnode(
+        vnode,
+        activeInstance
+      );
+      child.$mount(hydrating ? vnode.elm : undefined, hydrating);
+    }
+  },
+
+  prepatch: function prepatch (oldVnode, vnode) {
+    var options = vnode.componentOptions;
+    var child = vnode.componentInstance = oldVnode.componentInstance;
+    updateChildComponent(
+      child,
+      options.propsData, // updated props
+      options.listeners, // updated listeners
+      vnode, // new parent vnode
+      options.children // new children
+    );
+  },
+
+  insert: function insert (vnode) {
+    var context = vnode.context;
+    var componentInstance = vnode.componentInstance;
+    if (!componentInstance._isMounted) {
+      componentInstance._isMounted = true;
+      callHook(componentInstance, 'mounted');
+    }
+    if (vnode.data.keepAlive) {
+      if (context._isMounted) {
+        // vue-router#1212
+        // During updates, a kept-alive component's child components may
+        // change, so directly walking the tree here may call activated hooks
+        // on incorrect children. Instead we push them into a queue which will
+        // be processed after the whole patch process ended.
+        queueActivatedComponent(componentInstance);
+      } else {
+        activateChildComponent(componentInstance, true /* direct */);
+      }
+    }
+  },
+
+  destroy: function destroy (vnode) {
+    var componentInstance = vnode.componentInstance;
+    if (!componentInstance._isDestroyed) {
+      if (!vnode.data.keepAlive) {
+        componentInstance.$destroy();
+      } else {
+        deactivateChildComponent(componentInstance, true /* direct */);
+      }
+    }
+  }
+};
+
+var hooksToMerge = Object.keys(componentVNodeHooks);
+
+function createComponent (
+  Ctor,
+  data,
+  context,
+  children,
+  tag
+) {
+  if (isUndef(Ctor)) {
+    return
+  }
+
+  var baseCtor = context.$options._base;
+
+  // plain options object: turn it into a constructor
+  if (isObject(Ctor)) {
+    Ctor = baseCtor.extend(Ctor);
+  }
+
+  // if at this stage it's not a constructor or an async component factory,
+  // reject.
+  if (typeof Ctor !== 'function') {
+    {
+      warn(("Invalid Component definition: " + (String(Ctor))), context);
+    }
+    return
+  }
+
+  // async component
+  var asyncFactory;
+  if (isUndef(Ctor.cid)) {
+    asyncFactory = Ctor;
+    Ctor = resolveAsyncComponent(asyncFactory, baseCtor);
+    if (Ctor === undefined) {
+      // return a placeholder node for async component, which is rendered
+      // as a comment node but preserves all the raw information for the node.
+      // the information will be used for async server-rendering and hydration.
+      return createAsyncPlaceholder(
+        asyncFactory,
+        data,
+        context,
+        children,
+        tag
+      )
+    }
+  }
+
+  data = data || {};
+
+  // resolve constructor options in case global mixins are applied after
+  // component constructor creation
+  resolveConstructorOptions(Ctor);
+
+  // transform component v-model data into props & events
+  if (isDef(data.model)) {
+    transformModel(Ctor.options, data);
+  }
+
+  // extract props
+  var propsData = extractPropsFromVNodeData(data, Ctor, tag);
+
+  // functional component
+  if (isTrue(Ctor.options.functional)) {
+    return createFunctionalComponent(Ctor, propsData, data, context, children)
+  }
+
+  // extract listeners, since these needs to be treated as
+  // child component listeners instead of DOM listeners
+  var listeners = data.on;
+  // replace with listeners with .native modifier
+  // so it gets processed during parent component patch.
+  data.on = data.nativeOn;
+
+  if (isTrue(Ctor.options.abstract)) {
+    // abstract components do not keep anything
+    // other than props & listeners & slot
+
+    // work around flow
+    var slot = data.slot;
+    data = {};
+    if (slot) {
+      data.slot = slot;
+    }
+  }
+
+  // install component management hooks onto the placeholder node
+  installComponentHooks(data);
+
+  // return a placeholder vnode
+  var name = Ctor.options.name || tag;
+  var vnode = new VNode(
+    ("vue-component-" + (Ctor.cid) + (name ? ("-" + name) : '')),
+    data, undefined, undefined, undefined, context,
+    { Ctor: Ctor, propsData: propsData, listeners: listeners, tag: tag, children: children },
+    asyncFactory
+  );
+
+  return vnode
+}
+
+function createComponentInstanceForVnode (
+  vnode, // we know it's MountedComponentVNode but flow doesn't
+  parent // activeInstance in lifecycle state
+) {
+  var options = {
+    _isComponent: true,
+    _parentVnode: vnode,
+    parent: parent
+  };
+  // check inline-template render functions
+  var inlineTemplate = vnode.data.inlineTemplate;
+  if (isDef(inlineTemplate)) {
+    options.render = inlineTemplate.render;
+    options.staticRenderFns = inlineTemplate.staticRenderFns;
+  }
+  return new vnode.componentOptions.Ctor(options)
+}
+
+function installComponentHooks (data) {
+  var hooks = data.hook || (data.hook = {});
+  for (var i = 0; i < hooksToMerge.length; i++) {
+    var key = hooksToMerge[i];
+    var existing = hooks[key];
+    var toMerge = componentVNodeHooks[key];
+    if (existing !== toMerge && !(existing && existing._merged)) {
+      hooks[key] = existing ? mergeHook$1(toMerge, existing) : toMerge;
+    }
+  }
+}
+
+function mergeHook$1 (f1, f2) {
+  var merged = function (a, b) {
+    // flow complains about extra args which is why we use any
+    f1(a, b);
+    f2(a, b);
+  };
+  merged._merged = true;
+  return merged
+}
+
+// transform component v-model info (value and callback) into
+// prop and event handler respectively.
+function transformModel (options, data) {
+  var prop = (options.model && options.model.prop) || 'value';
+  var event = (options.model && options.model.event) || 'input'
+  ;(data.attrs || (data.attrs = {}))[prop] = data.model.value;
+  var on = data.on || (data.on = {});
+  var existing = on[event];
+  var callback = data.model.callback;
+  if (isDef(existing)) {
+    if (
+      Array.isArray(existing)
+        ? existing.indexOf(callback) === -1
+        : existing !== callback
+    ) {
+      on[event] = [callback].concat(existing);
+    }
+  } else {
+    on[event] = callback;
+  }
+}
+
+/*  */
+
+var SIMPLE_NORMALIZE = 1;
+var ALWAYS_NORMALIZE = 2;
+
+// wrapper function for providing a more flexible interface
+// without getting yelled at by flow
+function createElement (
+  context,
+  tag,
+  data,
+  children,
+  normalizationType,
+  alwaysNormalize
+) {
+  if (Array.isArray(data) || isPrimitive(data)) {
+    normalizationType = children;
+    children = data;
+    data = undefined;
+  }
+  if (isTrue(alwaysNormalize)) {
+    normalizationType = ALWAYS_NORMALIZE;
+  }
+  return _createElement(context, tag, data, children, normalizationType)
+}
+
+function _createElement (
+  context,
+  tag,
+  data,
+  children,
+  normalizationType
+) {
+  if (isDef(data) && isDef((data).__ob__)) {
+    warn(
+      "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
+      'Always create fresh vnode data objects in each render!',
+      context
+    );
+    return createEmptyVNode()
+  }
+  // object syntax in v-bind
+  if (isDef(data) && isDef(data.is)) {
+    tag = data.is;
+  }
+  if (!tag) {
+    // in case of component :is set to falsy value
+    return createEmptyVNode()
+  }
+  // warn against non-primitive key
+  if (isDef(data) && isDef(data.key) && !isPrimitive(data.key)
+  ) {
+    {
+      warn(
+        'Avoid using non-primitive value as key, ' +
+        'use string/number value instead.',
+        context
+      );
+    }
+  }
+  // support single function children as default scoped slot
+  if (Array.isArray(children) &&
+    typeof children[0] === 'function'
+  ) {
+    data = data || {};
+    data.scopedSlots = { default: children[0] };
+    children.length = 0;
+  }
+  if (normalizationType === ALWAYS_NORMALIZE) {
+    children = normalizeChildren(children);
+  } else if (normalizationType === SIMPLE_NORMALIZE) {
+    children = simpleNormalizeChildren(children);
+  }
+  var vnode, ns;
+  if (typeof tag === 'string') {
+    var Ctor;
+    ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
+    if (config.isReservedTag(tag)) {
+      // platform built-in elements
+      vnode = new VNode(
+        config.parsePlatformTagName(tag), data, children,
+        undefined, undefined, context
+      );
+    } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
+      // component
+      vnode = createComponent(Ctor, data, context, children, tag);
+    } else {
+      // unknown or unlisted namespaced elements
+      // check at runtime because it may get assigned a namespace when its
+      // parent normalizes children
+      vnode = new VNode(
+        tag, data, children,
+        undefined, undefined, context
+      );
+    }
+  } else {
+    // direct component options / constructor
+    vnode = createComponent(tag, data, context, children);
+  }
+  if (Array.isArray(vnode)) {
+    return vnode
+  } else if (isDef(vnode)) {
+    if (isDef(ns)) { applyNS(vnode, ns); }
+    if (isDef(data)) { registerDeepBindings(data); }
+    return vnode
+  } else {
+    return createEmptyVNode()
+  }
+}
+
+function applyNS (vnode, ns, force) {
+  vnode.ns = ns;
+  if (vnode.tag === 'foreignObject') {
+    // use default namespace inside foreignObject
+    ns = undefined;
+    force = true;
+  }
+  if (isDef(vnode.children)) {
+    for (var i = 0, l = vnode.children.length; i < l; i++) {
+      var child = vnode.children[i];
+      if (isDef(child.tag) && (
+        isUndef(child.ns) || (isTrue(force) && child.tag !== 'svg'))) {
+        applyNS(child, ns, force);
+      }
+    }
+  }
+}
+
+// ref #5318
+// necessary to ensure parent re-render when deep bindings like :style and
+// :class are used on slot nodes
+function registerDeepBindings (data) {
+  if (isObject(data.style)) {
+    traverse(data.style);
+  }
+  if (isObject(data.class)) {
+    traverse(data.class);
+  }
+}
+
+/*  */
+
+function initRender (vm) {
+  vm._vnode = null; // the root of the child tree
+  vm._staticTrees = null; // v-once cached trees
+  var options = vm.$options;
+  var parentVnode = vm.$vnode = options._parentVnode; // the placeholder node in parent tree
+  var renderContext = parentVnode && parentVnode.context;
+  vm.$slots = resolveSlots(options._renderChildren, renderContext);
+  vm.$scopedSlots = emptyObject;
+  // bind the createElement fn to this instance
+  // so that we get proper render context inside it.
+  // args order: tag, data, children, normalizationType, alwaysNormalize
+  // internal version is used by render functions compiled from templates
+  vm._c = function (a, b, c, d) { return createElement(vm, a, b, c, d, false); };
+  // normalization is always applied for the public version, used in
+  // user-written render functions.
+  vm.$createElement = function (a, b, c, d) { return createElement(vm, a, b, c, d, true); };
+
+  // $attrs & $listeners are exposed for easier HOC creation.
+  // they need to be reactive so that HOCs using them are always updated
+  var parentData = parentVnode && parentVnode.data;
+
+  /* istanbul ignore else */
+  {
+    defineReactive$$1(vm, '$attrs', parentData && parentData.attrs || emptyObject, function () {
+      !isUpdatingChildComponent && warn("$attrs is readonly.", vm);
+    }, true);
+    defineReactive$$1(vm, '$listeners', options._parentListeners || emptyObject, function () {
+      !isUpdatingChildComponent && warn("$listeners is readonly.", vm);
+    }, true);
+  }
+}
+
+var currentRenderingInstance = null;
+
+function renderMixin (Vue) {
+  // install runtime convenience helpers
+  installRenderHelpers(Vue.prototype);
+
+  Vue.prototype.$nextTick = function (fn) {
+    return nextTick(fn, this)
+  };
+
+  Vue.prototype._render = function () {
+    var vm = this;
+    var ref = vm.$options;
+    var render = ref.render;
+    var _parentVnode = ref._parentVnode;
+
+    if (_parentVnode) {
+      vm.$scopedSlots = normalizeScopedSlots(
+        _parentVnode.data.scopedSlots,
+        vm.$slots,
+        vm.$scopedSlots
+      );
+    }
+
+    // set parent vnode. this allows render functions to have access
+    // to the data on the placeholder node.
+    vm.$vnode = _parentVnode;
+    // render self
+    var vnode;
+    try {
+      // There's no need to maintain a stack becaues all render fns are called
+      // separately from one another. Nested component's render fns are called
+      // when parent component is patched.
+      currentRenderingInstance = vm;
+      vnode = render.call(vm._renderProxy, vm.$createElement);
+    } catch (e) {
+      handleError(e, vm, "render");
+      // return error render result,
+      // or previous vnode to prevent render error causing blank component
+      /* istanbul ignore else */
+      if (vm.$options.renderError) {
+        try {
+          vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e);
+        } catch (e) {
+          handleError(e, vm, "renderError");
+          vnode = vm._vnode;
+        }
+      } else {
+        vnode = vm._vnode;
+      }
+    } finally {
+      currentRenderingInstance = null;
+    }
+    // if the returned array contains only a single node, allow it
+    if (Array.isArray(vnode) && vnode.length === 1) {
+      vnode = vnode[0];
+    }
+    // return empty vnode in case the render function errored out
+    if (!(vnode instanceof VNode)) {
+      if (Array.isArray(vnode)) {
+        warn(
+          'Multiple root nodes returned from render function. Render function ' +
+          'should return a single root node.',
+          vm
+        );
+      }
+      vnode = createEmptyVNode();
+    }
+    // set parent
+    vnode.parent = _parentVnode;
+    return vnode
+  };
+}
+
+/*  */
+
 function ensureCtor (comp, base) {
   if (
     comp.__esModule ||
@@ -34083,8 +35885,7 @@ function createAsyncPlaceholder (
 
 function resolveAsyncComponent (
   factory,
-  baseCtor,
-  context
+  baseCtor
 ) {
   if (isTrue(factory.error) && isDef(factory.errorComp)) {
     return factory.errorComp
@@ -34094,20 +35895,39 @@ function resolveAsyncComponent (
     return factory.resolved
   }
 
+  var owner = currentRenderingInstance;
+  if (owner && isDef(factory.owners) && factory.owners.indexOf(owner) === -1) {
+    // already pending
+    factory.owners.push(owner);
+  }
+
   if (isTrue(factory.loading) && isDef(factory.loadingComp)) {
     return factory.loadingComp
   }
 
-  if (isDef(factory.contexts)) {
-    // already pending
-    factory.contexts.push(context);
-  } else {
-    var contexts = factory.contexts = [context];
+  if (owner && !isDef(factory.owners)) {
+    var owners = factory.owners = [owner];
     var sync = true;
+    var timerLoading = null;
+    var timerTimeout = null
 
-    var forceRender = function () {
-      for (var i = 0, l = contexts.length; i < l; i++) {
-        contexts[i].$forceUpdate();
+    ;(owner).$on('hook:destroyed', function () { return remove(owners, owner); });
+
+    var forceRender = function (renderCompleted) {
+      for (var i = 0, l = owners.length; i < l; i++) {
+        (owners[i]).$forceUpdate();
+      }
+
+      if (renderCompleted) {
+        owners.length = 0;
+        if (timerLoading !== null) {
+          clearTimeout(timerLoading);
+          timerLoading = null;
+        }
+        if (timerTimeout !== null) {
+          clearTimeout(timerTimeout);
+          timerTimeout = null;
+        }
       }
     };
 
@@ -34117,30 +35937,32 @@ function resolveAsyncComponent (
       // invoke callbacks only if this is not a synchronous resolve
       // (async resolves are shimmed as synchronous during SSR)
       if (!sync) {
-        forceRender();
+        forceRender(true);
+      } else {
+        owners.length = 0;
       }
     });
 
     var reject = once(function (reason) {
-      "development" !== 'production' && warn(
+      warn(
         "Failed to resolve async component: " + (String(factory)) +
         (reason ? ("\nReason: " + reason) : '')
       );
       if (isDef(factory.errorComp)) {
         factory.error = true;
-        forceRender();
+        forceRender(true);
       }
     });
 
     var res = factory(resolve, reject);
 
     if (isObject(res)) {
-      if (typeof res.then === 'function') {
+      if (isPromise(res)) {
         // () => Promise
         if (isUndef(factory.resolved)) {
           res.then(resolve, reject);
         }
-      } else if (isDef(res.component) && typeof res.component.then === 'function') {
+      } else if (isPromise(res.component)) {
         res.component.then(resolve, reject);
 
         if (isDef(res.error)) {
@@ -34152,22 +35974,22 @@ function resolveAsyncComponent (
           if (res.delay === 0) {
             factory.loading = true;
           } else {
-            setTimeout(function () {
+            timerLoading = setTimeout(function () {
+              timerLoading = null;
               if (isUndef(factory.resolved) && isUndef(factory.error)) {
                 factory.loading = true;
-                forceRender();
+                forceRender(false);
               }
             }, res.delay || 200);
           }
         }
 
         if (isDef(res.timeout)) {
-          setTimeout(function () {
+          timerTimeout = setTimeout(function () {
+            timerTimeout = null;
             if (isUndef(factory.resolved)) {
               reject(
-                 true
-                  ? ("timeout (" + (res.timeout) + "ms)")
-                  : null
+                "timeout (" + (res.timeout) + "ms)"
               );
             }
           }, res.timeout);
@@ -34218,16 +36040,22 @@ function initEvents (vm) {
 
 var target;
 
-function add (event, fn, once) {
-  if (once) {
-    target.$once(event, fn);
-  } else {
-    target.$on(event, fn);
-  }
+function add (event, fn) {
+  target.$on(event, fn);
 }
 
 function remove$1 (event, fn) {
   target.$off(event, fn);
+}
+
+function createOnceHandler (event, fn) {
+  var _target = target;
+  return function onceHandler () {
+    var res = fn.apply(null, arguments);
+    if (res !== null) {
+      _target.$off(event, onceHandler);
+    }
+  }
 }
 
 function updateComponentListeners (
@@ -34236,19 +36064,17 @@ function updateComponentListeners (
   oldListeners
 ) {
   target = vm;
-  updateListeners(listeners, oldListeners || {}, add, remove$1, vm);
+  updateListeners(listeners, oldListeners || {}, add, remove$1, createOnceHandler, vm);
   target = undefined;
 }
 
 function eventsMixin (Vue) {
   var hookRE = /^hook:/;
   Vue.prototype.$on = function (event, fn) {
-    var this$1 = this;
-
     var vm = this;
     if (Array.isArray(event)) {
       for (var i = 0, l = event.length; i < l; i++) {
-        this$1.$on(event[i], fn);
+        vm.$on(event[i], fn);
       }
     } else {
       (vm._events[event] || (vm._events[event] = [])).push(fn);
@@ -34273,8 +36099,6 @@ function eventsMixin (Vue) {
   };
 
   Vue.prototype.$off = function (event, fn) {
-    var this$1 = this;
-
     var vm = this;
     // all
     if (!arguments.length) {
@@ -34283,8 +36107,8 @@ function eventsMixin (Vue) {
     }
     // array of events
     if (Array.isArray(event)) {
-      for (var i = 0, l = event.length; i < l; i++) {
-        this$1.$off(event[i], fn);
+      for (var i$1 = 0, l = event.length; i$1 < l; i$1++) {
+        vm.$off(event[i$1], fn);
       }
       return vm
     }
@@ -34297,16 +36121,14 @@ function eventsMixin (Vue) {
       vm._events[event] = null;
       return vm
     }
-    if (fn) {
-      // specific handler
-      var cb;
-      var i$1 = cbs.length;
-      while (i$1--) {
-        cb = cbs[i$1];
-        if (cb === fn || cb.fn === fn) {
-          cbs.splice(i$1, 1);
-          break
-        }
+    // specific handler
+    var cb;
+    var i = cbs.length;
+    while (i--) {
+      cb = cbs[i];
+      if (cb === fn || cb.fn === fn) {
+        cbs.splice(i, 1);
+        break
       }
     }
     return vm
@@ -34314,7 +36136,7 @@ function eventsMixin (Vue) {
 
   Vue.prototype.$emit = function (event) {
     var vm = this;
-    if (true) {
+    {
       var lowerCaseEvent = event.toLowerCase();
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
         tip(
@@ -34330,12 +36152,9 @@ function eventsMixin (Vue) {
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs;
       var args = toArray(arguments, 1);
+      var info = "event handler for \"" + event + "\"";
       for (var i = 0, l = cbs.length; i < l; i++) {
-        try {
-          cbs[i].apply(vm, args);
-        } catch (e) {
-          handleError(e, vm, ("event handler for \"" + event + "\""));
-        }
+        invokeWithErrorHandling(cbs[i], vm, args, vm, info);
       }
     }
     return vm
@@ -34344,74 +36163,16 @@ function eventsMixin (Vue) {
 
 /*  */
 
-
-
-/**
- * Runtime helper for resolving raw children VNodes into a slot object.
- */
-function resolveSlots (
-  children,
-  context
-) {
-  var slots = {};
-  if (!children) {
-    return slots
-  }
-  for (var i = 0, l = children.length; i < l; i++) {
-    var child = children[i];
-    var data = child.data;
-    // remove slot attribute if the node is resolved as a Vue slot node
-    if (data && data.attrs && data.attrs.slot) {
-      delete data.attrs.slot;
-    }
-    // named slots should only be respected if the vnode was rendered in the
-    // same context.
-    if ((child.context === context || child.fnContext === context) &&
-      data && data.slot != null
-    ) {
-      var name = data.slot;
-      var slot = (slots[name] || (slots[name] = []));
-      if (child.tag === 'template') {
-        slot.push.apply(slot, child.children || []);
-      } else {
-        slot.push(child);
-      }
-    } else {
-      (slots.default || (slots.default = [])).push(child);
-    }
-  }
-  // ignore slots that contains only whitespace
-  for (var name$1 in slots) {
-    if (slots[name$1].every(isWhitespace)) {
-      delete slots[name$1];
-    }
-  }
-  return slots
-}
-
-function isWhitespace (node) {
-  return (node.isComment && !node.asyncFactory) || node.text === ' '
-}
-
-function resolveScopedSlots (
-  fns, // see flow/vnode
-  res
-) {
-  res = res || {};
-  for (var i = 0; i < fns.length; i++) {
-    if (Array.isArray(fns[i])) {
-      resolveScopedSlots(fns[i], res);
-    } else {
-      res[fns[i].key] = fns[i].fn;
-    }
-  }
-  return res
-}
-
-/*  */
-
 var activeInstance = null;
 var isUpdatingChildComponent = false;
+
+function setActiveInstance(vm) {
+  var prevActiveInstance = activeInstance;
+  activeInstance = vm;
+  return function () {
+    activeInstance = prevActiveInstance;
+  }
+}
 
 function initLifecycle (vm) {
   var options = vm.$options;
@@ -34442,31 +36203,20 @@ function initLifecycle (vm) {
 function lifecycleMixin (Vue) {
   Vue.prototype._update = function (vnode, hydrating) {
     var vm = this;
-    if (vm._isMounted) {
-      callHook(vm, 'beforeUpdate');
-    }
     var prevEl = vm.$el;
     var prevVnode = vm._vnode;
-    var prevActiveInstance = activeInstance;
-    activeInstance = vm;
+    var restoreActiveInstance = setActiveInstance(vm);
     vm._vnode = vnode;
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
-      vm.$el = vm.__patch__(
-        vm.$el, vnode, hydrating, false /* removeOnly */,
-        vm.$options._parentElm,
-        vm.$options._refElm
-      );
-      // no need for the ref nodes after initial patch
-      // this prevents keeping a detached DOM tree in memory (#5851)
-      vm.$options._parentElm = vm.$options._refElm = null;
+      vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);
     } else {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode);
     }
-    activeInstance = prevActiveInstance;
+    restoreActiveInstance();
     // update __vue__ reference
     if (prevEl) {
       prevEl.__vue__ = null;
@@ -34541,7 +36291,7 @@ function mountComponent (
   vm.$el = el;
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode;
-    if (true) {
+    {
       /* istanbul ignore if */
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
@@ -34563,7 +36313,7 @@ function mountComponent (
 
   var updateComponent;
   /* istanbul ignore if */
-  if ("development" !== 'production' && config.performance && mark) {
+  if (config.performance && mark) {
     updateComponent = function () {
       var name = vm._name;
       var id = vm._uid;
@@ -34589,7 +36339,13 @@ function mountComponent (
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  new Watcher(vm, updateComponent, noop, null, true /* isRenderWatcher */);
+  new Watcher(vm, updateComponent, noop, {
+    before: function before () {
+      if (vm._isMounted && !vm._isDestroyed) {
+        callHook(vm, 'beforeUpdate');
+      }
+    }
+  }, true /* isRenderWatcher */);
   hydrating = false;
 
   // manually mounted instance, call mounted on self
@@ -34608,17 +36364,31 @@ function updateChildComponent (
   parentVnode,
   renderChildren
 ) {
-  if (true) {
+  {
     isUpdatingChildComponent = true;
   }
 
   // determine whether component has slot children
-  // we need to do this before overwriting $options._renderChildren
-  var hasChildren = !!(
+  // we need to do this before overwriting $options._renderChildren.
+
+  // check if there are dynamic scopedSlots (hand-written or compiled but with
+  // dynamic slot names). Static scoped slots compiled from template has the
+  // "$stable" marker.
+  var newScopedSlots = parentVnode.data.scopedSlots;
+  var oldScopedSlots = vm.$scopedSlots;
+  var hasDynamicScopedSlot = !!(
+    (newScopedSlots && !newScopedSlots.$stable) ||
+    (oldScopedSlots !== emptyObject && !oldScopedSlots.$stable) ||
+    (newScopedSlots && vm.$scopedSlots.$key !== newScopedSlots.$key)
+  );
+
+  // Any static slot children from the parent may have changed during parent's
+  // update. Dynamic scoped slots may also have changed. In such cases, a forced
+  // update is necessary to ensure correctness.
+  var needsForceUpdate = !!(
     renderChildren ||               // has new static slots
     vm.$options._renderChildren ||  // has old static slots
-    parentVnode.data.scopedSlots || // has new scoped slots
-    vm.$scopedSlots !== emptyObject // has old scoped slots
+    hasDynamicScopedSlot
   );
 
   vm.$options._parentVnode = parentVnode;
@@ -34632,36 +36402,37 @@ function updateChildComponent (
   // update $attrs and $listeners hash
   // these are also reactive so they may trigger child update if the child
   // used them during render
-  vm.$attrs = (parentVnode.data && parentVnode.data.attrs) || emptyObject;
+  vm.$attrs = parentVnode.data.attrs || emptyObject;
   vm.$listeners = listeners || emptyObject;
 
   // update props
   if (propsData && vm.$options.props) {
-    observerState.shouldConvert = false;
+    toggleObserving(false);
     var props = vm._props;
     var propKeys = vm.$options._propKeys || [];
     for (var i = 0; i < propKeys.length; i++) {
       var key = propKeys[i];
-      props[key] = validateProp(key, vm.$options.props, propsData, vm);
+      var propOptions = vm.$options.props; // wtf flow?
+      props[key] = validateProp(key, propOptions, propsData, vm);
     }
-    observerState.shouldConvert = true;
+    toggleObserving(true);
     // keep a copy of raw propsData
     vm.$options.propsData = propsData;
   }
 
   // update listeners
-  if (listeners) {
-    var oldListeners = vm.$options._parentListeners;
-    vm.$options._parentListeners = listeners;
-    updateComponentListeners(vm, listeners, oldListeners);
-  }
+  listeners = listeners || emptyObject;
+  var oldListeners = vm.$options._parentListeners;
+  vm.$options._parentListeners = listeners;
+  updateComponentListeners(vm, listeners, oldListeners);
+
   // resolve slots + force update if has children
-  if (hasChildren) {
+  if (needsForceUpdate) {
     vm.$slots = resolveSlots(renderChildren, parentVnode.context);
     vm.$forceUpdate();
   }
 
-  if (true) {
+  {
     isUpdatingChildComponent = false;
   }
 }
@@ -34708,23 +36479,22 @@ function deactivateChildComponent (vm, direct) {
 }
 
 function callHook (vm, hook) {
+  // #7573 disable dep collection when invoking lifecycle hooks
+  pushTarget();
   var handlers = vm.$options[hook];
+  var info = hook + " hook";
   if (handlers) {
     for (var i = 0, j = handlers.length; i < j; i++) {
-      try {
-        handlers[i].call(vm);
-      } catch (e) {
-        handleError(e, vm, (hook + " hook"));
-      }
+      invokeWithErrorHandling(handlers[i], vm, null, vm, info);
     }
   }
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook);
   }
+  popTarget();
 }
 
 /*  */
-
 
 var MAX_UPDATE_COUNT = 100;
 
@@ -34742,16 +36512,48 @@ var index = 0;
 function resetSchedulerState () {
   index = queue.length = activatedChildren.length = 0;
   has = {};
-  if (true) {
+  {
     circular = {};
   }
   waiting = flushing = false;
+}
+
+// Async edge case #6566 requires saving the timestamp when event listeners are
+// attached. However, calling performance.now() has a perf overhead especially
+// if the page has thousands of event listeners. Instead, we take a timestamp
+// every time the scheduler flushes and use that for all event listeners
+// attached during that flush.
+var currentFlushTimestamp = 0;
+
+// Async edge case fix requires storing an event listener's attach timestamp.
+var getNow = Date.now;
+
+// Determine what event timestamp the browser is using. Annoyingly, the
+// timestamp can either be hi-res (relative to page load) or low-res
+// (relative to UNIX epoch), so in order to compare time we have to use the
+// same timestamp type when saving the flush timestamp.
+// All IE versions use low-res event timestamps, and have problematic clock
+// implementations (#9632)
+if (inBrowser && !isIE) {
+  var performance = window.performance;
+  if (
+    performance &&
+    typeof performance.now === 'function' &&
+    getNow() > document.createEvent('Event').timeStamp
+  ) {
+    // if the event timestamp, although evaluated AFTER the Date.now(), is
+    // smaller than it, it means the event is using a hi-res timestamp,
+    // and we need to use the hi-res version for event listener timestamps as
+    // well.
+    getNow = function () { return performance.now(); };
+  }
 }
 
 /**
  * Flush both queues and run the watchers.
  */
 function flushSchedulerQueue () {
+  currentFlushTimestamp = getNow();
   flushing = true;
   var watcher, id;
 
@@ -34769,11 +36571,14 @@ function flushSchedulerQueue () {
   // as we run existing watchers
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index];
+    if (watcher.before) {
+      watcher.before();
+    }
     id = watcher.id;
     has[id] = null;
     watcher.run();
     // in dev build, check and stop circular updates.
-    if ("development" !== 'production' && has[id] != null) {
+    if (has[id] != null) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > MAX_UPDATE_COUNT) {
         warn(
@@ -34811,7 +36616,7 @@ function callUpdatedHooks (queue) {
   while (i--) {
     var watcher = queue[i];
     var vm = watcher.vm;
-    if (vm._watcher === watcher && vm._isMounted) {
+    if (vm._watcher === watcher && vm._isMounted && !vm._isDestroyed) {
       callHook(vm, 'updated');
     }
   }
@@ -34858,12 +36663,19 @@ function queueWatcher (watcher) {
     // queue the flush
     if (!waiting) {
       waiting = true;
+
+      if (!config.async) {
+        flushSchedulerQueue();
+        return
+      }
       nextTick(flushSchedulerQueue);
     }
   }
 }
 
 /*  */
+
+
 
 var uid$2 = 0;
 
@@ -34890,6 +36702,7 @@ var Watcher = function Watcher (
     this.user = !!options.user;
     this.lazy = !!options.lazy;
     this.sync = !!options.sync;
+    this.before = options.before;
   } else {
     this.deep = this.user = this.lazy = this.sync = false;
   }
@@ -34901,17 +36714,15 @@ var Watcher = function Watcher (
   this.newDeps = [];
   this.depIds = new _Set();
   this.newDepIds = new _Set();
-  this.expression =  true
-    ? expOrFn.toString()
-    : '';
+  this.expression = expOrFn.toString();
   // parse expression for getter
   if (typeof expOrFn === 'function') {
     this.getter = expOrFn;
   } else {
     this.getter = parsePath(expOrFn);
     if (!this.getter) {
-      this.getter = function () {};
-      "development" !== 'production' && warn(
+      this.getter = noop;
+      warn(
         "Failed watching path: \"" + expOrFn + "\" " +
         'Watcher only accepts simple dot-delimited paths. ' +
         'For full control, use a function instead.',
@@ -34969,13 +36780,11 @@ Watcher.prototype.addDep = function addDep (dep) {
  * Clean up for dependency collection.
  */
 Watcher.prototype.cleanupDeps = function cleanupDeps () {
-    var this$1 = this;
-
   var i = this.deps.length;
   while (i--) {
-    var dep = this$1.deps[i];
-    if (!this$1.newDepIds.has(dep.id)) {
-      dep.removeSub(this$1);
+    var dep = this.deps[i];
+    if (!this.newDepIds.has(dep.id)) {
+      dep.removeSub(this);
     }
   }
   var tmp = this.depIds;
@@ -35047,11 +36856,9 @@ Watcher.prototype.evaluate = function evaluate () {
  * Depend on all deps collected by this watcher.
  */
 Watcher.prototype.depend = function depend () {
-    var this$1 = this;
-
   var i = this.deps.length;
   while (i--) {
-    this$1.deps[i].depend();
+    this.deps[i].depend();
   }
 };
 
@@ -35059,8 +36866,6 @@ Watcher.prototype.depend = function depend () {
  * Remove self from all dependencies' subscriber list.
  */
 Watcher.prototype.teardown = function teardown () {
-    var this$1 = this;
-
   if (this.active) {
     // remove self from vm's watcher list
     // this is a somewhat expensive operation so we skip it
@@ -35070,7 +36875,7 @@ Watcher.prototype.teardown = function teardown () {
     }
     var i = this.deps.length;
     while (i--) {
-      this$1.deps[i].removeSub(this$1);
+      this.deps[i].removeSub(this);
     }
     this.active = false;
   }
@@ -35119,12 +36924,14 @@ function initProps (vm, propsOptions) {
   var keys = vm.$options._propKeys = [];
   var isRoot = !vm.$parent;
   // root instance props should be converted
-  observerState.shouldConvert = isRoot;
+  if (!isRoot) {
+    toggleObserving(false);
+  }
   var loop = function ( key ) {
     keys.push(key);
     var value = validateProp(key, propsOptions, propsData, vm);
     /* istanbul ignore else */
-    if (true) {
+    {
       var hyphenatedKey = hyphenate(key);
       if (isReservedAttribute(hyphenatedKey) ||
           config.isReservedAttr(hyphenatedKey)) {
@@ -35133,8 +36940,8 @@ function initProps (vm, propsOptions) {
           vm
         );
       }
-      defineReactive(props, key, value, function () {
-        if (vm.$parent && !isUpdatingChildComponent) {
+      defineReactive$$1(props, key, value, function () {
+        if (!isRoot && !isUpdatingChildComponent) {
           warn(
             "Avoid mutating a prop directly since the value will be " +
             "overwritten whenever the parent component re-renders. " +
@@ -35144,8 +36951,6 @@ function initProps (vm, propsOptions) {
           );
         }
       });
-    } else {
-      defineReactive(props, key, value);
     }
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
@@ -35156,7 +36961,7 @@ function initProps (vm, propsOptions) {
   };
 
   for (var key in propsOptions) loop( key );
-  observerState.shouldConvert = true;
+  toggleObserving(true);
 }
 
 function initData (vm) {
@@ -35166,7 +36971,7 @@ function initData (vm) {
     : data || {};
   if (!isPlainObject(data)) {
     data = {};
-    "development" !== 'production' && warn(
+    warn(
       'data functions should return an object:\n' +
       'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function',
       vm
@@ -35179,7 +36984,7 @@ function initData (vm) {
   var i = keys.length;
   while (i--) {
     var key = keys[i];
-    if (true) {
+    {
       if (methods && hasOwn(methods, key)) {
         warn(
           ("Method \"" + key + "\" has already been defined as a data property."),
@@ -35188,7 +36993,7 @@ function initData (vm) {
       }
     }
     if (props && hasOwn(props, key)) {
-      "development" !== 'production' && warn(
+      warn(
         "The data property \"" + key + "\" is already declared as a prop. " +
         "Use prop default value instead.",
         vm
@@ -35202,11 +37007,15 @@ function initData (vm) {
 }
 
 function getData (data, vm) {
+  // #7573 disable dep collection when invoking data getters
+  pushTarget();
   try {
     return data.call(vm, vm)
   } catch (e) {
     handleError(e, vm, "data()");
     return {}
+  } finally {
+    popTarget();
   }
 }
 
@@ -35221,7 +37030,7 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
-    if ("development" !== 'production' && getter == null) {
+    if (getter == null) {
       warn(
         ("Getter is missing for computed property \"" + key + "\"."),
         vm
@@ -35243,7 +37052,7 @@ function initComputed (vm, computed) {
     // at instantiation here.
     if (!(key in vm)) {
       defineComputed(vm, key, userDef);
-    } else if (true) {
+    } else {
       if (key in vm.$data) {
         warn(("The computed property \"" + key + "\" is already defined in data."), vm);
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -35262,20 +37071,17 @@ function defineComputed (
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
-      : userDef;
+      : createGetterInvoker(userDef);
     sharedPropertyDefinition.set = noop;
   } else {
     sharedPropertyDefinition.get = userDef.get
       ? shouldCache && userDef.cache !== false
         ? createComputedGetter(key)
-        : userDef.get
+        : createGetterInvoker(userDef.get)
       : noop;
-    sharedPropertyDefinition.set = userDef.set
-      ? userDef.set
-      : noop;
+    sharedPropertyDefinition.set = userDef.set || noop;
   }
-  if ("development" !== 'production' &&
-      sharedPropertyDefinition.set === noop) {
+  if (sharedPropertyDefinition.set === noop) {
     sharedPropertyDefinition.set = function () {
       warn(
         ("Computed property \"" + key + "\" was assigned to but it has no setter."),
@@ -35301,13 +37107,19 @@ function createComputedGetter (key) {
   }
 }
 
+function createGetterInvoker(fn) {
+  return function computedGetter () {
+    return fn.call(this, this)
+  }
+}
+
 function initMethods (vm, methods) {
   var props = vm.$options.props;
   for (var key in methods) {
-    if (true) {
-      if (methods[key] == null) {
+    {
+      if (typeof methods[key] !== 'function') {
         warn(
-          "Method \"" + key + "\" has an undefined value in the component definition. " +
+          "Method \"" + key + "\" has type \"" + (typeof methods[key]) + "\" in the component definition. " +
           "Did you reference the function correctly?",
           vm
         );
@@ -35325,7 +37137,7 @@ function initMethods (vm, methods) {
         );
       }
     }
-    vm[key] = methods[key] == null ? noop : bind(methods[key], vm);
+    vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm);
   }
 }
 
@@ -35344,7 +37156,7 @@ function initWatch (vm, watch) {
 
 function createWatcher (
   vm,
-  keyOrFn,
+  expOrFn,
   handler,
   options
 ) {
@@ -35355,7 +37167,7 @@ function createWatcher (
   if (typeof handler === 'string') {
     handler = vm[handler];
   }
-  return vm.$watch(keyOrFn, handler, options)
+  return vm.$watch(expOrFn, handler, options)
 }
 
 function stateMixin (Vue) {
@@ -35366,8 +37178,8 @@ function stateMixin (Vue) {
   dataDef.get = function () { return this._data };
   var propsDef = {};
   propsDef.get = function () { return this._props };
-  if (true) {
-    dataDef.set = function (newData) {
+  {
+    dataDef.set = function () {
       warn(
         'Avoid replacing instance root $data. ' +
         'Use nested data properties instead.',
@@ -35397,7 +37209,11 @@ function stateMixin (Vue) {
     options.user = true;
     var watcher = new Watcher(vm, expOrFn, cb, options);
     if (options.immediate) {
-      cb.call(vm, watcher.value);
+      try {
+        cb.call(vm, watcher.value);
+      } catch (error) {
+        handleError(error, vm, ("callback for immediate watcher \"" + (watcher.expression) + "\""));
+      }
     }
     return function unwatchFn () {
       watcher.teardown();
@@ -35407,941 +37223,17 @@ function stateMixin (Vue) {
 
 /*  */
 
-function initProvide (vm) {
-  var provide = vm.$options.provide;
-  if (provide) {
-    vm._provided = typeof provide === 'function'
-      ? provide.call(vm)
-      : provide;
-  }
-}
-
-function initInjections (vm) {
-  var result = resolveInject(vm.$options.inject, vm);
-  if (result) {
-    observerState.shouldConvert = false;
-    Object.keys(result).forEach(function (key) {
-      /* istanbul ignore else */
-      if (true) {
-        defineReactive(vm, key, result[key], function () {
-          warn(
-            "Avoid mutating an injected value directly since the changes will be " +
-            "overwritten whenever the provided component re-renders. " +
-            "injection being mutated: \"" + key + "\"",
-            vm
-          );
-        });
-      } else {
-        defineReactive(vm, key, result[key]);
-      }
-    });
-    observerState.shouldConvert = true;
-  }
-}
-
-function resolveInject (inject, vm) {
-  if (inject) {
-    // inject is :any because flow is not smart enough to figure out cached
-    var result = Object.create(null);
-    var keys = hasSymbol
-      ? Reflect.ownKeys(inject).filter(function (key) {
-        /* istanbul ignore next */
-        return Object.getOwnPropertyDescriptor(inject, key).enumerable
-      })
-      : Object.keys(inject);
-
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var provideKey = inject[key].from;
-      var source = vm;
-      while (source) {
-        if (source._provided && provideKey in source._provided) {
-          result[key] = source._provided[provideKey];
-          break
-        }
-        source = source.$parent;
-      }
-      if (!source) {
-        if ('default' in inject[key]) {
-          var provideDefault = inject[key].default;
-          result[key] = typeof provideDefault === 'function'
-            ? provideDefault.call(vm)
-            : provideDefault;
-        } else if (true) {
-          warn(("Injection \"" + key + "\" not found"), vm);
-        }
-      }
-    }
-    return result
-  }
-}
-
-/*  */
-
-/**
- * Runtime helper for rendering v-for lists.
- */
-function renderList (
-  val,
-  render
-) {
-  var ret, i, l, keys, key;
-  if (Array.isArray(val) || typeof val === 'string') {
-    ret = new Array(val.length);
-    for (i = 0, l = val.length; i < l; i++) {
-      ret[i] = render(val[i], i);
-    }
-  } else if (typeof val === 'number') {
-    ret = new Array(val);
-    for (i = 0; i < val; i++) {
-      ret[i] = render(i + 1, i);
-    }
-  } else if (isObject(val)) {
-    keys = Object.keys(val);
-    ret = new Array(keys.length);
-    for (i = 0, l = keys.length; i < l; i++) {
-      key = keys[i];
-      ret[i] = render(val[key], key, i);
-    }
-  }
-  if (isDef(ret)) {
-    (ret)._isVList = true;
-  }
-  return ret
-}
-
-/*  */
-
-/**
- * Runtime helper for rendering <slot>
- */
-function renderSlot (
-  name,
-  fallback,
-  props,
-  bindObject
-) {
-  var scopedSlotFn = this.$scopedSlots[name];
-  var nodes;
-  if (scopedSlotFn) { // scoped slot
-    props = props || {};
-    if (bindObject) {
-      if ("development" !== 'production' && !isObject(bindObject)) {
-        warn(
-          'slot v-bind without argument expects an Object',
-          this
-        );
-      }
-      props = extend(extend({}, bindObject), props);
-    }
-    nodes = scopedSlotFn(props) || fallback;
-  } else {
-    var slotNodes = this.$slots[name];
-    // warn duplicate slot usage
-    if (slotNodes) {
-      if ("development" !== 'production' && slotNodes._rendered) {
-        warn(
-          "Duplicate presence of slot \"" + name + "\" found in the same render tree " +
-          "- this will likely cause render errors.",
-          this
-        );
-      }
-      slotNodes._rendered = true;
-    }
-    nodes = slotNodes || fallback;
-  }
-
-  var target = props && props.slot;
-  if (target) {
-    return this.$createElement('template', { slot: target }, nodes)
-  } else {
-    return nodes
-  }
-}
-
-/*  */
-
-/**
- * Runtime helper for resolving filters
- */
-function resolveFilter (id) {
-  return resolveAsset(this.$options, 'filters', id, true) || identity
-}
-
-/*  */
-
-/**
- * Runtime helper for checking keyCodes from config.
- * exposed as Vue.prototype._k
- * passing in eventKeyName as last argument separately for backwards compat
- */
-function checkKeyCodes (
-  eventKeyCode,
-  key,
-  builtInAlias,
-  eventKeyName
-) {
-  var keyCodes = config.keyCodes[key] || builtInAlias;
-  if (keyCodes) {
-    if (Array.isArray(keyCodes)) {
-      return keyCodes.indexOf(eventKeyCode) === -1
-    } else {
-      return keyCodes !== eventKeyCode
-    }
-  } else if (eventKeyName) {
-    return hyphenate(eventKeyName) !== key
-  }
-}
-
-/*  */
-
-/**
- * Runtime helper for merging v-bind="object" into a VNode's data.
- */
-function bindObjectProps (
-  data,
-  tag,
-  value,
-  asProp,
-  isSync
-) {
-  if (value) {
-    if (!isObject(value)) {
-      "development" !== 'production' && warn(
-        'v-bind without argument expects an Object or Array value',
-        this
-      );
-    } else {
-      if (Array.isArray(value)) {
-        value = toObject(value);
-      }
-      var hash;
-      var loop = function ( key ) {
-        if (
-          key === 'class' ||
-          key === 'style' ||
-          isReservedAttribute(key)
-        ) {
-          hash = data;
-        } else {
-          var type = data.attrs && data.attrs.type;
-          hash = asProp || config.mustUseProp(tag, type, key)
-            ? data.domProps || (data.domProps = {})
-            : data.attrs || (data.attrs = {});
-        }
-        if (!(key in hash)) {
-          hash[key] = value[key];
-
-          if (isSync) {
-            var on = data.on || (data.on = {});
-            on[("update:" + key)] = function ($event) {
-              value[key] = $event;
-            };
-          }
-        }
-      };
-
-      for (var key in value) loop( key );
-    }
-  }
-  return data
-}
-
-/*  */
-
-/**
- * Runtime helper for rendering static trees.
- */
-function renderStatic (
-  index,
-  isInFor
-) {
-  var cached = this._staticTrees || (this._staticTrees = []);
-  var tree = cached[index];
-  // if has already-rendered static tree and not inside v-for,
-  // we can reuse the same tree by doing a shallow clone.
-  if (tree && !isInFor) {
-    return Array.isArray(tree)
-      ? cloneVNodes(tree)
-      : cloneVNode(tree)
-  }
-  // otherwise, render a fresh tree.
-  tree = cached[index] = this.$options.staticRenderFns[index].call(
-    this._renderProxy,
-    null,
-    this // for render fns generated for functional component templates
-  );
-  markStatic(tree, ("__static__" + index), false);
-  return tree
-}
-
-/**
- * Runtime helper for v-once.
- * Effectively it means marking the node as static with a unique key.
- */
-function markOnce (
-  tree,
-  index,
-  key
-) {
-  markStatic(tree, ("__once__" + index + (key ? ("_" + key) : "")), true);
-  return tree
-}
-
-function markStatic (
-  tree,
-  key,
-  isOnce
-) {
-  if (Array.isArray(tree)) {
-    for (var i = 0; i < tree.length; i++) {
-      if (tree[i] && typeof tree[i] !== 'string') {
-        markStaticNode(tree[i], (key + "_" + i), isOnce);
-      }
-    }
-  } else {
-    markStaticNode(tree, key, isOnce);
-  }
-}
-
-function markStaticNode (node, key, isOnce) {
-  node.isStatic = true;
-  node.key = key;
-  node.isOnce = isOnce;
-}
-
-/*  */
-
-function bindObjectListeners (data, value) {
-  if (value) {
-    if (!isPlainObject(value)) {
-      "development" !== 'production' && warn(
-        'v-on without argument expects an Object value',
-        this
-      );
-    } else {
-      var on = data.on = data.on ? extend({}, data.on) : {};
-      for (var key in value) {
-        var existing = on[key];
-        var ours = value[key];
-        on[key] = existing ? [].concat(existing, ours) : ours;
-      }
-    }
-  }
-  return data
-}
-
-/*  */
-
-function installRenderHelpers (target) {
-  target._o = markOnce;
-  target._n = toNumber;
-  target._s = toString;
-  target._l = renderList;
-  target._t = renderSlot;
-  target._q = looseEqual;
-  target._i = looseIndexOf;
-  target._m = renderStatic;
-  target._f = resolveFilter;
-  target._k = checkKeyCodes;
-  target._b = bindObjectProps;
-  target._v = createTextVNode;
-  target._e = createEmptyVNode;
-  target._u = resolveScopedSlots;
-  target._g = bindObjectListeners;
-}
-
-/*  */
-
-function FunctionalRenderContext (
-  data,
-  props,
-  children,
-  parent,
-  Ctor
-) {
-  var options = Ctor.options;
-  this.data = data;
-  this.props = props;
-  this.children = children;
-  this.parent = parent;
-  this.listeners = data.on || emptyObject;
-  this.injections = resolveInject(options.inject, parent);
-  this.slots = function () { return resolveSlots(children, parent); };
-
-  // ensure the createElement function in functional components
-  // gets a unique context - this is necessary for correct named slot check
-  var contextVm = Object.create(parent);
-  var isCompiled = isTrue(options._compiled);
-  var needNormalization = !isCompiled;
-
-  // support for compiled functional template
-  if (isCompiled) {
-    // exposing $options for renderStatic()
-    this.$options = options;
-    // pre-resolve slots for renderSlot()
-    this.$slots = this.slots();
-    this.$scopedSlots = data.scopedSlots || emptyObject;
-  }
-
-  if (options._scopeId) {
-    this._c = function (a, b, c, d) {
-      var vnode = createElement(contextVm, a, b, c, d, needNormalization);
-      if (vnode) {
-        vnode.fnScopeId = options._scopeId;
-        vnode.fnContext = parent;
-      }
-      return vnode
-    };
-  } else {
-    this._c = function (a, b, c, d) { return createElement(contextVm, a, b, c, d, needNormalization); };
-  }
-}
-
-installRenderHelpers(FunctionalRenderContext.prototype);
-
-function createFunctionalComponent (
-  Ctor,
-  propsData,
-  data,
-  contextVm,
-  children
-) {
-  var options = Ctor.options;
-  var props = {};
-  var propOptions = options.props;
-  if (isDef(propOptions)) {
-    for (var key in propOptions) {
-      props[key] = validateProp(key, propOptions, propsData || emptyObject);
-    }
-  } else {
-    if (isDef(data.attrs)) { mergeProps(props, data.attrs); }
-    if (isDef(data.props)) { mergeProps(props, data.props); }
-  }
-
-  var renderContext = new FunctionalRenderContext(
-    data,
-    props,
-    children,
-    contextVm,
-    Ctor
-  );
-
-  var vnode = options.render.call(null, renderContext._c, renderContext);
-
-  if (vnode instanceof VNode) {
-    vnode.fnContext = contextVm;
-    vnode.fnOptions = options;
-    if (data.slot) {
-      (vnode.data || (vnode.data = {})).slot = data.slot;
-    }
-  }
-
-  return vnode
-}
-
-function mergeProps (to, from) {
-  for (var key in from) {
-    to[camelize(key)] = from[key];
-  }
-}
-
-/*  */
-
-
-
-
-// Register the component hook to weex native render engine.
-// The hook will be triggered by native, not javascript.
-
-
-// Updates the state of the component to weex native render engine.
-
-/*  */
-
-// https://github.com/Hanks10100/weex-native-directive/tree/master/component
-
-// listening on native callback
-
-/*  */
-
-/*  */
-
-// hooks to be invoked on component VNodes during patch
-var componentVNodeHooks = {
-  init: function init (
-    vnode,
-    hydrating,
-    parentElm,
-    refElm
-  ) {
-    if (!vnode.componentInstance || vnode.componentInstance._isDestroyed) {
-      var child = vnode.componentInstance = createComponentInstanceForVnode(
-        vnode,
-        activeInstance,
-        parentElm,
-        refElm
-      );
-      child.$mount(hydrating ? vnode.elm : undefined, hydrating);
-    } else if (vnode.data.keepAlive) {
-      // kept-alive components, treat as a patch
-      var mountedNode = vnode; // work around flow
-      componentVNodeHooks.prepatch(mountedNode, mountedNode);
-    }
-  },
-
-  prepatch: function prepatch (oldVnode, vnode) {
-    var options = vnode.componentOptions;
-    var child = vnode.componentInstance = oldVnode.componentInstance;
-    updateChildComponent(
-      child,
-      options.propsData, // updated props
-      options.listeners, // updated listeners
-      vnode, // new parent vnode
-      options.children // new children
-    );
-  },
-
-  insert: function insert (vnode) {
-    var context = vnode.context;
-    var componentInstance = vnode.componentInstance;
-    if (!componentInstance._isMounted) {
-      componentInstance._isMounted = true;
-      callHook(componentInstance, 'mounted');
-    }
-    if (vnode.data.keepAlive) {
-      if (context._isMounted) {
-        // vue-router#1212
-        // During updates, a kept-alive component's child components may
-        // change, so directly walking the tree here may call activated hooks
-        // on incorrect children. Instead we push them into a queue which will
-        // be processed after the whole patch process ended.
-        queueActivatedComponent(componentInstance);
-      } else {
-        activateChildComponent(componentInstance, true /* direct */);
-      }
-    }
-  },
-
-  destroy: function destroy (vnode) {
-    var componentInstance = vnode.componentInstance;
-    if (!componentInstance._isDestroyed) {
-      if (!vnode.data.keepAlive) {
-        componentInstance.$destroy();
-      } else {
-        deactivateChildComponent(componentInstance, true /* direct */);
-      }
-    }
-  }
-};
-
-var hooksToMerge = Object.keys(componentVNodeHooks);
-
-function createComponent (
-  Ctor,
-  data,
-  context,
-  children,
-  tag
-) {
-  if (isUndef(Ctor)) {
-    return
-  }
-
-  var baseCtor = context.$options._base;
-
-  // plain options object: turn it into a constructor
-  if (isObject(Ctor)) {
-    Ctor = baseCtor.extend(Ctor);
-  }
-
-  // if at this stage it's not a constructor or an async component factory,
-  // reject.
-  if (typeof Ctor !== 'function') {
-    if (true) {
-      warn(("Invalid Component definition: " + (String(Ctor))), context);
-    }
-    return
-  }
-
-  // async component
-  var asyncFactory;
-  if (isUndef(Ctor.cid)) {
-    asyncFactory = Ctor;
-    Ctor = resolveAsyncComponent(asyncFactory, baseCtor, context);
-    if (Ctor === undefined) {
-      // return a placeholder node for async component, which is rendered
-      // as a comment node but preserves all the raw information for the node.
-      // the information will be used for async server-rendering and hydration.
-      return createAsyncPlaceholder(
-        asyncFactory,
-        data,
-        context,
-        children,
-        tag
-      )
-    }
-  }
-
-  data = data || {};
-
-  // resolve constructor options in case global mixins are applied after
-  // component constructor creation
-  resolveConstructorOptions(Ctor);
-
-  // transform component v-model data into props & events
-  if (isDef(data.model)) {
-    transformModel(Ctor.options, data);
-  }
-
-  // extract props
-  var propsData = extractPropsFromVNodeData(data, Ctor, tag);
-
-  // functional component
-  if (isTrue(Ctor.options.functional)) {
-    return createFunctionalComponent(Ctor, propsData, data, context, children)
-  }
-
-  // extract listeners, since these needs to be treated as
-  // child component listeners instead of DOM listeners
-  var listeners = data.on;
-  // replace with listeners with .native modifier
-  // so it gets processed during parent component patch.
-  data.on = data.nativeOn;
-
-  if (isTrue(Ctor.options.abstract)) {
-    // abstract components do not keep anything
-    // other than props & listeners & slot
-
-    // work around flow
-    var slot = data.slot;
-    data = {};
-    if (slot) {
-      data.slot = slot;
-    }
-  }
-
-  // merge component management hooks onto the placeholder node
-  mergeHooks(data);
-
-  // return a placeholder vnode
-  var name = Ctor.options.name || tag;
-  var vnode = new VNode(
-    ("vue-component-" + (Ctor.cid) + (name ? ("-" + name) : '')),
-    data, undefined, undefined, undefined, context,
-    { Ctor: Ctor, propsData: propsData, listeners: listeners, tag: tag, children: children },
-    asyncFactory
-  );
-
-  // Weex specific: invoke recycle-list optimized @render function for
-  // extracting cell-slot template.
-  // https://github.com/Hanks10100/weex-native-directive/tree/master/component
-  /* istanbul ignore if */
-  return vnode
-}
-
-function createComponentInstanceForVnode (
-  vnode, // we know it's MountedComponentVNode but flow doesn't
-  parent, // activeInstance in lifecycle state
-  parentElm,
-  refElm
-) {
-  var options = {
-    _isComponent: true,
-    parent: parent,
-    _parentVnode: vnode,
-    _parentElm: parentElm || null,
-    _refElm: refElm || null
-  };
-  // check inline-template render functions
-  var inlineTemplate = vnode.data.inlineTemplate;
-  if (isDef(inlineTemplate)) {
-    options.render = inlineTemplate.render;
-    options.staticRenderFns = inlineTemplate.staticRenderFns;
-  }
-  return new vnode.componentOptions.Ctor(options)
-}
-
-function mergeHooks (data) {
-  if (!data.hook) {
-    data.hook = {};
-  }
-  for (var i = 0; i < hooksToMerge.length; i++) {
-    var key = hooksToMerge[i];
-    var fromParent = data.hook[key];
-    var ours = componentVNodeHooks[key];
-    data.hook[key] = fromParent ? mergeHook$1(ours, fromParent) : ours;
-  }
-}
-
-function mergeHook$1 (one, two) {
-  return function (a, b, c, d) {
-    one(a, b, c, d);
-    two(a, b, c, d);
-  }
-}
-
-// transform component v-model info (value and callback) into
-// prop and event handler respectively.
-function transformModel (options, data) {
-  var prop = (options.model && options.model.prop) || 'value';
-  var event = (options.model && options.model.event) || 'input';(data.props || (data.props = {}))[prop] = data.model.value;
-  var on = data.on || (data.on = {});
-  if (isDef(on[event])) {
-    on[event] = [data.model.callback].concat(on[event]);
-  } else {
-    on[event] = data.model.callback;
-  }
-}
-
-/*  */
-
-var SIMPLE_NORMALIZE = 1;
-var ALWAYS_NORMALIZE = 2;
-
-// wrapper function for providing a more flexible interface
-// without getting yelled at by flow
-function createElement (
-  context,
-  tag,
-  data,
-  children,
-  normalizationType,
-  alwaysNormalize
-) {
-  if (Array.isArray(data) || isPrimitive(data)) {
-    normalizationType = children;
-    children = data;
-    data = undefined;
-  }
-  if (isTrue(alwaysNormalize)) {
-    normalizationType = ALWAYS_NORMALIZE;
-  }
-  return _createElement(context, tag, data, children, normalizationType)
-}
-
-function _createElement (
-  context,
-  tag,
-  data,
-  children,
-  normalizationType
-) {
-  if (isDef(data) && isDef((data).__ob__)) {
-    "development" !== 'production' && warn(
-      "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
-      'Always create fresh vnode data objects in each render!',
-      context
-    );
-    return createEmptyVNode()
-  }
-  // object syntax in v-bind
-  if (isDef(data) && isDef(data.is)) {
-    tag = data.is;
-  }
-  if (!tag) {
-    // in case of component :is set to falsy value
-    return createEmptyVNode()
-  }
-  // warn against non-primitive key
-  if ("development" !== 'production' &&
-    isDef(data) && isDef(data.key) && !isPrimitive(data.key)
-  ) {
-    {
-      warn(
-        'Avoid using non-primitive value as key, ' +
-        'use string/number value instead.',
-        context
-      );
-    }
-  }
-  // support single function children as default scoped slot
-  if (Array.isArray(children) &&
-    typeof children[0] === 'function'
-  ) {
-    data = data || {};
-    data.scopedSlots = { default: children[0] };
-    children.length = 0;
-  }
-  if (normalizationType === ALWAYS_NORMALIZE) {
-    children = normalizeChildren(children);
-  } else if (normalizationType === SIMPLE_NORMALIZE) {
-    children = simpleNormalizeChildren(children);
-  }
-  var vnode, ns;
-  if (typeof tag === 'string') {
-    var Ctor;
-    ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
-    if (config.isReservedTag(tag)) {
-      // platform built-in elements
-      vnode = new VNode(
-        config.parsePlatformTagName(tag), data, children,
-        undefined, undefined, context
-      );
-    } else if (isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
-      // component
-      vnode = createComponent(Ctor, data, context, children, tag);
-    } else {
-      // unknown or unlisted namespaced elements
-      // check at runtime because it may get assigned a namespace when its
-      // parent normalizes children
-      vnode = new VNode(
-        tag, data, children,
-        undefined, undefined, context
-      );
-    }
-  } else {
-    // direct component options / constructor
-    vnode = createComponent(tag, data, context, children);
-  }
-  if (isDef(vnode)) {
-    if (ns) { applyNS(vnode, ns); }
-    return vnode
-  } else {
-    return createEmptyVNode()
-  }
-}
-
-function applyNS (vnode, ns, force) {
-  vnode.ns = ns;
-  if (vnode.tag === 'foreignObject') {
-    // use default namespace inside foreignObject
-    ns = undefined;
-    force = true;
-  }
-  if (isDef(vnode.children)) {
-    for (var i = 0, l = vnode.children.length; i < l; i++) {
-      var child = vnode.children[i];
-      if (isDef(child.tag) && (isUndef(child.ns) || isTrue(force))) {
-        applyNS(child, ns, force);
-      }
-    }
-  }
-}
-
-/*  */
-
-function initRender (vm) {
-  vm._vnode = null; // the root of the child tree
-  vm._staticTrees = null; // v-once cached trees
-  var options = vm.$options;
-  var parentVnode = vm.$vnode = options._parentVnode; // the placeholder node in parent tree
-  var renderContext = parentVnode && parentVnode.context;
-  vm.$slots = resolveSlots(options._renderChildren, renderContext);
-  vm.$scopedSlots = emptyObject;
-  // bind the createElement fn to this instance
-  // so that we get proper render context inside it.
-  // args order: tag, data, children, normalizationType, alwaysNormalize
-  // internal version is used by render functions compiled from templates
-  vm._c = function (a, b, c, d) { return createElement(vm, a, b, c, d, false); };
-  // normalization is always applied for the public version, used in
-  // user-written render functions.
-  vm.$createElement = function (a, b, c, d) { return createElement(vm, a, b, c, d, true); };
-
-  // $attrs & $listeners are exposed for easier HOC creation.
-  // they need to be reactive so that HOCs using them are always updated
-  var parentData = parentVnode && parentVnode.data;
-
-  /* istanbul ignore else */
-  if (true) {
-    defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, function () {
-      !isUpdatingChildComponent && warn("$attrs is readonly.", vm);
-    }, true);
-    defineReactive(vm, '$listeners', options._parentListeners || emptyObject, function () {
-      !isUpdatingChildComponent && warn("$listeners is readonly.", vm);
-    }, true);
-  } else {
-    defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, null, true);
-    defineReactive(vm, '$listeners', options._parentListeners || emptyObject, null, true);
-  }
-}
-
-function renderMixin (Vue) {
-  // install runtime convenience helpers
-  installRenderHelpers(Vue.prototype);
-
-  Vue.prototype.$nextTick = function (fn) {
-    return nextTick(fn, this)
-  };
-
-  Vue.prototype._render = function () {
-    var vm = this;
-    var ref = vm.$options;
-    var render = ref.render;
-    var _parentVnode = ref._parentVnode;
-
-    if (vm._isMounted) {
-      // if the parent didn't update, the slot nodes will be the ones from
-      // last render. They need to be cloned to ensure "freshness" for this render.
-      for (var key in vm.$slots) {
-        var slot = vm.$slots[key];
-        // _rendered is a flag added by renderSlot, but may not be present
-        // if the slot is passed from manually written render functions
-        if (slot._rendered || (slot[0] && slot[0].elm)) {
-          vm.$slots[key] = cloneVNodes(slot, true /* deep */);
-        }
-      }
-    }
-
-    vm.$scopedSlots = (_parentVnode && _parentVnode.data.scopedSlots) || emptyObject;
-
-    // set parent vnode. this allows render functions to have access
-    // to the data on the placeholder node.
-    vm.$vnode = _parentVnode;
-    // render self
-    var vnode;
-    try {
-      vnode = render.call(vm._renderProxy, vm.$createElement);
-    } catch (e) {
-      handleError(e, vm, "render");
-      // return error render result,
-      // or previous vnode to prevent render error causing blank component
-      /* istanbul ignore else */
-      if (true) {
-        if (vm.$options.renderError) {
-          try {
-            vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e);
-          } catch (e) {
-            handleError(e, vm, "renderError");
-            vnode = vm._vnode;
-          }
-        } else {
-          vnode = vm._vnode;
-        }
-      } else {
-        vnode = vm._vnode;
-      }
-    }
-    // return empty vnode in case the render function errored out
-    if (!(vnode instanceof VNode)) {
-      if ("development" !== 'production' && Array.isArray(vnode)) {
-        warn(
-          'Multiple root nodes returned from render function. Render function ' +
-          'should return a single root node.',
-          vm
-        );
-      }
-      vnode = createEmptyVNode();
-    }
-    // set parent
-    vnode.parent = _parentVnode;
-    return vnode
-  };
-}
-
-/*  */
-
-var uid$1 = 0;
+var uid$3 = 0;
 
 function initMixin (Vue) {
   Vue.prototype._init = function (options) {
     var vm = this;
     // a uid
-    vm._uid = uid$1++;
+    vm._uid = uid$3++;
 
     var startTag, endTag;
     /* istanbul ignore if */
-    if ("development" !== 'production' && config.performance && mark) {
+    if (config.performance && mark) {
       startTag = "vue-perf-start:" + (vm._uid);
       endTag = "vue-perf-end:" + (vm._uid);
       mark(startTag);
@@ -36363,10 +37255,8 @@ function initMixin (Vue) {
       );
     }
     /* istanbul ignore else */
-    if (true) {
+    {
       initProxy(vm);
-    } else {
-      vm._renderProxy = vm;
     }
     // expose real self
     vm._self = vm;
@@ -36380,7 +37270,7 @@ function initMixin (Vue) {
     callHook(vm, 'created');
 
     /* istanbul ignore if */
-    if ("development" !== 'production' && config.performance && mark) {
+    if (config.performance && mark) {
       vm._name = formatComponentName(vm, false);
       mark(endTag);
       measure(("vue " + (vm._name) + " init"), startTag, endTag);
@@ -36398,8 +37288,6 @@ function initInternalComponent (vm, options) {
   var parentVnode = options._parentVnode;
   opts.parent = options.parent;
   opts._parentVnode = parentVnode;
-  opts._parentElm = options._parentElm;
-  opts._refElm = options._refElm;
 
   var vnodeComponentOptions = parentVnode.componentOptions;
   opts.propsData = vnodeComponentOptions.propsData;
@@ -36440,50 +37328,29 @@ function resolveConstructorOptions (Ctor) {
 function resolveModifiedOptions (Ctor) {
   var modified;
   var latest = Ctor.options;
-  var extended = Ctor.extendOptions;
   var sealed = Ctor.sealedOptions;
   for (var key in latest) {
     if (latest[key] !== sealed[key]) {
       if (!modified) { modified = {}; }
-      modified[key] = dedupe(latest[key], extended[key], sealed[key]);
+      modified[key] = latest[key];
     }
   }
   return modified
 }
 
-function dedupe (latest, extended, sealed) {
-  // compare latest and sealed to ensure lifecycle hooks won't be duplicated
-  // between merges
-  if (Array.isArray(latest)) {
-    var res = [];
-    sealed = Array.isArray(sealed) ? sealed : [sealed];
-    extended = Array.isArray(extended) ? extended : [extended];
-    for (var i = 0; i < latest.length; i++) {
-      // push original options and not sealed options to exclude duplicated options
-      if (extended.indexOf(latest[i]) >= 0 || sealed.indexOf(latest[i]) < 0) {
-        res.push(latest[i]);
-      }
-    }
-    return res
-  } else {
-    return latest
-  }
-}
-
-function Vue$3 (options) {
-  if ("development" !== 'production' &&
-    !(this instanceof Vue$3)
+function Vue (options) {
+  if (!(this instanceof Vue)
   ) {
     warn('Vue is a constructor and should be called with the `new` keyword');
   }
   this._init(options);
 }
 
-initMixin(Vue$3);
-stateMixin(Vue$3);
-eventsMixin(Vue$3);
-lifecycleMixin(Vue$3);
-renderMixin(Vue$3);
+initMixin(Vue);
+stateMixin(Vue);
+eventsMixin(Vue);
+lifecycleMixin(Vue);
+renderMixin(Vue);
 
 /*  */
 
@@ -36540,7 +37407,7 @@ function initExtend (Vue) {
     }
 
     var name = extendOptions.name || Super.options.name;
-    if ("development" !== 'production' && name) {
+    if (name) {
       validateComponentName(name);
     }
 
@@ -36623,7 +37490,7 @@ function initAssetRegisters (Vue) {
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
-        if ("development" !== 'production' && type === 'component') {
+        if (type === 'component') {
           validateComponentName(id);
         }
         if (type === 'component' && isPlainObject(definition)) {
@@ -36641,6 +37508,8 @@ function initAssetRegisters (Vue) {
 }
 
 /*  */
+
+
 
 function getComponentName (opts) {
   return opts && (opts.Ctor.options.name || opts.tag)
@@ -36705,20 +37574,20 @@ var KeepAlive = {
   },
 
   destroyed: function destroyed () {
-    var this$1 = this;
-
-    for (var key in this$1.cache) {
-      pruneCacheEntry(this$1.cache, key, this$1.keys);
+    for (var key in this.cache) {
+      pruneCacheEntry(this.cache, key, this.keys);
     }
   },
 
-  watch: {
-    include: function include (val) {
-      pruneCache(this, function (name) { return matches(val, name); });
-    },
-    exclude: function exclude (val) {
-      pruneCache(this, function (name) { return !matches(val, name); });
-    }
+  mounted: function mounted () {
+    var this$1 = this;
+
+    this.$watch('include', function (val) {
+      pruneCache(this$1, function (name) { return matches(val, name); });
+    });
+    this.$watch('exclude', function (val) {
+      pruneCache(this$1, function (name) { return !matches(val, name); });
+    });
   },
 
   render: function render () {
@@ -36778,7 +37647,7 @@ function initGlobalAPI (Vue) {
   // config
   var configDef = {};
   configDef.get = function () { return config; };
-  if (true) {
+  {
     configDef.set = function () {
       warn(
         'Do not replace the Vue.config object, set individual fields instead.'
@@ -36794,12 +37663,18 @@ function initGlobalAPI (Vue) {
     warn: warn,
     extend: extend,
     mergeOptions: mergeOptions,
-    defineReactive: defineReactive
+    defineReactive: defineReactive$$1
   };
 
   Vue.set = set;
   Vue.delete = del;
   Vue.nextTick = nextTick;
+
+  // 2.6 explicit observable API
+  Vue.observable = function (obj) {
+    observe(obj);
+    return obj
+  };
 
   Vue.options = Object.create(null);
   ASSET_TYPES.forEach(function (type) {
@@ -36818,20 +37693,25 @@ function initGlobalAPI (Vue) {
   initAssetRegisters(Vue);
 }
 
-initGlobalAPI(Vue$3);
+initGlobalAPI(Vue);
 
-Object.defineProperty(Vue$3.prototype, '$isServer', {
+Object.defineProperty(Vue.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Object.defineProperty(Vue$3.prototype, '$ssrContext', {
+Object.defineProperty(Vue.prototype, '$ssrContext', {
   get: function get () {
     /* istanbul ignore next */
     return this.$vnode && this.$vnode.ssrContext
   }
 });
 
-Vue$3.version = '2.5.13';
+// expose FunctionalRenderContext for ssr runtime helper installation
+Object.defineProperty(Vue, 'FunctionalRenderContext', {
+  value: FunctionalRenderContext
+});
+
+Vue.version = '2.6.10';
 
 /*  */
 
@@ -36851,6 +37731,17 @@ var mustUseProp = function (tag, type, attr) {
 };
 
 var isEnumeratedAttr = makeMap('contenteditable,draggable,spellcheck');
+
+var isValidContentEditableValue = makeMap('events,caret,typing,plaintext-only');
+
+var convertEnumeratedValue = function (key, value) {
+  return isFalsyAttrValue(value) || value === 'false'
+    ? 'false'
+    // allow arbitrary string value for contenteditable
+    : key === 'contenteditable' && isValidContentEditableValue(value)
+      ? value
+      : 'true'
+};
 
 var isBooleanAttr = makeMap(
   'allowfullscreen,async,autofocus,autoplay,checked,compact,controls,declare,' +
@@ -37040,7 +37931,7 @@ function query (el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
     if (!selected) {
-      "development" !== 'production' && warn(
+      warn(
         'Cannot find element: ' + el
       );
       return document.createElement('div')
@@ -37105,24 +37996,23 @@ function setTextContent (node, text) {
   node.textContent = text;
 }
 
-function setAttribute (node, key, val) {
-  node.setAttribute(key, val);
+function setStyleScope (node, scopeId) {
+  node.setAttribute(scopeId, '');
 }
 
-
-var nodeOps = Object.freeze({
-	createElement: createElement$1,
-	createElementNS: createElementNS,
-	createTextNode: createTextNode,
-	createComment: createComment,
-	insertBefore: insertBefore,
-	removeChild: removeChild,
-	appendChild: appendChild,
-	parentNode: parentNode,
-	nextSibling: nextSibling,
-	tagName: tagName,
-	setTextContent: setTextContent,
-	setAttribute: setAttribute
+var nodeOps = /*#__PURE__*/Object.freeze({
+  createElement: createElement$1,
+  createElementNS: createElementNS,
+  createTextNode: createTextNode,
+  createComment: createComment,
+  insertBefore: insertBefore,
+  removeChild: removeChild,
+  appendChild: appendChild,
+  parentNode: parentNode,
+  nextSibling: nextSibling,
+  tagName: tagName,
+  setTextContent: setTextContent,
+  setStyleScope: setStyleScope
 });
 
 /*  */
@@ -37144,7 +38034,7 @@ var ref = {
 
 function registerRef (vnode, isRemoval) {
   var key = vnode.data.ref;
-  if (!key) { return }
+  if (!isDef(key)) { return }
 
   var vm = vnode.context;
   var ref = vnode.componentInstance || vnode.elm;
@@ -37241,13 +38131,13 @@ function createPatchFunction (backend) {
   }
 
   function createRmCb (childElm, listeners) {
-    function remove () {
-      if (--remove.listeners === 0) {
+    function remove$$1 () {
+      if (--remove$$1.listeners === 0) {
         removeNode(childElm);
       }
     }
-    remove.listeners = listeners;
-    return remove
+    remove$$1.listeners = listeners;
+    return remove$$1
   }
 
   function removeNode (el) {
@@ -37275,7 +38165,25 @@ function createPatchFunction (backend) {
   }
 
   var creatingElmInVPre = 0;
-  function createElm (vnode, insertedVnodeQueue, parentElm, refElm, nested) {
+
+  function createElm (
+    vnode,
+    insertedVnodeQueue,
+    parentElm,
+    refElm,
+    nested,
+    ownerArray,
+    index
+  ) {
+    if (isDef(vnode.elm) && isDef(ownerArray)) {
+      // This vnode was used in a previous render!
+      // now it's used as a new node, overwriting its elm would cause
+      // potential patch errors down the road when it's used as an insertion
+      // reference node. Instead, we clone the node on-demand before creating
+      // associated DOM element for it.
+      vnode = ownerArray[index] = cloneVNode(vnode);
+    }
+
     vnode.isRootInsert = !nested; // for transition enter check
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
@@ -37285,7 +38193,7 @@ function createPatchFunction (backend) {
     var children = vnode.children;
     var tag = vnode.tag;
     if (isDef(tag)) {
-      if (true) {
+      {
         if (data && data.pre) {
           creatingElmInVPre++;
         }
@@ -37298,6 +38206,7 @@ function createPatchFunction (backend) {
           );
         }
       }
+
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode);
@@ -37312,7 +38221,7 @@ function createPatchFunction (backend) {
         insert(parentElm, vnode.elm, refElm);
       }
 
-      if ("development" !== 'production' && data && data.pre) {
+      if (data && data.pre) {
         creatingElmInVPre--;
       }
     } else if (isTrue(vnode.isComment)) {
@@ -37329,7 +38238,7 @@ function createPatchFunction (backend) {
     if (isDef(i)) {
       var isReactivated = isDef(vnode.componentInstance) && i.keepAlive;
       if (isDef(i = i.hook) && isDef(i = i.init)) {
-        i(vnode, false /* hydrating */, parentElm, refElm);
+        i(vnode, false /* hydrating */);
       }
       // after calling the init hook, if the vnode is a child component
       // it should've created a child instance and mounted it. the child
@@ -37337,6 +38246,7 @@ function createPatchFunction (backend) {
       // in that case we can just return the element and be done.
       if (isDef(vnode.componentInstance)) {
         initComponent(vnode, insertedVnodeQueue);
+        insert(parentElm, vnode.elm, refElm);
         if (isTrue(isReactivated)) {
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm);
         }
@@ -37388,7 +38298,7 @@ function createPatchFunction (backend) {
   function insert (parent, elm, ref$$1) {
     if (isDef(parent)) {
       if (isDef(ref$$1)) {
-        if (ref$$1.parentNode === parent) {
+        if (nodeOps.parentNode(ref$$1) === parent) {
           nodeOps.insertBefore(parent, elm, ref$$1);
         }
       } else {
@@ -37399,11 +38309,11 @@ function createPatchFunction (backend) {
 
   function createChildren (vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
-      if (true) {
+      {
         checkDuplicateKeys(children);
       }
       for (var i = 0; i < children.length; ++i) {
-        createElm(children[i], insertedVnodeQueue, vnode.elm, null, true);
+        createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i);
       }
     } else if (isPrimitive(vnode.text)) {
       nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)));
@@ -37434,12 +38344,12 @@ function createPatchFunction (backend) {
   function setScope (vnode) {
     var i;
     if (isDef(i = vnode.fnScopeId)) {
-      nodeOps.setAttribute(vnode.elm, i, '');
+      nodeOps.setStyleScope(vnode.elm, i);
     } else {
       var ancestor = vnode;
       while (ancestor) {
         if (isDef(i = ancestor.context) && isDef(i = i.$options._scopeId)) {
-          nodeOps.setAttribute(vnode.elm, i, '');
+          nodeOps.setStyleScope(vnode.elm, i);
         }
         ancestor = ancestor.parent;
       }
@@ -37450,13 +38360,13 @@ function createPatchFunction (backend) {
       i !== vnode.fnContext &&
       isDef(i = i.$options._scopeId)
     ) {
-      nodeOps.setAttribute(vnode.elm, i, '');
+      nodeOps.setStyleScope(vnode.elm, i);
     }
   }
 
   function addVnodes (parentElm, refElm, vnodes, startIdx, endIdx, insertedVnodeQueue) {
     for (; startIdx <= endIdx; ++startIdx) {
-      createElm(vnodes[startIdx], insertedVnodeQueue, parentElm, refElm);
+      createElm(vnodes[startIdx], insertedVnodeQueue, parentElm, refElm, false, vnodes, startIdx);
     }
   }
 
@@ -37533,7 +38443,7 @@ function createPatchFunction (backend) {
     // during leaving transitions
     var canMove = !removeOnly;
 
-    if (true) {
+    {
       checkDuplicateKeys(newCh);
     }
 
@@ -37543,20 +38453,20 @@ function createPatchFunction (backend) {
       } else if (isUndef(oldEndVnode)) {
         oldEndVnode = oldCh[--oldEndIdx];
       } else if (sameVnode(oldStartVnode, newStartVnode)) {
-        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue);
+        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
         oldStartVnode = oldCh[++oldStartIdx];
         newStartVnode = newCh[++newStartIdx];
       } else if (sameVnode(oldEndVnode, newEndVnode)) {
-        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue);
+        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx);
         oldEndVnode = oldCh[--oldEndIdx];
         newEndVnode = newCh[--newEndIdx];
       } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
-        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
+        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx);
         canMove && nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm));
         oldStartVnode = oldCh[++oldStartIdx];
         newEndVnode = newCh[--newEndIdx];
       } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
-        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue);
+        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
         canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
         oldEndVnode = oldCh[--oldEndIdx];
         newStartVnode = newCh[++newStartIdx];
@@ -37566,16 +38476,16 @@ function createPatchFunction (backend) {
           ? oldKeyToIdx[newStartVnode.key]
           : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx);
         if (isUndef(idxInOld)) { // New element
-          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
+          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx);
         } else {
           vnodeToMove = oldCh[idxInOld];
           if (sameVnode(vnodeToMove, newStartVnode)) {
-            patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue);
+            patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
             oldCh[idxInOld] = undefined;
             canMove && nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVnode.elm);
           } else {
             // same key but different element. treat as new element
-            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
+            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx);
           }
         }
         newStartVnode = newCh[++newStartIdx];
@@ -37614,9 +38524,21 @@ function createPatchFunction (backend) {
     }
   }
 
-  function patchVnode (oldVnode, vnode, insertedVnodeQueue, removeOnly) {
+  function patchVnode (
+    oldVnode,
+    vnode,
+    insertedVnodeQueue,
+    ownerArray,
+    index,
+    removeOnly
+  ) {
     if (oldVnode === vnode) {
       return
+    }
+
+    if (isDef(vnode.elm) && isDef(ownerArray)) {
+      // clone reused vnode
+      vnode = ownerArray[index] = cloneVNode(vnode);
     }
 
     var elm = vnode.elm = oldVnode.elm;
@@ -37659,6 +38581,9 @@ function createPatchFunction (backend) {
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) { updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly); }
       } else if (isDef(ch)) {
+        {
+          checkDuplicateKeys(ch);
+        }
         if (isDef(oldVnode.text)) { nodeOps.setTextContent(elm, ''); }
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
       } else if (isDef(oldCh)) {
@@ -37707,7 +38632,7 @@ function createPatchFunction (backend) {
       return true
     }
     // assert node match
-    if (true) {
+    {
       if (!assertNodeMatch(elm, vnode, inVPre)) {
         return false
       }
@@ -37730,8 +38655,7 @@ function createPatchFunction (backend) {
           if (isDef(i = data) && isDef(i = i.domProps) && isDef(i = i.innerHTML)) {
             if (i !== elm.innerHTML) {
               /* istanbul ignore if */
-              if ("development" !== 'production' &&
-                typeof console !== 'undefined' &&
+              if (typeof console !== 'undefined' &&
                 !hydrationBailed
               ) {
                 hydrationBailed = true;
@@ -37756,8 +38680,7 @@ function createPatchFunction (backend) {
             // longer than the virtual children list.
             if (!childrenMatch || childNode) {
               /* istanbul ignore if */
-              if ("development" !== 'production' &&
-                typeof console !== 'undefined' &&
+              if (typeof console !== 'undefined' &&
                 !hydrationBailed
               ) {
                 hydrationBailed = true;
@@ -37800,7 +38723,7 @@ function createPatchFunction (backend) {
     }
   }
 
-  return function patch (oldVnode, vnode, hydrating, removeOnly, parentElm, refElm) {
+  return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
       return
@@ -37812,12 +38735,12 @@ function createPatchFunction (backend) {
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
       isInitialPatch = true;
-      createElm(vnode, insertedVnodeQueue, parentElm, refElm);
+      createElm(vnode, insertedVnodeQueue);
     } else {
       var isRealElement = isDef(oldVnode.nodeType);
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
-        patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly);
+        patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly);
       } else {
         if (isRealElement) {
           // mounting to a real element
@@ -37831,7 +38754,7 @@ function createPatchFunction (backend) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true);
               return oldVnode
-            } else if (true) {
+            } else {
               warn(
                 'The client-side rendered virtual DOM tree is not matching ' +
                 'server-rendered content. This is likely caused by incorrect ' +
@@ -37848,7 +38771,7 @@ function createPatchFunction (backend) {
 
         // replacing existing element
         var oldElm = oldVnode.elm;
-        var parentElm$1 = nodeOps.parentNode(oldElm);
+        var parentElm = nodeOps.parentNode(oldElm);
 
         // create new node
         createElm(
@@ -37857,7 +38780,7 @@ function createPatchFunction (backend) {
           // extremely rare edge case: do not insert if old element is in a
           // leaving transition. Only happens when combining transition +
           // keep-alive + HOCs. (#4590)
-          oldElm._leaveCb ? null : parentElm$1,
+          oldElm._leaveCb ? null : parentElm,
           nodeOps.nextSibling(oldElm)
         );
 
@@ -37892,8 +38815,8 @@ function createPatchFunction (backend) {
         }
 
         // destroy old node
-        if (isDef(parentElm$1)) {
-          removeVnodes(parentElm$1, [oldVnode], 0, 0);
+        if (isDef(parentElm)) {
+          removeVnodes(parentElm, [oldVnode], 0, 0);
         } else if (isDef(oldVnode.tag)) {
           invokeDestroyHook(oldVnode);
         }
@@ -37943,6 +38866,7 @@ function _update (oldVnode, vnode) {
     } else {
       // existing directive, update
       dir.oldValue = oldDir.value;
+      dir.oldArg = oldDir.arg;
       callHook$1(dir, 'update', vnode, oldVnode);
       if (dir.def && dir.def.componentUpdated) {
         dirsWithPostpatch.push(dir);
@@ -38070,7 +38994,9 @@ function updateAttrs (oldVnode, vnode) {
 }
 
 function setAttr (el, key, value) {
-  if (isBooleanAttr(key)) {
+  if (el.tagName.indexOf('-') > -1) {
+    baseSetAttr(el, key, value);
+  } else if (isBooleanAttr(key)) {
     // set attribute for blank value
     // e.g. <option disabled>Select one</option>
     if (isFalsyAttrValue(value)) {
@@ -38084,7 +39010,7 @@ function setAttr (el, key, value) {
       el.setAttribute(key, value);
     }
   } else if (isEnumeratedAttr(key)) {
-    el.setAttribute(key, isFalsyAttrValue(value) || value === 'false' ? 'false' : 'true');
+    el.setAttribute(key, convertEnumeratedValue(key, value));
   } else if (isXlink(key)) {
     if (isFalsyAttrValue(value)) {
       el.removeAttributeNS(xlinkNS, getXlinkProp(key));
@@ -38092,28 +39018,32 @@ function setAttr (el, key, value) {
       el.setAttributeNS(xlinkNS, key, value);
     }
   } else {
-    if (isFalsyAttrValue(value)) {
-      el.removeAttribute(key);
-    } else {
-      // #7138: IE10 & 11 fires input event when setting placeholder on
-      // <textarea>... block the first input event and remove the blocker
-      // immediately.
-      /* istanbul ignore if */
-      if (
-        isIE && !isIE9 &&
-        el.tagName === 'TEXTAREA' &&
-        key === 'placeholder' && !el.__ieph
-      ) {
-        var blocker = function (e) {
-          e.stopImmediatePropagation();
-          el.removeEventListener('input', blocker);
-        };
-        el.addEventListener('input', blocker);
-        // $flow-disable-line
-        el.__ieph = true; /* IE placeholder patched */
-      }
-      el.setAttribute(key, value);
+    baseSetAttr(el, key, value);
+  }
+}
+
+function baseSetAttr (el, key, value) {
+  if (isFalsyAttrValue(value)) {
+    el.removeAttribute(key);
+  } else {
+    // #7138: IE10 & 11 fires input event when setting placeholder on
+    // <textarea>... block the first input event and remove the blocker
+    // immediately.
+    /* istanbul ignore if */
+    if (
+      isIE && !isIE9 &&
+      el.tagName === 'TEXTAREA' &&
+      key === 'placeholder' && value !== '' && !el.__ieph
+    ) {
+      var blocker = function (e) {
+        e.stopImmediatePropagation();
+        el.removeEventListener('input', blocker);
+      };
+      el.addEventListener('input', blocker);
+      // $flow-disable-line
+      el.__ieph = true; /* IE placeholder patched */
     }
+    el.setAttribute(key, value);
   }
 }
 
@@ -38254,15 +39184,19 @@ function wrapFilter (exp, filter) {
   } else {
     var name = filter.slice(0, i);
     var args = filter.slice(i + 1);
-    return ("_f(\"" + name + "\")(" + exp + "," + args)
+    return ("_f(\"" + name + "\")(" + exp + (args !== ')' ? ',' + args : args))
   }
 }
 
 /*  */
 
-function baseWarn (msg) {
+
+
+/* eslint-disable no-unused-vars */
+function baseWarn (msg, range) {
   console.error(("[Vue compiler]: " + msg));
 }
+/* eslint-enable no-unused-vars */
 
 function pluckModuleFunction (
   modules,
@@ -38273,20 +39207,23 @@ function pluckModuleFunction (
     : []
 }
 
-function addProp (el, name, value) {
-  (el.props || (el.props = [])).push({ name: name, value: value });
+function addProp (el, name, value, range, dynamic) {
+  (el.props || (el.props = [])).push(rangeSetItem({ name: name, value: value, dynamic: dynamic }, range));
   el.plain = false;
 }
 
-function addAttr (el, name, value) {
-  (el.attrs || (el.attrs = [])).push({ name: name, value: value });
+function addAttr (el, name, value, range, dynamic) {
+  var attrs = dynamic
+    ? (el.dynamicAttrs || (el.dynamicAttrs = []))
+    : (el.attrs || (el.attrs = []));
+  attrs.push(rangeSetItem({ name: name, value: value, dynamic: dynamic }, range));
   el.plain = false;
 }
 
 // add a raw attr (use this in preTransforms)
-function addRawAttr (el, name, value) {
+function addRawAttr (el, name, value, range) {
   el.attrsMap[name] = value;
-  el.attrsList.push({ name: name, value: value });
+  el.attrsList.push(rangeSetItem({ name: name, value: value }, range));
 }
 
 function addDirective (
@@ -38295,10 +39232,25 @@ function addDirective (
   rawName,
   value,
   arg,
-  modifiers
+  isDynamicArg,
+  modifiers,
+  range
 ) {
-  (el.directives || (el.directives = [])).push({ name: name, rawName: rawName, value: value, arg: arg, modifiers: modifiers });
+  (el.directives || (el.directives = [])).push(rangeSetItem({
+    name: name,
+    rawName: rawName,
+    value: value,
+    arg: arg,
+    isDynamicArg: isDynamicArg,
+    modifiers: modifiers
+  }, range));
   el.plain = false;
+}
+
+function prependModifierMarker (symbol, name, dynamic) {
+  return dynamic
+    ? ("_p(" + name + ",\"" + symbol + "\")")
+    : symbol + name // mark the event as captured
 }
 
 function addHandler (
@@ -38307,46 +39259,55 @@ function addHandler (
   value,
   modifiers,
   important,
-  warn
+  warn,
+  range,
+  dynamic
 ) {
   modifiers = modifiers || emptyObject;
   // warn prevent and passive modifier
   /* istanbul ignore if */
   if (
-    "development" !== 'production' && warn &&
+    warn &&
     modifiers.prevent && modifiers.passive
   ) {
     warn(
       'passive and prevent can\'t be used together. ' +
-      'Passive handler can\'t prevent default event.'
+      'Passive handler can\'t prevent default event.',
+      range
     );
-  }
-
-  // check capture modifier
-  if (modifiers.capture) {
-    delete modifiers.capture;
-    name = '!' + name; // mark the event as captured
-  }
-  if (modifiers.once) {
-    delete modifiers.once;
-    name = '~' + name; // mark the event as once
-  }
-  /* istanbul ignore if */
-  if (modifiers.passive) {
-    delete modifiers.passive;
-    name = '&' + name; // mark the event as passive
   }
 
   // normalize click.right and click.middle since they don't actually fire
   // this is technically browser-specific, but at least for now browsers are
   // the only target envs that have right/middle clicks.
-  if (name === 'click') {
-    if (modifiers.right) {
+  if (modifiers.right) {
+    if (dynamic) {
+      name = "(" + name + ")==='click'?'contextmenu':(" + name + ")";
+    } else if (name === 'click') {
       name = 'contextmenu';
       delete modifiers.right;
-    } else if (modifiers.middle) {
+    }
+  } else if (modifiers.middle) {
+    if (dynamic) {
+      name = "(" + name + ")==='click'?'mouseup':(" + name + ")";
+    } else if (name === 'click') {
       name = 'mouseup';
     }
+  }
+
+  // check capture modifier
+  if (modifiers.capture) {
+    delete modifiers.capture;
+    name = prependModifierMarker('!', name, dynamic);
+  }
+  if (modifiers.once) {
+    delete modifiers.once;
+    name = prependModifierMarker('~', name, dynamic);
+  }
+  /* istanbul ignore if */
+  if (modifiers.passive) {
+    delete modifiers.passive;
+    name = prependModifierMarker('&', name, dynamic);
   }
 
   var events;
@@ -38357,7 +39318,7 @@ function addHandler (
     events = el.events || (el.events = {});
   }
 
-  var newHandler = { value: value };
+  var newHandler = rangeSetItem({ value: value.trim(), dynamic: dynamic }, range);
   if (modifiers !== emptyObject) {
     newHandler.modifiers = modifiers;
   }
@@ -38373,6 +39334,15 @@ function addHandler (
   }
 
   el.plain = false;
+}
+
+function getRawBindingAttr (
+  el,
+  name
+) {
+  return el.rawAttrsMap[':' + name] ||
+    el.rawAttrsMap['v-bind:' + name] ||
+    el.rawAttrsMap[name]
 }
 
 function getBindingAttr (
@@ -38418,6 +39388,35 @@ function getAndRemoveAttr (
   return val
 }
 
+function getAndRemoveAttrByRegex (
+  el,
+  name
+) {
+  var list = el.attrsList;
+  for (var i = 0, l = list.length; i < l; i++) {
+    var attr = list[i];
+    if (name.test(attr.name)) {
+      list.splice(i, 1);
+      return attr
+    }
+  }
+}
+
+function rangeSetItem (
+  item,
+  range
+) {
+  if (range) {
+    if (range.start != null) {
+      item.start = range.start;
+    }
+    if (range.end != null) {
+      item.end = range.end;
+    }
+  }
+  return item
+}
+
 /*  */
 
 /**
@@ -38437,8 +39436,8 @@ function genComponentModel (
   if (trim) {
     valueExpression =
       "(typeof " + baseValueExpression + " === 'string'" +
-        "? " + baseValueExpression + ".trim()" +
-        ": " + baseValueExpression + ")";
+      "? " + baseValueExpression + ".trim()" +
+      ": " + baseValueExpression + ")";
   }
   if (number) {
     valueExpression = "_n(" + valueExpression + ")";
@@ -38447,7 +39446,7 @@ function genComponentModel (
 
   el.model = {
     value: ("(" + value + ")"),
-    expression: ("\"" + value + "\""),
+    expression: JSON.stringify(value),
     callback: ("function (" + baseValueExpression + ") {" + assignment + "}")
   };
 }
@@ -38482,16 +39481,14 @@ function genAssignmentCode (
  *
  */
 
-var len;
-var str;
-var chr;
-var index$1;
-var expressionPos;
-var expressionEndPos;
+var len, str, chr, index$1, expressionPos, expressionEndPos;
 
 
 
 function parseModel (val) {
+  // Fix https://github.com/vuejs/vue/pull/7730
+  // allow v-model="obj.val " (trailing whitespace)
+  val = val.trim();
   len = val.length;
 
   if (val.indexOf('[') < 0 || val.lastIndexOf(']') < len - 1) {
@@ -38588,13 +39585,14 @@ function model (
   var tag = el.tag;
   var type = el.attrsMap.type;
 
-  if (true) {
+  {
     // inputs with type="file" are read only and setting the input's
     // value will throw an error.
     if (tag === 'input' && type === 'file') {
       warn$1(
         "<" + (el.tag) + " v-model=\"" + value + "\" type=\"file\">:\n" +
-        "File inputs are read only. Use a v-on:change listener instead."
+        "File inputs are read only. Use a v-on:change listener instead.",
+        el.rawAttrsMap['v-model']
       );
     }
   }
@@ -38615,12 +39613,13 @@ function model (
     genComponentModel(el, value, modifiers);
     // component v-model doesn't need extra runtime
     return false
-  } else if (true) {
+  } else {
     warn$1(
       "<" + (el.tag) + " v-model=\"" + value + "\">: " +
       "v-model is not supported on this element type. " +
       'If you are working with contenteditable, it\'s recommended to ' +
-      'wrap a library dedicated for that purpose inside a custom component.'
+      'wrap a library dedicated for that purpose inside a custom component.',
+      el.rawAttrsMap['v-model']
     );
   }
 
@@ -38652,8 +39651,8 @@ function genCheckboxModel (
     'if(Array.isArray($$a)){' +
       "var $$v=" + (number ? '_n(' + valueBinding + ')' : valueBinding) + "," +
           '$$i=_i($$a,$$v);' +
-      "if($$el.checked){$$i<0&&(" + value + "=$$a.concat([$$v]))}" +
-      "else{$$i>-1&&(" + value + "=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}" +
+      "if($$el.checked){$$i<0&&(" + (genAssignmentCode(value, '$$a.concat([$$v])')) + ")}" +
+      "else{$$i>-1&&(" + (genAssignmentCode(value, '$$a.slice(0,$$i).concat($$a.slice($$i+1))')) + ")}" +
     "}else{" + (genAssignmentCode(value, '$$c')) + "}",
     null, true
   );
@@ -38696,13 +39695,16 @@ function genDefaultModel (
   var type = el.attrsMap.type;
 
   // warn if v-bind:value conflicts with v-model
-  if (true) {
+  // except for inputs with v-bind:type
+  {
     var value$1 = el.attrsMap['v-bind:value'] || el.attrsMap[':value'];
-    if (value$1) {
+    var typeBinding = el.attrsMap['v-bind:type'] || el.attrsMap[':type'];
+    if (value$1 && !typeBinding) {
       var binding = el.attrsMap['v-bind:value'] ? 'v-bind:value' : ':value';
       warn$1(
         binding + "=\"" + value$1 + "\" conflicts with v-model on the same element " +
-        'because the latter already expands to a value binding internally'
+        'because the latter already expands to a value binding internally',
+        el.rawAttrsMap[binding]
       );
     }
   }
@@ -38763,7 +39765,7 @@ function normalizeEvents (on) {
 
 var target$1;
 
-function createOnceHandler (handler, event, capture) {
+function createOnceHandler$1 (event, handler, capture) {
   var _target = target$1; // save current target element in closure
   return function onceHandler () {
     var res = handler.apply(null, arguments);
@@ -38773,17 +39775,49 @@ function createOnceHandler (handler, event, capture) {
   }
 }
 
+// #9446: Firefox <= 53 (in particular, ESR 52) has incorrect Event.timeStamp
+// implementation and does not fire microtasks in between event propagation, so
+// safe to exclude.
+var useMicrotaskFix = isUsingMicroTask && !(isFF && Number(isFF[1]) <= 53);
+
 function add$1 (
-  event,
+  name,
   handler,
-  once$$1,
   capture,
   passive
 ) {
-  handler = withMacroTask(handler);
-  if (once$$1) { handler = createOnceHandler(handler, event, capture); }
+  // async edge case #6566: inner click event triggers patch, event handler
+  // attached to outer element during patch, and triggered again. This
+  // happens because browsers fire microtask ticks between event propagation.
+  // the solution is simple: we save the timestamp when a handler is attached,
+  // and the handler would only fire if the event passed to it was fired
+  // AFTER it was attached.
+  if (useMicrotaskFix) {
+    var attachedTimestamp = currentFlushTimestamp;
+    var original = handler;
+    handler = original._wrapper = function (e) {
+      if (
+        // no bubbling, should always fire.
+        // this is just a safety net in case event.timeStamp is unreliable in
+        // certain weird environments...
+        e.target === e.currentTarget ||
+        // event is fired after handler attachment
+        e.timeStamp >= attachedTimestamp ||
+        // bail for environments that have buggy event.timeStamp implementations
+        // #9462 iOS 9 bug: event.timeStamp is 0 after history.pushState
+        // #9681 QtWebEngine event.timeStamp is negative value
+        e.timeStamp <= 0 ||
+        // #9448 bail if event is fired in another document in a multi-page
+        // electron/nw.js app, since event.timeStamp will be using a different
+        // starting reference
+        e.target.ownerDocument !== document
+      ) {
+        return original.apply(this, arguments)
+      }
+    };
+  }
   target$1.addEventListener(
-    event,
+    name,
     handler,
     supportsPassive
       ? { capture: capture, passive: passive }
@@ -38792,14 +39826,14 @@ function add$1 (
 }
 
 function remove$2 (
-  event,
+  name,
   handler,
   capture,
   _target
 ) {
   (_target || target$1).removeEventListener(
-    event,
-    handler._withTask || handler,
+    name,
+    handler._wrapper || handler,
     capture
   );
 }
@@ -38812,7 +39846,7 @@ function updateDOMListeners (oldVnode, vnode) {
   var oldOn = oldVnode.data.on || {};
   target$1 = vnode.elm;
   normalizeEvents(on);
-  updateListeners(on, oldOn, add$1, remove$2, vnode.context);
+  updateListeners(on, oldOn, add$1, remove$2, createOnceHandler$1, vnode.context);
   target$1 = undefined;
 }
 
@@ -38822,6 +39856,8 @@ var events = {
 };
 
 /*  */
+
+var svgContainer;
 
 function updateDOMProps (oldVnode, vnode) {
   if (isUndef(oldVnode.data.domProps) && isUndef(vnode.data.domProps)) {
@@ -38837,10 +39873,11 @@ function updateDOMProps (oldVnode, vnode) {
   }
 
   for (key in oldProps) {
-    if (isUndef(props[key])) {
+    if (!(key in props)) {
       elm[key] = '';
     }
   }
+
   for (key in props) {
     cur = props[key];
     // ignore children if the node has textContent or innerHTML,
@@ -38856,7 +39893,7 @@ function updateDOMProps (oldVnode, vnode) {
       }
     }
 
-    if (key === 'value') {
+    if (key === 'value' && elm.tagName !== 'PROGRESS') {
       // store value as _value as well since
       // non-string values will be stringified
       elm._value = cur;
@@ -38865,8 +39902,29 @@ function updateDOMProps (oldVnode, vnode) {
       if (shouldUpdateValue(elm, strCur)) {
         elm.value = strCur;
       }
-    } else {
-      elm[key] = cur;
+    } else if (key === 'innerHTML' && isSVG(elm.tagName) && isUndef(elm.innerHTML)) {
+      // IE doesn't support innerHTML for SVG elements
+      svgContainer = svgContainer || document.createElement('div');
+      svgContainer.innerHTML = "<svg>" + cur + "</svg>";
+      var svg = svgContainer.firstChild;
+      while (elm.firstChild) {
+        elm.removeChild(elm.firstChild);
+      }
+      while (svg.firstChild) {
+        elm.appendChild(svg.firstChild);
+      }
+    } else if (
+      // skip the update if old and new VDOM state is the same.
+      // `value` is handled separately because the DOM value may be temporarily
+      // out of sync with VDOM state due to focus, composition and modifiers.
+      // This  #4521 by skipping the unnecesarry `checked` update.
+      cur !== oldProps[key]
+    ) {
+      // some property updates can throw
+      // e.g. `value` on <progress> w/ non-finite value
+      try {
+        elm[key] = cur;
+      } catch (e) {}
     }
   }
 }
@@ -38896,10 +39954,6 @@ function isDirtyWithModifiers (elm, newVal) {
   var value = elm.value;
   var modifiers = elm._vModifiers; // injected by v-model runtime
   if (isDef(modifiers)) {
-    if (modifiers.lazy) {
-      // inputs with lazy should only be updated when not in focus
-      return false
-    }
     if (modifiers.number) {
       return toNumber(value) !== toNumber(newVal)
     }
@@ -38994,7 +40048,7 @@ var setProp = function (el, name, val) {
   if (cssVarRE.test(name)) {
     el.style.setProperty(name, val);
   } else if (importantRE.test(val)) {
-    el.style.setProperty(name, val.replace(importantRE, ''), 'important');
+    el.style.setProperty(hyphenate(name), val.replace(importantRE, ''), 'important');
   } else {
     var normalizedName = normalize(name);
     if (Array.isArray(val)) {
@@ -39078,6 +40132,8 @@ var style = {
 
 /*  */
 
+var whitespaceRE = /\s+/;
+
 /**
  * Add class with compatibility for SVG since classList is not supported on
  * SVG elements in IE
@@ -39091,7 +40147,7 @@ function addClass (el, cls) {
   /* istanbul ignore else */
   if (el.classList) {
     if (cls.indexOf(' ') > -1) {
-      cls.split(/\s+/).forEach(function (c) { return el.classList.add(c); });
+      cls.split(whitespaceRE).forEach(function (c) { return el.classList.add(c); });
     } else {
       el.classList.add(cls);
     }
@@ -39116,7 +40172,7 @@ function removeClass (el, cls) {
   /* istanbul ignore else */
   if (el.classList) {
     if (cls.indexOf(' ') > -1) {
-      cls.split(/\s+/).forEach(function (c) { return el.classList.remove(c); });
+      cls.split(whitespaceRE).forEach(function (c) { return el.classList.remove(c); });
     } else {
       el.classList.remove(cls);
     }
@@ -39140,20 +40196,20 @@ function removeClass (el, cls) {
 
 /*  */
 
-function resolveTransition (def) {
-  if (!def) {
+function resolveTransition (def$$1) {
+  if (!def$$1) {
     return
   }
   /* istanbul ignore else */
-  if (typeof def === 'object') {
+  if (typeof def$$1 === 'object') {
     var res = {};
-    if (def.css !== false) {
-      extend(res, autoCssTransition(def.name || 'v'));
+    if (def$$1.css !== false) {
+      extend(res, autoCssTransition(def$$1.name || 'v'));
     }
-    extend(res, def);
+    extend(res, def$$1);
     return res
-  } else if (typeof def === 'string') {
-    return autoCssTransition(def)
+  } else if (typeof def$$1 === 'string') {
+    return autoCssTransition(def$$1)
   }
 }
 
@@ -39256,11 +40312,12 @@ var transformRE = /\b(transform|all)(,|$)/;
 
 function getTransitionInfo (el, expectedType) {
   var styles = window.getComputedStyle(el);
-  var transitionDelays = styles[transitionProp + 'Delay'].split(', ');
-  var transitionDurations = styles[transitionProp + 'Duration'].split(', ');
+  // JSDOM may return undefined for transition properties
+  var transitionDelays = (styles[transitionProp + 'Delay'] || '').split(', ');
+  var transitionDurations = (styles[transitionProp + 'Duration'] || '').split(', ');
   var transitionTimeout = getTimeout(transitionDelays, transitionDurations);
-  var animationDelays = styles[animationProp + 'Delay'].split(', ');
-  var animationDurations = styles[animationProp + 'Duration'].split(', ');
+  var animationDelays = (styles[animationProp + 'Delay'] || '').split(', ');
+  var animationDurations = (styles[animationProp + 'Duration'] || '').split(', ');
   var animationTimeout = getTimeout(animationDelays, animationDurations);
 
   var type;
@@ -39314,8 +40371,12 @@ function getTimeout (delays, durations) {
   }))
 }
 
+// Old versions of Chromium (below 61.0.3163.100) formats floating pointer numbers
+// in a locale-dependent way, using a comma instead of a dot.
+// If comma is not replaced with a dot, the input will be rounded down (i.e. acting
+// as a floor function) causing unexpected behaviors
 function toMs (s) {
-  return Number(s.slice(0, -1)) * 1000
+  return Number(s.slice(0, -1).replace(',', '.')) * 1000
 }
 
 /*  */
@@ -39364,8 +40425,8 @@ function enter (vnode, toggleDisplay) {
   var context = activeInstance;
   var transitionNode = activeInstance.$vnode;
   while (transitionNode && transitionNode.parent) {
-    transitionNode = transitionNode.parent;
     context = transitionNode.context;
+    transitionNode = transitionNode.parent;
   }
 
   var isAppear = !context._isMounted || !vnode.isRootInsert;
@@ -39403,7 +40464,7 @@ function enter (vnode, toggleDisplay) {
       : duration
   );
 
-  if ("development" !== 'production' && explicitEnterDuration != null) {
+  if (explicitEnterDuration != null) {
     checkDuration(explicitEnterDuration, 'enter', vnode);
   }
 
@@ -39447,13 +40508,15 @@ function enter (vnode, toggleDisplay) {
     addTransitionClass(el, startClass);
     addTransitionClass(el, activeClass);
     nextFrame(function () {
-      addTransitionClass(el, toClass);
       removeTransitionClass(el, startClass);
-      if (!cb.cancelled && !userWantsControl) {
-        if (isValidDuration(explicitEnterDuration)) {
-          setTimeout(cb, explicitEnterDuration);
-        } else {
-          whenTransitionEnds(el, type, cb);
+      if (!cb.cancelled) {
+        addTransitionClass(el, toClass);
+        if (!userWantsControl) {
+          if (isValidDuration(explicitEnterDuration)) {
+            setTimeout(cb, explicitEnterDuration);
+          } else {
+            whenTransitionEnds(el, type, cb);
+          }
         }
       }
     });
@@ -39509,7 +40572,7 @@ function leave (vnode, rm) {
       : duration
   );
 
-  if ("development" !== 'production' && isDef(explicitLeaveDuration)) {
+  if (isDef(explicitLeaveDuration)) {
     checkDuration(explicitLeaveDuration, 'leave', vnode);
   }
 
@@ -39545,7 +40608,7 @@ function leave (vnode, rm) {
       return
     }
     // record leaving element
-    if (!vnode.data.show) {
+    if (!vnode.data.show && el.parentNode) {
       (el.parentNode._pending || (el.parentNode._pending = {}))[(vnode.key)] = vnode;
     }
     beforeLeave && beforeLeave(el);
@@ -39553,13 +40616,15 @@ function leave (vnode, rm) {
       addTransitionClass(el, leaveClass);
       addTransitionClass(el, leaveActiveClass);
       nextFrame(function () {
-        addTransitionClass(el, leaveToClass);
         removeTransitionClass(el, leaveClass);
-        if (!cb.cancelled && !userWantsControl) {
-          if (isValidDuration(explicitLeaveDuration)) {
-            setTimeout(cb, explicitLeaveDuration);
-          } else {
-            whenTransitionEnds(el, type, cb);
+        if (!cb.cancelled) {
+          addTransitionClass(el, leaveToClass);
+          if (!userWantsControl) {
+            if (isValidDuration(explicitLeaveDuration)) {
+              setTimeout(cb, explicitLeaveDuration);
+            } else {
+              whenTransitionEnds(el, type, cb);
+            }
           }
         }
       });
@@ -39682,15 +40747,13 @@ var directive = {
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
       el._vModifiers = binding.modifiers;
       if (!binding.modifiers.lazy) {
+        el.addEventListener('compositionstart', onCompositionStart);
+        el.addEventListener('compositionend', onCompositionEnd);
         // Safari < 10.2 & UIWebView doesn't fire compositionend when
         // switching focus before confirming composition choice
         // this also fixes the issue where some browsers e.g. iOS Chrome
         // fires "change" instead of "input" on autocomplete.
         el.addEventListener('change', onCompositionEnd);
-        if (!isAndroid) {
-          el.addEventListener('compositionstart', onCompositionStart);
-          el.addEventListener('compositionend', onCompositionEnd);
-        }
         /* istanbul ignore if */
         if (isIE9) {
           el.vmodel = true;
@@ -39736,7 +40799,7 @@ function actuallySetSelected (el, binding, vm) {
   var value = binding.value;
   var isMultiple = el.multiple;
   if (isMultiple && !Array.isArray(value)) {
-    "development" !== 'production' && warn(
+    warn(
       "<select multiple v-model=\"" + (binding.expression) + "\"> " +
       "expects an Array value for its binding, but got " + (Object.prototype.toString.call(value).slice(8, -1)),
       vm
@@ -39824,7 +40887,7 @@ var show = {
     var oldValue = ref.oldValue;
 
     /* istanbul ignore if */
-    if (value === oldValue) { return }
+    if (!value === !oldValue) { return }
     vnode = locateNode(vnode);
     var transition$$1 = vnode.data && vnode.data.transition;
     if (transition$$1) {
@@ -39862,9 +40925,6 @@ var platformDirectives = {
 };
 
 /*  */
-
-// Provides transition support for a single element/component.
-// supports transition mode (out-in / in-out)
 
 var transitionProps = {
   name: String,
@@ -39931,6 +40991,10 @@ function isSameChild (child, oldChild) {
   return oldChild.key === child.key && oldChild.tag === child.tag
 }
 
+var isNotTextNode = function (c) { return c.tag || isAsyncPlaceholder(c); };
+
+var isVShowDirective = function (d) { return d.name === 'show'; };
+
 var Transition = {
   name: 'transition',
   props: transitionProps,
@@ -39945,14 +41009,14 @@ var Transition = {
     }
 
     // filter out text nodes (possible whitespaces)
-    children = children.filter(function (c) { return c.tag || isAsyncPlaceholder(c); });
+    children = children.filter(isNotTextNode);
     /* istanbul ignore if */
     if (!children.length) {
       return
     }
 
     // warn multiple elements
-    if ("development" !== 'production' && children.length > 1) {
+    if (children.length > 1) {
       warn(
         '<transition> can only be used on a single element. Use ' +
         '<transition-group> for lists.',
@@ -39963,8 +41027,7 @@ var Transition = {
     var mode = this.mode;
 
     // warn invalid mode
-    if ("development" !== 'production' &&
-      mode && mode !== 'in-out' && mode !== 'out-in'
+    if (mode && mode !== 'in-out' && mode !== 'out-in'
     ) {
       warn(
         'invalid <transition> mode: ' + mode,
@@ -40010,7 +41073,7 @@ var Transition = {
 
     // mark v-show
     // so that the transition module can hand over the control to the directive
-    if (child.data.directives && child.data.directives.some(function (d) { return d.name === 'show'; })) {
+    if (child.data.directives && child.data.directives.some(isVShowDirective)) {
       child.data.show = true;
     }
 
@@ -40052,17 +41115,6 @@ var Transition = {
 
 /*  */
 
-// Provides transition support for list items.
-// supports move transitions using the FLIP technique.
-
-// Because the vdom's children update algorithm is "unstable" - i.e.
-// it doesn't guarantee the relative positioning of removed elements,
-// we force transition-group to update its children into two passes:
-// in the first pass, we remove all nodes that need to be removed,
-// triggering their leaving transition; in the second pass, we insert/move
-// into the final desired state. This way in the second pass removed
-// nodes will remain where they should be.
-
 var props = extend({
   tag: String,
   moveClass: String
@@ -40072,6 +41124,25 @@ delete props.mode;
 
 var TransitionGroup = {
   props: props,
+
+  beforeMount: function beforeMount () {
+    var this$1 = this;
+
+    var update = this._update;
+    this._update = function (vnode, hydrating) {
+      var restoreActiveInstance = setActiveInstance(this$1);
+      // force removing pass
+      this$1.__patch__(
+        this$1._vnode,
+        this$1.kept,
+        false, // hydrating
+        true // removeOnly (!important, avoids unnecessary moves)
+      );
+      this$1._vnode = this$1.kept;
+      restoreActiveInstance();
+      update.call(this$1, vnode, hydrating);
+    };
+  },
 
   render: function render (h) {
     var tag = this.tag || this.$vnode.data.tag || 'span';
@@ -40088,7 +41159,7 @@ var TransitionGroup = {
           children.push(c);
           map[c.key] = c
           ;(c.data || (c.data = {})).transition = transitionData;
-        } else if (true) {
+        } else {
           var opts = c.componentOptions;
           var name = opts ? (opts.Ctor.options.name || opts.tag || '') : c.tag;
           warn(("<transition-group> children must be keyed: <" + name + ">"));
@@ -40116,17 +41187,6 @@ var TransitionGroup = {
     return h(tag, null, children)
   },
 
-  beforeUpdate: function beforeUpdate () {
-    // force removing pass
-    this.__patch__(
-      this._vnode,
-      this.kept,
-      false, // hydrating
-      true // removeOnly (!important avoids unnecessary moves)
-    );
-    this._vnode = this.kept;
-  },
-
   updated: function updated () {
     var children = this.prevChildren;
     var moveClass = this.moveClass || ((this.name || 'v') + '-move');
@@ -40152,6 +41212,9 @@ var TransitionGroup = {
         addTransitionClass(el, moveClass);
         s.transform = s.WebkitTransform = s.transitionDuration = '';
         el.addEventListener(transitionEndEvent, el._moveCb = function cb (e) {
+          if (e && e.target !== el) {
+            return
+          }
           if (!e || /transform$/.test(e.propertyName)) {
             el.removeEventListener(transitionEndEvent, cb);
             el._moveCb = null;
@@ -40227,21 +41290,21 @@ var platformComponents = {
 /*  */
 
 // install platform specific utils
-Vue$3.config.mustUseProp = mustUseProp;
-Vue$3.config.isReservedTag = isReservedTag;
-Vue$3.config.isReservedAttr = isReservedAttr;
-Vue$3.config.getTagNamespace = getTagNamespace;
-Vue$3.config.isUnknownElement = isUnknownElement;
+Vue.config.mustUseProp = mustUseProp;
+Vue.config.isReservedTag = isReservedTag;
+Vue.config.isReservedAttr = isReservedAttr;
+Vue.config.getTagNamespace = getTagNamespace;
+Vue.config.isUnknownElement = isUnknownElement;
 
 // install platform runtime directives & components
-extend(Vue$3.options.directives, platformDirectives);
-extend(Vue$3.options.components, platformComponents);
+extend(Vue.options.directives, platformDirectives);
+extend(Vue.options.components, platformComponents);
 
 // install platform patch function
-Vue$3.prototype.__patch__ = inBrowser ? patch : noop;
+Vue.prototype.__patch__ = inBrowser ? patch : noop;
 
 // public mount method
-Vue$3.prototype.$mount = function (
+Vue.prototype.$mount = function (
   el,
   hydrating
 ) {
@@ -40251,32 +41314,33 @@ Vue$3.prototype.$mount = function (
 
 // devtools global hook
 /* istanbul ignore next */
-Vue$3.nextTick(function () {
-  if (config.devtools) {
-    if (devtools) {
-      devtools.emit('init', Vue$3);
-    } else if ("development" !== 'production' && isChrome) {
+if (inBrowser) {
+  setTimeout(function () {
+    if (config.devtools) {
+      if (devtools) {
+        devtools.emit('init', Vue);
+      } else {
+        console[console.info ? 'info' : 'log'](
+          'Download the Vue Devtools extension for a better development experience:\n' +
+          'https://github.com/vuejs/vue-devtools'
+        );
+      }
+    }
+    if (config.productionTip !== false &&
+      typeof console !== 'undefined'
+    ) {
       console[console.info ? 'info' : 'log'](
-        'Download the Vue Devtools extension for a better development experience:\n' +
-        'https://github.com/vuejs/vue-devtools'
+        "You are running Vue in development mode.\n" +
+        "Make sure to turn on production mode when deploying for production.\n" +
+        "See more tips at https://vuejs.org/guide/deployment.html"
       );
     }
-  }
-  if ("development" !== 'production' &&
-    config.productionTip !== false &&
-    inBrowser && typeof console !== 'undefined'
-  ) {
-    console[console.info ? 'info' : 'log'](
-      "You are running Vue in development mode.\n" +
-      "Make sure to turn on production mode when deploying for production.\n" +
-      "See more tips at https://vuejs.org/guide/deployment.html"
-    );
-  }
-}, 0);
+  }, 0);
+}
 
 /*  */
 
-var defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g;
+var defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
 var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
 
 var buildRegex = cached(function (delimiters) {
@@ -40327,14 +41391,15 @@ function parseText (
 function transformNode (el, options) {
   var warn = options.warn || baseWarn;
   var staticClass = getAndRemoveAttr(el, 'class');
-  if ("development" !== 'production' && staticClass) {
+  if (staticClass) {
     var res = parseText(staticClass, options.delimiters);
     if (res) {
       warn(
         "class=\"" + staticClass + "\": " +
         'Interpolation inside attributes has been removed. ' +
         'Use v-bind or the colon shorthand instead. For example, ' +
-        'instead of <div class="{{ val }}">, use <div :class="val">.'
+        'instead of <div class="{{ val }}">, use <div :class="val">.',
+        el.rawAttrsMap['class']
       );
     }
   }
@@ -40371,14 +41436,15 @@ function transformNode$1 (el, options) {
   var staticStyle = getAndRemoveAttr(el, 'style');
   if (staticStyle) {
     /* istanbul ignore if */
-    if (true) {
+    {
       var res = parseText(staticStyle, options.delimiters);
       if (res) {
         warn(
           "style=\"" + staticStyle + "\": " +
           'Interpolation inside attributes has been removed. ' +
           'Use v-bind or the colon shorthand instead. For example, ' +
-          'instead of <div style="{{ val }}">, use <div :style="val">.'
+          'instead of <div style="{{ val }}">, use <div :style="val">.',
+          el.rawAttrsMap['style']
         );
       }
     }
@@ -40447,30 +41513,18 @@ var isNonPhrasingTag = makeMap(
  * Not type-checking this file because it's mostly vendor code.
  */
 
-/*!
- * HTML Parser By John Resig (ejohn.org)
- * Modified by Juriy "kangax" Zaytsev
- * Original code by Erik Arvidsson, Mozilla Public License
- * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
- */
-
 // Regular Expressions for parsing tags and attributes
 var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
-// could use https://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-QName
-// but for Vue templates we can enforce a simple charset
-var ncname = '[a-zA-Z_][\\w\\-\\.]*';
+var dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
+var ncname = "[a-zA-Z_][\\-\\.0-9_a-zA-Z" + (unicodeRegExp.source) + "]*";
 var qnameCapture = "((?:" + ncname + "\\:)?" + ncname + ")";
 var startTagOpen = new RegExp(("^<" + qnameCapture));
 var startTagClose = /^\s*(\/?)>/;
 var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
 var doctype = /^<!DOCTYPE [^>]+>/i;
-var comment = /^<!--/;
+// #7298: escape - to avoid being pased as HTML comment when inlined in page
+var comment = /^<!\--/;
 var conditionalComment = /^<!\[/;
-
-var IS_REGEX_CAPTURING_BROKEN = false;
-'x'.replace(/x(.)?/g, function (m, g) {
-  IS_REGEX_CAPTURING_BROKEN = g === '';
-});
 
 // Special Elements (can contain anything)
 var isPlainTextElement = makeMap('script,style,textarea', true);
@@ -40482,10 +41536,11 @@ var decodingMap = {
   '&quot;': '"',
   '&amp;': '&',
   '&#10;': '\n',
-  '&#9;': '\t'
+  '&#9;': '\t',
+  '&#39;': "'"
 };
-var encodedAttr = /&(?:lt|gt|quot|amp);/g;
-var encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#10|#9);/g;
+var encodedAttr = /&(?:lt|gt|quot|amp|#39);/g;
+var encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g;
 
 // #5992
 var isIgnoreNewlineTag = makeMap('pre,textarea', true);
@@ -40515,7 +41570,7 @@ function parseHTML (html, options) {
 
           if (commentEnd >= 0) {
             if (options.shouldKeepComment) {
-              options.comment(html.substring(4, commentEnd));
+              options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3);
             }
             advance(commentEnd + 3);
             continue
@@ -40552,7 +41607,7 @@ function parseHTML (html, options) {
         var startTagMatch = parseStartTag();
         if (startTagMatch) {
           handleStartTag(startTagMatch);
-          if (shouldIgnoreFirstNewline(lastTag, html)) {
+          if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
             advance(1);
           }
           continue
@@ -40575,16 +41630,18 @@ function parseHTML (html, options) {
           rest = html.slice(textEnd);
         }
         text = html.substring(0, textEnd);
-        advance(textEnd);
       }
 
       if (textEnd < 0) {
         text = html;
-        html = '';
+      }
+
+      if (text) {
+        advance(text.length);
       }
 
       if (options.chars && text) {
-        options.chars(text);
+        options.chars(text, index - text.length, index);
       }
     } else {
       var endTagLength = 0;
@@ -40594,7 +41651,7 @@ function parseHTML (html, options) {
         endTagLength = endTag.length;
         if (!isPlainTextElement(stackedTag) && stackedTag !== 'noscript') {
           text = text
-            .replace(/<!--([\s\S]*?)-->/g, '$1')
+            .replace(/<!\--([\s\S]*?)-->/g, '$1') // #7298
             .replace(/<!\[CDATA\[([\s\S]*?)]]>/g, '$1');
         }
         if (shouldIgnoreFirstNewline(stackedTag, text)) {
@@ -40612,8 +41669,8 @@ function parseHTML (html, options) {
 
     if (html === last) {
       options.chars && options.chars(html);
-      if ("development" !== 'production' && !stack.length && options.warn) {
-        options.warn(("Mal-formatted tag at end of template: \"" + html + "\""));
+      if (!stack.length && options.warn) {
+        options.warn(("Mal-formatted tag at end of template: \"" + html + "\""), { start: index + html.length });
       }
       break
     }
@@ -40637,8 +41694,10 @@ function parseHTML (html, options) {
       };
       advance(start[0].length);
       var end, attr;
-      while (!(end = html.match(startTagClose)) && (attr = html.match(attribute))) {
+      while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
+        attr.start = index;
         advance(attr[0].length);
+        attr.end = index;
         match.attrs.push(attr);
       }
       if (end) {
@@ -40669,12 +41728,6 @@ function parseHTML (html, options) {
     var attrs = new Array(l);
     for (var i = 0; i < l; i++) {
       var args = match.attrs[i];
-      // hackish work around FF bug https://bugzilla.mozilla.org/show_bug.cgi?id=369778
-      if (IS_REGEX_CAPTURING_BROKEN && args[0].indexOf('""') === -1) {
-        if (args[3] === '') { delete args[3]; }
-        if (args[4] === '') { delete args[4]; }
-        if (args[5] === '') { delete args[5]; }
-      }
       var value = args[3] || args[4] || args[5] || '';
       var shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
         ? options.shouldDecodeNewlinesForHref
@@ -40683,10 +41736,14 @@ function parseHTML (html, options) {
         name: args[1],
         value: decodeAttr(value, shouldDecodeNewlines)
       };
+      if (options.outputSourceRange) {
+        attrs[i].start = args.start + args[0].match(/^\s*/).length;
+        attrs[i].end = args.end;
+      }
     }
 
     if (!unary) {
-      stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs });
+      stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs, start: match.start, end: match.end });
       lastTag = tagName;
     }
 
@@ -40700,12 +41757,9 @@ function parseHTML (html, options) {
     if (start == null) { start = index; }
     if (end == null) { end = index; }
 
-    if (tagName) {
-      lowerCasedTagName = tagName.toLowerCase();
-    }
-
     // Find the closest opened tag of the same type
     if (tagName) {
+      lowerCasedTagName = tagName.toLowerCase();
       for (pos = stack.length - 1; pos >= 0; pos--) {
         if (stack[pos].lowerCasedTag === lowerCasedTagName) {
           break
@@ -40719,12 +41773,12 @@ function parseHTML (html, options) {
     if (pos >= 0) {
       // Close all the open elements, up the stack
       for (var i = stack.length - 1; i >= pos; i--) {
-        if ("development" !== 'production' &&
-          (i > pos || !tagName) &&
+        if (i > pos || !tagName &&
           options.warn
         ) {
           options.warn(
-            ("tag <" + (stack[i].tag) + "> has no matching end tag.")
+            ("tag <" + (stack[i].tag) + "> has no matching end tag."),
+            { start: stack[i].start, end: stack[i].end }
           );
         }
         if (options.end) {
@@ -40754,15 +41808,25 @@ function parseHTML (html, options) {
 
 var onRE = /^@|^v-on:/;
 var dirRE = /^v-|^@|^:/;
-var forAliasRE = /(.*?)\s+(?:in|of)\s+(.*)/;
+var forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
 var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
 var stripParensRE = /^\(|\)$/g;
+var dynamicArgRE = /^\[.*\]$/;
 
 var argRE = /:(.*)$/;
-var bindRE = /^:|^v-bind:/;
-var modifierRE = /\.[^.]+/g;
+var bindRE = /^:|^\.|^v-bind:/;
+var modifierRE = /\.[^.\]]+(?=[^\]]*$)/g;
+
+var slotRE = /^v-slot(:|$)|^#/;
+
+var lineBreakRE = /[\r\n]/;
+var whitespaceRE$1 = /\s+/g;
+
+var invalidAttributeRE = /[\s"'<>\/=]/;
 
 var decodeHTMLCached = cached(he.decode);
+
+var emptySlotScopeToken = "_empty_";
 
 // configurable state
 var warn$2;
@@ -40773,8 +41837,7 @@ var postTransforms;
 var platformIsPreTag;
 var platformMustUseProp;
 var platformGetTagNamespace;
-
-
+var maybeComponent;
 
 function createASTElement (
   tag,
@@ -40786,6 +41849,7 @@ function createASTElement (
     tag: tag,
     attrsList: attrs,
     attrsMap: makeAttrsMap(attrs),
+    rawAttrsMap: {},
     parent: parent,
     children: []
   }
@@ -40803,6 +41867,8 @@ function parse (
   platformIsPreTag = options.isPreTag || no;
   platformMustUseProp = options.mustUseProp || no;
   platformGetTagNamespace = options.getTagNamespace || no;
+  var isReservedTag = options.isReservedTag || no;
+  maybeComponent = function (el) { return !!el.component || !isReservedTag(el.tag); };
 
   transforms = pluckModuleFunction(options.modules, 'transformNode');
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode');
@@ -40812,20 +41878,67 @@ function parse (
 
   var stack = [];
   var preserveWhitespace = options.preserveWhitespace !== false;
+  var whitespaceOption = options.whitespace;
   var root;
   var currentParent;
   var inVPre = false;
   var inPre = false;
   var warned = false;
 
-  function warnOnce (msg) {
+  function warnOnce (msg, range) {
     if (!warned) {
       warned = true;
-      warn$2(msg);
+      warn$2(msg, range);
     }
   }
 
   function closeElement (element) {
+    trimEndingWhitespace(element);
+    if (!inVPre && !element.processed) {
+      element = processElement(element, options);
+    }
+    // tree management
+    if (!stack.length && element !== root) {
+      // allow root elements with v-if, v-else-if and v-else
+      if (root.if && (element.elseif || element.else)) {
+        {
+          checkRootConstraints(element);
+        }
+        addIfCondition(root, {
+          exp: element.elseif,
+          block: element
+        });
+      } else {
+        warnOnce(
+          "Component template should contain exactly one root element. " +
+          "If you are using v-if on multiple elements, " +
+          "use v-else-if to chain them instead.",
+          { start: element.start }
+        );
+      }
+    }
+    if (currentParent && !element.forbidden) {
+      if (element.elseif || element.else) {
+        processIfConditions(element, currentParent);
+      } else {
+        if (element.slotScope) {
+          // scoped slot
+          // keep it in the children list so that v-else(-if) conditions can
+          // find it as the prev node.
+          var name = element.slotTarget || '"default"'
+          ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element;
+        }
+        currentParent.children.push(element);
+        element.parent = currentParent;
+      }
+    }
+
+    // final children cleanup
+    // filter out scoped slots
+    element.children = element.children.filter(function (c) { return !(c).slotScope; });
+    // remove trailing whitespace node again
+    trimEndingWhitespace(element);
+
     // check pre state
     if (element.pre) {
       inVPre = false;
@@ -40839,6 +41952,37 @@ function parse (
     }
   }
 
+  function trimEndingWhitespace (el) {
+    // remove trailing whitespace node
+    if (!inPre) {
+      var lastNode;
+      while (
+        (lastNode = el.children[el.children.length - 1]) &&
+        lastNode.type === 3 &&
+        lastNode.text === ' '
+      ) {
+        el.children.pop();
+      }
+    }
+  }
+
+  function checkRootConstraints (el) {
+    if (el.tag === 'slot' || el.tag === 'template') {
+      warnOnce(
+        "Cannot use <" + (el.tag) + "> as component root element because it may " +
+        'contain multiple nodes.',
+        { start: el.start }
+      );
+    }
+    if (el.attrsMap.hasOwnProperty('v-for')) {
+      warnOnce(
+        'Cannot use v-for on stateful component root element because ' +
+        'it renders multiple elements.',
+        el.rawAttrsMap['v-for']
+      );
+    }
+  }
+
   parseHTML(template, {
     warn: warn$2,
     expectHTML: options.expectHTML,
@@ -40847,7 +41991,8 @@ function parse (
     shouldDecodeNewlines: options.shouldDecodeNewlines,
     shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
     shouldKeepComment: options.comments,
-    start: function start (tag, attrs, unary) {
+    outputSourceRange: options.outputSourceRange,
+    start: function start (tag, attrs, unary, start$1, end) {
       // check namespace.
       // inherit parent ns if there is one
       var ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag);
@@ -40863,12 +42008,36 @@ function parse (
         element.ns = ns;
       }
 
+      {
+        if (options.outputSourceRange) {
+          element.start = start$1;
+          element.end = end;
+          element.rawAttrsMap = element.attrsList.reduce(function (cumulated, attr) {
+            cumulated[attr.name] = attr;
+            return cumulated
+          }, {});
+        }
+        attrs.forEach(function (attr) {
+          if (invalidAttributeRE.test(attr.name)) {
+            warn$2(
+              "Invalid dynamic argument expression: attribute names cannot contain " +
+              "spaces, quotes, <, >, / or =.",
+              {
+                start: attr.start + attr.name.indexOf("["),
+                end: attr.start + attr.name.length
+              }
+            );
+          }
+        });
+      }
+
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true;
-        "development" !== 'production' && warn$2(
+        warn$2(
           'Templates should only be responsible for mapping the state to the ' +
           'UI. Avoid placing tags with side-effects in your templates, such as ' +
-          "<" + tag + ">" + ', as they will not be parsed.'
+          "<" + tag + ">" + ', as they will not be parsed.',
+          { start: element.start }
         );
       }
 
@@ -40893,58 +42062,15 @@ function parse (
         processFor(element);
         processIf(element);
         processOnce(element);
-        // element-scope stuff
-        processElement(element, options);
       }
 
-      function checkRootConstraints (el) {
-        if (true) {
-          if (el.tag === 'slot' || el.tag === 'template') {
-            warnOnce(
-              "Cannot use <" + (el.tag) + "> as component root element because it may " +
-              'contain multiple nodes.'
-            );
-          }
-          if (el.attrsMap.hasOwnProperty('v-for')) {
-            warnOnce(
-              'Cannot use v-for on stateful component root element because ' +
-              'it renders multiple elements.'
-            );
-          }
-        }
-      }
-
-      // tree management
       if (!root) {
         root = element;
-        checkRootConstraints(root);
-      } else if (!stack.length) {
-        // allow root elements with v-if, v-else-if and v-else
-        if (root.if && (element.elseif || element.else)) {
-          checkRootConstraints(element);
-          addIfCondition(root, {
-            exp: element.elseif,
-            block: element
-          });
-        } else if (true) {
-          warnOnce(
-            "Component template should contain exactly one root element. " +
-            "If you are using v-if on multiple elements, " +
-            "use v-else-if to chain them instead."
-          );
+        {
+          checkRootConstraints(root);
         }
       }
-      if (currentParent && !element.forbidden) {
-        if (element.elseif || element.else) {
-          processIfConditions(element, currentParent);
-        } else if (element.slotScope) { // scoped slot
-          currentParent.plain = false;
-          var name = element.slotTarget || '"default"';(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element;
-        } else {
-          currentParent.children.push(element);
-          element.parent = currentParent;
-        }
-      }
+
       if (!unary) {
         currentParent = element;
         stack.push(element);
@@ -40953,29 +42079,29 @@ function parse (
       }
     },
 
-    end: function end () {
-      // remove trailing whitespace
+    end: function end (tag, start, end$1) {
       var element = stack[stack.length - 1];
-      var lastNode = element.children[element.children.length - 1];
-      if (lastNode && lastNode.type === 3 && lastNode.text === ' ' && !inPre) {
-        element.children.pop();
-      }
       // pop stack
       stack.length -= 1;
       currentParent = stack[stack.length - 1];
+      if (options.outputSourceRange) {
+        element.end = end$1;
+      }
       closeElement(element);
     },
 
-    chars: function chars (text) {
+    chars: function chars (text, start, end) {
       if (!currentParent) {
-        if (true) {
+        {
           if (text === template) {
             warnOnce(
-              'Component template requires a root element, rather than just text.'
+              'Component template requires a root element, rather than just text.',
+              { start: start }
             );
           } else if ((text = text.trim())) {
             warnOnce(
-              ("text \"" + text + "\" outside root element will be ignored.")
+              ("text \"" + text + "\" outside root element will be ignored."),
+              { start: start }
             );
           }
         }
@@ -40990,33 +42116,66 @@ function parse (
         return
       }
       var children = currentParent.children;
-      text = inPre || text.trim()
-        ? isTextTag(currentParent) ? text : decodeHTMLCached(text)
-        // only preserve whitespace if its not right after a starting tag
-        : preserveWhitespace && children.length ? ' ' : '';
+      if (inPre || text.trim()) {
+        text = isTextTag(currentParent) ? text : decodeHTMLCached(text);
+      } else if (!children.length) {
+        // remove the whitespace-only node right after an opening tag
+        text = '';
+      } else if (whitespaceOption) {
+        if (whitespaceOption === 'condense') {
+          // in condense mode, remove the whitespace node if it contains
+          // line break, otherwise condense to a single space
+          text = lineBreakRE.test(text) ? '' : ' ';
+        } else {
+          text = ' ';
+        }
+      } else {
+        text = preserveWhitespace ? ' ' : '';
+      }
       if (text) {
+        if (!inPre && whitespaceOption === 'condense') {
+          // condense consecutive whitespaces into single space
+          text = text.replace(whitespaceRE$1, ' ');
+        }
         var res;
+        var child;
         if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
-          children.push({
+          child = {
             type: 2,
             expression: res.expression,
             tokens: res.tokens,
             text: text
-          });
+          };
         } else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
-          children.push({
+          child = {
             type: 3,
             text: text
-          });
+          };
+        }
+        if (child) {
+          if (options.outputSourceRange) {
+            child.start = start;
+            child.end = end;
+          }
+          children.push(child);
         }
       }
     },
-    comment: function comment (text) {
-      currentParent.children.push({
-        type: 3,
-        text: text,
-        isComment: true
-      });
+    comment: function comment (text, start, end) {
+      // adding anyting as a sibling to the root node is forbidden
+      // comments should still be allowed, but ignored
+      if (currentParent) {
+        var child = {
+          type: 3,
+          text: text,
+          isComment: true
+        };
+        if (options.outputSourceRange) {
+          child.start = start;
+          child.end = end;
+        }
+        currentParent.children.push(child);
+      }
     }
   });
   return root
@@ -41029,14 +42188,19 @@ function processPre (el) {
 }
 
 function processRawAttrs (el) {
-  var l = el.attrsList.length;
-  if (l) {
-    var attrs = el.attrs = new Array(l);
-    for (var i = 0; i < l; i++) {
+  var list = el.attrsList;
+  var len = list.length;
+  if (len) {
+    var attrs = el.attrs = new Array(len);
+    for (var i = 0; i < len; i++) {
       attrs[i] = {
-        name: el.attrsList[i].name,
-        value: JSON.stringify(el.attrsList[i].value)
+        name: list[i].name,
+        value: JSON.stringify(list[i].value)
       };
+      if (list[i].start != null) {
+        attrs[i].start = list[i].start;
+        attrs[i].end = list[i].end;
+      }
     }
   } else if (!el.pre) {
     // non root node in pre blocks with no attributes
@@ -41044,27 +42208,53 @@ function processRawAttrs (el) {
   }
 }
 
-function processElement (element, options) {
+function processElement (
+  element,
+  options
+) {
   processKey(element);
 
   // determine whether this is a plain element after
   // removing structural attributes
-  element.plain = !element.key && !element.attrsList.length;
+  element.plain = (
+    !element.key &&
+    !element.scopedSlots &&
+    !element.attrsList.length
+  );
 
   processRef(element);
-  processSlot(element);
+  processSlotContent(element);
+  processSlotOutlet(element);
   processComponent(element);
   for (var i = 0; i < transforms.length; i++) {
     element = transforms[i](element, options) || element;
   }
   processAttrs(element);
+  return element
 }
 
 function processKey (el) {
   var exp = getBindingAttr(el, 'key');
   if (exp) {
-    if ("development" !== 'production' && el.tag === 'template') {
-      warn$2("<template> cannot be keyed. Place the key on real elements instead.");
+    {
+      if (el.tag === 'template') {
+        warn$2(
+          "<template> cannot be keyed. Place the key on real elements instead.",
+          getRawBindingAttr(el, 'key')
+        );
+      }
+      if (el.for) {
+        var iterator = el.iterator2 || el.iterator1;
+        var parent = el.parent;
+        if (iterator && iterator === exp && parent && parent.tag === 'transition-group') {
+          warn$2(
+            "Do not use v-for index as key on <transition-group> children, " +
+            "this is the same as not using keys.",
+            getRawBindingAttr(el, 'key'),
+            true /* tip */
+          );
+        }
+      }
     }
     el.key = exp;
   }
@@ -41084,13 +42274,16 @@ function processFor (el) {
     var res = parseFor(exp);
     if (res) {
       extend(el, res);
-    } else if (true) {
+    } else {
       warn$2(
-        ("Invalid v-for expression: " + exp)
+        ("Invalid v-for expression: " + exp),
+        el.rawAttrsMap['v-for']
       );
     }
   }
 }
+
+
 
 function parseFor (exp) {
   var inMatch = exp.match(forAliasRE);
@@ -41100,7 +42293,7 @@ function parseFor (exp) {
   var alias = inMatch[1].trim().replace(stripParensRE, '');
   var iteratorMatch = alias.match(forIteratorRE);
   if (iteratorMatch) {
-    res.alias = alias.replace(forIteratorRE, '');
+    res.alias = alias.replace(forIteratorRE, '').trim();
     res.iterator1 = iteratorMatch[1].trim();
     if (iteratorMatch[2]) {
       res.iterator2 = iteratorMatch[2].trim();
@@ -41137,10 +42330,11 @@ function processIfConditions (el, parent) {
       exp: el.elseif,
       block: el
     });
-  } else if (true) {
+  } else {
     warn$2(
       "v-" + (el.elseif ? ('else-if="' + el.elseif + '"') : 'else') + " " +
-      "used on element <" + (el.tag) + "> without corresponding v-if."
+      "used on element <" + (el.tag) + "> without corresponding v-if.",
+      el.rawAttrsMap[el.elseif ? 'v-else-if' : 'v-else']
     );
   }
 }
@@ -41151,10 +42345,11 @@ function findPrevElement (children) {
     if (children[i].type === 1) {
       return children[i]
     } else {
-      if ("development" !== 'production' && children[i].text !== ' ') {
+      if (children[i].text !== ' ') {
         warn$2(
           "text \"" + (children[i].text.trim()) + "\" between v-if and v-else(-if) " +
-          "will be ignored."
+          "will be ignored.",
+          children[i]
         );
       }
       children.pop();
@@ -41176,51 +42371,157 @@ function processOnce (el) {
   }
 }
 
-function processSlot (el) {
+// handle content being passed to a component as slot,
+// e.g. <template slot="xxx">, <div slot-scope="xxx">
+function processSlotContent (el) {
+  var slotScope;
+  if (el.tag === 'template') {
+    slotScope = getAndRemoveAttr(el, 'scope');
+    /* istanbul ignore if */
+    if (slotScope) {
+      warn$2(
+        "the \"scope\" attribute for scoped slots have been deprecated and " +
+        "replaced by \"slot-scope\" since 2.5. The new \"slot-scope\" attribute " +
+        "can also be used on plain elements in addition to <template> to " +
+        "denote scoped slots.",
+        el.rawAttrsMap['scope'],
+        true
+      );
+    }
+    el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope');
+  } else if ((slotScope = getAndRemoveAttr(el, 'slot-scope'))) {
+    /* istanbul ignore if */
+    if (el.attrsMap['v-for']) {
+      warn$2(
+        "Ambiguous combined usage of slot-scope and v-for on <" + (el.tag) + "> " +
+        "(v-for takes higher priority). Use a wrapper <template> for the " +
+        "scoped slot to make it clearer.",
+        el.rawAttrsMap['slot-scope'],
+        true
+      );
+    }
+    el.slotScope = slotScope;
+  }
+
+  // slot="xxx"
+  var slotTarget = getBindingAttr(el, 'slot');
+  if (slotTarget) {
+    el.slotTarget = slotTarget === '""' ? '"default"' : slotTarget;
+    el.slotTargetDynamic = !!(el.attrsMap[':slot'] || el.attrsMap['v-bind:slot']);
+    // preserve slot as an attribute for native shadow DOM compat
+    // only for non-scoped slots.
+    if (el.tag !== 'template' && !el.slotScope) {
+      addAttr(el, 'slot', slotTarget, getRawBindingAttr(el, 'slot'));
+    }
+  }
+
+  // 2.6 v-slot syntax
+  {
+    if (el.tag === 'template') {
+      // v-slot on <template>
+      var slotBinding = getAndRemoveAttrByRegex(el, slotRE);
+      if (slotBinding) {
+        {
+          if (el.slotTarget || el.slotScope) {
+            warn$2(
+              "Unexpected mixed usage of different slot syntaxes.",
+              el
+            );
+          }
+          if (el.parent && !maybeComponent(el.parent)) {
+            warn$2(
+              "<template v-slot> can only appear at the root level inside " +
+              "the receiving the component",
+              el
+            );
+          }
+        }
+        var ref = getSlotName(slotBinding);
+        var name = ref.name;
+        var dynamic = ref.dynamic;
+        el.slotTarget = name;
+        el.slotTargetDynamic = dynamic;
+        el.slotScope = slotBinding.value || emptySlotScopeToken; // force it into a scoped slot for perf
+      }
+    } else {
+      // v-slot on component, denotes default slot
+      var slotBinding$1 = getAndRemoveAttrByRegex(el, slotRE);
+      if (slotBinding$1) {
+        {
+          if (!maybeComponent(el)) {
+            warn$2(
+              "v-slot can only be used on components or <template>.",
+              slotBinding$1
+            );
+          }
+          if (el.slotScope || el.slotTarget) {
+            warn$2(
+              "Unexpected mixed usage of different slot syntaxes.",
+              el
+            );
+          }
+          if (el.scopedSlots) {
+            warn$2(
+              "To avoid scope ambiguity, the default slot should also use " +
+              "<template> syntax when there are other named slots.",
+              slotBinding$1
+            );
+          }
+        }
+        // add the component's children to its default slot
+        var slots = el.scopedSlots || (el.scopedSlots = {});
+        var ref$1 = getSlotName(slotBinding$1);
+        var name$1 = ref$1.name;
+        var dynamic$1 = ref$1.dynamic;
+        var slotContainer = slots[name$1] = createASTElement('template', [], el);
+        slotContainer.slotTarget = name$1;
+        slotContainer.slotTargetDynamic = dynamic$1;
+        slotContainer.children = el.children.filter(function (c) {
+          if (!c.slotScope) {
+            c.parent = slotContainer;
+            return true
+          }
+        });
+        slotContainer.slotScope = slotBinding$1.value || emptySlotScopeToken;
+        // remove children as they are returned from scopedSlots now
+        el.children = [];
+        // mark el non-plain so data gets generated
+        el.plain = false;
+      }
+    }
+  }
+}
+
+function getSlotName (binding) {
+  var name = binding.name.replace(slotRE, '');
+  if (!name) {
+    if (binding.name[0] !== '#') {
+      name = 'default';
+    } else {
+      warn$2(
+        "v-slot shorthand syntax requires a slot name.",
+        binding
+      );
+    }
+  }
+  return dynamicArgRE.test(name)
+    // dynamic [name]
+    ? { name: name.slice(1, -1), dynamic: true }
+    // static name
+    : { name: ("\"" + name + "\""), dynamic: false }
+}
+
+// handle <slot/> outlets
+function processSlotOutlet (el) {
   if (el.tag === 'slot') {
     el.slotName = getBindingAttr(el, 'name');
-    if ("development" !== 'production' && el.key) {
+    if (el.key) {
       warn$2(
         "`key` does not work on <slot> because slots are abstract outlets " +
         "and can possibly expand into multiple elements. " +
-        "Use the key on a wrapping element instead."
+        "Use the key on a wrapping element instead.",
+        getRawBindingAttr(el, 'key')
       );
-    }
-  } else {
-    var slotScope;
-    if (el.tag === 'template') {
-      slotScope = getAndRemoveAttr(el, 'scope');
-      /* istanbul ignore if */
-      if ("development" !== 'production' && slotScope) {
-        warn$2(
-          "the \"scope\" attribute for scoped slots have been deprecated and " +
-          "replaced by \"slot-scope\" since 2.5. The new \"slot-scope\" attribute " +
-          "can also be used on plain elements in addition to <template> to " +
-          "denote scoped slots.",
-          true
-        );
-      }
-      el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope');
-    } else if ((slotScope = getAndRemoveAttr(el, 'slot-scope'))) {
-      /* istanbul ignore if */
-      if ("development" !== 'production' && el.attrsMap['v-for']) {
-        warn$2(
-          "Ambiguous combined usage of slot-scope and v-for on <" + (el.tag) + "> " +
-          "(v-for takes higher priority). Use a wrapper <template> for the " +
-          "scoped slot to make it clearer.",
-          true
-        );
-      }
-      el.slotScope = slotScope;
-    }
-    var slotTarget = getBindingAttr(el, 'slot');
-    if (slotTarget) {
-      el.slotTarget = slotTarget === '""' ? '"default"' : slotTarget;
-      // preserve slot as an attribute for native shadow DOM compat
-      // only for non-scoped slots.
-      if (el.tag !== 'template' && !el.slotScope) {
-        addAttr(el, 'slot', slotTarget);
-      }
     }
   }
 }
@@ -41237,7 +42538,7 @@ function processComponent (el) {
 
 function processAttrs (el) {
   var list = el.attrsList;
-  var i, l, name, rawName, value, modifiers, isProp;
+  var i, l, name, rawName, value, modifiers, syncGen, isDynamic;
   for (i = 0, l = list.length; i < l; i++) {
     name = rawName = list[i].name;
     value = list[i].value;
@@ -41245,74 +42546,124 @@ function processAttrs (el) {
       // mark element as dynamic
       el.hasBindings = true;
       // modifiers
-      modifiers = parseModifiers(name);
+      modifiers = parseModifiers(name.replace(dirRE, ''));
+      // support .foo shorthand syntax for the .prop modifier
       if (modifiers) {
         name = name.replace(modifierRE, '');
       }
       if (bindRE.test(name)) { // v-bind
         name = name.replace(bindRE, '');
         value = parseFilters(value);
-        isProp = false;
+        isDynamic = dynamicArgRE.test(name);
+        if (isDynamic) {
+          name = name.slice(1, -1);
+        }
+        if (
+          value.trim().length === 0
+        ) {
+          warn$2(
+            ("The value for a v-bind expression cannot be empty. Found in \"v-bind:" + name + "\"")
+          );
+        }
         if (modifiers) {
-          if (modifiers.prop) {
-            isProp = true;
+          if (modifiers.prop && !isDynamic) {
             name = camelize(name);
             if (name === 'innerHtml') { name = 'innerHTML'; }
           }
-          if (modifiers.camel) {
+          if (modifiers.camel && !isDynamic) {
             name = camelize(name);
           }
           if (modifiers.sync) {
-            addHandler(
-              el,
-              ("update:" + (camelize(name))),
-              genAssignmentCode(value, "$event")
-            );
+            syncGen = genAssignmentCode(value, "$event");
+            if (!isDynamic) {
+              addHandler(
+                el,
+                ("update:" + (camelize(name))),
+                syncGen,
+                null,
+                false,
+                warn$2,
+                list[i]
+              );
+              if (hyphenate(name) !== camelize(name)) {
+                addHandler(
+                  el,
+                  ("update:" + (hyphenate(name))),
+                  syncGen,
+                  null,
+                  false,
+                  warn$2,
+                  list[i]
+                );
+              }
+            } else {
+              // handler w/ dynamic event name
+              addHandler(
+                el,
+                ("\"update:\"+(" + name + ")"),
+                syncGen,
+                null,
+                false,
+                warn$2,
+                list[i],
+                true // dynamic
+              );
+            }
           }
         }
-        if (isProp || (
+        if ((modifiers && modifiers.prop) || (
           !el.component && platformMustUseProp(el.tag, el.attrsMap.type, name)
         )) {
-          addProp(el, name, value);
+          addProp(el, name, value, list[i], isDynamic);
         } else {
-          addAttr(el, name, value);
+          addAttr(el, name, value, list[i], isDynamic);
         }
       } else if (onRE.test(name)) { // v-on
         name = name.replace(onRE, '');
-        addHandler(el, name, value, modifiers, false, warn$2);
+        isDynamic = dynamicArgRE.test(name);
+        if (isDynamic) {
+          name = name.slice(1, -1);
+        }
+        addHandler(el, name, value, modifiers, false, warn$2, list[i], isDynamic);
       } else { // normal directives
         name = name.replace(dirRE, '');
         // parse arg
         var argMatch = name.match(argRE);
         var arg = argMatch && argMatch[1];
+        isDynamic = false;
         if (arg) {
           name = name.slice(0, -(arg.length + 1));
+          if (dynamicArgRE.test(arg)) {
+            arg = arg.slice(1, -1);
+            isDynamic = true;
+          }
         }
-        addDirective(el, name, rawName, value, arg, modifiers);
-        if ("development" !== 'production' && name === 'model') {
+        addDirective(el, name, rawName, value, arg, isDynamic, modifiers, list[i]);
+        if (name === 'model') {
           checkForAliasModel(el, value);
         }
       }
     } else {
       // literal attribute
-      if (true) {
+      {
         var res = parseText(value, delimiters);
         if (res) {
           warn$2(
             name + "=\"" + value + "\": " +
             'Interpolation inside attributes has been removed. ' +
             'Use v-bind or the colon shorthand instead. For example, ' +
-            'instead of <div id="{{ val }}">, use <div :id="val">.'
+            'instead of <div id="{{ val }}">, use <div :id="val">.',
+            list[i]
           );
         }
       }
-      addAttr(el, name, JSON.stringify(value));
+      addAttr(el, name, JSON.stringify(value), list[i]);
       // #6887 firefox doesn't update muted state if set via attribute
       // even immediately after element creation
       if (!el.component &&
           name === 'muted' &&
           platformMustUseProp(el.tag, el.attrsMap.type, name)) {
-        addProp(el, name, 'true');
+        addProp(el, name, 'true', list[i]);
       }
     }
   }
@@ -41342,10 +42693,9 @@ function makeAttrsMap (attrs) {
   var map = {};
   for (var i = 0, l = attrs.length; i < l; i++) {
     if (
-      "development" !== 'production' &&
       map[attrs[i].name] && !isIE && !isEdge
     ) {
-      warn$2('duplicate attribute: ' + attrs[i].name);
+      warn$2('duplicate attribute: ' + attrs[i].name, attrs[i]);
     }
     map[attrs[i].name] = attrs[i].value;
   }
@@ -41392,7 +42742,8 @@ function checkForAliasModel (el, value) {
         "You are binding v-model directly to a v-for iteration alias. " +
         "This will not be able to modify the v-for source array because " +
         "writing to the alias is like modifying a function local variable. " +
-        "Consider using an array of objects and use v-model on an object property instead."
+        "Consider using an array of objects and use v-model on an object property instead.",
+        el.rawAttrsMap['v-model']
       );
     }
     _el = _el.parent;
@@ -41401,21 +42752,22 @@ function checkForAliasModel (el, value) {
 
 /*  */
 
-/**
- * Expand input[v-model] with dyanmic type bindings into v-if-else chains
- * Turn this:
- *   <input v-model="data[type]" :type="type">
- * into this:
- *   <input v-if="type === 'checkbox'" type="checkbox" v-model="data[type]">
- *   <input v-else-if="type === 'radio'" type="radio" v-model="data[type]">
- *   <input v-else :type="type" v-model="data[type]">
- */
-
 function preTransformNode (el, options) {
   if (el.tag === 'input') {
     var map = el.attrsMap;
-    if (map['v-model'] && (map['v-bind:type'] || map[':type'])) {
-      var typeBinding = getBindingAttr(el, 'type');
+    if (!map['v-model']) {
+      return
+    }
+
+    var typeBinding;
+    if (map[':type'] || map['v-bind:type']) {
+      typeBinding = getBindingAttr(el, 'type');
+    }
+    if (!map.type && !typeBinding && map['v-bind']) {
+      typeBinding = "(" + (map['v-bind']) + ").type";
+    }
+
+    if (typeBinding) {
       var ifCondition = getAndRemoveAttr(el, 'v-if', true);
       var ifConditionExtra = ifCondition ? ("&&(" + ifCondition + ")") : "";
       var hasElse = getAndRemoveAttr(el, 'v-else', true) != null;
@@ -41466,21 +42818,21 @@ function cloneASTElement (el) {
   return createASTElement(el.tag, el.attrsList.slice(), el.parent)
 }
 
-var model$2 = {
+var model$1 = {
   preTransformNode: preTransformNode
 };
 
 var modules$1 = [
   klass$1,
   style$1,
-  model$2
+  model$1
 ];
 
 /*  */
 
 function text (el, dir) {
   if (dir.value) {
-    addProp(el, 'textContent', ("_s(" + (dir.value) + ")"));
+    addProp(el, 'textContent', ("_s(" + (dir.value) + ")"), dir);
   }
 }
 
@@ -41488,7 +42840,7 @@ function text (el, dir) {
 
 function html (el, dir) {
   if (dir.value) {
-    addProp(el, 'innerHTML', ("_s(" + (dir.value) + ")"));
+    addProp(el, 'innerHTML', ("_s(" + (dir.value) + ")"), dir);
   }
 }
 
@@ -41543,7 +42895,7 @@ function optimize (root, options) {
 
 function genStaticKeys$1 (keys) {
   return makeMap(
-    'type,tag,attrsList,attrsMap,plain,parent,children,attrs' +
+    'type,tag,attrsList,attrsMap,plain,parent,children,attrs,start,end,rawAttrsMap' +
     (keys ? ',' + keys : '')
   )
 }
@@ -41642,10 +42994,11 @@ function isDirectChildOfTemplateFor (node) {
 
 /*  */
 
-var fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
-var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
+var fnExpRE = /^([\w$_]+|\([^)]*?\))\s*=>|^function\s*(?:[\w$]+)?\s*\(/;
+var fnInvokeRE = /\([^)]*?\);*$/;
+var simplePathRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['[^']*?']|\["[^"]*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*$/;
 
-// keyCode aliases
+// KeyboardEvent.keyCode aliases
 var keyCodes = {
   esc: 27,
   tab: 9,
@@ -41656,6 +43009,23 @@ var keyCodes = {
   right: 39,
   down: 40,
   'delete': [8, 46]
+};
+
+// KeyboardEvent.key aliases
+var keyNames = {
+  // #7880: IE11 and Edge use `Esc` for Escape key name.
+  esc: ['Esc', 'Escape'],
+  tab: 'Tab',
+  enter: 'Enter',
+  // #9112: IE11 uses `Spacebar` for Space key name.
+  space: [' ', 'Spacebar'],
+  // #7806: IE11 uses key names without `Arrow` prefix for arrow keys.
+  up: ['Up', 'ArrowUp'],
+  left: ['Left', 'ArrowLeft'],
+  right: ['Right', 'ArrowRight'],
+  down: ['Down', 'ArrowDown'],
+  // #9112: IE11 uses `Del` for Delete key name.
+  'delete': ['Backspace', 'Delete', 'Del']
 };
 
 // #4868: modifiers that prevent the execution of the listener
@@ -41678,37 +43048,45 @@ var modifierCode = {
 
 function genHandlers (
   events,
-  isNative,
-  warn
+  isNative
 ) {
-  var res = isNative ? 'nativeOn:{' : 'on:{';
+  var prefix = isNative ? 'nativeOn:' : 'on:';
+  var staticHandlers = "";
+  var dynamicHandlers = "";
   for (var name in events) {
-    res += "\"" + name + "\":" + (genHandler(name, events[name])) + ",";
+    var handlerCode = genHandler(events[name]);
+    if (events[name] && events[name].dynamic) {
+      dynamicHandlers += name + "," + handlerCode + ",";
+    } else {
+      staticHandlers += "\"" + name + "\":" + handlerCode + ",";
+    }
   }
-  return res.slice(0, -1) + '}'
+  staticHandlers = "{" + (staticHandlers.slice(0, -1)) + "}";
+  if (dynamicHandlers) {
+    return prefix + "_d(" + staticHandlers + ",[" + (dynamicHandlers.slice(0, -1)) + "])"
+  } else {
+    return prefix + staticHandlers
+  }
 }
 
-function genHandler (
-  name,
-  handler
-) {
+function genHandler (handler) {
   if (!handler) {
     return 'function(){}'
   }
 
   if (Array.isArray(handler)) {
-    return ("[" + (handler.map(function (handler) { return genHandler(name, handler); }).join(',')) + "]")
+    return ("[" + (handler.map(function (handler) { return genHandler(handler); }).join(',')) + "]")
   }
 
   var isMethodPath = simplePathRE.test(handler.value);
   var isFunctionExpression = fnExpRE.test(handler.value);
+  var isFunctionInvocation = simplePathRE.test(handler.value.replace(fnInvokeRE, ''));
 
   if (!handler.modifiers) {
     if (isMethodPath || isFunctionExpression) {
       return handler.value
     }
-    /* istanbul ignore if */
-    return ("function($event){" + (handler.value) + "}") // inline statement
+    return ("function($event){" + (isFunctionInvocation ? ("return " + (handler.value)) : handler.value) + "}") // inline statement
   } else {
     var code = '';
     var genModifierCode = '';
@@ -41740,17 +43118,24 @@ function genHandler (
       code += genModifierCode;
     }
     var handlerCode = isMethodPath
-      ? handler.value + '($event)'
+      ? ("return " + (handler.value) + "($event)")
       : isFunctionExpression
-        ? ("(" + (handler.value) + ")($event)")
-        : handler.value;
-    /* istanbul ignore if */
+        ? ("return (" + (handler.value) + ")($event)")
+        : isFunctionInvocation
+          ? ("return " + (handler.value))
+          : handler.value;
     return ("function($event){" + code + handlerCode + "}")
   }
 }
 
 function genKeyFilter (keys) {
-  return ("if(!('button' in $event)&&" + (keys.map(genFilterCode).join('&&')) + ")return null;")
+  return (
+    // make sure the key filters only apply to KeyboardEvents
+    // #9441: can't use 'keyCode' in $event because Chrome autofill fires fake
+    // key events that do not have keyCode property...
+    "if(!$event.type.indexOf('key')&&" +
+    (keys.map(genFilterCode).join('&&')) + ")return null;"
+  )
 }
 
 function genFilterCode (key) {
@@ -41758,19 +43143,22 @@ function genFilterCode (key) {
   if (keyVal) {
     return ("$event.keyCode!==" + keyVal)
   }
-  var code = keyCodes[key];
+  var keyCode = keyCodes[key];
+  var keyName = keyNames[key];
   return (
     "_k($event.keyCode," +
     (JSON.stringify(key)) + "," +
-    (JSON.stringify(code)) + "," +
-    "$event.key)"
+    (JSON.stringify(keyCode)) + "," +
+    "$event.key," +
+    "" + (JSON.stringify(keyName)) +
+    ")"
   )
 }
 
 /*  */
 
 function on (el, dir) {
-  if ("development" !== 'production' && dir.modifiers) {
+  if (dir.modifiers) {
     warn("v-on without argument does not support modifiers.");
   }
   el.wrapListeners = function (code) { return ("_g(" + code + "," + (dir.value) + ")"); };
@@ -41794,6 +43182,10 @@ var baseDirectives = {
 
 /*  */
 
+
+
+
+
 var CodegenState = function CodegenState (options) {
   this.options = options;
   this.warn = options.warn || baseWarn;
@@ -41801,9 +43193,10 @@ var CodegenState = function CodegenState (options) {
   this.dataGenFns = pluckModuleFunction(options.modules, 'genData');
   this.directives = extend(extend({}, baseDirectives), options.directives);
   var isReservedTag = options.isReservedTag || no;
-  this.maybeComponent = function (el) { return !isReservedTag(el.tag); };
+  this.maybeComponent = function (el) { return !!el.component || !isReservedTag(el.tag); };
   this.onceId = 0;
   this.staticRenderFns = [];
+  this.pre = false;
 };
 
 
@@ -41821,6 +43214,10 @@ function generate (
 }
 
 function genElement (el, state) {
+  if (el.parent) {
+    el.pre = el.pre || el.parent.pre;
+  }
+
   if (el.staticRoot && !el.staticProcessed) {
     return genStatic(el, state)
   } else if (el.once && !el.onceProcessed) {
@@ -41829,7 +43226,7 @@ function genElement (el, state) {
     return genFor(el, state)
   } else if (el.if && !el.ifProcessed) {
     return genIf(el, state)
-  } else if (el.tag === 'template' && !el.slotTarget) {
+  } else if (el.tag === 'template' && !el.slotTarget && !state.pre) {
     return genChildren(el, state) || 'void 0'
   } else if (el.tag === 'slot') {
     return genSlot(el, state)
@@ -41839,7 +43236,10 @@ function genElement (el, state) {
     if (el.component) {
       code = genComponent(el.component, el, state);
     } else {
-      var data = el.plain ? undefined : genData$2(el, state);
+      var data;
+      if (!el.plain || (el.pre && state.maybeComponent(el))) {
+        data = genData$2(el, state);
+      }
 
       var children = el.inlineTemplate ? null : genChildren(el, state, true);
       code = "_c('" + (el.tag) + "'" + (data ? ("," + data) : '') + (children ? ("," + children) : '') + ")";
@@ -41855,7 +43255,15 @@ function genElement (el, state) {
 // hoist static sub-trees out
 function genStatic (el, state) {
   el.staticProcessed = true;
+  // Some elements (templates) need to behave differently inside of a v-pre
+  // node.  All pre nodes are static roots, so we can use this as a location to
+  // wrap a state change and reset it upon exiting the pre node.
+  var originalPreState = state.pre;
+  if (el.pre) {
+    state.pre = el.pre;
+  }
   state.staticRenderFns.push(("with(this){return " + (genElement(el, state)) + "}"));
+  state.pre = originalPreState;
   return ("_m(" + (state.staticRenderFns.length - 1) + (el.staticInFor ? ',true' : '') + ")")
 }
 
@@ -41875,8 +43283,9 @@ function genOnce (el, state) {
       parent = parent.parent;
     }
     if (!key) {
-      "development" !== 'production' && state.warn(
-        "v-once can only be used inside v-for that is keyed. "
+      state.warn(
+        "v-once can only be used inside v-for that is keyed. ",
+        el.rawAttrsMap['v-once']
       );
       return genElement(el, state)
     }
@@ -41934,8 +43343,7 @@ function genFor (
   var iterator1 = el.iterator1 ? ("," + (el.iterator1)) : '';
   var iterator2 = el.iterator2 ? ("," + (el.iterator2)) : '';
 
-  if ("development" !== 'production' &&
-    state.maybeComponent(el) &&
+  if (state.maybeComponent(el) &&
     el.tag !== 'slot' &&
     el.tag !== 'template' &&
     !el.key
@@ -41944,6 +43352,7 @@ function genFor (
       "<" + (el.tag) + " v-for=\"" + alias + " in " + exp + "\">: component lists rendered with " +
       "v-for should have explicit keys. " +
       "See https://vuejs.org/guide/list.html#key for more info.",
+      el.rawAttrsMap['v-for'],
       true /* tip */
     );
   }
@@ -41988,18 +43397,18 @@ function genData$2 (el, state) {
   }
   // attributes
   if (el.attrs) {
-    data += "attrs:{" + (genProps(el.attrs)) + "},";
+    data += "attrs:" + (genProps(el.attrs)) + ",";
   }
   // DOM props
   if (el.props) {
-    data += "domProps:{" + (genProps(el.props)) + "},";
+    data += "domProps:" + (genProps(el.props)) + ",";
   }
   // event handlers
   if (el.events) {
-    data += (genHandlers(el.events, false, state.warn)) + ",";
+    data += (genHandlers(el.events, false)) + ",";
   }
   if (el.nativeEvents) {
-    data += (genHandlers(el.nativeEvents, true, state.warn)) + ",";
+    data += (genHandlers(el.nativeEvents, true)) + ",";
   }
   // slot target
   // only for non-scoped slots
@@ -42008,7 +43417,7 @@ function genData$2 (el, state) {
   }
   // scoped slots
   if (el.scopedSlots) {
-    data += (genScopedSlots(el.scopedSlots, state)) + ",";
+    data += (genScopedSlots(el, el.scopedSlots, state)) + ",";
   }
   // component v-model
   if (el.model) {
@@ -42022,6 +43431,12 @@ function genData$2 (el, state) {
     }
   }
   data = data.replace(/,$/, '') + '}';
+  // v-bind dynamic argument wrap
+  // v-bind with dynamic arguments must be applied using the same v-bind object
+  // merge helper so that class/style/mustUseProp attrs are handled correctly.
+  if (el.dynamicAttrs) {
+    data = "_b(" + data + ",\"" + (el.tag) + "\"," + (genProps(el.dynamicAttrs)) + ")";
+  }
   // v-bind data wrap
   if (el.wrapData) {
     data = el.wrapData(data);
@@ -42050,7 +43465,7 @@ function genDirectives (el, state) {
     }
     if (needRuntime) {
       hasRuntime = true;
-      res += "{name:\"" + (dir.name) + "\",rawName:\"" + (dir.rawName) + "\"" + (dir.value ? (",value:(" + (dir.value) + "),expression:" + (JSON.stringify(dir.value))) : '') + (dir.arg ? (",arg:\"" + (dir.arg) + "\"") : '') + (dir.modifiers ? (",modifiers:" + (JSON.stringify(dir.modifiers))) : '') + "},";
+      res += "{name:\"" + (dir.name) + "\",rawName:\"" + (dir.rawName) + "\"" + (dir.value ? (",value:(" + (dir.value) + "),expression:" + (JSON.stringify(dir.value))) : '') + (dir.arg ? (",arg:" + (dir.isDynamicArg ? dir.arg : ("\"" + (dir.arg) + "\""))) : '') + (dir.modifiers ? (",modifiers:" + (JSON.stringify(dir.modifiers))) : '') + "},";
     }
   }
   if (hasRuntime) {
@@ -42060,57 +43475,114 @@ function genDirectives (el, state) {
 
 function genInlineTemplate (el, state) {
   var ast = el.children[0];
-  if ("development" !== 'production' && (
-    el.children.length !== 1 || ast.type !== 1
-  )) {
-    state.warn('Inline-template components must have exactly one child element.');
+  if (el.children.length !== 1 || ast.type !== 1) {
+    state.warn(
+      'Inline-template components must have exactly one child element.',
+      { start: el.start }
+    );
   }
-  if (ast.type === 1) {
+  if (ast && ast.type === 1) {
     var inlineRenderFns = generate(ast, state.options);
     return ("inlineTemplate:{render:function(){" + (inlineRenderFns.render) + "},staticRenderFns:[" + (inlineRenderFns.staticRenderFns.map(function (code) { return ("function(){" + code + "}"); }).join(',')) + "]}")
   }
 }
 
 function genScopedSlots (
+  el,
   slots,
   state
 ) {
-  return ("scopedSlots:_u([" + (Object.keys(slots).map(function (key) {
-      return genScopedSlot(key, slots[key], state)
-    }).join(',')) + "])")
+  // by default scoped slots are considered "stable", this allows child
+  // components with only scoped slots to skip forced updates from parent.
+  // but in some cases we have to bail-out of this optimization
+  // for example if the slot contains dynamic names, has v-if or v-for on them...
+  var needsForceUpdate = el.for || Object.keys(slots).some(function (key) {
+    var slot = slots[key];
+    return (
+      slot.slotTargetDynamic ||
+      slot.if ||
+      slot.for ||
+      containsSlotChild(slot) // is passing down slot from parent which may be dynamic
+    )
+  });
+
+  // #9534: if a component with scoped slots is inside a conditional branch,
+  // it's possible for the same component to be reused but with different
+  // compiled slot content. To avoid that, we generate a unique key based on
+  // the generated code of all the slot contents.
+  var needsKey = !!el.if;
+
+  // OR when it is inside another scoped slot or v-for (the reactivity may be
+  // disconnected due to the intermediate scope variable)
+  // #9438, #9506
+  // TODO: this can be further optimized by properly analyzing in-scope bindings
+  // and skip force updating ones that do not actually use scope variables.
+  if (!needsForceUpdate) {
+    var parent = el.parent;
+    while (parent) {
+      if (
+        (parent.slotScope && parent.slotScope !== emptySlotScopeToken) ||
+        parent.for
+      ) {
+        needsForceUpdate = true;
+        break
+      }
+      if (parent.if) {
+        needsKey = true;
+      }
+      parent = parent.parent;
+    }
+  }
+
+  var generatedSlots = Object.keys(slots)
+    .map(function (key) { return genScopedSlot(slots[key], state); })
+    .join(',');
+
+  return ("scopedSlots:_u([" + generatedSlots + "]" + (needsForceUpdate ? ",null,true" : "") + (!needsForceUpdate && needsKey ? (",null,false," + (hash(generatedSlots))) : "") + ")")
+}
+
+function hash(str) {
+  var hash = 5381;
+  var i = str.length;
+  while(i) {
+    hash = (hash * 33) ^ str.charCodeAt(--i);
+  }
+  return hash >>> 0
+}
+
+function containsSlotChild (el) {
+  if (el.type === 1) {
+    if (el.tag === 'slot') {
+      return true
+    }
+    return el.children.some(containsSlotChild)
+  }
+  return false
 }
 
 function genScopedSlot (
-  key,
   el,
   state
 ) {
-  if (el.for && !el.forProcessed) {
-    return genForScopedSlot(key, el, state)
+  var isLegacySyntax = el.attrsMap['slot-scope'];
+  if (el.if && !el.ifProcessed && !isLegacySyntax) {
+    return genIf(el, state, genScopedSlot, "null")
   }
-  var fn = "function(" + (String(el.slotScope)) + "){" +
+  if (el.for && !el.forProcessed) {
+    return genFor(el, state, genScopedSlot)
+  }
+  var slotScope = el.slotScope === emptySlotScopeToken
+    ? ""
+    : String(el.slotScope);
+  var fn = "function(" + slotScope + "){" +
     "return " + (el.tag === 'template'
-      ? el.if
-        ? ((el.if) + "?" + (genChildren(el, state) || 'undefined') + ":undefined")
+      ? el.if && isLegacySyntax
+        ? ("(" + (el.if) + ")?" + (genChildren(el, state) || 'undefined') + ":undefined")
         : genChildren(el, state) || 'undefined'
       : genElement(el, state)) + "}";
-  return ("{key:" + key + ",fn:" + fn + "}")
-}
-
-function genForScopedSlot (
-  key,
-  el,
-  state
-) {
-  var exp = el.for;
-  var alias = el.alias;
-  var iterator1 = el.iterator1 ? ("," + (el.iterator1)) : '';
-  var iterator2 = el.iterator2 ? ("," + (el.iterator2)) : '';
-  el.forProcessed = true; // avoid recursion
-  return "_l((" + exp + ")," +
-    "function(" + alias + iterator1 + iterator2 + "){" +
-      "return " + (genScopedSlot(key, el, state)) +
-    '})'
+  // reverse proxy v-slot without scope on this.$slots
+  var reverseProxy = slotScope ? "" : ",proxy:true";
+  return ("{key:" + (el.slotTarget || "\"default\"") + ",fn:" + fn + reverseProxy + "}")
 }
 
 function genChildren (
@@ -42129,13 +43601,16 @@ function genChildren (
       el$1.tag !== 'template' &&
       el$1.tag !== 'slot'
     ) {
-      return (altGenElement || genElement)(el$1, state)
+      var normalizationType = checkSkip
+        ? state.maybeComponent(el$1) ? ",1" : ",0"
+        : "";
+      return ("" + ((altGenElement || genElement)(el$1, state)) + normalizationType)
     }
-    var normalizationType = checkSkip
+    var normalizationType$1 = checkSkip
       ? getNormalizationType(children, state.maybeComponent)
       : 0;
     var gen = altGenNode || genNode;
-    return ("[" + (children.map(function (c) { return gen(c, state); }).join(',')) + "]" + (normalizationType ? ("," + normalizationType) : ''))
+    return ("[" + (children.map(function (c) { return gen(c, state); }).join(',')) + "]" + (normalizationType$1 ? ("," + normalizationType$1) : ''))
   }
 }
 
@@ -42173,7 +43648,7 @@ function needsNormalization (el) {
 function genNode (node, state) {
   if (node.type === 1) {
     return genElement(node, state)
-  } if (node.type === 3 && node.isComment) {
+  } else if (node.type === 3 && node.isComment) {
     return genComment(node)
   } else {
     return genText(node)
@@ -42194,7 +43669,14 @@ function genSlot (el, state) {
   var slotName = el.slotName || '"default"';
   var children = genChildren(el, state);
   var res = "_t(" + slotName + (children ? ("," + children) : '');
-  var attrs = el.attrs && ("{" + (el.attrs.map(function (a) { return ((camelize(a.name)) + ":" + (a.value)); }).join(',')) + "}");
+  var attrs = el.attrs || el.dynamicAttrs
+    ? genProps((el.attrs || []).concat(el.dynamicAttrs || []).map(function (attr) { return ({
+        // slot props are camelized
+        name: camelize(attr.name),
+        value: attr.value,
+        dynamic: attr.dynamic
+      }); }))
+    : null;
   var bind$$1 = el.attrsMap['v-bind'];
   if ((attrs || bind$$1) && !children) {
     res += ",null";
@@ -42219,15 +43701,23 @@ function genComponent (
 }
 
 function genProps (props) {
-  var res = '';
+  var staticProps = "";
+  var dynamicProps = "";
   for (var i = 0; i < props.length; i++) {
     var prop = props[i];
-    /* istanbul ignore if */
-    {
-      res += "\"" + (prop.name) + "\":" + (transformSpecialNewlines(prop.value)) + ",";
+    var value = transformSpecialNewlines(prop.value);
+    if (prop.dynamic) {
+      dynamicProps += (prop.name) + "," + value + ",";
+    } else {
+      staticProps += "\"" + (prop.name) + "\":" + value + ",";
     }
   }
-  return res.slice(0, -1)
+  staticProps = "{" + (staticProps.slice(0, -1)) + "}";
+  if (dynamicProps) {
+    return ("_d(" + staticProps + ",[" + (dynamicProps.slice(0, -1)) + "])")
+  } else {
+    return staticProps
+  }
 }
 
 // #3895, #4268
@@ -42238,6 +43728,8 @@ function transformSpecialNewlines (text) {
 }
 
 /*  */
+
+
 
 // these keywords should not appear inside expressions, but operators like
 // typeof, instanceof and in are allowed
@@ -42256,95 +43748,154 @@ var unaryOperatorsRE = new RegExp('\\b' + (
 var stripStringRE = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\]|\\.)*`|`(?:[^`\\]|\\.)*`/g;
 
 // detect problematic expressions in a template
-function detectErrors (ast) {
-  var errors = [];
+function detectErrors (ast, warn) {
   if (ast) {
-    checkNode(ast, errors);
+    checkNode(ast, warn);
   }
-  return errors
 }
 
-function checkNode (node, errors) {
+function checkNode (node, warn) {
   if (node.type === 1) {
     for (var name in node.attrsMap) {
       if (dirRE.test(name)) {
         var value = node.attrsMap[name];
         if (value) {
+          var range = node.rawAttrsMap[name];
           if (name === 'v-for') {
-            checkFor(node, ("v-for=\"" + value + "\""), errors);
+            checkFor(node, ("v-for=\"" + value + "\""), warn, range);
           } else if (onRE.test(name)) {
-            checkEvent(value, (name + "=\"" + value + "\""), errors);
+            checkEvent(value, (name + "=\"" + value + "\""), warn, range);
           } else {
-            checkExpression(value, (name + "=\"" + value + "\""), errors);
+            checkExpression(value, (name + "=\"" + value + "\""), warn, range);
           }
         }
       }
     }
     if (node.children) {
       for (var i = 0; i < node.children.length; i++) {
-        checkNode(node.children[i], errors);
+        checkNode(node.children[i], warn);
       }
     }
   } else if (node.type === 2) {
-    checkExpression(node.expression, node.text, errors);
+    checkExpression(node.expression, node.text, warn, node);
   }
 }
 
-function checkEvent (exp, text, errors) {
+function checkEvent (exp, text, warn, range) {
   var stipped = exp.replace(stripStringRE, '');
   var keywordMatch = stipped.match(unaryOperatorsRE);
   if (keywordMatch && stipped.charAt(keywordMatch.index - 1) !== '$') {
-    errors.push(
+    warn(
       "avoid using JavaScript unary operator as property name: " +
-      "\"" + (keywordMatch[0]) + "\" in expression " + (text.trim())
+      "\"" + (keywordMatch[0]) + "\" in expression " + (text.trim()),
+      range
     );
   }
-  checkExpression(exp, text, errors);
+  checkExpression(exp, text, warn, range);
 }
 
-function checkFor (node, text, errors) {
-  checkExpression(node.for || '', text, errors);
-  checkIdentifier(node.alias, 'v-for alias', text, errors);
-  checkIdentifier(node.iterator1, 'v-for iterator', text, errors);
-  checkIdentifier(node.iterator2, 'v-for iterator', text, errors);
+function checkFor (node, text, warn, range) {
+  checkExpression(node.for || '', text, warn, range);
+  checkIdentifier(node.alias, 'v-for alias', text, warn, range);
+  checkIdentifier(node.iterator1, 'v-for iterator', text, warn, range);
+  checkIdentifier(node.iterator2, 'v-for iterator', text, warn, range);
 }
 
 function checkIdentifier (
   ident,
   type,
   text,
-  errors
+  warn,
+  range
 ) {
   if (typeof ident === 'string') {
     try {
       new Function(("var " + ident + "=_"));
     } catch (e) {
-      errors.push(("invalid " + type + " \"" + ident + "\" in expression: " + (text.trim())));
+      warn(("invalid " + type + " \"" + ident + "\" in expression: " + (text.trim())), range);
     }
   }
 }
 
-function checkExpression (exp, text, errors) {
+function checkExpression (exp, text, warn, range) {
   try {
     new Function(("return " + exp));
   } catch (e) {
     var keywordMatch = exp.replace(stripStringRE, '').match(prohibitedKeywordRE);
     if (keywordMatch) {
-      errors.push(
+      warn(
         "avoid using JavaScript keyword as property name: " +
-        "\"" + (keywordMatch[0]) + "\"\n  Raw expression: " + (text.trim())
+        "\"" + (keywordMatch[0]) + "\"\n  Raw expression: " + (text.trim()),
+        range
       );
     } else {
-      errors.push(
+      warn(
         "invalid expression: " + (e.message) + " in\n\n" +
         "    " + exp + "\n\n" +
-        "  Raw expression: " + (text.trim()) + "\n"
+        "  Raw expression: " + (text.trim()) + "\n",
+        range
       );
     }
   }
 }
 
 /*  */
+
+var range = 2;
+
+function generateCodeFrame (
+  source,
+  start,
+  end
+) {
+  if ( start === void 0 ) start = 0;
+  if ( end === void 0 ) end = source.length;
+
+  var lines = source.split(/\r?\n/);
+  var count = 0;
+  var res = [];
+  for (var i = 0; i < lines.length; i++) {
+    count += lines[i].length + 1;
+    if (count >= start) {
+      for (var j = i - range; j <= i + range || end > count; j++) {
+        if (j < 0 || j >= lines.length) { continue }
+        res.push(("" + (j + 1) + (repeat$1(" ", 3 - String(j + 1).length)) + "|  " + (lines[j])));
+        var lineLength = lines[j].length;
+        if (j === i) {
+          // push underline
+          var pad = start - (count - lineLength) + 1;
+          var length = end > count ? lineLength - pad : end - start;
+          res.push("   |  " + repeat$1(" ", pad) + repeat$1("^", length));
+        } else if (j > i) {
+          if (end > count) {
+            var length$1 = Math.min(end - count, lineLength);
+            res.push("   |  " + repeat$1("^", length$1));
+          }
+          count += lineLength + 1;
+        }
+      }
+      break
+    }
+  }
+  return res.join('\n')
+}
+
+function repeat$1 (str, n) {
+  var result = '';
+  if (n > 0) {
+    while (true) { // eslint-disable-line
+      if (n & 1) { result += str; }
+      n >>>= 1;
+      if (n <= 0) { break }
+      str += str;
+    }
+  }
+  return result
+}
+
+/*  */
+
+
 
 function createFunction (code, errors) {
   try {
@@ -42368,7 +43919,7 @@ function createCompileToFunctionFn (compile) {
     delete options.warn;
 
     /* istanbul ignore if */
-    if (true) {
+    {
       // detect possible CSP restriction
       try {
         new Function('return 1');
@@ -42397,16 +43948,30 @@ function createCompileToFunctionFn (compile) {
     var compiled = compile(template, options);
 
     // check compilation errors/tips
-    if (true) {
+    {
       if (compiled.errors && compiled.errors.length) {
-        warn$$1(
-          "Error compiling template:\n\n" + template + "\n\n" +
-          compiled.errors.map(function (e) { return ("- " + e); }).join('\n') + '\n',
-          vm
-        );
+        if (options.outputSourceRange) {
+          compiled.errors.forEach(function (e) {
+            warn$$1(
+              "Error compiling template:\n\n" + (e.msg) + "\n\n" +
+              generateCodeFrame(template, e.start, e.end),
+              vm
+            );
+          });
+        } else {
+          warn$$1(
+            "Error compiling template:\n\n" + template + "\n\n" +
+            compiled.errors.map(function (e) { return ("- " + e); }).join('\n') + '\n',
+            vm
+          );
+        }
       }
       if (compiled.tips && compiled.tips.length) {
-        compiled.tips.forEach(function (msg) { return tip(msg, vm); });
+        if (options.outputSourceRange) {
+          compiled.tips.forEach(function (e) { return tip(e.msg, vm); });
+        } else {
+          compiled.tips.forEach(function (msg) { return tip(msg, vm); });
+        }
       }
     }
 
@@ -42422,7 +43987,7 @@ function createCompileToFunctionFn (compile) {
     // this should only happen if there is a bug in the compiler itself.
     // mostly for codegen development use
     /* istanbul ignore if */
-    if (true) {
+    {
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
         warn$$1(
           "Failed to generate render function:\n\n" +
@@ -42452,11 +44017,29 @@ function createCompilerCreator (baseCompile) {
       var finalOptions = Object.create(baseOptions);
       var errors = [];
       var tips = [];
-      finalOptions.warn = function (msg, tip) {
+
+      var warn = function (msg, range, tip) {
         (tip ? tips : errors).push(msg);
       };
 
       if (options) {
+        if (options.outputSourceRange) {
+          // $flow-disable-line
+          var leadingSpaceLength = template.match(/^\s*/)[0].length;
+
+          warn = function (msg, range, tip) {
+            var data = { msg: msg };
+            if (range) {
+              if (range.start != null) {
+                data.start = range.start + leadingSpaceLength;
+              }
+              if (range.end != null) {
+                data.end = range.end + leadingSpaceLength;
+              }
+            }
+            (tip ? tips : errors).push(data);
+          };
+        }
         // merge custom modules
         if (options.modules) {
           finalOptions.modules =
@@ -42477,9 +44060,11 @@ function createCompilerCreator (baseCompile) {
         }
       }
 
-      var compiled = baseCompile(template, finalOptions);
-      if (true) {
-        errors.push.apply(errors, detectErrors(compiled.ast));
+      finalOptions.warn = warn;
+
+      var compiled = baseCompile(template.trim(), finalOptions);
+      {
+        detectErrors(compiled.ast, warn);
       }
       compiled.errors = errors;
       compiled.tips = tips;
@@ -42517,6 +44102,7 @@ var createCompiler = createCompilerCreator(function baseCompile (
 /*  */
 
 var ref$1 = createCompiler(baseOptions);
+var compile = ref$1.compile;
 var compileToFunctions = ref$1.compileToFunctions;
 
 /*  */
@@ -42541,8 +44127,8 @@ var idToTemplate = cached(function (id) {
   return el && el.innerHTML
 });
 
-var mount = Vue$3.prototype.$mount;
-Vue$3.prototype.$mount = function (
+var mount = Vue.prototype.$mount;
+Vue.prototype.$mount = function (
   el,
   hydrating
 ) {
@@ -42550,7 +44136,7 @@ Vue$3.prototype.$mount = function (
 
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
-    "development" !== 'production' && warn(
+    warn(
       "Do not mount Vue to <html> or <body> - mount to normal elements instead."
     );
     return this
@@ -42565,7 +44151,7 @@ Vue$3.prototype.$mount = function (
         if (template.charAt(0) === '#') {
           template = idToTemplate(template);
           /* istanbul ignore if */
-          if ("development" !== 'production' && !template) {
+          if (!template) {
             warn(
               ("Template element not found or is empty: " + (options.template)),
               this
@@ -42575,7 +44161,7 @@ Vue$3.prototype.$mount = function (
       } else if (template.nodeType) {
         template = template.innerHTML;
       } else {
-        if (true) {
+        {
           warn('invalid template option:' + template, this);
         }
         return this
@@ -42585,11 +44171,12 @@ Vue$3.prototype.$mount = function (
     }
     if (template) {
       /* istanbul ignore if */
-      if ("development" !== 'production' && config.performance && mark) {
+      if (config.performance && mark) {
         mark('compile');
       }
 
       var ref = compileToFunctions(template, {
+        outputSourceRange: "development" !== 'production',
         shouldDecodeNewlines: shouldDecodeNewlines,
         shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
         delimiters: options.delimiters,
@@ -42601,7 +44188,7 @@ Vue$3.prototype.$mount = function (
       options.staticRenderFns = staticRenderFns;
 
       /* istanbul ignore if */
-      if ("development" !== 'production' && config.performance && mark) {
+      if (config.performance && mark) {
         mark('compile end');
         measure(("vue " + (this._name) + " compile"), 'compile', 'compile end');
       }
@@ -42624,14 +44211,14 @@ function getOuterHTML (el) {
   }
 }
 
-Vue$3.compile = compileToFunctions;
+Vue.compile = compileToFunctions;
 
-module.exports = Vue$3;
+module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(36).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(37).setImmediate))
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
@@ -42684,7 +44271,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(37);
+__webpack_require__(38);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -42698,7 +44285,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -42891,15 +44478,15 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(4)))
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(39)
+var normalizeComponent = __webpack_require__(40)
 /* script */
-var __vue_script__ = __webpack_require__(40)
+var __vue_script__ = __webpack_require__(41)
 /* template */
-var __vue_template__ = __webpack_require__(42)
+var __vue_template__ = __webpack_require__(43)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -42938,7 +44525,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -43047,12 +44634,12 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_highcharts__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_highcharts__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_highcharts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_highcharts__);
 //
 //
@@ -43089,406 +44676,436 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports) {
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/*
- Highcharts JS v6.0.7 (2018-02-16)
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
+ Highcharts JS v6.2.0 (2018-10-17)
 
  (c) 2009-2016 Torstein Honsi
 
  License: www.highcharts.com/license
 */
-(function(S,K){"object"===typeof module&&module.exports?module.exports=S.document?K(S):K:S.Highcharts=K(S)})("undefined"!==typeof window?window:this,function(S){var K=function(){var a="undefined"===typeof S?window:S,B=a.document,H=a.navigator&&a.navigator.userAgent||"",E=B&&B.createElementNS&&!!B.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect,q=/(edge|msie|trident)/i.test(H)&&!a.opera,f=-1!==H.indexOf("Firefox"),l=-1!==H.indexOf("Chrome"),t=f&&4>parseInt(H.split("Firefox/")[1],
-10);return a.Highcharts?a.Highcharts.error(16,!0):{product:"Highcharts",version:"6.0.7",deg2rad:2*Math.PI/360,doc:B,hasBidiBug:t,hasTouch:B&&void 0!==B.documentElement.ontouchstart,isMS:q,isWebKit:-1!==H.indexOf("AppleWebKit"),isFirefox:f,isChrome:l,isSafari:!l&&-1!==H.indexOf("Safari"),isTouchDevice:/(Mobile|Android|Windows Phone)/.test(H),SVG_NS:"http://www.w3.org/2000/svg",chartCount:0,seriesTypes:{},symbolSizes:{},svg:E,win:a,marginNames:["plotTop","marginRight","marginBottom","plotLeft"],noop:function(){},
-charts:[]}}();(function(a){a.timers=[];var B=a.charts,H=a.doc,E=a.win;a.error=function(q,f){q=a.isNumber(q)?"Highcharts error #"+q+": www.highcharts.com/errors/"+q:q;if(f)throw Error(q);E.console&&console.log(q)};a.Fx=function(a,f,l){this.options=f;this.elem=a;this.prop=l};a.Fx.prototype={dSetter:function(){var a=this.paths[0],f=this.paths[1],l=[],t=this.now,n=a.length,v;if(1===t)l=this.toD;else if(n===f.length&&1>t)for(;n--;)v=parseFloat(a[n]),l[n]=isNaN(v)?f[n]:t*parseFloat(f[n]-v)+v;else l=f;this.elem.attr("d",
-l,null,!0)},update:function(){var a=this.elem,f=this.prop,l=this.now,t=this.options.step;if(this[f+"Setter"])this[f+"Setter"]();else a.attr?a.element&&a.attr(f,l,null,!0):a.style[f]=l+this.unit;t&&t.call(a,l,this)},run:function(q,f,l){var t=this,n=t.options,v=function(a){return v.stopped?!1:t.step(a)},u=E.requestAnimationFrame||function(a){setTimeout(a,13)},c=function(){for(var b=0;b<a.timers.length;b++)a.timers[b]()||a.timers.splice(b--,1);a.timers.length&&u(c)};q===f?(delete n.curAnim[this.prop],
-n.complete&&0===a.keys(n.curAnim).length&&n.complete.call(this.elem)):(this.startTime=+new Date,this.start=q,this.end=f,this.unit=l,this.now=this.start,this.pos=0,v.elem=this.elem,v.prop=this.prop,v()&&1===a.timers.push(v)&&u(c))},step:function(q){var f=+new Date,l,t=this.options,n=this.elem,v=t.complete,u=t.duration,c=t.curAnim;n.attr&&!n.element?q=!1:q||f>=u+this.startTime?(this.now=this.end,this.pos=1,this.update(),l=c[this.prop]=!0,a.objectEach(c,function(a){!0!==a&&(l=!1)}),l&&v&&v.call(n),q=
-!1):(this.pos=t.easing((f-this.startTime)/u),this.now=this.start+(this.end-this.start)*this.pos,this.update(),q=!0);return q},initPath:function(q,f,l){function t(a){var c,h;for(e=a.length;e--;)c="M"===a[e]||"L"===a[e],h=/[a-zA-Z]/.test(a[e+3]),c&&h&&a.splice(e+1,0,a[e+1],a[e+2],a[e+1],a[e+2])}function n(a,c){for(;a.length<h;){a[0]=c[h-a.length];var b=a.slice(0,d);[].splice.apply(a,[0,0].concat(b));p&&(b=a.slice(a.length-d),[].splice.apply(a,[a.length,0].concat(b)),e--)}a[0]="M"}function v(a,c){for(var b=
-(h-a.length)/d;0<b&&b--;)k=a.slice().splice(a.length/r-d,d*r),k[0]=c[h-d-b*d],m&&(k[d-6]=k[d-2],k[d-5]=k[d-1]),[].splice.apply(a,[a.length/r,0].concat(k)),p&&b--}f=f||"";var u,c=q.startX,b=q.endX,m=-1<f.indexOf("C"),d=m?7:3,h,k,e;f=f.split(" ");l=l.slice();var p=q.isArea,r=p?2:1,I;m&&(t(f),t(l));if(c&&b){for(e=0;e<c.length;e++)if(c[e]===b[0]){u=e;break}else if(c[0]===b[b.length-c.length+e]){u=e;I=!0;break}void 0===u&&(f=[])}f.length&&a.isNumber(u)&&(h=l.length+u*r*d,I?(n(f,l),v(l,f)):(n(l,f),v(f,
-l)));return[f,l]}};a.Fx.prototype.fillSetter=a.Fx.prototype.strokeSetter=function(){this.elem.attr(this.prop,a.color(this.start).tweenTo(a.color(this.end),this.pos),null,!0)};a.merge=function(){var q,f=arguments,l,t={},n=function(l,q){"object"!==typeof l&&(l={});a.objectEach(q,function(c,b){!a.isObject(c,!0)||a.isClass(c)||a.isDOMElement(c)?l[b]=q[b]:l[b]=n(l[b]||{},c)});return l};!0===f[0]&&(t=f[1],f=Array.prototype.slice.call(f,2));l=f.length;for(q=0;q<l;q++)t=n(t,f[q]);return t};a.pInt=function(a,
-f){return parseInt(a,f||10)};a.isString=function(a){return"string"===typeof a};a.isArray=function(a){a=Object.prototype.toString.call(a);return"[object Array]"===a||"[object Array Iterator]"===a};a.isObject=function(q,f){return!!q&&"object"===typeof q&&(!f||!a.isArray(q))};a.isDOMElement=function(q){return a.isObject(q)&&"number"===typeof q.nodeType};a.isClass=function(q){var f=q&&q.constructor;return!(!a.isObject(q,!0)||a.isDOMElement(q)||!f||!f.name||"Object"===f.name)};a.isNumber=function(a){return"number"===
-typeof a&&!isNaN(a)&&Infinity>a&&-Infinity<a};a.erase=function(a,f){for(var l=a.length;l--;)if(a[l]===f){a.splice(l,1);break}};a.defined=function(a){return void 0!==a&&null!==a};a.attr=function(q,f,l){var t;a.isString(f)?a.defined(l)?q.setAttribute(f,l):q&&q.getAttribute&&(t=q.getAttribute(f)):a.defined(f)&&a.isObject(f)&&a.objectEach(f,function(a,l){q.setAttribute(l,a)});return t};a.splat=function(q){return a.isArray(q)?q:[q]};a.syncTimeout=function(a,f,l){if(f)return setTimeout(a,f,l);a.call(0,
-l)};a.extend=function(a,f){var l;a||(a={});for(l in f)a[l]=f[l];return a};a.pick=function(){var a=arguments,f,l,t=a.length;for(f=0;f<t;f++)if(l=a[f],void 0!==l&&null!==l)return l};a.css=function(q,f){a.isMS&&!a.svg&&f&&void 0!==f.opacity&&(f.filter="alpha(opacity\x3d"+100*f.opacity+")");a.extend(q.style,f)};a.createElement=function(q,f,l,t,n){q=H.createElement(q);var v=a.css;f&&a.extend(q,f);n&&v(q,{padding:0,border:"none",margin:0});l&&v(q,l);t&&t.appendChild(q);return q};a.extendClass=function(q,
-f){var l=function(){};l.prototype=new q;a.extend(l.prototype,f);return l};a.pad=function(a,f,l){return Array((f||2)+1-String(a).length).join(l||0)+a};a.relativeLength=function(a,f,l){return/%$/.test(a)?f*parseFloat(a)/100+(l||0):parseFloat(a)};a.wrap=function(a,f,l){var t=a[f];a[f]=function(){var a=Array.prototype.slice.call(arguments),v=arguments,u=this;u.proceed=function(){t.apply(u,arguments.length?arguments:v)};a.unshift(t);a=l.apply(this,a);u.proceed=null;return a}};a.formatSingle=function(q,
-f,l){var t=/\.([0-9])/,n=a.defaultOptions.lang;/f$/.test(q)?(l=(l=q.match(t))?l[1]:-1,null!==f&&(f=a.numberFormat(f,l,n.decimalPoint,-1<q.indexOf(",")?n.thousandsSep:""))):f=(l||a.time).dateFormat(q,f);return f};a.format=function(q,f,l){for(var t="{",n=!1,v,u,c,b,m=[],d;q;){t=q.indexOf(t);if(-1===t)break;v=q.slice(0,t);if(n){v=v.split(":");u=v.shift().split(".");b=u.length;d=f;for(c=0;c<b;c++)d&&(d=d[u[c]]);v.length&&(d=a.formatSingle(v.join(":"),d,l));m.push(d)}else m.push(v);q=q.slice(t+1);t=(n=
-!n)?"}":"{"}m.push(q);return m.join("")};a.getMagnitude=function(a){return Math.pow(10,Math.floor(Math.log(a)/Math.LN10))};a.normalizeTickInterval=function(q,f,l,t,n){var v,u=q;l=a.pick(l,1);v=q/l;f||(f=n?[1,1.2,1.5,2,2.5,3,4,5,6,8,10]:[1,2,2.5,5,10],!1===t&&(1===l?f=a.grep(f,function(a){return 0===a%1}):.1>=l&&(f=[1/l])));for(t=0;t<f.length&&!(u=f[t],n&&u*l>=q||!n&&v<=(f[t]+(f[t+1]||f[t]))/2);t++);return u=a.correctFloat(u*l,-Math.round(Math.log(.001)/Math.LN10))};a.stableSort=function(a,f){var l=
-a.length,t,n;for(n=0;n<l;n++)a[n].safeI=n;a.sort(function(a,l){t=f(a,l);return 0===t?a.safeI-l.safeI:t});for(n=0;n<l;n++)delete a[n].safeI};a.arrayMin=function(a){for(var f=a.length,l=a[0];f--;)a[f]<l&&(l=a[f]);return l};a.arrayMax=function(a){for(var f=a.length,l=a[0];f--;)a[f]>l&&(l=a[f]);return l};a.destroyObjectProperties=function(q,f){a.objectEach(q,function(a,t){a&&a!==f&&a.destroy&&a.destroy();delete q[t]})};a.discardElement=function(q){var f=a.garbageBin;f||(f=a.createElement("div"));q&&f.appendChild(q);
-f.innerHTML=""};a.correctFloat=function(a,f){return parseFloat(a.toPrecision(f||14))};a.setAnimation=function(q,f){f.renderer.globalAnimation=a.pick(q,f.options.chart.animation,!0)};a.animObject=function(q){return a.isObject(q)?a.merge(q):{duration:q?500:0}};a.timeUnits={millisecond:1,second:1E3,minute:6E4,hour:36E5,day:864E5,week:6048E5,month:24192E5,year:314496E5};a.numberFormat=function(q,f,l,t){q=+q||0;f=+f;var n=a.defaultOptions.lang,v=(q.toString().split(".")[1]||"").split("e")[0].length,u,
-c,b=q.toString().split("e");-1===f?f=Math.min(v,20):a.isNumber(f)?f&&b[1]&&0>b[1]&&(u=f+ +b[1],0<=u?(b[0]=(+b[0]).toExponential(u).split("e")[0],f=u):(b[0]=b[0].split(".")[0]||0,q=20>f?(b[0]*Math.pow(10,b[1])).toFixed(f):0,b[1]=0)):f=2;c=(Math.abs(b[1]?b[0]:q)+Math.pow(10,-Math.max(f,v)-1)).toFixed(f);v=String(a.pInt(c));u=3<v.length?v.length%3:0;l=a.pick(l,n.decimalPoint);t=a.pick(t,n.thousandsSep);q=(0>q?"-":"")+(u?v.substr(0,u)+t:"");q+=v.substr(u).replace(/(\d{3})(?=\d)/g,"$1"+t);f&&(q+=l+c.slice(-f));
-b[1]&&0!==+q&&(q+="e"+b[1]);return q};Math.easeInOutSine=function(a){return-.5*(Math.cos(Math.PI*a)-1)};a.getStyle=function(q,f,l){if("width"===f)return Math.min(q.offsetWidth,q.scrollWidth)-a.getStyle(q,"padding-left")-a.getStyle(q,"padding-right");if("height"===f)return Math.min(q.offsetHeight,q.scrollHeight)-a.getStyle(q,"padding-top")-a.getStyle(q,"padding-bottom");E.getComputedStyle||a.error(27,!0);if(q=E.getComputedStyle(q,void 0))q=q.getPropertyValue(f),a.pick(l,"opacity"!==f)&&(q=a.pInt(q));
-return q};a.inArray=function(q,f){return(a.indexOfPolyfill||Array.prototype.indexOf).call(f,q)};a.grep=function(q,f){return(a.filterPolyfill||Array.prototype.filter).call(q,f)};a.find=Array.prototype.find?function(a,f){return a.find(f)}:function(a,f){var l,t=a.length;for(l=0;l<t;l++)if(f(a[l],l))return a[l]};a.map=function(a,f){for(var l=[],t=0,n=a.length;t<n;t++)l[t]=f.call(a[t],a[t],t,a);return l};a.keys=function(q){return(a.keysPolyfill||Object.keys).call(void 0,q)};a.reduce=function(q,f,l){return(a.reducePolyfill||
-Array.prototype.reduce).call(q,f,l)};a.offset=function(a){var f=H.documentElement;a=a.parentElement?a.getBoundingClientRect():{top:0,left:0};return{top:a.top+(E.pageYOffset||f.scrollTop)-(f.clientTop||0),left:a.left+(E.pageXOffset||f.scrollLeft)-(f.clientLeft||0)}};a.stop=function(q,f){for(var l=a.timers.length;l--;)a.timers[l].elem!==q||f&&f!==a.timers[l].prop||(a.timers[l].stopped=!0)};a.each=function(q,f,l){return(a.forEachPolyfill||Array.prototype.forEach).call(q,f,l)};a.objectEach=function(a,
-f,l){for(var t in a)a.hasOwnProperty(t)&&f.call(l,a[t],t,a)};a.isPrototype=function(q){return q===a.Axis.prototype||q===a.Chart.prototype||q===a.Point.prototype||q===a.Series.prototype||q===a.Tick.prototype};a.addEvent=function(q,f,l){var t,n=q.addEventListener||a.addEventListenerPolyfill;t=a.isPrototype(q)?"protoEvents":"hcEvents";t=q[t]=q[t]||{};n&&n.call(q,f,l,!1);t[f]||(t[f]=[]);t[f].push(l);return function(){a.removeEvent(q,f,l)}};a.removeEvent=function(q,f,l){function t(c,b){var m=q.removeEventListener||
-a.removeEventListenerPolyfill;m&&m.call(q,c,b,!1)}function n(c){var b,m;q.nodeName&&(f?(b={},b[f]=!0):b=c,a.objectEach(b,function(a,h){if(c[h])for(m=c[h].length;m--;)t(h,c[h][m])}))}var v,u;a.each(["protoEvents","hcEvents"],function(c){var b=q[c];b&&(f?(v=b[f]||[],l?(u=a.inArray(l,v),-1<u&&(v.splice(u,1),b[f]=v),t(f,l)):(n(b),b[f]=[])):(n(b),q[c]={}))})};a.fireEvent=function(q,f,l,t){var n,v,u,c,b;l=l||{};H.createEvent&&(q.dispatchEvent||q.fireEvent)?(n=H.createEvent("Events"),n.initEvent(f,!0,!0),
-a.extend(n,l),q.dispatchEvent?q.dispatchEvent(n):q.fireEvent(f,n)):a.each(["protoEvents","hcEvents"],function(m){if(q[m])for(v=q[m][f]||[],u=v.length,l.target||a.extend(l,{preventDefault:function(){l.defaultPrevented=!0},target:q,type:f}),c=0;c<u;c++)(b=v[c])&&!1===b.call(q,l)&&l.preventDefault()});t&&!l.defaultPrevented&&t(l)};a.animate=function(q,f,l){var t,n="",v,u,c;a.isObject(l)||(c=arguments,l={duration:c[2],easing:c[3],complete:c[4]});a.isNumber(l.duration)||(l.duration=400);l.easing="function"===
-typeof l.easing?l.easing:Math[l.easing]||Math.easeInOutSine;l.curAnim=a.merge(f);a.objectEach(f,function(c,m){a.stop(q,m);u=new a.Fx(q,l,m);v=null;"d"===m?(u.paths=u.initPath(q,q.d,f.d),u.toD=f.d,t=0,v=1):q.attr?t=q.attr(m):(t=parseFloat(a.getStyle(q,m))||0,"opacity"!==m&&(n="px"));v||(v=c);v&&v.match&&v.match("px")&&(v=v.replace(/px/g,""));u.run(t,v,n)})};a.seriesType=function(q,f,l,t,n){var v=a.getOptions(),u=a.seriesTypes;v.plotOptions[q]=a.merge(v.plotOptions[f],l);u[q]=a.extendClass(u[f]||function(){},
-t);u[q].prototype.type=q;n&&(u[q].prototype.pointClass=a.extendClass(a.Point,n));return u[q]};a.uniqueKey=function(){var a=Math.random().toString(36).substring(2,9),f=0;return function(){return"highcharts-"+a+"-"+f++}}();E.jQuery&&(E.jQuery.fn.highcharts=function(){var q=[].slice.call(arguments);if(this[0])return q[0]?(new (a[a.isString(q[0])?q.shift():"Chart"])(this[0],q[0],q[1]),this):B[a.attr(this[0],"data-highcharts-chart")]})})(K);(function(a){var B=a.each,H=a.isNumber,E=a.map,q=a.merge,f=a.pInt;
-a.Color=function(l){if(!(this instanceof a.Color))return new a.Color(l);this.init(l)};a.Color.prototype={parsers:[{regex:/rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,parse:function(a){return[f(a[1]),f(a[2]),f(a[3]),parseFloat(a[4],10)]}},{regex:/rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,parse:function(a){return[f(a[1]),f(a[2]),f(a[3]),1]}}],names:{none:"rgba(255,255,255,0)",white:"#ffffff",black:"#000000"},init:function(l){var f,
-n,v,u;if((this.input=l=this.names[l&&l.toLowerCase?l.toLowerCase():""]||l)&&l.stops)this.stops=E(l.stops,function(c){return new a.Color(c[1])});else if(l&&l.charAt&&"#"===l.charAt()&&(f=l.length,l=parseInt(l.substr(1),16),7===f?n=[(l&16711680)>>16,(l&65280)>>8,l&255,1]:4===f&&(n=[(l&3840)>>4|(l&3840)>>8,(l&240)>>4|l&240,(l&15)<<4|l&15,1])),!n)for(v=this.parsers.length;v--&&!n;)u=this.parsers[v],(f=u.regex.exec(l))&&(n=u.parse(f));this.rgba=n||[]},get:function(a){var l=this.input,n=this.rgba,v;this.stops?
-(v=q(l),v.stops=[].concat(v.stops),B(this.stops,function(n,c){v.stops[c]=[v.stops[c][0],n.get(a)]})):v=n&&H(n[0])?"rgb"===a||!a&&1===n[3]?"rgb("+n[0]+","+n[1]+","+n[2]+")":"a"===a?n[3]:"rgba("+n.join(",")+")":l;return v},brighten:function(a){var l,n=this.rgba;if(this.stops)B(this.stops,function(n){n.brighten(a)});else if(H(a)&&0!==a)for(l=0;3>l;l++)n[l]+=f(255*a),0>n[l]&&(n[l]=0),255<n[l]&&(n[l]=255);return this},setOpacity:function(a){this.rgba[3]=a;return this},tweenTo:function(a,f){var n=this.rgba,
-l=a.rgba;l.length&&n&&n.length?(a=1!==l[3]||1!==n[3],f=(a?"rgba(":"rgb(")+Math.round(l[0]+(n[0]-l[0])*(1-f))+","+Math.round(l[1]+(n[1]-l[1])*(1-f))+","+Math.round(l[2]+(n[2]-l[2])*(1-f))+(a?","+(l[3]+(n[3]-l[3])*(1-f)):"")+")"):f=a.input||"none";return f}};a.color=function(l){return new a.Color(l)}})(K);(function(a){var B,H,E=a.addEvent,q=a.animate,f=a.attr,l=a.charts,t=a.color,n=a.css,v=a.createElement,u=a.defined,c=a.deg2rad,b=a.destroyObjectProperties,m=a.doc,d=a.each,h=a.extend,k=a.erase,e=a.grep,
-p=a.hasTouch,r=a.inArray,I=a.isArray,z=a.isFirefox,M=a.isMS,D=a.isObject,C=a.isString,x=a.isWebKit,F=a.merge,A=a.noop,J=a.objectEach,G=a.pick,g=a.pInt,w=a.removeEvent,L=a.stop,P=a.svg,N=a.SVG_NS,O=a.symbolSizes,R=a.win;B=a.SVGElement=function(){return this};h(B.prototype,{opacity:1,SVG_NS:N,textProps:"direction fontSize fontWeight fontFamily fontStyle color lineHeight width textAlign textDecoration textOverflow textOutline".split(" "),init:function(a,g){this.element="span"===g?v(g):m.createElementNS(this.SVG_NS,
-g);this.renderer=a},animate:function(y,g,c){g=a.animObject(G(g,this.renderer.globalAnimation,!0));0!==g.duration?(c&&(g.complete=c),q(this,y,g)):(this.attr(y,null,c),g.step&&g.step.call(this));return this},colorGradient:function(y,g,c){var w=this.renderer,h,b,e,k,p,Q,x,N,m,A,r=[],P;y.radialGradient?b="radialGradient":y.linearGradient&&(b="linearGradient");b&&(e=y[b],p=w.gradients,x=y.stops,A=c.radialReference,I(e)&&(y[b]=e={x1:e[0],y1:e[1],x2:e[2],y2:e[3],gradientUnits:"userSpaceOnUse"}),"radialGradient"===
-b&&A&&!u(e.gradientUnits)&&(k=e,e=F(e,w.getRadialAttr(A,k),{gradientUnits:"userSpaceOnUse"})),J(e,function(a,y){"id"!==y&&r.push(y,a)}),J(x,function(a){r.push(a)}),r=r.join(","),p[r]?A=p[r].attr("id"):(e.id=A=a.uniqueKey(),p[r]=Q=w.createElement(b).attr(e).add(w.defs),Q.radAttr=k,Q.stops=[],d(x,function(y){0===y[1].indexOf("rgba")?(h=a.color(y[1]),N=h.get("rgb"),m=h.get("a")):(N=y[1],m=1);y=w.createElement("stop").attr({offset:y[0],"stop-color":N,"stop-opacity":m}).add(Q);Q.stops.push(y)})),P="url("+
-w.url+"#"+A+")",c.setAttribute(g,P),c.gradient=r,y.toString=function(){return P})},applyTextOutline:function(y){var g=this.element,c,w,h,e,b;-1!==y.indexOf("contrast")&&(y=y.replace(/contrast/g,this.renderer.getContrast(g.style.fill)));y=y.split(" ");w=y[y.length-1];if((h=y[0])&&"none"!==h&&a.svg){this.fakeTS=!0;y=[].slice.call(g.getElementsByTagName("tspan"));this.ySetter=this.xSetter;h=h.replace(/(^[\d\.]+)(.*?)$/g,function(a,y,g){return 2*y+g});for(b=y.length;b--;)c=y[b],"highcharts-text-outline"===
-c.getAttribute("class")&&k(y,g.removeChild(c));e=g.firstChild;d(y,function(a,y){0===y&&(a.setAttribute("x",g.getAttribute("x")),y=g.getAttribute("y"),a.setAttribute("y",y||0),null===y&&g.setAttribute("y",0));a=a.cloneNode(1);f(a,{"class":"highcharts-text-outline",fill:w,stroke:w,"stroke-width":h,"stroke-linejoin":"round"});g.insertBefore(a,e)})}},attr:function(a,g,c,w){var y,h=this.element,b,e=this,d,k;"string"===typeof a&&void 0!==g&&(y=a,a={},a[y]=g);"string"===typeof a?e=(this[a+"Getter"]||this._defaultGetter).call(this,
-a,h):(J(a,function(y,g){d=!1;w||L(this,g);this.symbolName&&/^(x|y|width|height|r|start|end|innerR|anchorX|anchorY)$/.test(g)&&(b||(this.symbolAttr(a),b=!0),d=!0);!this.rotation||"x"!==g&&"y"!==g||(this.doTransform=!0);d||(k=this[g+"Setter"]||this._defaultSetter,k.call(this,y,g,h),this.shadows&&/^(width|height|visibility|x|y|d|transform|cx|cy|r)$/.test(g)&&this.updateShadows(g,y,k))},this),this.afterSetters());c&&c.call(this);return e},afterSetters:function(){this.doTransform&&(this.updateTransform(),
-this.doTransform=!1)},updateShadows:function(a,g,c){for(var y=this.shadows,w=y.length;w--;)c.call(y[w],"height"===a?Math.max(g-(y[w].cutHeight||0),0):"d"===a?this.d:g,a,y[w])},addClass:function(a,g){var y=this.attr("class")||"";-1===y.indexOf(a)&&(g||(a=(y+(y?" ":"")+a).replace("  "," ")),this.attr("class",a));return this},hasClass:function(a){return-1!==r(a,(this.attr("class")||"").split(" "))},removeClass:function(a){return this.attr("class",(this.attr("class")||"").replace(a,""))},symbolAttr:function(a){var y=
-this;d("x y r start end width height innerR anchorX anchorY".split(" "),function(g){y[g]=G(a[g],y[g])});y.attr({d:y.renderer.symbols[y.symbolName](y.x,y.y,y.width,y.height,y)})},clip:function(a){return this.attr("clip-path",a?"url("+this.renderer.url+"#"+a.id+")":"none")},crisp:function(a,g){var y;g=g||a.strokeWidth||0;y=Math.round(g)%2/2;a.x=Math.floor(a.x||this.x||0)+y;a.y=Math.floor(a.y||this.y||0)+y;a.width=Math.floor((a.width||this.width||0)-2*y);a.height=Math.floor((a.height||this.height||0)-
-2*y);u(a.strokeWidth)&&(a.strokeWidth=g);return a},css:function(a){var y=this.styles,c={},w=this.element,b,e="",d,k=!y,p=["textOutline","textOverflow","width"];a&&a.color&&(a.fill=a.color);y&&J(a,function(a,g){a!==y[g]&&(c[g]=a,k=!0)});k&&(y&&(a=h(y,c)),b=this.textWidth=a&&a.width&&"auto"!==a.width&&"text"===w.nodeName.toLowerCase()&&g(a.width),this.styles=a,b&&!P&&this.renderer.forExport&&delete a.width,w.namespaceURI===this.SVG_NS?(d=function(a,y){return"-"+y.toLowerCase()},J(a,function(a,y){-1===
-r(y,p)&&(e+=y.replace(/([A-Z])/g,d)+":"+a+";")}),e&&f(w,"style",e)):n(w,a),this.added&&("text"===this.element.nodeName&&this.renderer.buildText(this),a&&a.textOutline&&this.applyTextOutline(a.textOutline)));return this},strokeWidth:function(){return this["stroke-width"]||0},on:function(a,g){var y=this,c=y.element;p&&"click"===a?(c.ontouchstart=function(a){y.touchEventFired=Date.now();a.preventDefault();g.call(c,a)},c.onclick=function(a){(-1===R.navigator.userAgent.indexOf("Android")||1100<Date.now()-
-(y.touchEventFired||0))&&g.call(c,a)}):c["on"+a]=g;return this},setRadialReference:function(a){var y=this.renderer.gradients[this.element.gradient];this.element.radialReference=a;y&&y.radAttr&&y.animate(this.renderer.getRadialAttr(a,y.radAttr));return this},translate:function(a,g){return this.attr({translateX:a,translateY:g})},invert:function(a){this.inverted=a;this.updateTransform();return this},updateTransform:function(){var a=this.translateX||0,g=this.translateY||0,c=this.scaleX,w=this.scaleY,
-h=this.inverted,e=this.rotation,b=this.matrix,d=this.element;h&&(a+=this.width,g+=this.height);a=["translate("+a+","+g+")"];u(b)&&a.push("matrix("+b.join(",")+")");h?a.push("rotate(90) scale(-1,1)"):e&&a.push("rotate("+e+" "+G(this.rotationOriginX,d.getAttribute("x"),0)+" "+G(this.rotationOriginY,d.getAttribute("y")||0)+")");(u(c)||u(w))&&a.push("scale("+G(c,1)+" "+G(w,1)+")");a.length&&d.setAttribute("transform",a.join(" "))},toFront:function(){var a=this.element;a.parentNode.appendChild(a);return this},
-align:function(a,g,c){var y,w,h,e,d={};w=this.renderer;h=w.alignedObjects;var b,p;if(a){if(this.alignOptions=a,this.alignByTranslate=g,!c||C(c))this.alignTo=y=c||"renderer",k(h,this),h.push(this),c=null}else a=this.alignOptions,g=this.alignByTranslate,y=this.alignTo;c=G(c,w[y],w);y=a.align;w=a.verticalAlign;h=(c.x||0)+(a.x||0);e=(c.y||0)+(a.y||0);"right"===y?b=1:"center"===y&&(b=2);b&&(h+=(c.width-(a.width||0))/b);d[g?"translateX":"x"]=Math.round(h);"bottom"===w?p=1:"middle"===w&&(p=2);p&&(e+=(c.height-
-(a.height||0))/p);d[g?"translateY":"y"]=Math.round(e);this[this.placed?"animate":"attr"](d);this.placed=!0;this.alignAttr=d;return this},getBBox:function(a,g){var y,w=this.renderer,b,e=this.element,k=this.styles,p,x=this.textStr,N,m=w.cache,A=w.cacheKeys,F;g=G(g,this.rotation);b=g*c;p=k&&k.fontSize;u(x)&&(F=x.toString(),-1===F.indexOf("\x3c")&&(F=F.replace(/[0-9]/g,"0")),F+=["",g||0,p,k&&k.width,k&&k.textOverflow].join());F&&!a&&(y=m[F]);if(!y){if(e.namespaceURI===this.SVG_NS||w.forExport){try{(N=
-this.fakeTS&&function(a){d(e.querySelectorAll(".highcharts-text-outline"),function(y){y.style.display=a})})&&N("none"),y=e.getBBox?h({},e.getBBox()):{width:e.offsetWidth,height:e.offsetHeight},N&&N("")}catch(W){}if(!y||0>y.width)y={width:0,height:0}}else y=this.htmlGetBBox();w.isSVG&&(a=y.width,w=y.height,k&&"11px"===k.fontSize&&17===Math.round(w)&&(y.height=w=14),g&&(y.width=Math.abs(w*Math.sin(b))+Math.abs(a*Math.cos(b)),y.height=Math.abs(w*Math.cos(b))+Math.abs(a*Math.sin(b))));if(F&&0<y.height){for(;250<
-A.length;)delete m[A.shift()];m[F]||A.push(F);m[F]=y}}return y},show:function(a){return this.attr({visibility:a?"inherit":"visible"})},hide:function(){return this.attr({visibility:"hidden"})},fadeOut:function(a){var y=this;y.animate({opacity:0},{duration:a||150,complete:function(){y.attr({y:-9999})}})},add:function(a){var y=this.renderer,g=this.element,c;a&&(this.parentGroup=a);this.parentInverted=a&&a.inverted;void 0!==this.textStr&&y.buildText(this);this.added=!0;if(!a||a.handleZ||this.zIndex)c=
-this.zIndexSetter();c||(a?a.element:y.box).appendChild(g);if(this.onAdd)this.onAdd();return this},safeRemoveChild:function(a){var y=a.parentNode;y&&y.removeChild(a)},destroy:function(){var a=this,g=a.element||{},c=a.renderer.isSVG&&"SPAN"===g.nodeName&&a.parentGroup,w=g.ownerSVGElement,h=a.clipPath;g.onclick=g.onmouseout=g.onmouseover=g.onmousemove=g.point=null;L(a);h&&w&&(d(w.querySelectorAll("[clip-path],[CLIP-PATH]"),function(a){var g=a.getAttribute("clip-path"),y=h.element.id;(-1<g.indexOf("(#"+
-y+")")||-1<g.indexOf('("#'+y+'")'))&&a.removeAttribute("clip-path")}),a.clipPath=h.destroy());if(a.stops){for(w=0;w<a.stops.length;w++)a.stops[w]=a.stops[w].destroy();a.stops=null}a.safeRemoveChild(g);for(a.destroyShadows();c&&c.div&&0===c.div.childNodes.length;)g=c.parentGroup,a.safeRemoveChild(c.div),delete c.div,c=g;a.alignTo&&k(a.renderer.alignedObjects,a);J(a,function(g,y){delete a[y]});return null},shadow:function(a,g,c){var y=[],w,h,e=this.element,b,d,k,p;if(!a)this.destroyShadows();else if(!this.shadows){d=
-G(a.width,3);k=(a.opacity||.15)/d;p=this.parentInverted?"(-1,-1)":"("+G(a.offsetX,1)+", "+G(a.offsetY,1)+")";for(w=1;w<=d;w++)h=e.cloneNode(0),b=2*d+1-2*w,f(h,{isShadow:"true",stroke:a.color||"#000000","stroke-opacity":k*w,"stroke-width":b,transform:"translate"+p,fill:"none"}),c&&(f(h,"height",Math.max(f(h,"height")-b,0)),h.cutHeight=b),g?g.element.appendChild(h):e.parentNode&&e.parentNode.insertBefore(h,e),y.push(h);this.shadows=y}return this},destroyShadows:function(){d(this.shadows||[],function(a){this.safeRemoveChild(a)},
-this);this.shadows=void 0},xGetter:function(a){"circle"===this.element.nodeName&&("x"===a?a="cx":"y"===a&&(a="cy"));return this._defaultGetter(a)},_defaultGetter:function(a){a=G(this[a+"Value"],this[a],this.element?this.element.getAttribute(a):null,0);/^[\-0-9\.]+$/.test(a)&&(a=parseFloat(a));return a},dSetter:function(a,g,c){a&&a.join&&(a=a.join(" "));/(NaN| {2}|^$)/.test(a)&&(a="M 0 0");this[g]!==a&&(c.setAttribute(g,a),this[g]=a)},dashstyleSetter:function(a){var y,c=this["stroke-width"];"inherit"===
-c&&(c=1);if(a=a&&a.toLowerCase()){a=a.replace("shortdashdotdot","3,1,1,1,1,1,").replace("shortdashdot","3,1,1,1").replace("shortdot","1,1,").replace("shortdash","3,1,").replace("longdash","8,3,").replace(/dot/g,"1,3,").replace("dash","4,3,").replace(/,$/,"").split(",");for(y=a.length;y--;)a[y]=g(a[y])*c;a=a.join(",").replace(/NaN/g,"none");this.element.setAttribute("stroke-dasharray",a)}},alignSetter:function(a){this.alignValue=a;this.element.setAttribute("text-anchor",{left:"start",center:"middle",
-right:"end"}[a])},opacitySetter:function(a,g,c){this[g]=a;c.setAttribute(g,a)},titleSetter:function(a){var g=this.element.getElementsByTagName("title")[0];g||(g=m.createElementNS(this.SVG_NS,"title"),this.element.appendChild(g));g.firstChild&&g.removeChild(g.firstChild);g.appendChild(m.createTextNode(String(G(a),"").replace(/<[^>]*>/g,"").replace(/&lt;/g,"\x3c").replace(/&gt;/g,"\x3e")))},textSetter:function(a){a!==this.textStr&&(delete this.bBox,this.textStr=a,this.added&&this.renderer.buildText(this))},
-fillSetter:function(a,g,c){"string"===typeof a?c.setAttribute(g,a):a&&this.colorGradient(a,g,c)},visibilitySetter:function(a,g,c){"inherit"===a?c.removeAttribute(g):this[g]!==a&&c.setAttribute(g,a);this[g]=a},zIndexSetter:function(a,c){var w=this.renderer,y=this.parentGroup,h=(y||w).element||w.box,e,b=this.element,d,k,w=h===w.box;e=this.added;var p;u(a)&&(b.zIndex=a,a=+a,this[c]===a&&(e=!1),this[c]=a);if(e){(a=this.zIndex)&&y&&(y.handleZ=!0);c=h.childNodes;for(p=c.length-1;0<=p&&!d;p--)if(y=c[p],
-e=y.zIndex,k=!u(e),y!==b)if(0>a&&k&&!w&&!p)h.insertBefore(b,c[p]),d=!0;else if(g(e)<=a||k&&(!u(a)||0<=a))h.insertBefore(b,c[p+1]||null),d=!0;d||(h.insertBefore(b,c[w?3:0]||null),d=!0)}return d},_defaultSetter:function(a,g,c){c.setAttribute(g,a)}});B.prototype.yGetter=B.prototype.xGetter;B.prototype.translateXSetter=B.prototype.translateYSetter=B.prototype.rotationSetter=B.prototype.verticalAlignSetter=B.prototype.rotationOriginXSetter=B.prototype.rotationOriginYSetter=B.prototype.scaleXSetter=B.prototype.scaleYSetter=
-B.prototype.matrixSetter=function(a,g){this[g]=a;this.doTransform=!0};B.prototype["stroke-widthSetter"]=B.prototype.strokeSetter=function(a,g,c){this[g]=a;this.stroke&&this["stroke-width"]?(B.prototype.fillSetter.call(this,this.stroke,"stroke",c),c.setAttribute("stroke-width",this["stroke-width"]),this.hasStroke=!0):"stroke-width"===g&&0===a&&this.hasStroke&&(c.removeAttribute("stroke"),this.hasStroke=!1)};H=a.SVGRenderer=function(){this.init.apply(this,arguments)};h(H.prototype,{Element:B,SVG_NS:N,
-init:function(a,g,c,w,h,e){var y;w=this.createElement("svg").attr({version:"1.1","class":"highcharts-root"}).css(this.getStyle(w));y=w.element;a.appendChild(y);f(a,"dir","ltr");-1===a.innerHTML.indexOf("xmlns")&&f(y,"xmlns",this.SVG_NS);this.isSVG=!0;this.box=y;this.boxWrapper=w;this.alignedObjects=[];this.url=(z||x)&&m.getElementsByTagName("base").length?R.location.href.replace(/#.*?$/,"").replace(/<[^>]*>/g,"").replace(/([\('\)])/g,"\\$1").replace(/ /g,"%20"):"";this.createElement("desc").add().element.appendChild(m.createTextNode("Created with Highcharts 6.0.7"));
-this.defs=this.createElement("defs").add();this.allowHTML=e;this.forExport=h;this.gradients={};this.cache={};this.cacheKeys=[];this.imgCount=0;this.setSize(g,c,!1);var b;z&&a.getBoundingClientRect&&(g=function(){n(a,{left:0,top:0});b=a.getBoundingClientRect();n(a,{left:Math.ceil(b.left)-b.left+"px",top:Math.ceil(b.top)-b.top+"px"})},g(),this.unSubPixelFix=E(R,"resize",g))},getStyle:function(a){return this.style=h({fontFamily:'"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif',fontSize:"12px"},
-a)},setStyle:function(a){this.boxWrapper.css(this.getStyle(a))},isHidden:function(){return!this.boxWrapper.getBBox().width},destroy:function(){var a=this.defs;this.box=null;this.boxWrapper=this.boxWrapper.destroy();b(this.gradients||{});this.gradients=null;a&&(this.defs=a.destroy());this.unSubPixelFix&&this.unSubPixelFix();return this.alignedObjects=null},createElement:function(a){var g=new this.Element;g.init(this,a);return g},draw:A,getRadialAttr:function(a,g){return{cx:a[0]-a[2]/2+g.cx*a[2],cy:a[1]-
-a[2]/2+g.cy*a[2],r:g.r*a[2]}},getSpanWidth:function(a){return a.getBBox(!0).width},applyEllipsis:function(a,g,c,w){var h=a.rotation,y=c,b,e=0,d=c.length,k=function(a){g.removeChild(g.firstChild);a&&g.appendChild(m.createTextNode(a))},p;a.rotation=0;y=this.getSpanWidth(a,g);if(p=y>w){for(;e<=d;)b=Math.ceil((e+d)/2),y=c.substring(0,b)+"\u2026",k(y),y=this.getSpanWidth(a,g),e===d?e=d+1:y>w?d=b-1:e=b;0===d&&k("")}a.rotation=h;return p},escapes:{"\x26":"\x26amp;","\x3c":"\x26lt;","\x3e":"\x26gt;","'":"\x26#39;",
-'"':"\x26quot;"},buildText:function(a){var c=a.element,w=this,h=w.forExport,b=G(a.textStr,"").toString(),y=-1!==b.indexOf("\x3c"),k=c.childNodes,p,x,A,F,z=f(c,"x"),L=a.styles,O=a.textWidth,l=L&&L.lineHeight,D=L&&L.textOutline,C=L&&"ellipsis"===L.textOverflow,v=L&&"nowrap"===L.whiteSpace,u=L&&L.fontSize,M,t,I=k.length,L=O&&!a.added&&this.box,R=function(a){var h;h=/(px|em)$/.test(a&&a.style.fontSize)?a.style.fontSize:u||w.style.fontSize||12;return l?g(l):w.fontMetrics(h,a.getAttribute("style")?a:c).h},
-q=function(a,g){J(w.escapes,function(c,w){g&&-1!==r(c,g)||(a=a.toString().replace(new RegExp(c,"g"),w))});return a};M=[b,C,v,l,D,u,O].join();if(M!==a.textCache){for(a.textCache=M;I--;)c.removeChild(k[I]);y||D||C||O||-1!==b.indexOf(" ")?(p=/<.*class="([^"]+)".*>/,x=/<.*style="([^"]+)".*>/,A=/<.*href="([^"]+)".*>/,L&&L.appendChild(c),b=y?b.replace(/<(b|strong)>/g,'\x3cspan style\x3d"font-weight:bold"\x3e').replace(/<(i|em)>/g,'\x3cspan style\x3d"font-style:italic"\x3e').replace(/<a/g,"\x3cspan").replace(/<\/(b|strong|i|em|a)>/g,
-"\x3c/span\x3e").split(/<br.*?>/g):[b],b=e(b,function(a){return""!==a}),d(b,function(g,b){var e,y=0;g=g.replace(/^\s+|\s+$/g,"").replace(/<span/g,"|||\x3cspan").replace(/<\/span>/g,"\x3c/span\x3e|||");e=g.split("|||");d(e,function(g){if(""!==g||1===e.length){var d={},k=m.createElementNS(w.SVG_NS,"tspan"),r,L;p.test(g)&&(r=g.match(p)[1],f(k,"class",r));x.test(g)&&(L=g.match(x)[1].replace(/(;| |^)color([ :])/,"$1fill$2"),f(k,"style",L));A.test(g)&&!h&&(f(k,"onclick",'location.href\x3d"'+g.match(A)[1]+
-'"'),f(k,"class","highcharts-anchor"),n(k,{cursor:"pointer"}));g=q(g.replace(/<[a-zA-Z\/](.|\n)*?>/g,"")||" ");if(" "!==g){k.appendChild(m.createTextNode(g));y?d.dx=0:b&&null!==z&&(d.x=z);f(k,d);c.appendChild(k);!y&&t&&(!P&&h&&n(k,{display:"block"}),f(k,"dy",R(k)));if(O){d=g.replace(/([^\^])-/g,"$1- ").split(" ");r=1<e.length||b||1<d.length&&!v;var l=[],D,J=R(k),G=a.rotation;for(C&&(F=w.applyEllipsis(a,k,g,O));!C&&r&&(d.length||l.length);)a.rotation=0,D=w.getSpanWidth(a,k),g=D>O,void 0===F&&(F=g),
-g&&1!==d.length?(k.removeChild(k.firstChild),l.unshift(d.pop())):(d=l,l=[],d.length&&!v&&(k=m.createElementNS(N,"tspan"),f(k,{dy:J,x:z}),L&&f(k,"style",L),c.appendChild(k)),D>O&&(O=D)),d.length&&k.appendChild(m.createTextNode(d.join(" ").replace(/- /g,"-")));a.rotation=G}y++}}});t=t||c.childNodes.length}),F&&a.attr("title",q(a.textStr,["\x26lt;","\x26gt;"])),L&&L.removeChild(c),D&&a.applyTextOutline&&a.applyTextOutline(D)):c.appendChild(m.createTextNode(q(b)))}},getContrast:function(a){a=t(a).rgba;
-return 510<a[0]+a[1]+a[2]?"#000000":"#FFFFFF"},button:function(a,g,c,w,b,d,e,k,p){var y=this.label(a,g,c,p,null,null,null,null,"button"),x=0;y.attr(F({padding:8,r:2},b));var N,m,A,r;b=F({fill:"#f7f7f7",stroke:"#cccccc","stroke-width":1,style:{color:"#333333",cursor:"pointer",fontWeight:"normal"}},b);N=b.style;delete b.style;d=F(b,{fill:"#e6e6e6"},d);m=d.style;delete d.style;e=F(b,{fill:"#e6ebf5",style:{color:"#000000",fontWeight:"bold"}},e);A=e.style;delete e.style;k=F(b,{style:{color:"#cccccc"}},
-k);r=k.style;delete k.style;E(y.element,M?"mouseover":"mouseenter",function(){3!==x&&y.setState(1)});E(y.element,M?"mouseout":"mouseleave",function(){3!==x&&y.setState(x)});y.setState=function(a){1!==a&&(y.state=x=a);y.removeClass(/highcharts-button-(normal|hover|pressed|disabled)/).addClass("highcharts-button-"+["normal","hover","pressed","disabled"][a||0]);y.attr([b,d,e,k][a||0]).css([N,m,A,r][a||0])};y.attr(b).css(h({cursor:"default"},N));return y.on("click",function(a){3!==x&&w.call(y,a)})},crispLine:function(a,
-g){a[1]===a[4]&&(a[1]=a[4]=Math.round(a[1])-g%2/2);a[2]===a[5]&&(a[2]=a[5]=Math.round(a[2])+g%2/2);return a},path:function(a){var g={fill:"none"};I(a)?g.d=a:D(a)&&h(g,a);return this.createElement("path").attr(g)},circle:function(a,g,c){a=D(a)?a:{x:a,y:g,r:c};g=this.createElement("circle");g.xSetter=g.ySetter=function(a,g,c){c.setAttribute("c"+g,a)};return g.attr(a)},arc:function(a,g,c,w,b,h){D(a)?(w=a,g=w.y,c=w.r,a=w.x):w={innerR:w,start:b,end:h};a=this.symbol("arc",a,g,c,c,w);a.r=c;return a},rect:function(a,
-g,c,w,b,h){b=D(a)?a.r:b;var d=this.createElement("rect");a=D(a)?a:void 0===a?{}:{x:a,y:g,width:Math.max(c,0),height:Math.max(w,0)};void 0!==h&&(a.strokeWidth=h,a=d.crisp(a));a.fill="none";b&&(a.r=b);d.rSetter=function(a,g,c){f(c,{rx:a,ry:a})};return d.attr(a)},setSize:function(a,g,c){var w=this.alignedObjects,b=w.length;this.width=a;this.height=g;for(this.boxWrapper.animate({width:a,height:g},{step:function(){this.attr({viewBox:"0 0 "+this.attr("width")+" "+this.attr("height")})},duration:G(c,!0)?
-void 0:0});b--;)w[b].align()},g:function(a){var g=this.createElement("g");return a?g.attr({"class":"highcharts-"+a}):g},image:function(a,g,c,w,b){var d={preserveAspectRatio:"none"};1<arguments.length&&h(d,{x:g,y:c,width:w,height:b});d=this.createElement("image").attr(d);d.element.setAttributeNS?d.element.setAttributeNS("http://www.w3.org/1999/xlink","href",a):d.element.setAttribute("hc-svg-href",a);return d},symbol:function(a,g,c,w,b,e){var k=this,p,y=/^url\((.*?)\)$/,x=y.test(a),N=!x&&(this.symbols[a]?
-a:"circle"),A=N&&this.symbols[N],F=u(g)&&A&&A.call(this.symbols,Math.round(g),Math.round(c),w,b,e),r,L;A?(p=this.path(F),p.attr("fill","none"),h(p,{symbolName:N,x:g,y:c,width:w,height:b}),e&&h(p,e)):x&&(r=a.match(y)[1],p=this.image(r),p.imgwidth=G(O[r]&&O[r].width,e&&e.width),p.imgheight=G(O[r]&&O[r].height,e&&e.height),L=function(){p.attr({width:p.width,height:p.height})},d(["width","height"],function(a){p[a+"Setter"]=function(a,g){var c={},w=this["img"+g],b="width"===g?"translateX":"translateY";
-this[g]=a;u(w)&&(this.element&&this.element.setAttribute(g,w),this.alignByTranslate||(c[b]=((this[g]||0)-w)/2,this.attr(c)))}}),u(g)&&p.attr({x:g,y:c}),p.isImg=!0,u(p.imgwidth)&&u(p.imgheight)?L():(p.attr({width:0,height:0}),v("img",{onload:function(){var a=l[k.chartIndex];0===this.width&&(n(this,{position:"absolute",top:"-999em"}),m.body.appendChild(this));O[r]={width:this.width,height:this.height};p.imgwidth=this.width;p.imgheight=this.height;p.element&&L();this.parentNode&&this.parentNode.removeChild(this);
-k.imgCount--;if(!k.imgCount&&a&&a.onload)a.onload()},src:r}),this.imgCount++));return p},symbols:{circle:function(a,g,c,w){return this.arc(a+c/2,g+w/2,c/2,w/2,{start:0,end:2*Math.PI,open:!1})},square:function(a,g,c,w){return["M",a,g,"L",a+c,g,a+c,g+w,a,g+w,"Z"]},triangle:function(a,g,c,w){return["M",a+c/2,g,"L",a+c,g+w,a,g+w,"Z"]},"triangle-down":function(a,g,c,w){return["M",a,g,"L",a+c,g,a+c/2,g+w,"Z"]},diamond:function(a,g,c,w){return["M",a+c/2,g,"L",a+c,g+w/2,a+c/2,g+w,a,g+w/2,"Z"]},arc:function(a,
-g,c,w,b){var h=b.start,d=b.r||c,e=b.r||w||c,k=b.end-.001;c=b.innerR;w=G(b.open,.001>Math.abs(b.end-b.start-2*Math.PI));var p=Math.cos(h),y=Math.sin(h),x=Math.cos(k),k=Math.sin(k);b=.001>b.end-h-Math.PI?0:1;d=["M",a+d*p,g+e*y,"A",d,e,0,b,1,a+d*x,g+e*k];u(c)&&d.push(w?"M":"L",a+c*x,g+c*k,"A",c,c,0,b,0,a+c*p,g+c*y);d.push(w?"":"Z");return d},callout:function(a,g,c,w,b){var h=Math.min(b&&b.r||0,c,w),d=h+6,e=b&&b.anchorX;b=b&&b.anchorY;var k;k=["M",a+h,g,"L",a+c-h,g,"C",a+c,g,a+c,g,a+c,g+h,"L",a+c,g+w-
-h,"C",a+c,g+w,a+c,g+w,a+c-h,g+w,"L",a+h,g+w,"C",a,g+w,a,g+w,a,g+w-h,"L",a,g+h,"C",a,g,a,g,a+h,g];e&&e>c?b>g+d&&b<g+w-d?k.splice(13,3,"L",a+c,b-6,a+c+6,b,a+c,b+6,a+c,g+w-h):k.splice(13,3,"L",a+c,w/2,e,b,a+c,w/2,a+c,g+w-h):e&&0>e?b>g+d&&b<g+w-d?k.splice(33,3,"L",a,b+6,a-6,b,a,b-6,a,g+h):k.splice(33,3,"L",a,w/2,e,b,a,w/2,a,g+h):b&&b>w&&e>a+d&&e<a+c-d?k.splice(23,3,"L",e+6,g+w,e,g+w+6,e-6,g+w,a+h,g+w):b&&0>b&&e>a+d&&e<a+c-d&&k.splice(3,3,"L",e-6,g,e,g-6,e+6,g,c-h,g);return k}},clipRect:function(g,c,w,
-b){var h=a.uniqueKey(),d=this.createElement("clipPath").attr({id:h}).add(this.defs);g=this.rect(g,c,w,b,0).add(d);g.id=h;g.clipPath=d;g.count=0;return g},text:function(a,g,c,w){var b={};if(w&&(this.allowHTML||!this.forExport))return this.html(a,g,c);b.x=Math.round(g||0);c&&(b.y=Math.round(c));if(a||0===a)b.text=a;a=this.createElement("text").attr(b);w||(a.xSetter=function(a,g,c){var w=c.getElementsByTagName("tspan"),b,h=c.getAttribute(g),d;for(d=0;d<w.length;d++)b=w[d],b.getAttribute(g)===h&&b.setAttribute(g,
-a);c.setAttribute(g,a)});return a},fontMetrics:function(a,c){a=a||c&&c.style&&c.style.fontSize||this.style&&this.style.fontSize;a=/px/.test(a)?g(a):/em/.test(a)?parseFloat(a)*(c?this.fontMetrics(null,c.parentNode).f:16):12;c=24>a?a+3:Math.round(1.2*a);return{h:c,b:Math.round(.8*c),f:a}},rotCorr:function(a,g,w){var b=a;g&&w&&(b=Math.max(b*Math.cos(g*c),4));return{x:-a/3*Math.sin(g*c),y:b}},label:function(g,c,b,e,k,p,x,N,m){var A=this,r=A.g("button"!==m&&"label"),y=r.text=A.text("",0,0,x).attr({zIndex:1}),
-L,P,z=0,O=3,l=0,n,D,f,J,C,G={},v,M,t=/^url\((.*?)\)$/.test(e),I=t,R,q,Q,T;m&&r.addClass("highcharts-"+m);I=t;R=function(){return(v||0)%2/2};q=function(){var a=y.element.style,g={};P=(void 0===n||void 0===D||C)&&u(y.textStr)&&y.getBBox();r.width=(n||P.width||0)+2*O+l;r.height=(D||P.height||0)+2*O;M=O+A.fontMetrics(a&&a.fontSize,y).b;I&&(L||(r.box=L=A.symbols[e]||t?A.symbol(e):A.rect(),L.addClass(("button"===m?"":"highcharts-label-box")+(m?" highcharts-"+m+"-box":"")),L.add(r),a=R(),g.x=a,g.y=(N?-M:
-0)+a),g.width=Math.round(r.width),g.height=Math.round(r.height),L.attr(h(g,G)),G={})};Q=function(){var a=l+O,g;g=N?0:M;u(n)&&P&&("center"===C||"right"===C)&&(a+={center:.5,right:1}[C]*(n-P.width));if(a!==y.x||g!==y.y)y.attr("x",a),void 0!==g&&y.attr("y",g);y.x=a;y.y=g};T=function(a,g){L?L.attr(a,g):G[a]=g};r.onAdd=function(){y.add(r);r.attr({text:g||0===g?g:"",x:c,y:b});L&&u(k)&&r.attr({anchorX:k,anchorY:p})};r.widthSetter=function(g){n=a.isNumber(g)?g:null};r.heightSetter=function(a){D=a};r["text-alignSetter"]=
-function(a){C=a};r.paddingSetter=function(a){u(a)&&a!==O&&(O=r.padding=a,Q())};r.paddingLeftSetter=function(a){u(a)&&a!==l&&(l=a,Q())};r.alignSetter=function(a){a={left:0,center:.5,right:1}[a];a!==z&&(z=a,P&&r.attr({x:f}))};r.textSetter=function(a){void 0!==a&&y.textSetter(a);q();Q()};r["stroke-widthSetter"]=function(a,g){a&&(I=!0);v=this["stroke-width"]=a;T(g,a)};r.strokeSetter=r.fillSetter=r.rSetter=function(a,g){"r"!==g&&("fill"===g&&a&&(I=!0),r[g]=a);T(g,a)};r.anchorXSetter=function(a,g){k=r.anchorX=
-a;T(g,Math.round(a)-R()-f)};r.anchorYSetter=function(a,g){p=r.anchorY=a;T(g,a-J)};r.xSetter=function(a){r.x=a;z&&(a-=z*((n||P.width)+2*O));f=Math.round(a);r.attr("translateX",f)};r.ySetter=function(a){J=r.y=Math.round(a);r.attr("translateY",J)};var U=r.css;return h(r,{css:function(a){if(a){var g={};a=F(a);d(r.textProps,function(c){void 0!==a[c]&&(g[c]=a[c],delete a[c])});y.css(g)}return U.call(r,a)},getBBox:function(){return{width:P.width+2*O,height:P.height+2*O,x:P.x-O,y:P.y-O}},shadow:function(a){a&&
-(q(),L&&L.shadow(a));return r},destroy:function(){w(r.element,"mouseenter");w(r.element,"mouseleave");y&&(y=y.destroy());L&&(L=L.destroy());B.prototype.destroy.call(r);r=A=q=Q=T=null}})}});a.Renderer=H})(K);(function(a){var B=a.attr,H=a.createElement,E=a.css,q=a.defined,f=a.each,l=a.extend,t=a.isFirefox,n=a.isMS,v=a.isWebKit,u=a.pick,c=a.pInt,b=a.SVGRenderer,m=a.win,d=a.wrap;l(a.SVGElement.prototype,{htmlCss:function(a){var c=this.element;if(c=a&&"SPAN"===c.tagName&&a.width)delete a.width,this.textWidth=
-c,this.updateTransform();a&&"ellipsis"===a.textOverflow&&(a.whiteSpace="nowrap",a.overflow="hidden");this.styles=l(this.styles,a);E(this.element,a);return this},htmlGetBBox:function(){var a=this.element;return{x:a.offsetLeft,y:a.offsetTop,width:a.offsetWidth,height:a.offsetHeight}},htmlUpdateTransform:function(){if(this.added){var a=this.renderer,b=this.element,d=this.translateX||0,p=this.translateY||0,r=this.x||0,m=this.y||0,z=this.textAlign||"left",l={left:0,center:.5,right:1}[z],n=this.styles,
-C=n&&n.whiteSpace;E(b,{marginLeft:d,marginTop:p});this.shadows&&f(this.shadows,function(a){E(a,{marginLeft:d+1,marginTop:p+1})});this.inverted&&f(b.childNodes,function(c){a.invertChild(c,b)});if("SPAN"===b.tagName){var n=this.rotation,x=this.textWidth&&c(this.textWidth),F=[n,z,b.innerHTML,this.textWidth,this.textAlign].join(),A;(A=x!==this.oldTextWidth)&&!(A=x>this.oldTextWidth)&&((A=this.textPxLength)||(E(b,{width:"",whiteSpace:C||"nowrap"}),A=b.offsetWidth),A=A>x);A&&/[ \-]/.test(b.textContent||
-b.innerText)&&(E(b,{width:x+"px",display:"block",whiteSpace:C||"normal"}),this.oldTextWidth=x);F!==this.cTT&&(C=a.fontMetrics(b.style.fontSize).b,q(n)&&n!==(this.oldRotation||0)&&this.setSpanRotation(n,l,C),this.getSpanCorrection(this.textPxLength||b.offsetWidth,C,l,n,z));E(b,{left:r+(this.xCorr||0)+"px",top:m+(this.yCorr||0)+"px"});this.cTT=F;this.oldRotation=n}}else this.alignOnAdd=!0},setSpanRotation:function(a,c,b){var d={},e=this.renderer.getTransformKey();d[e]=d.transform="rotate("+a+"deg)";
-d[e+(t?"Origin":"-origin")]=d.transformOrigin=100*c+"% "+b+"px";E(this.element,d)},getSpanCorrection:function(a,c,b){this.xCorr=-a*b;this.yCorr=-c}});l(b.prototype,{getTransformKey:function(){return n&&!/Edge/.test(m.navigator.userAgent)?"-ms-transform":v?"-webkit-transform":t?"MozTransform":m.opera?"-o-transform":""},html:function(a,c,b){var e=this.createElement("span"),h=e.element,k=e.renderer,m=k.isSVG,n=function(a,c){f(["opacity","visibility"],function(b){d(a,b+"Setter",function(a,b,e,d){a.call(this,
-b,e,d);c[e]=b})})};e.textSetter=function(a){a!==h.innerHTML&&delete this.bBox;this.textStr=a;h.innerHTML=u(a,"");e.doTransform=!0};m&&n(e,e.element.style);e.xSetter=e.ySetter=e.alignSetter=e.rotationSetter=function(a,c){"align"===c&&(c="textAlign");e[c]=a;e.doTransform=!0};e.afterSetters=function(){this.doTransform&&(this.htmlUpdateTransform(),this.doTransform=!1)};e.attr({text:a,x:Math.round(c),y:Math.round(b)}).css({fontFamily:this.style.fontFamily,fontSize:this.style.fontSize,position:"absolute"});
-h.style.whiteSpace="nowrap";e.css=e.htmlCss;m&&(e.add=function(a){var c,b=k.box.parentNode,d=[];if(this.parentGroup=a){if(c=a.div,!c){for(;a;)d.push(a),a=a.parentGroup;f(d.reverse(),function(a){function h(g,c){a[c]=g;"translateX"===c?k.left=g+"px":k.top=g+"px";a.doTransform=!0}var k,g=B(a.element,"class");g&&(g={className:g});c=a.div=a.div||H("div",g,{position:"absolute",left:(a.translateX||0)+"px",top:(a.translateY||0)+"px",display:a.display,opacity:a.opacity,pointerEvents:a.styles&&a.styles.pointerEvents},
-c||b);k=c.style;l(a,{classSetter:function(a){return function(g){this.element.setAttribute("class",g);a.className=g}}(c),on:function(){d[0].div&&e.on.apply({element:d[0].div},arguments);return a},translateXSetter:h,translateYSetter:h});n(a,k)})}}else c=b;c.appendChild(h);e.added=!0;e.alignOnAdd&&e.htmlUpdateTransform();return e});return e}})})(K);(function(a){var B=a.defined,H=a.each,E=a.extend,q=a.merge,f=a.pick,l=a.timeUnits,t=a.win;a.Time=function(a){this.update(a,!1)};a.Time.prototype={defaultOptions:{},
-update:function(n){var l=f(n&&n.useUTC,!0),u=this;this.options=n=q(!0,this.options||{},n);this.Date=n.Date||t.Date;this.timezoneOffset=(this.useUTC=l)&&n.timezoneOffset;this.getTimezoneOffset=this.timezoneOffsetFunction();(this.variableTimezone=!(l&&!n.getTimezoneOffset&&!n.timezone))||this.timezoneOffset?(this.get=function(a,b){var c=b.getTime(),d=c-u.getTimezoneOffset(b);b.setTime(d);a=b["getUTC"+a]();b.setTime(c);return a},this.set=function(c,b,m){var d;if(-1!==a.inArray(c,["Milliseconds","Seconds",
-"Minutes"]))b["set"+c](m);else d=u.getTimezoneOffset(b),d=b.getTime()-d,b.setTime(d),b["setUTC"+c](m),c=u.getTimezoneOffset(b),d=b.getTime()+c,b.setTime(d)}):l?(this.get=function(a,b){return b["getUTC"+a]()},this.set=function(a,b,m){return b["setUTC"+a](m)}):(this.get=function(a,b){return b["get"+a]()},this.set=function(a,b,m){return b["set"+a](m)})},makeTime:function(l,v,u,c,b,m){var d,h,k;this.useUTC?(d=this.Date.UTC.apply(0,arguments),h=this.getTimezoneOffset(d),d+=h,k=this.getTimezoneOffset(d),
-h!==k?d+=k-h:h-36E5!==this.getTimezoneOffset(d-36E5)||a.isSafari||(d-=36E5)):d=(new this.Date(l,v,f(u,1),f(c,0),f(b,0),f(m,0))).getTime();return d},timezoneOffsetFunction:function(){var l=this,f=this.options,u=t.moment;if(!this.useUTC)return function(a){return 6E4*(new Date(a)).getTimezoneOffset()};if(f.timezone){if(u)return function(a){return 6E4*-u.tz(a,f.timezone).utcOffset()};a.error(25)}return this.useUTC&&f.getTimezoneOffset?function(a){return 6E4*f.getTimezoneOffset(a)}:function(){return 6E4*
-(l.timezoneOffset||0)}},dateFormat:function(l,f,u){if(!a.defined(f)||isNaN(f))return a.defaultOptions.lang.invalidDate||"";l=a.pick(l,"%Y-%m-%d %H:%M:%S");var c=this,b=new this.Date(f),m=this.get("Hours",b),d=this.get("Day",b),h=this.get("Date",b),k=this.get("Month",b),e=this.get("FullYear",b),p=a.defaultOptions.lang,r=p.weekdays,n=p.shortWeekdays,z=a.pad,b=a.extend({a:n?n[d]:r[d].substr(0,3),A:r[d],d:z(h),e:z(h,2," "),w:d,b:p.shortMonths[k],B:p.months[k],m:z(k+1),y:e.toString().substr(2,2),Y:e,H:z(m),
-k:m,I:z(m%12||12),l:m%12||12,M:z(c.get("Minutes",b)),p:12>m?"AM":"PM",P:12>m?"am":"pm",S:z(b.getSeconds()),L:z(Math.round(f%1E3),3)},a.dateFormats);a.objectEach(b,function(a,b){for(;-1!==l.indexOf("%"+b);)l=l.replace("%"+b,"function"===typeof a?a.call(c,f):a)});return u?l.substr(0,1).toUpperCase()+l.substr(1):l},getTimeTicks:function(a,v,u,c){var b=this,m=[],d={},h,k=new b.Date(v),e=a.unitRange,p=a.count||1,r;if(B(v)){b.set("Milliseconds",k,e>=l.second?0:p*Math.floor(b.get("Milliseconds",k)/p));e>=
-l.second&&b.set("Seconds",k,e>=l.minute?0:p*Math.floor(b.get("Seconds",k)/p));e>=l.minute&&b.set("Minutes",k,e>=l.hour?0:p*Math.floor(b.get("Minutes",k)/p));e>=l.hour&&b.set("Hours",k,e>=l.day?0:p*Math.floor(b.get("Hours",k)/p));e>=l.day&&b.set("Date",k,e>=l.month?1:p*Math.floor(b.get("Date",k)/p));e>=l.month&&(b.set("Month",k,e>=l.year?0:p*Math.floor(b.get("Month",k)/p)),h=b.get("FullYear",k));e>=l.year&&b.set("FullYear",k,h-h%p);e===l.week&&b.set("Date",k,b.get("Date",k)-b.get("Day",k)+f(c,1));
-h=b.get("FullYear",k);c=b.get("Month",k);var n=b.get("Date",k),z=b.get("Hours",k);v=k.getTime();b.variableTimezone&&(r=u-v>4*l.month||b.getTimezoneOffset(v)!==b.getTimezoneOffset(u));k=k.getTime();for(v=1;k<u;)m.push(k),k=e===l.year?b.makeTime(h+v*p,0):e===l.month?b.makeTime(h,c+v*p):!r||e!==l.day&&e!==l.week?r&&e===l.hour&&1<p?b.makeTime(h,c,n,z+v*p):k+e*p:b.makeTime(h,c,n+v*p*(e===l.day?1:7)),v++;m.push(k);e<=l.hour&&1E4>m.length&&H(m,function(a){0===a%18E5&&"000000000"===b.dateFormat("%H%M%S%L",
-a)&&(d[a]="day")})}m.info=E(a,{higherRanks:d,totalRange:e*p});return m}}})(K);(function(a){var B=a.color,H=a.merge;a.defaultOptions={colors:"#7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1".split(" "),symbols:["circle","diamond","square","triangle","triangle-down"],lang:{loading:"Loading...",months:"January February March April May June July August September October November December".split(" "),shortMonths:"Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" "),
-weekdays:"Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" "),decimalPoint:".",numericSymbols:"kMGTPE".split(""),resetZoom:"Reset zoom",resetZoomTitle:"Reset zoom level 1:1",thousandsSep:" "},global:{},time:a.Time.prototype.defaultOptions,chart:{borderRadius:0,defaultSeriesType:"line",ignoreHiddenSeries:!0,spacing:[10,10,15,10],resetZoomButton:{theme:{zIndex:6},position:{align:"right",x:-10,y:10}},width:null,height:null,borderColor:"#335cad",backgroundColor:"#ffffff",plotBorderColor:"#cccccc"},
-title:{text:"Chart title",align:"center",margin:15,widthAdjust:-44},subtitle:{text:"",align:"center",widthAdjust:-44},plotOptions:{},labels:{style:{position:"absolute",color:"#333333"}},legend:{enabled:!0,align:"center",layout:"horizontal",labelFormatter:function(){return this.name},borderColor:"#999999",borderRadius:0,navigation:{activeColor:"#003399",inactiveColor:"#cccccc"},itemStyle:{color:"#333333",fontSize:"12px",fontWeight:"bold",textOverflow:"ellipsis"},itemHoverStyle:{color:"#000000"},itemHiddenStyle:{color:"#cccccc"},
-shadow:!1,itemCheckboxStyle:{position:"absolute",width:"13px",height:"13px"},squareSymbol:!0,symbolPadding:5,verticalAlign:"bottom",x:0,y:0,title:{style:{fontWeight:"bold"}}},loading:{labelStyle:{fontWeight:"bold",position:"relative",top:"45%"},style:{position:"absolute",backgroundColor:"#ffffff",opacity:.5,textAlign:"center"}},tooltip:{enabled:!0,animation:a.svg,borderRadius:3,dateTimeLabelFormats:{millisecond:"%A, %b %e, %H:%M:%S.%L",second:"%A, %b %e, %H:%M:%S",minute:"%A, %b %e, %H:%M",hour:"%A, %b %e, %H:%M",
-day:"%A, %b %e, %Y",week:"Week from %A, %b %e, %Y",month:"%B %Y",year:"%Y"},footerFormat:"",padding:8,snap:a.isTouchDevice?25:10,backgroundColor:B("#f7f7f7").setOpacity(.85).get(),borderWidth:1,headerFormat:'\x3cspan style\x3d"font-size: 10px"\x3e{point.key}\x3c/span\x3e\x3cbr/\x3e',pointFormat:'\x3cspan style\x3d"color:{point.color}"\x3e\u25cf\x3c/span\x3e {series.name}: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3e',shadow:!0,style:{color:"#333333",cursor:"default",fontSize:"12px",pointerEvents:"none",
-whiteSpace:"nowrap"}},credits:{enabled:!0,href:"http://www.highcharts.com",position:{align:"right",x:-10,verticalAlign:"bottom",y:-5},style:{cursor:"pointer",color:"#999999",fontSize:"9px"},text:"Highcharts.com"}};a.setOptions=function(B){a.defaultOptions=H(!0,a.defaultOptions,B);a.time.update(H(a.defaultOptions.global,a.defaultOptions.time),!1);return a.defaultOptions};a.getOptions=function(){return a.defaultOptions};a.defaultPlotOptions=a.defaultOptions.plotOptions;a.time=new a.Time(H(a.defaultOptions.global,
-a.defaultOptions.time));a.dateFormat=function(B,q,f){return a.time.dateFormat(B,q,f)}})(K);(function(a){var B=a.correctFloat,H=a.defined,E=a.destroyObjectProperties,q=a.isNumber,f=a.merge,l=a.pick,t=a.deg2rad;a.Tick=function(a,l,f,c){this.axis=a;this.pos=l;this.type=f||"";this.isNewLabel=this.isNew=!0;f||c||this.addLabel()};a.Tick.prototype={addLabel:function(){var a=this.axis,v=a.options,u=a.chart,c=a.categories,b=a.names,m=this.pos,d=v.labels,h=a.tickPositions,k=m===h[0],e=m===h[h.length-1],b=c?
-l(c[m],b[m],m):m,c=this.label,h=h.info,p;a.isDatetimeAxis&&h&&(p=v.dateTimeLabelFormats[h.higherRanks[m]||h.unitName]);this.isFirst=k;this.isLast=e;v=a.labelFormatter.call({axis:a,chart:u,isFirst:k,isLast:e,dateTimeLabelFormat:p,value:a.isLog?B(a.lin2log(b)):b,pos:m});if(H(c))c&&c.attr({text:v});else{if(this.label=c=H(v)&&d.enabled?u.renderer.text(v,0,0,d.useHTML).css(f(d.style)).add(a.labelGroup):null)c.textPxLength=c.getBBox().width;this.rotation=0}},getLabelSize:function(){return this.label?this.label.getBBox()[this.axis.horiz?
-"height":"width"]:0},handleOverflow:function(a){var f=this.axis,n=f.options.labels,c=a.x,b=f.chart.chartWidth,m=f.chart.spacing,d=l(f.labelLeft,Math.min(f.pos,m[3])),m=l(f.labelRight,Math.max(f.isRadial?0:f.pos+f.len,b-m[1])),h=this.label,k=this.rotation,e={left:0,center:.5,right:1}[f.labelAlign||h.attr("align")],p=h.getBBox().width,r=f.getSlotWidth(),I=r,z=1,M,D={};if(k||!1===n.overflow)0>k&&c-e*p<d?M=Math.round(c/Math.cos(k*t)-d):0<k&&c+e*p>m&&(M=Math.round((b-c)/Math.cos(k*t)));else if(b=c+(1-
-e)*p,c-e*p<d?I=a.x+I*(1-e)-d:b>m&&(I=m-a.x+I*e,z=-1),I=Math.min(r,I),I<r&&"center"===f.labelAlign&&(a.x+=z*(r-I-e*(r-Math.min(p,I)))),p>I||f.autoRotation&&(h.styles||{}).width)M=I;M&&(D.width=M,(n.style||{}).textOverflow||(D.textOverflow="ellipsis"),h.css(D))},getPosition:function(l,f,u,c){var b=this.axis,m=b.chart,d=c&&m.oldChartHeight||m.chartHeight;return{x:l?a.correctFloat(b.translate(f+u,null,null,c)+b.transB):b.left+b.offset+(b.opposite?(c&&m.oldChartWidth||m.chartWidth)-b.right-b.left:0),y:l?
-d-b.bottom+b.offset-(b.opposite?b.height:0):a.correctFloat(d-b.translate(f+u,null,null,c)-b.transB)}},getLabelPosition:function(a,l,f,c,b,m,d,h){var k=this.axis,e=k.transA,p=k.reversed,r=k.staggerLines,n=k.tickRotCorr||{x:0,y:0},z=b.y,u=c||k.reserveSpaceDefault?0:-k.labelOffset*("center"===k.labelAlign?.5:1);H(z)||(z=0===k.side?f.rotation?-8:-f.getBBox().height:2===k.side?n.y+8:Math.cos(f.rotation*t)*(n.y-f.getBBox(!1,0).height/2));a=a+b.x+u+n.x-(m&&c?m*e*(p?-1:1):0);l=l+z-(m&&!c?m*e*(p?1:-1):0);
-r&&(f=d/(h||1)%r,k.opposite&&(f=r-f-1),l+=k.labelOffset/r*f);return{x:a,y:Math.round(l)}},getMarkPath:function(a,l,f,c,b,m){return m.crispLine(["M",a,l,"L",a+(b?0:-f),l+(b?f:0)],c)},renderGridLine:function(a,l,f){var c=this.axis,b=c.options,m=this.gridLine,d={},h=this.pos,k=this.type,e=c.tickmarkOffset,p=c.chart.renderer,r=k?k+"Grid":"grid",n=b[r+"LineWidth"],z=b[r+"LineColor"],b=b[r+"LineDashStyle"];m||(d.stroke=z,d["stroke-width"]=n,b&&(d.dashstyle=b),k||(d.zIndex=1),a&&(d.opacity=0),this.gridLine=
-m=p.path().attr(d).addClass("highcharts-"+(k?k+"-":"")+"grid-line").add(c.gridGroup));if(!a&&m&&(a=c.getPlotLinePath(h+e,m.strokeWidth()*f,a,!0)))m[this.isNew?"attr":"animate"]({d:a,opacity:l})},renderMark:function(a,f,u){var c=this.axis,b=c.options,m=c.chart.renderer,d=this.type,h=d?d+"Tick":"tick",k=c.tickSize(h),e=this.mark,p=!e,r=a.x;a=a.y;var n=l(b[h+"Width"],!d&&c.isXAxis?1:0),b=b[h+"Color"];k&&(c.opposite&&(k[0]=-k[0]),p&&(this.mark=e=m.path().addClass("highcharts-"+(d?d+"-":"")+"tick").add(c.axisGroup),
-e.attr({stroke:b,"stroke-width":n})),e[p?"attr":"animate"]({d:this.getMarkPath(r,a,k[0],e.strokeWidth()*u,c.horiz,m),opacity:f}))},renderLabel:function(a,f,u,c){var b=this.axis,m=b.horiz,d=b.options,h=this.label,k=d.labels,e=k.step,b=b.tickmarkOffset,p=!0,r=a.x;a=a.y;h&&q(r)&&(h.xy=a=this.getLabelPosition(r,a,h,m,k,b,c,e),this.isFirst&&!this.isLast&&!l(d.showFirstLabel,1)||this.isLast&&!this.isFirst&&!l(d.showLastLabel,1)?p=!1:!m||k.step||k.rotation||f||0===u||this.handleOverflow(a),e&&c%e&&(p=!1),
-p&&q(a.y)?(a.opacity=u,h[this.isNewLabel?"attr":"animate"](a),this.isNewLabel=!1):(h.attr("y",-9999),this.isNewLabel=!0))},render:function(f,t,u){var c=this.axis,b=c.horiz,m=this.getPosition(b,this.pos,c.tickmarkOffset,t),d=m.x,h=m.y,c=b&&d===c.pos+c.len||!b&&h===c.pos?-1:1;u=l(u,1);this.isActive=!0;this.renderGridLine(t,u,c);this.renderMark(m,u,c);this.renderLabel(m,t,u,f);this.isNew=!1;a.fireEvent(this,"afterRender")},destroy:function(){E(this,this.axis)}}})(K);var V=function(a){var B=a.addEvent,
-H=a.animObject,E=a.arrayMax,q=a.arrayMin,f=a.color,l=a.correctFloat,t=a.defaultOptions,n=a.defined,v=a.deg2rad,u=a.destroyObjectProperties,c=a.each,b=a.extend,m=a.fireEvent,d=a.format,h=a.getMagnitude,k=a.grep,e=a.inArray,p=a.isArray,r=a.isNumber,I=a.isString,z=a.merge,M=a.normalizeTickInterval,D=a.objectEach,C=a.pick,x=a.removeEvent,F=a.splat,A=a.syncTimeout,J=a.Tick,G=function(){this.init.apply(this,arguments)};a.extend(G.prototype,{defaultOptions:{dateTimeLabelFormats:{millisecond:"%H:%M:%S.%L",
-second:"%H:%M:%S",minute:"%H:%M",hour:"%H:%M",day:"%e. %b",week:"%e. %b",month:"%b '%y",year:"%Y"},endOnTick:!1,labels:{enabled:!0,style:{color:"#666666",cursor:"default",fontSize:"11px"},x:0},maxPadding:.01,minorTickLength:2,minorTickPosition:"outside",minPadding:.01,startOfWeek:1,startOnTick:!1,tickLength:10,tickmarkPlacement:"between",tickPixelInterval:100,tickPosition:"outside",title:{align:"middle",style:{color:"#666666"}},type:"linear",minorGridLineColor:"#f2f2f2",minorGridLineWidth:1,minorTickColor:"#999999",
-lineColor:"#ccd6eb",lineWidth:1,gridLineColor:"#e6e6e6",tickColor:"#ccd6eb"},defaultYAxisOptions:{endOnTick:!0,tickPixelInterval:72,showLastLabel:!0,labels:{x:-8},maxPadding:.05,minPadding:.05,startOnTick:!0,title:{rotation:270,text:"Values"},stackLabels:{allowOverlap:!1,enabled:!1,formatter:function(){return a.numberFormat(this.total,-1)},style:{fontSize:"11px",fontWeight:"bold",color:"#000000",textOutline:"1px contrast"}},gridLineWidth:1,lineWidth:0},defaultLeftAxisOptions:{labels:{x:-15},title:{rotation:270}},
-defaultRightAxisOptions:{labels:{x:15},title:{rotation:90}},defaultBottomAxisOptions:{labels:{autoRotation:[-45],x:0},title:{rotation:0}},defaultTopAxisOptions:{labels:{autoRotation:[-45],x:0},title:{rotation:0}},init:function(a,c){var g=c.isX,b=this;b.chart=a;b.horiz=a.inverted&&!b.isZAxis?!g:g;b.isXAxis=g;b.coll=b.coll||(g?"xAxis":"yAxis");b.opposite=c.opposite;b.side=c.side||(b.horiz?b.opposite?0:2:b.opposite?1:3);b.setOptions(c);var w=this.options,d=w.type;b.labelFormatter=w.labels.formatter||
-b.defaultLabelFormatter;b.userOptions=c;b.minPixelPadding=0;b.reversed=w.reversed;b.visible=!1!==w.visible;b.zoomEnabled=!1!==w.zoomEnabled;b.hasNames="category"===d||!0===w.categories;b.categories=w.categories||b.hasNames;b.names||(b.names=[],b.names.keys={});b.plotLinesAndBandsGroups={};b.isLog="logarithmic"===d;b.isDatetimeAxis="datetime"===d;b.positiveValuesOnly=b.isLog&&!b.allowNegativeLog;b.isLinked=n(w.linkedTo);b.ticks={};b.labelEdge=[];b.minorTicks={};b.plotLinesAndBands=[];b.alternateBands=
-{};b.len=0;b.minRange=b.userMinRange=w.minRange||w.maxZoom;b.range=w.range;b.offset=w.offset||0;b.stacks={};b.oldStacks={};b.stacksTouched=0;b.max=null;b.min=null;b.crosshair=C(w.crosshair,F(a.options.tooltip.crosshairs)[g?0:1],!1);c=b.options.events;-1===e(b,a.axes)&&(g?a.axes.splice(a.xAxis.length,0,b):a.axes.push(b),a[b.coll].push(b));b.series=b.series||[];a.inverted&&!b.isZAxis&&g&&void 0===b.reversed&&(b.reversed=!0);D(c,function(a,g){B(b,g,a)});b.lin2log=w.linearToLogConverter||b.lin2log;b.isLog&&
-(b.val2lin=b.log2lin,b.lin2val=b.lin2log)},setOptions:function(a){this.options=z(this.defaultOptions,"yAxis"===this.coll&&this.defaultYAxisOptions,[this.defaultTopAxisOptions,this.defaultRightAxisOptions,this.defaultBottomAxisOptions,this.defaultLeftAxisOptions][this.side],z(t[this.coll],a))},defaultLabelFormatter:function(){var g=this.axis,c=this.value,b=g.chart.time,e=g.categories,h=this.dateTimeLabelFormat,k=t.lang,p=k.numericSymbols,k=k.numericSymbolMagnitude||1E3,x=p&&p.length,r,m=g.options.labels.format,
-g=g.isLog?Math.abs(c):g.tickInterval;if(m)r=d(m,this,b);else if(e)r=c;else if(h)r=b.dateFormat(h,c);else if(x&&1E3<=g)for(;x--&&void 0===r;)b=Math.pow(k,x+1),g>=b&&0===10*c%b&&null!==p[x]&&0!==c&&(r=a.numberFormat(c/b,-1)+p[x]);void 0===r&&(r=1E4<=Math.abs(c)?a.numberFormat(c,-1):a.numberFormat(c,-1,void 0,""));return r},getSeriesExtremes:function(){var a=this,b=a.chart;a.hasVisibleSeries=!1;a.dataMin=a.dataMax=a.threshold=null;a.softThreshold=!a.isXAxis;a.buildStacks&&a.buildStacks();c(a.series,
-function(g){if(g.visible||!b.options.chart.ignoreHiddenSeries){var c=g.options,w=c.threshold,d;a.hasVisibleSeries=!0;a.positiveValuesOnly&&0>=w&&(w=null);if(a.isXAxis)c=g.xData,c.length&&(g=q(c),d=E(c),r(g)||g instanceof Date||(c=k(c,r),g=q(c),d=E(c)),c.length&&(a.dataMin=Math.min(C(a.dataMin,c[0],g),g),a.dataMax=Math.max(C(a.dataMax,c[0],d),d)));else if(g.getExtremes(),d=g.dataMax,g=g.dataMin,n(g)&&n(d)&&(a.dataMin=Math.min(C(a.dataMin,g),g),a.dataMax=Math.max(C(a.dataMax,d),d)),n(w)&&(a.threshold=
-w),!c.softThreshold||a.positiveValuesOnly)a.softThreshold=!1}})},translate:function(a,c,b,d,e,h){var g=this.linkedParent||this,w=1,k=0,p=d?g.oldTransA:g.transA;d=d?g.oldMin:g.min;var x=g.minPixelPadding;e=(g.isOrdinal||g.isBroken||g.isLog&&e)&&g.lin2val;p||(p=g.transA);b&&(w*=-1,k=g.len);g.reversed&&(w*=-1,k-=w*(g.sector||g.len));c?(a=(a*w+k-x)/p+d,e&&(a=g.lin2val(a))):(e&&(a=g.val2lin(a)),a=r(d)?w*(a-d)*p+k+w*x+(r(h)?p*h:0):void 0);return a},toPixels:function(a,c){return this.translate(a,!1,!this.horiz,
-null,!0)+(c?0:this.pos)},toValue:function(a,c){return this.translate(a-(c?0:this.pos),!0,!this.horiz,null,!0)},getPlotLinePath:function(a,c,b,d,e){var g=this.chart,w=this.left,h=this.top,k,p,x=b&&g.oldChartHeight||g.chartHeight,m=b&&g.oldChartWidth||g.chartWidth,N;k=this.transB;var A=function(a,g,c){if(a<g||a>c)d?a=Math.min(Math.max(g,a),c):N=!0;return a};e=C(e,this.translate(a,null,null,b));e=Math.min(Math.max(-1E5,e),1E5);a=b=Math.round(e+k);k=p=Math.round(x-e-k);r(e)?this.horiz?(k=h,p=x-this.bottom,
-a=b=A(a,w,w+this.width)):(a=w,b=m-this.right,k=p=A(k,h,h+this.height)):(N=!0,d=!1);return N&&!d?null:g.renderer.crispLine(["M",a,k,"L",b,p],c||1)},getLinearTickPositions:function(a,c,b){var g,w=l(Math.floor(c/a)*a);b=l(Math.ceil(b/a)*a);var d=[],e;l(w+a)===w&&(e=20);if(this.single)return[c];for(c=w;c<=b;){d.push(c);c=l(c+a,e);if(c===g)break;g=c}return d},getMinorTickInterval:function(){var a=this.options;return!0===a.minorTicks?C(a.minorTickInterval,"auto"):!1===a.minorTicks?null:a.minorTickInterval},
-getMinorTickPositions:function(){var a=this,b=a.options,d=a.tickPositions,e=a.minorTickInterval,h=[],k=a.pointRangePadding||0,p=a.min-k,k=a.max+k,x=k-p;if(x&&x/e<a.len/3)if(a.isLog)c(this.paddedTicks,function(g,c,b){c&&h.push.apply(h,a.getLogTickPositions(e,b[c-1],b[c],!0))});else if(a.isDatetimeAxis&&"auto"===this.getMinorTickInterval())h=h.concat(a.getTimeTicks(a.normalizeTimeTickInterval(e),p,k,b.startOfWeek));else for(b=p+(d[0]-p)%e;b<=k&&b!==h[0];b+=e)h.push(b);0!==h.length&&a.trimTicks(h);return h},
-adjustForMinRange:function(){var a=this.options,b=this.min,d=this.max,e,h,k,p,x,r,m,A;this.isXAxis&&void 0===this.minRange&&!this.isLog&&(n(a.min)||n(a.max)?this.minRange=null:(c(this.series,function(a){r=a.xData;for(p=m=a.xIncrement?1:r.length-1;0<p;p--)if(x=r[p]-r[p-1],void 0===k||x<k)k=x}),this.minRange=Math.min(5*k,this.dataMax-this.dataMin)));d-b<this.minRange&&(h=this.dataMax-this.dataMin>=this.minRange,A=this.minRange,e=(A-d+b)/2,e=[b-e,C(a.min,b-e)],h&&(e[2]=this.isLog?this.log2lin(this.dataMin):
-this.dataMin),b=E(e),d=[b+A,C(a.max,b+A)],h&&(d[2]=this.isLog?this.log2lin(this.dataMax):this.dataMax),d=q(d),d-b<A&&(e[0]=d-A,e[1]=C(a.min,d-A),b=E(e)));this.min=b;this.max=d},getClosest:function(){var a;this.categories?a=1:c(this.series,function(g){var c=g.closestPointRange,b=g.visible||!g.chart.options.chart.ignoreHiddenSeries;!g.noSharedTooltip&&n(c)&&b&&(a=n(a)?Math.min(a,c):c)});return a},nameToX:function(a){var g=p(this.categories),c=g?this.categories:this.names,b=a.options.x,d;a.series.requireSorting=
-!1;n(b)||(b=!1===this.options.uniqueNames?a.series.autoIncrement():g?e(a.name,c):C(c.keys[a.name],-1));-1===b?g||(d=c.length):d=b;void 0!==d&&(this.names[d]=a.name,this.names.keys[a.name]=d);return d},updateNames:function(){var g=this,b=this.names;0<b.length&&(c(a.keys(b.keys),function(a){delete b.keys[a]}),b.length=0,this.minRange=this.userMinRange,c(this.series||[],function(a){a.xIncrement=null;if(!a.points||a.isDirtyData)a.processData(),a.generatePoints();c(a.points,function(c,b){var d;c.options&&
-(d=g.nameToX(c),void 0!==d&&d!==c.x&&(c.x=d,a.xData[b]=d))})}))},setAxisTranslation:function(a){var g=this,b=g.max-g.min,d=g.axisPointRange||0,e,h=0,k=0,p=g.linkedParent,x=!!g.categories,r=g.transA,m=g.isXAxis;if(m||x||d)e=g.getClosest(),p?(h=p.minPointOffset,k=p.pointRangePadding):c(g.series,function(a){var c=x?1:m?C(a.options.pointRange,e,0):g.axisPointRange||0;a=a.options.pointPlacement;d=Math.max(d,c);g.single||(h=Math.max(h,I(a)?0:c/2),k=Math.max(k,"on"===a?0:c))}),p=g.ordinalSlope&&e?g.ordinalSlope/
-e:1,g.minPointOffset=h*=p,g.pointRangePadding=k*=p,g.pointRange=Math.min(d,b),m&&(g.closestPointRange=e);a&&(g.oldTransA=r);g.translationSlope=g.transA=r=g.options.staticScale||g.len/(b+k||1);g.transB=g.horiz?g.left:g.bottom;g.minPixelPadding=r*h},minFromRange:function(){return this.max-this.range},setTickInterval:function(g){var b=this,d=b.chart,e=b.options,k=b.isLog,p=b.log2lin,x=b.isDatetimeAxis,A=b.isXAxis,F=b.isLinked,f=e.maxPadding,z=e.minPadding,D=e.tickInterval,J=e.tickPixelInterval,G=b.categories,
-u=b.threshold,t=b.softThreshold,v,q,I,B;x||G||F||this.getTickAmount();I=C(b.userMin,e.min);B=C(b.userMax,e.max);F?(b.linkedParent=d[b.coll][e.linkedTo],d=b.linkedParent.getExtremes(),b.min=C(d.min,d.dataMin),b.max=C(d.max,d.dataMax),e.type!==b.linkedParent.options.type&&a.error(11,1)):(!t&&n(u)&&(b.dataMin>=u?(v=u,z=0):b.dataMax<=u&&(q=u,f=0)),b.min=C(I,v,b.dataMin),b.max=C(B,q,b.dataMax));k&&(b.positiveValuesOnly&&!g&&0>=Math.min(b.min,C(b.dataMin,b.min))&&a.error(10,1),b.min=l(p(b.min),15),b.max=
-l(p(b.max),15));b.range&&n(b.max)&&(b.userMin=b.min=I=Math.max(b.dataMin,b.minFromRange()),b.userMax=B=b.max,b.range=null);m(b,"foundExtremes");b.beforePadding&&b.beforePadding();b.adjustForMinRange();!(G||b.axisPointRange||b.usePercentage||F)&&n(b.min)&&n(b.max)&&(p=b.max-b.min)&&(!n(I)&&z&&(b.min-=p*z),!n(B)&&f&&(b.max+=p*f));r(e.softMin)&&!r(b.userMin)&&(b.min=Math.min(b.min,e.softMin));r(e.softMax)&&!r(b.userMax)&&(b.max=Math.max(b.max,e.softMax));r(e.floor)&&(b.min=Math.max(b.min,e.floor));r(e.ceiling)&&
-(b.max=Math.min(b.max,e.ceiling));t&&n(b.dataMin)&&(u=u||0,!n(I)&&b.min<u&&b.dataMin>=u?b.min=u:!n(B)&&b.max>u&&b.dataMax<=u&&(b.max=u));b.tickInterval=b.min===b.max||void 0===b.min||void 0===b.max?1:F&&!D&&J===b.linkedParent.options.tickPixelInterval?D=b.linkedParent.tickInterval:C(D,this.tickAmount?(b.max-b.min)/Math.max(this.tickAmount-1,1):void 0,G?1:(b.max-b.min)*J/Math.max(b.len,J));A&&!g&&c(b.series,function(a){a.processData(b.min!==b.oldMin||b.max!==b.oldMax)});b.setAxisTranslation(!0);b.beforeSetTickPositions&&
-b.beforeSetTickPositions();b.postProcessTickInterval&&(b.tickInterval=b.postProcessTickInterval(b.tickInterval));b.pointRange&&!D&&(b.tickInterval=Math.max(b.pointRange,b.tickInterval));g=C(e.minTickInterval,b.isDatetimeAxis&&b.closestPointRange);!D&&b.tickInterval<g&&(b.tickInterval=g);x||k||D||(b.tickInterval=M(b.tickInterval,null,h(b.tickInterval),C(e.allowDecimals,!(.5<b.tickInterval&&5>b.tickInterval&&1E3<b.max&&9999>b.max)),!!this.tickAmount));this.tickAmount||(b.tickInterval=b.unsquish());
-this.setTickPositions()},setTickPositions:function(){var a=this.options,b,c=a.tickPositions;b=this.getMinorTickInterval();var d=a.tickPositioner,e=a.startOnTick,h=a.endOnTick;this.tickmarkOffset=this.categories&&"between"===a.tickmarkPlacement&&1===this.tickInterval?.5:0;this.minorTickInterval="auto"===b&&this.tickInterval?this.tickInterval/5:b;this.single=this.min===this.max&&n(this.min)&&!this.tickAmount&&(parseInt(this.min,10)===this.min||!1!==a.allowDecimals);this.tickPositions=b=c&&c.slice();
-!b&&(b=this.isDatetimeAxis?this.getTimeTicks(this.normalizeTimeTickInterval(this.tickInterval,a.units),this.min,this.max,a.startOfWeek,this.ordinalPositions,this.closestPointRange,!0):this.isLog?this.getLogTickPositions(this.tickInterval,this.min,this.max):this.getLinearTickPositions(this.tickInterval,this.min,this.max),b.length>this.len&&(b=[b[0],b.pop()],b[0]===b[1]&&(b.length=1)),this.tickPositions=b,d&&(d=d.apply(this,[this.min,this.max])))&&(this.tickPositions=b=d);this.paddedTicks=b.slice(0);
-this.trimTicks(b,e,h);this.isLinked||(this.single&&2>b.length&&(this.min-=.5,this.max+=.5),c||d||this.adjustTickAmount())},trimTicks:function(a,b,c){var g=a[0],d=a[a.length-1],e=this.minPointOffset||0;if(!this.isLinked){if(b&&-Infinity!==g)this.min=g;else for(;this.min-e>a[0];)a.shift();if(c)this.max=d;else for(;this.max+e<a[a.length-1];)a.pop();0===a.length&&n(g)&&!this.options.tickPositions&&a.push((d+g)/2)}},alignToOthers:function(){var a={},b,d=this.options;!1===this.chart.options.chart.alignTicks||
-!1===d.alignTicks||this.isLog||c(this.chart[this.coll],function(g){var c=g.options,c=[g.horiz?c.left:c.top,c.width,c.height,c.pane].join();g.series.length&&(a[c]?b=!0:a[c]=1)});return b},getTickAmount:function(){var a=this.options,b=a.tickAmount,c=a.tickPixelInterval;!n(a.tickInterval)&&this.len<c&&!this.isRadial&&!this.isLog&&a.startOnTick&&a.endOnTick&&(b=2);!b&&this.alignToOthers()&&(b=Math.ceil(this.len/c)+1);4>b&&(this.finalTickAmt=b,b=5);this.tickAmount=b},adjustTickAmount:function(){var a=
-this.tickInterval,b=this.tickPositions,c=this.tickAmount,d=this.finalTickAmt,e=b&&b.length,h=C(this.threshold,this.softThreshold?0:null);if(this.hasData()){if(e<c){for(;b.length<c;)b.length%2||this.min===h?b.push(l(b[b.length-1]+a)):b.unshift(l(b[0]-a));this.transA*=(e-1)/(c-1);this.min=b[0];this.max=b[b.length-1]}else e>c&&(this.tickInterval*=2,this.setTickPositions());if(n(d)){for(a=c=b.length;a--;)(3===d&&1===a%2||2>=d&&0<a&&a<c-1)&&b.splice(a,1);this.finalTickAmt=void 0}}},setScale:function(){var a,
-b;this.oldMin=this.min;this.oldMax=this.max;this.oldAxisLength=this.len;this.setAxisSize();b=this.len!==this.oldAxisLength;c(this.series,function(b){if(b.isDirtyData||b.isDirty||b.xAxis.isDirty)a=!0});b||a||this.isLinked||this.forceRedraw||this.userMin!==this.oldUserMin||this.userMax!==this.oldUserMax||this.alignToOthers()?(this.resetStacks&&this.resetStacks(),this.forceRedraw=!1,this.getSeriesExtremes(),this.setTickInterval(),this.oldUserMin=this.userMin,this.oldUserMax=this.userMax,this.isDirty||
-(this.isDirty=b||this.min!==this.oldMin||this.max!==this.oldMax)):this.cleanStacks&&this.cleanStacks();m(this,"afterSetScale")},setExtremes:function(a,d,e,h,k){var g=this,p=g.chart;e=C(e,!0);c(g.series,function(a){delete a.kdTree});k=b(k,{min:a,max:d});m(g,"setExtremes",k,function(){g.userMin=a;g.userMax=d;g.eventArgs=k;e&&p.redraw(h)})},zoom:function(a,b){var g=this.dataMin,c=this.dataMax,d=this.options,e=Math.min(g,C(d.min,g)),d=Math.max(c,C(d.max,c));if(a!==this.min||b!==this.max)this.allowZoomOutside||
-(n(g)&&(a<e&&(a=e),a>d&&(a=d)),n(c)&&(b<e&&(b=e),b>d&&(b=d))),this.displayBtn=void 0!==a||void 0!==b,this.setExtremes(a,b,!1,void 0,{trigger:"zoom"});return!0},setAxisSize:function(){var b=this.chart,c=this.options,d=c.offsets||[0,0,0,0],e=this.horiz,h=this.width=Math.round(a.relativeLength(C(c.width,b.plotWidth-d[3]+d[1]),b.plotWidth)),k=this.height=Math.round(a.relativeLength(C(c.height,b.plotHeight-d[0]+d[2]),b.plotHeight)),p=this.top=Math.round(a.relativeLength(C(c.top,b.plotTop+d[0]),b.plotHeight,
-b.plotTop)),c=this.left=Math.round(a.relativeLength(C(c.left,b.plotLeft+d[3]),b.plotWidth,b.plotLeft));this.bottom=b.chartHeight-k-p;this.right=b.chartWidth-h-c;this.len=Math.max(e?h:k,0);this.pos=e?c:p},getExtremes:function(){var a=this.isLog,b=this.lin2log;return{min:a?l(b(this.min)):this.min,max:a?l(b(this.max)):this.max,dataMin:this.dataMin,dataMax:this.dataMax,userMin:this.userMin,userMax:this.userMax}},getThreshold:function(a){var b=this.isLog,c=this.lin2log,g=b?c(this.min):this.min,b=b?c(this.max):
-this.max;null===a?a=g:g>a?a=g:b<a&&(a=b);return this.translate(a,0,1,0,1)},autoLabelAlign:function(a){a=(C(a,0)-90*this.side+720)%360;return 15<a&&165>a?"right":195<a&&345>a?"left":"center"},tickSize:function(a){var b=this.options,c=b[a+"Length"],g=C(b[a+"Width"],"tick"===a&&this.isXAxis?1:0);if(g&&c)return"inside"===b[a+"Position"]&&(c=-c),[c,g]},labelMetrics:function(){var a=this.tickPositions&&this.tickPositions[0]||0;return this.chart.renderer.fontMetrics(this.options.labels.style&&this.options.labels.style.fontSize,
-this.ticks[a]&&this.ticks[a].label)},unsquish:function(){var a=this.options.labels,b=this.horiz,d=this.tickInterval,e=d,h=this.len/(((this.categories?1:0)+this.max-this.min)/d),k,p=a.rotation,x=this.labelMetrics(),r,m=Number.MAX_VALUE,A,F=function(a){a/=h||1;a=1<a?Math.ceil(a):1;return a*d};b?(A=!a.staggerLines&&!a.step&&(n(p)?[p]:h<C(a.autoRotationLimit,80)&&a.autoRotation))&&c(A,function(a){var b;if(a===p||a&&-90<=a&&90>=a)r=F(Math.abs(x.h/Math.sin(v*a))),b=r+Math.abs(a/360),b<m&&(m=b,k=a,e=r)}):
-a.step||(e=F(x.h));this.autoRotation=A;this.labelRotation=C(k,p);return e},getSlotWidth:function(){var a=this.chart,b=this.horiz,c=this.options.labels,d=Math.max(this.tickPositions.length-(this.categories?0:1),1),e=a.margin[3];return b&&2>(c.step||0)&&!c.rotation&&(this.staggerLines||1)*this.len/d||!b&&(c.style&&parseInt(c.style.width,10)||e&&e-a.spacing[3]||.33*a.chartWidth)},renderUnsquish:function(){var a=this.chart,b=a.renderer,d=this.tickPositions,e=this.ticks,h=this.options.labels,k=this.horiz,
-p=this.getSlotWidth(),x=Math.max(1,Math.round(p-2*(h.padding||5))),r={},m=this.labelMetrics(),A=h.style&&h.style.textOverflow,F,l,f=0,z;I(h.rotation)||(r.rotation=h.rotation||0);c(d,function(a){(a=e[a])&&a.label&&a.label.textPxLength>f&&(f=a.label.textPxLength)});this.maxLabelLength=f;if(this.autoRotation)f>x&&f>m.h?r.rotation=this.labelRotation:this.labelRotation=0;else if(p&&(F=x,!A))for(l="clip",x=d.length;!k&&x--;)if(z=d[x],z=e[z].label)z.styles&&"ellipsis"===z.styles.textOverflow?z.css({textOverflow:"clip"}):
-z.textPxLength>p&&z.css({width:p+"px"}),z.getBBox().height>this.len/d.length-(m.h-m.f)&&(z.specificTextOverflow="ellipsis");r.rotation&&(F=f>.5*a.chartHeight?.33*a.chartHeight:a.chartHeight,A||(l="ellipsis"));if(this.labelAlign=h.align||this.autoLabelAlign(this.labelRotation))r.align=this.labelAlign;c(d,function(a){var b=(a=e[a])&&a.label;b&&(b.attr(r),!F||h.style&&h.style.width||!(F<b.textPxLength||"SPAN"===b.element.tagName)||b.css({width:F,textOverflow:b.specificTextOverflow||l}),delete b.specificTextOverflow,
-a.rotation=r.rotation)});this.tickRotCorr=b.rotCorr(m.b,this.labelRotation||0,0!==this.side)},hasData:function(){return this.hasVisibleSeries||n(this.min)&&n(this.max)&&this.tickPositions&&0<this.tickPositions.length},addTitle:function(a){var b=this.chart.renderer,c=this.horiz,g=this.opposite,d=this.options.title,e;this.axisTitle||((e=d.textAlign)||(e=(c?{low:"left",middle:"center",high:"right"}:{low:g?"right":"left",middle:"center",high:g?"left":"right"})[d.align]),this.axisTitle=b.text(d.text,0,
-0,d.useHTML).attr({zIndex:7,rotation:d.rotation||0,align:e}).addClass("highcharts-axis-title").css(z(d.style)).add(this.axisGroup),this.axisTitle.isNew=!0);d.style.width||this.isRadial||this.axisTitle.css({width:this.len});this.axisTitle[a?"show":"hide"](!0)},generateTick:function(a){var b=this.ticks;b[a]?b[a].addLabel():b[a]=new J(this,a)},getOffset:function(){var a=this,b=a.chart,d=b.renderer,e=a.options,h=a.tickPositions,k=a.ticks,p=a.horiz,x=a.side,r=b.inverted&&!a.isZAxis?[1,0,3,2][x]:x,m,A,
-F=0,l,f=0,z=e.title,J=e.labels,G=0,u=b.axisOffset,b=b.clipOffset,t=[-1,1,1,-1][x],v=e.className,M=a.axisParent,q=this.tickSize("tick");m=a.hasData();a.showAxis=A=m||C(e.showEmpty,!0);a.staggerLines=a.horiz&&J.staggerLines;a.axisGroup||(a.gridGroup=d.g("grid").attr({zIndex:e.gridZIndex||1}).addClass("highcharts-"+this.coll.toLowerCase()+"-grid "+(v||"")).add(M),a.axisGroup=d.g("axis").attr({zIndex:e.zIndex||2}).addClass("highcharts-"+this.coll.toLowerCase()+" "+(v||"")).add(M),a.labelGroup=d.g("axis-labels").attr({zIndex:J.zIndex||
-7}).addClass("highcharts-"+a.coll.toLowerCase()+"-labels "+(v||"")).add(M));m||a.isLinked?(c(h,function(b,c){a.generateTick(b,c)}),a.renderUnsquish(),a.reserveSpaceDefault=0===x||2===x||{1:"left",3:"right"}[x]===a.labelAlign,C(J.reserveSpace,"center"===a.labelAlign?!0:null,a.reserveSpaceDefault)&&c(h,function(a){G=Math.max(k[a].getLabelSize(),G)}),a.staggerLines&&(G*=a.staggerLines),a.labelOffset=G*(a.opposite?-1:1)):D(k,function(a,b){a.destroy();delete k[b]});z&&z.text&&!1!==z.enabled&&(a.addTitle(A),
-A&&!1!==z.reserveSpace&&(a.titleOffset=F=a.axisTitle.getBBox()[p?"height":"width"],l=z.offset,f=n(l)?0:C(z.margin,p?5:10)));a.renderLine();a.offset=t*C(e.offset,u[x]);a.tickRotCorr=a.tickRotCorr||{x:0,y:0};d=0===x?-a.labelMetrics().h:2===x?a.tickRotCorr.y:0;f=Math.abs(G)+f;G&&(f=f-d+t*(p?C(J.y,a.tickRotCorr.y+8*t):J.x));a.axisTitleMargin=C(l,f);u[x]=Math.max(u[x],a.axisTitleMargin+F+t*a.offset,f,m&&h.length&&q?q[0]+t*a.offset:0);e=e.offset?0:2*Math.floor(a.axisLine.strokeWidth()/2);b[r]=Math.max(b[r],
-e)},getLinePath:function(a){var b=this.chart,c=this.opposite,g=this.offset,d=this.horiz,e=this.left+(c?this.width:0)+g,g=b.chartHeight-this.bottom-(c?this.height:0)+g;c&&(a*=-1);return b.renderer.crispLine(["M",d?this.left:e,d?g:this.top,"L",d?b.chartWidth-this.right:e,d?g:b.chartHeight-this.bottom],a)},renderLine:function(){this.axisLine||(this.axisLine=this.chart.renderer.path().addClass("highcharts-axis-line").add(this.axisGroup),this.axisLine.attr({stroke:this.options.lineColor,"stroke-width":this.options.lineWidth,
-zIndex:7}))},getTitlePosition:function(){var a=this.horiz,b=this.left,c=this.top,d=this.len,e=this.options.title,h=a?b:c,k=this.opposite,p=this.offset,x=e.x||0,r=e.y||0,m=this.axisTitle,A=this.chart.renderer.fontMetrics(e.style&&e.style.fontSize,m),m=Math.max(m.getBBox(null,0).height-A.h-1,0),d={low:h+(a?0:d),middle:h+d/2,high:h+(a?d:0)}[e.align],b=(a?c+this.height:b)+(a?1:-1)*(k?-1:1)*this.axisTitleMargin+[-m,m,A.f,-m][this.side];return{x:a?d+x:b+(k?this.width:0)+p+x,y:a?b+r-(k?this.height:0)+p:
-d+r}},renderMinorTick:function(a){var b=this.chart.hasRendered&&r(this.oldMin),c=this.minorTicks;c[a]||(c[a]=new J(this,a,"minor"));b&&c[a].isNew&&c[a].render(null,!0);c[a].render(null,!1,1)},renderTick:function(a,b){var c=this.isLinked,g=this.ticks,d=this.chart.hasRendered&&r(this.oldMin);if(!c||a>=this.min&&a<=this.max)g[a]||(g[a]=new J(this,a)),d&&g[a].isNew&&g[a].render(b,!0,.1),g[a].render(b)},render:function(){var b=this,d=b.chart,e=b.options,h=b.isLog,k=b.lin2log,p=b.isLinked,x=b.tickPositions,
-m=b.axisTitle,F=b.ticks,l=b.minorTicks,f=b.alternateBands,z=e.stackLabels,G=e.alternateGridColor,n=b.tickmarkOffset,u=b.axisLine,C=b.showAxis,t=H(d.renderer.globalAnimation),v,M;b.labelEdge.length=0;b.overlap=!1;c([F,l,f],function(a){D(a,function(a){a.isActive=!1})});if(b.hasData()||p)b.minorTickInterval&&!b.categories&&c(b.getMinorTickPositions(),function(a){b.renderMinorTick(a)}),x.length&&(c(x,function(a,c){b.renderTick(a,c)}),n&&(0===b.min||b.single)&&(F[-1]||(F[-1]=new J(b,-1,null,!0)),F[-1].render(-1))),
-G&&c(x,function(c,e){M=void 0!==x[e+1]?x[e+1]+n:b.max-n;0===e%2&&c<b.max&&M<=b.max+(d.polar?-n:n)&&(f[c]||(f[c]=new a.PlotLineOrBand(b)),v=c+n,f[c].options={from:h?k(v):v,to:h?k(M):M,color:G},f[c].render(),f[c].isActive=!0)}),b._addedPlotLB||(c((e.plotLines||[]).concat(e.plotBands||[]),function(a){b.addPlotBandOrLine(a)}),b._addedPlotLB=!0);c([F,l,f],function(a){var b,c=[],e=t.duration;D(a,function(a,b){a.isActive||(a.render(b,!1,0),a.isActive=!1,c.push(b))});A(function(){for(b=c.length;b--;)a[c[b]]&&
-!a[c[b]].isActive&&(a[c[b]].destroy(),delete a[c[b]])},a!==f&&d.hasRendered&&e?e:0)});u&&(u[u.isPlaced?"animate":"attr"]({d:this.getLinePath(u.strokeWidth())}),u.isPlaced=!0,u[C?"show":"hide"](!0));m&&C&&(e=b.getTitlePosition(),r(e.y)?(m[m.isNew?"attr":"animate"](e),m.isNew=!1):(m.attr("y",-9999),m.isNew=!0));z&&z.enabled&&b.renderStackTotals();b.isDirty=!1},redraw:function(){this.visible&&(this.render(),c(this.plotLinesAndBands,function(a){a.render()}));c(this.series,function(a){a.isDirty=!0})},
-keepProps:"extKey hcEvents names series userMax userMin".split(" "),destroy:function(a){var b=this,d=b.stacks,g=b.plotLinesAndBands,h;a||x(b);D(d,function(a,b){u(a);d[b]=null});c([b.ticks,b.minorTicks,b.alternateBands],function(a){u(a)});if(g)for(a=g.length;a--;)g[a].destroy();c("stackTotalGroup axisLine axisTitle axisGroup gridGroup labelGroup cross".split(" "),function(a){b[a]&&(b[a]=b[a].destroy())});for(h in b.plotLinesAndBandsGroups)b.plotLinesAndBandsGroups[h]=b.plotLinesAndBandsGroups[h].destroy();
-D(b,function(a,c){-1===e(c,b.keepProps)&&delete b[c]})},drawCrosshair:function(a,b){var c,d=this.crosshair,e=C(d.snap,!0),g,h=this.cross;a||(a=this.cross&&this.cross.e);this.crosshair&&!1!==(n(b)||!e)?(e?n(b)&&(g=this.isXAxis?b.plotX:this.len-b.plotY):g=a&&(this.horiz?a.chartX-this.pos:this.len-a.chartY+this.pos),n(g)&&(c=this.getPlotLinePath(b&&(this.isXAxis?b.x:C(b.stackY,b.y)),null,null,null,g)||null),n(c)?(b=this.categories&&!this.isRadial,h||(this.cross=h=this.chart.renderer.path().addClass("highcharts-crosshair highcharts-crosshair-"+
-(b?"category ":"thin ")+d.className).attr({zIndex:C(d.zIndex,2)}).add(),h.attr({stroke:d.color||(b?f("#ccd6eb").setOpacity(.25).get():"#cccccc"),"stroke-width":C(d.width,1)}).css({"pointer-events":"none"}),d.dashStyle&&h.attr({dashstyle:d.dashStyle})),h.show().attr({d:c}),b&&!d.width&&h.attr({"stroke-width":this.transA}),this.cross.e=a):this.hideCrosshair()):this.hideCrosshair()},hideCrosshair:function(){this.cross&&this.cross.hide()}});return a.Axis=G}(K);(function(a){var B=a.Axis,H=a.getMagnitude,
-E=a.normalizeTickInterval,q=a.timeUnits;B.prototype.getTimeTicks=function(){return this.chart.time.getTimeTicks.apply(this.chart.time,arguments)};B.prototype.normalizeTimeTickInterval=function(a,l){var f=l||[["millisecond",[1,2,5,10,20,25,50,100,200,500]],["second",[1,2,5,10,15,30]],["minute",[1,2,5,10,15,30]],["hour",[1,2,3,4,6,8,12]],["day",[1,2]],["week",[1,2]],["month",[1,2,3,4,6]],["year",null]];l=f[f.length-1];var n=q[l[0]],v=l[1],u;for(u=0;u<f.length&&!(l=f[u],n=q[l[0]],v=l[1],f[u+1]&&a<=(n*
-v[v.length-1]+q[f[u+1][0]])/2);u++);n===q.year&&a<5*n&&(v=[1,2,5]);a=E(a/n,v,"year"===l[0]?Math.max(H(a/n),1):1);return{unitRange:n,count:a,unitName:l[0]}}})(K);(function(a){var B=a.Axis,H=a.getMagnitude,E=a.map,q=a.normalizeTickInterval,f=a.pick;B.prototype.getLogTickPositions=function(a,t,n,v){var l=this.options,c=this.len,b=this.lin2log,m=this.log2lin,d=[];v||(this._minorAutoInterval=null);if(.5<=a)a=Math.round(a),d=this.getLinearTickPositions(a,t,n);else if(.08<=a)for(var c=Math.floor(t),h,k,
-e,p,r,l=.3<a?[1,2,4]:.15<a?[1,2,4,6,8]:[1,2,3,4,5,6,7,8,9];c<n+1&&!r;c++)for(k=l.length,h=0;h<k&&!r;h++)e=m(b(c)*l[h]),e>t&&(!v||p<=n)&&void 0!==p&&d.push(p),p>n&&(r=!0),p=e;else t=b(t),n=b(n),a=v?this.getMinorTickInterval():l.tickInterval,a=f("auto"===a?null:a,this._minorAutoInterval,l.tickPixelInterval/(v?5:1)*(n-t)/((v?c/this.tickPositions.length:c)||1)),a=q(a,null,H(a)),d=E(this.getLinearTickPositions(a,t,n),m),v||(this._minorAutoInterval=a/5);v||(this.tickInterval=a);return d};B.prototype.log2lin=
-function(a){return Math.log(a)/Math.LN10};B.prototype.lin2log=function(a){return Math.pow(10,a)}})(K);(function(a,B){var H=a.arrayMax,E=a.arrayMin,q=a.defined,f=a.destroyObjectProperties,l=a.each,t=a.erase,n=a.merge,v=a.pick;a.PlotLineOrBand=function(a,c){this.axis=a;c&&(this.options=c,this.id=c.id)};a.PlotLineOrBand.prototype={render:function(){var f=this,c=f.axis,b=c.horiz,m=f.options,d=m.label,h=f.label,k=m.to,e=m.from,p=m.value,r=q(e)&&q(k),l=q(p),z=f.svgElem,t=!z,D=[],C=m.color,x=v(m.zIndex,
-0),F=m.events,D={"class":"highcharts-plot-"+(r?"band ":"line ")+(m.className||"")},A={},J=c.chart.renderer,G=r?"bands":"lines",g=c.log2lin;c.isLog&&(e=g(e),k=g(k),p=g(p));l?(D={stroke:C,"stroke-width":m.width},m.dashStyle&&(D.dashstyle=m.dashStyle)):r&&(C&&(D.fill=C),m.borderWidth&&(D.stroke=m.borderColor,D["stroke-width"]=m.borderWidth));A.zIndex=x;G+="-"+x;(C=c.plotLinesAndBandsGroups[G])||(c.plotLinesAndBandsGroups[G]=C=J.g("plot-"+G).attr(A).add());t&&(f.svgElem=z=J.path().attr(D).add(C));if(l)D=
-c.getPlotLinePath(p,z.strokeWidth());else if(r)D=c.getPlotBandPath(e,k,m);else return;t&&D&&D.length?(z.attr({d:D}),F&&a.objectEach(F,function(a,b){z.on(b,function(a){F[b].apply(f,[a])})})):z&&(D?(z.show(),z.animate({d:D})):(z.hide(),h&&(f.label=h=h.destroy())));d&&q(d.text)&&D&&D.length&&0<c.width&&0<c.height&&!D.flat?(d=n({align:b&&r&&"center",x:b?!r&&4:10,verticalAlign:!b&&r&&"middle",y:b?r?16:10:r?6:-4,rotation:b&&!r&&90},d),this.renderLabel(d,D,r,x)):h&&h.hide();return f},renderLabel:function(a,
-c,b,m){var d=this.label,h=this.axis.chart.renderer;d||(d={align:a.textAlign||a.align,rotation:a.rotation,"class":"highcharts-plot-"+(b?"band":"line")+"-label "+(a.className||"")},d.zIndex=m,this.label=d=h.text(a.text,0,0,a.useHTML).attr(d).add(),d.css(a.style));m=c.xBounds||[c[1],c[4],b?c[6]:c[1]];c=c.yBounds||[c[2],c[5],b?c[7]:c[2]];b=E(m);h=E(c);d.align(a,!1,{x:b,y:h,width:H(m)-b,height:H(c)-h});d.show()},destroy:function(){t(this.axis.plotLinesAndBands,this);delete this.axis;f(this)}};a.extend(B.prototype,
-{getPlotBandPath:function(a,c){var b=this.getPlotLinePath(c,null,null,!0),m=this.getPlotLinePath(a,null,null,!0),d=[],h=this.horiz,k=1,e;a=a<this.min&&c<this.min||a>this.max&&c>this.max;if(m&&b)for(a&&(e=m.toString()===b.toString(),k=0),a=0;a<m.length;a+=6)h&&b[a+1]===m[a+1]?(b[a+1]+=k,b[a+4]+=k):h||b[a+2]!==m[a+2]||(b[a+2]+=k,b[a+5]+=k),d.push("M",m[a+1],m[a+2],"L",m[a+4],m[a+5],b[a+4],b[a+5],b[a+1],b[a+2],"z"),d.flat=e;return d},addPlotBand:function(a){return this.addPlotBandOrLine(a,"plotBands")},
-addPlotLine:function(a){return this.addPlotBandOrLine(a,"plotLines")},addPlotBandOrLine:function(f,c){var b=(new a.PlotLineOrBand(this,f)).render(),m=this.userOptions;b&&(c&&(m[c]=m[c]||[],m[c].push(f)),this.plotLinesAndBands.push(b));return b},removePlotBandOrLine:function(a){for(var c=this.plotLinesAndBands,b=this.options,m=this.userOptions,d=c.length;d--;)c[d].id===a&&c[d].destroy();l([b.plotLines||[],m.plotLines||[],b.plotBands||[],m.plotBands||[]],function(b){for(d=b.length;d--;)b[d].id===a&&
-t(b,b[d])})},removePlotBand:function(a){this.removePlotBandOrLine(a)},removePlotLine:function(a){this.removePlotBandOrLine(a)}})})(K,V);(function(a){var B=a.each,H=a.extend,E=a.format,q=a.isNumber,f=a.map,l=a.merge,t=a.pick,n=a.splat,v=a.syncTimeout,u=a.timeUnits;a.Tooltip=function(){this.init.apply(this,arguments)};a.Tooltip.prototype={init:function(a,b){this.chart=a;this.options=b;this.crosshairs=[];this.now={x:0,y:0};this.isHidden=!0;this.split=b.split&&!a.inverted;this.shared=b.shared||this.split},
-cleanSplit:function(a){B(this.chart.series,function(b){var c=b&&b.tt;c&&(!c.isActive||a?b.tt=c.destroy():c.isActive=!1)})},getLabel:function(){var a=this.chart.renderer,b=this.options;this.label||(this.split?this.label=a.g("tooltip"):(this.label=a.label("",0,0,b.shape||"callout",null,null,b.useHTML,null,"tooltip").attr({padding:b.padding,r:b.borderRadius}),this.label.attr({fill:b.backgroundColor,"stroke-width":b.borderWidth}).css(b.style).shadow(b.shadow)),this.label.attr({zIndex:8}).add());return this.label},
-update:function(a){this.destroy();l(!0,this.chart.options.tooltip.userOptions,a);this.init(this.chart,l(!0,this.options,a))},destroy:function(){this.label&&(this.label=this.label.destroy());this.split&&this.tt&&(this.cleanSplit(this.chart,!0),this.tt=this.tt.destroy());clearTimeout(this.hideTimer);clearTimeout(this.tooltipTimeout)},move:function(a,b,m,d){var c=this,k=c.now,e=!1!==c.options.animation&&!c.isHidden&&(1<Math.abs(a-k.x)||1<Math.abs(b-k.y)),p=c.followPointer||1<c.len;H(k,{x:e?(2*k.x+a)/
-3:a,y:e?(k.y+b)/2:b,anchorX:p?void 0:e?(2*k.anchorX+m)/3:m,anchorY:p?void 0:e?(k.anchorY+d)/2:d});c.getLabel().attr(k);e&&(clearTimeout(this.tooltipTimeout),this.tooltipTimeout=setTimeout(function(){c&&c.move(a,b,m,d)},32))},hide:function(a){var b=this;clearTimeout(this.hideTimer);a=t(a,this.options.hideDelay,500);this.isHidden||(this.hideTimer=v(function(){b.getLabel()[a?"fadeOut":"hide"]();b.isHidden=!0},a))},getAnchor:function(a,b){var c,d=this.chart,h=d.inverted,k=d.plotTop,e=d.plotLeft,p=0,r=
-0,l,z;a=n(a);c=a[0].tooltipPos;this.followPointer&&b&&(void 0===b.chartX&&(b=d.pointer.normalize(b)),c=[b.chartX-d.plotLeft,b.chartY-k]);c||(B(a,function(a){l=a.series.yAxis;z=a.series.xAxis;p+=a.plotX+(!h&&z?z.left-e:0);r+=(a.plotLow?(a.plotLow+a.plotHigh)/2:a.plotY)+(!h&&l?l.top-k:0)}),p/=a.length,r/=a.length,c=[h?d.plotWidth-r:p,this.shared&&!h&&1<a.length&&b?b.chartY-k:h?d.plotHeight-p:r]);return f(c,Math.round)},getPosition:function(a,b,m){var c=this.chart,h=this.distance,k={},e=c.inverted&&
-m.h||0,p,r=["y",c.chartHeight,b,m.plotY+c.plotTop,c.plotTop,c.plotTop+c.plotHeight],f=["x",c.chartWidth,a,m.plotX+c.plotLeft,c.plotLeft,c.plotLeft+c.plotWidth],l=!this.followPointer&&t(m.ttBelow,!c.inverted===!!m.negative),n=function(a,b,c,d,g,p){var x=c<d-h,r=d+h+c<b,m=d-h-c;d+=h;if(l&&r)k[a]=d;else if(!l&&x)k[a]=m;else if(x)k[a]=Math.min(p-c,0>m-e?m:m-e);else if(r)k[a]=Math.max(g,d+e+c>b?d:d+e);else return!1},D=function(a,b,c,d){var e;d<h||d>b-h?e=!1:k[a]=d<c/2?1:d>b-c/2?b-c-2:d-c/2;return e},C=
-function(a){var b=r;r=f;f=b;p=a},x=function(){!1!==n.apply(0,r)?!1!==D.apply(0,f)||p||(C(!0),x()):p?k.x=k.y=0:(C(!0),x())};(c.inverted||1<this.len)&&C();x();return k},defaultFormatter:function(a){var b=this.points||n(this),c;c=[a.tooltipFooterHeaderFormatter(b[0])];c=c.concat(a.bodyFormatter(b));c.push(a.tooltipFooterHeaderFormatter(b[0],!0));return c},refresh:function(a,b){var c,d=this.options,h,k=a,e,p={},r=[];c=d.formatter||this.defaultFormatter;var p=this.shared,f;d.enabled&&(clearTimeout(this.hideTimer),
-this.followPointer=n(k)[0].series.tooltipOptions.followPointer,e=this.getAnchor(k,b),b=e[0],h=e[1],!p||k.series&&k.series.noSharedTooltip?p=k.getLabelConfig():(B(k,function(a){a.setState("hover");r.push(a.getLabelConfig())}),p={x:k[0].category,y:k[0].y},p.points=r,k=k[0]),this.len=r.length,p=c.call(p,this),f=k.series,this.distance=t(f.tooltipOptions.distance,16),!1===p?this.hide():(c=this.getLabel(),this.isHidden&&c.attr({opacity:1}).show(),this.split?this.renderSplit(p,n(a)):(d.style.width||c.css({width:this.chart.spacingBox.width}),
-c.attr({text:p&&p.join?p.join(""):p}),c.removeClass(/highcharts-color-[\d]+/g).addClass("highcharts-color-"+t(k.colorIndex,f.colorIndex)),c.attr({stroke:d.borderColor||k.color||f.color||"#666666"}),this.updatePosition({plotX:b,plotY:h,negative:k.negative,ttBelow:k.ttBelow,h:e[2]||0})),this.isHidden=!1))},renderSplit:function(c,b){var m=this,d=[],h=this.chart,k=h.renderer,e=!0,p=this.options,r=0,f=this.getLabel();a.isString(c)&&(c=[!1,c]);B(c.slice(0,b.length+1),function(a,c){if(!1!==a){c=b[c-1]||
-{isHeader:!0,plotX:b[0].plotX};var l=c.series||m,z=l.tt,x=c.series||{},F="highcharts-color-"+t(c.colorIndex,x.colorIndex,"none");z||(l.tt=z=k.label(null,null,null,"callout",null,null,p.useHTML).addClass("highcharts-tooltip-box "+F).attr({padding:p.padding,r:p.borderRadius,fill:p.backgroundColor,stroke:p.borderColor||c.color||x.color||"#333333","stroke-width":p.borderWidth}).add(f));z.isActive=!0;z.attr({text:a});z.css(p.style).shadow(p.shadow);a=z.getBBox();x=a.width+z.strokeWidth();c.isHeader?(r=
-a.height,x=Math.max(0,Math.min(c.plotX+h.plotLeft-x/2,h.chartWidth-x))):x=c.plotX+h.plotLeft-t(p.distance,16)-x;0>x&&(e=!1);a=(c.series&&c.series.yAxis&&c.series.yAxis.pos)+(c.plotY||0);a-=h.plotTop;d.push({target:c.isHeader?h.plotHeight+r:a,rank:c.isHeader?1:0,size:l.tt.getBBox().height+1,point:c,x:x,tt:z})}});this.cleanSplit();a.distribute(d,h.plotHeight+r);B(d,function(a){var b=a.point,c=b.series;a.tt.attr({visibility:void 0===a.pos?"hidden":"inherit",x:e||b.isHeader?a.x:b.plotX+h.plotLeft+t(p.distance,
-16),y:a.pos+h.plotTop,anchorX:b.isHeader?b.plotX+h.plotLeft:b.plotX+c.xAxis.pos,anchorY:b.isHeader?a.pos+h.plotTop-15:b.plotY+c.yAxis.pos})})},updatePosition:function(a){var b=this.chart,c=this.getLabel(),c=(this.options.positioner||this.getPosition).call(this,c.width,c.height,a);this.move(Math.round(c.x),Math.round(c.y||0),a.plotX+b.plotLeft,a.plotY+b.plotTop)},getDateFormat:function(a,b,m,d){var c=this.chart.time,k=c.dateFormat("%m-%d %H:%M:%S.%L",b),e,p,r={millisecond:15,second:12,minute:9,hour:6,
-day:3},f="millisecond";for(p in u){if(a===u.week&&+c.dateFormat("%w",b)===m&&"00:00:00.000"===k.substr(6)){p="week";break}if(u[p]>a){p=f;break}if(r[p]&&k.substr(r[p])!=="01-01 00:00:00.000".substr(r[p]))break;"week"!==p&&(f=p)}p&&(e=d[p]);return e},getXDateFormat:function(a,b,m){b=b.dateTimeLabelFormats;var c=m&&m.closestPointRange;return(c?this.getDateFormat(c,a.x,m.options.startOfWeek,b):b.day)||b.year},tooltipFooterHeaderFormatter:function(a,b){b=b?"footer":"header";var c=a.series,d=c.tooltipOptions,
-h=d.xDateFormat,k=c.xAxis,e=k&&"datetime"===k.options.type&&q(a.key),p=d[b+"Format"];e&&!h&&(h=this.getXDateFormat(a,d,k));e&&h&&B(a.point&&a.point.tooltipDateKeys||["key"],function(a){p=p.replace("{point."+a+"}","{point."+a+":"+h+"}")});return E(p,{point:a,series:c},this.chart.time)},bodyFormatter:function(a){return f(a,function(a){var b=a.series.tooltipOptions;return(b[(a.point.formatPrefix||"point")+"Formatter"]||a.point.tooltipFormatter).call(a.point,b[(a.point.formatPrefix||"point")+"Format"])})}}})(K);
-(function(a){var B=a.addEvent,H=a.attr,E=a.charts,q=a.color,f=a.css,l=a.defined,t=a.each,n=a.extend,v=a.find,u=a.fireEvent,c=a.isNumber,b=a.isObject,m=a.offset,d=a.pick,h=a.splat,k=a.Tooltip;a.Pointer=function(a,b){this.init(a,b)};a.Pointer.prototype={init:function(a,b){this.options=b;this.chart=a;this.runChartClick=b.chart.events&&!!b.chart.events.click;this.pinchDown=[];this.lastValidTouch={};k&&(a.tooltip=new k(a,b.tooltip),this.followTouchMove=d(b.tooltip.followTouchMove,!0));this.setDOMEvents()},
-zoomOption:function(a){var b=this.chart,c=b.options.chart,e=c.zoomType||"",b=b.inverted;/touch/.test(a.type)&&(e=d(c.pinchType,e));this.zoomX=a=/x/.test(e);this.zoomY=e=/y/.test(e);this.zoomHor=a&&!b||e&&b;this.zoomVert=e&&!b||a&&b;this.hasZoom=a||e},normalize:function(a,b){var c;c=a.touches?a.touches.length?a.touches.item(0):a.changedTouches[0]:a;b||(this.chartPosition=b=m(this.chart.container));return n(a,{chartX:Math.round(c.pageX-b.left),chartY:Math.round(c.pageY-b.top)})},getCoordinates:function(a){var b=
-{xAxis:[],yAxis:[]};t(this.chart.axes,function(c){b[c.isXAxis?"xAxis":"yAxis"].push({axis:c,value:c.toValue(a[c.horiz?"chartX":"chartY"])})});return b},findNearestKDPoint:function(a,c,d){var e;t(a,function(a){var h=!(a.noSharedTooltip&&c)&&0>a.options.findNearestPointBy.indexOf("y");a=a.searchPoint(d,h);if((h=b(a,!0))&&!(h=!b(e,!0)))var h=e.distX-a.distX,k=e.dist-a.dist,p=(a.series.group&&a.series.group.zIndex)-(e.series.group&&e.series.group.zIndex),h=0<(0!==h&&c?h:0!==k?k:0!==p?p:e.series.index>
-a.series.index?-1:1);h&&(e=a)});return e},getPointFromEvent:function(a){a=a.target;for(var b;a&&!b;)b=a.point,a=a.parentNode;return b},getChartCoordinatesFromPoint:function(a,b){var c=a.series,e=c.xAxis,c=c.yAxis,h=d(a.clientX,a.plotX);if(e&&c)return b?{chartX:e.len+e.pos-h,chartY:c.len+c.pos-a.plotY}:{chartX:h+e.pos,chartY:a.plotY+c.pos}},getHoverData:function(c,h,k,f,m,l,n){var e,x=[],p=n&&n.isBoosting;f=!(!f||!c);n=h&&!h.stickyTracking?[h]:a.grep(k,function(a){return a.visible&&!(!m&&a.directTouch)&&
-d(a.options.enableMouseTracking,!0)&&a.stickyTracking});h=(e=f?c:this.findNearestKDPoint(n,m,l))&&e.series;e&&(m&&!h.noSharedTooltip?(n=a.grep(k,function(a){return a.visible&&!(!m&&a.directTouch)&&d(a.options.enableMouseTracking,!0)&&!a.noSharedTooltip}),t(n,function(a){var c=v(a.points,function(a){return a.x===e.x&&!a.isNull});b(c)&&(p&&(c=a.getPoint(c)),x.push(c))})):x.push(e));return{hoverPoint:e,hoverSeries:h,hoverPoints:x}},runPointActions:function(b,c){var e=this.chart,h=e.tooltip&&e.tooltip.options.enabled?
-e.tooltip:void 0,k=h?h.shared:!1,p=c||e.hoverPoint,f=p&&p.series||e.hoverSeries,f=this.getHoverData(p,f,e.series,!!c||f&&f.directTouch&&this.isDirectTouch,k,b,{isBoosting:e.isBoosting}),m,p=f.hoverPoint;m=f.hoverPoints;c=(f=f.hoverSeries)&&f.tooltipOptions.followPointer;k=k&&f&&!f.noSharedTooltip;if(p&&(p!==e.hoverPoint||h&&h.isHidden)){t(e.hoverPoints||[],function(b){-1===a.inArray(b,m)&&b.setState()});t(m||[],function(a){a.setState("hover")});if(e.hoverSeries!==f)f.onMouseOver();e.hoverPoint&&e.hoverPoint.firePointEvent("mouseOut");
-if(!p.series)return;p.firePointEvent("mouseOver");e.hoverPoints=m;e.hoverPoint=p;h&&h.refresh(k?m:p,b)}else c&&h&&!h.isHidden&&(p=h.getAnchor([{}],b),h.updatePosition({plotX:p[0],plotY:p[1]}));this.unDocMouseMove||(this.unDocMouseMove=B(e.container.ownerDocument,"mousemove",function(b){var c=E[a.hoverChartIndex];if(c)c.pointer.onDocumentMouseMove(b)}));t(e.axes,function(c){var e=d(c.crosshair.snap,!0),h=e?a.find(m,function(a){return a.series[c.coll]===c}):void 0;h||!e?c.drawCrosshair(b,h):c.hideCrosshair()})},
-reset:function(a,b){var c=this.chart,d=c.hoverSeries,e=c.hoverPoint,k=c.hoverPoints,p=c.tooltip,f=p&&p.shared?k:e;a&&f&&t(h(f),function(b){b.series.isCartesian&&void 0===b.plotX&&(a=!1)});if(a)p&&f&&(p.refresh(f),e&&(e.setState(e.state,!0),t(c.axes,function(a){a.crosshair&&a.drawCrosshair(null,e)})));else{if(e)e.onMouseOut();k&&t(k,function(a){a.setState()});if(d)d.onMouseOut();p&&p.hide(b);this.unDocMouseMove&&(this.unDocMouseMove=this.unDocMouseMove());t(c.axes,function(a){a.hideCrosshair()});this.hoverX=
-c.hoverPoints=c.hoverPoint=null}},scaleGroups:function(a,b){var c=this.chart,d;t(c.series,function(e){d=a||e.getPlotBox();e.xAxis&&e.xAxis.zoomEnabled&&e.group&&(e.group.attr(d),e.markerGroup&&(e.markerGroup.attr(d),e.markerGroup.clip(b?c.clipRect:null)),e.dataLabelsGroup&&e.dataLabelsGroup.attr(d))});c.clipRect.attr(b||c.clipBox)},dragStart:function(a){var b=this.chart;b.mouseIsDown=a.type;b.cancelClick=!1;b.mouseDownX=this.mouseDownX=a.chartX;b.mouseDownY=this.mouseDownY=a.chartY},drag:function(a){var b=
-this.chart,c=b.options.chart,d=a.chartX,e=a.chartY,h=this.zoomHor,k=this.zoomVert,f=b.plotLeft,x=b.plotTop,m=b.plotWidth,A=b.plotHeight,l,n=this.selectionMarker,g=this.mouseDownX,w=this.mouseDownY,t=c.panKey&&a[c.panKey+"Key"];n&&n.touch||(d<f?d=f:d>f+m&&(d=f+m),e<x?e=x:e>x+A&&(e=x+A),this.hasDragged=Math.sqrt(Math.pow(g-d,2)+Math.pow(w-e,2)),10<this.hasDragged&&(l=b.isInsidePlot(g-f,w-x),b.hasCartesianSeries&&(this.zoomX||this.zoomY)&&l&&!t&&!n&&(this.selectionMarker=n=b.renderer.rect(f,x,h?1:m,
-k?1:A,0).attr({fill:c.selectionMarkerFill||q("#335cad").setOpacity(.25).get(),"class":"highcharts-selection-marker",zIndex:7}).add()),n&&h&&(d-=g,n.attr({width:Math.abs(d),x:(0<d?0:d)+g})),n&&k&&(d=e-w,n.attr({height:Math.abs(d),y:(0<d?0:d)+w})),l&&!n&&c.panning&&b.pan(a,c.panning)))},drop:function(a){var b=this,d=this.chart,e=this.hasPinched;if(this.selectionMarker){var h={originalEvent:a,xAxis:[],yAxis:[]},k=this.selectionMarker,m=k.attr?k.attr("x"):k.x,C=k.attr?k.attr("y"):k.y,x=k.attr?k.attr("width"):
-k.width,F=k.attr?k.attr("height"):k.height,A;if(this.hasDragged||e)t(d.axes,function(c){if(c.zoomEnabled&&l(c.min)&&(e||b[{xAxis:"zoomX",yAxis:"zoomY"}[c.coll]])){var d=c.horiz,g="touchend"===a.type?c.minPixelPadding:0,k=c.toValue((d?m:C)+g),d=c.toValue((d?m+x:C+F)-g);h[c.coll].push({axis:c,min:Math.min(k,d),max:Math.max(k,d)});A=!0}}),A&&u(d,"selection",h,function(a){d.zoom(n(a,e?{animation:!1}:null))});c(d.index)&&(this.selectionMarker=this.selectionMarker.destroy());e&&this.scaleGroups()}d&&c(d.index)&&
-(f(d.container,{cursor:d._cursor}),d.cancelClick=10<this.hasDragged,d.mouseIsDown=this.hasDragged=this.hasPinched=!1,this.pinchDown=[])},onContainerMouseDown:function(a){a=this.normalize(a);2!==a.button&&(this.zoomOption(a),a.preventDefault&&a.preventDefault(),this.dragStart(a))},onDocumentMouseUp:function(b){E[a.hoverChartIndex]&&E[a.hoverChartIndex].pointer.drop(b)},onDocumentMouseMove:function(a){var b=this.chart,c=this.chartPosition;a=this.normalize(a,c);!c||this.inClass(a.target,"highcharts-tracker")||
-b.isInsidePlot(a.chartX-b.plotLeft,a.chartY-b.plotTop)||this.reset()},onContainerMouseLeave:function(b){var c=E[a.hoverChartIndex];c&&(b.relatedTarget||b.toElement)&&(c.pointer.reset(),c.pointer.chartPosition=null)},onContainerMouseMove:function(b){var c=this.chart;l(a.hoverChartIndex)&&E[a.hoverChartIndex]&&E[a.hoverChartIndex].mouseIsDown||(a.hoverChartIndex=c.index);b=this.normalize(b);b.returnValue=!1;"mousedown"===c.mouseIsDown&&this.drag(b);!this.inClass(b.target,"highcharts-tracker")&&!c.isInsidePlot(b.chartX-
-c.plotLeft,b.chartY-c.plotTop)||c.openMenu||this.runPointActions(b)},inClass:function(a,b){for(var c;a;){if(c=H(a,"class")){if(-1!==c.indexOf(b))return!0;if(-1!==c.indexOf("highcharts-container"))return!1}a=a.parentNode}},onTrackerMouseOut:function(a){var b=this.chart.hoverSeries;a=a.relatedTarget||a.toElement;this.isDirectTouch=!1;if(!(!b||!a||b.stickyTracking||this.inClass(a,"highcharts-tooltip")||this.inClass(a,"highcharts-series-"+b.index)&&this.inClass(a,"highcharts-tracker")))b.onMouseOut()},
-onContainerClick:function(a){var b=this.chart,c=b.hoverPoint,d=b.plotLeft,e=b.plotTop;a=this.normalize(a);b.cancelClick||(c&&this.inClass(a.target,"highcharts-tracker")?(u(c.series,"click",n(a,{point:c})),b.hoverPoint&&c.firePointEvent("click",a)):(n(a,this.getCoordinates(a)),b.isInsidePlot(a.chartX-d,a.chartY-e)&&u(b,"click",a)))},setDOMEvents:function(){var b=this,c=b.chart.container,d=c.ownerDocument;c.onmousedown=function(a){b.onContainerMouseDown(a)};c.onmousemove=function(a){b.onContainerMouseMove(a)};
-c.onclick=function(a){b.onContainerClick(a)};this.unbindContainerMouseLeave=B(c,"mouseleave",b.onContainerMouseLeave);a.unbindDocumentMouseUp||(a.unbindDocumentMouseUp=B(d,"mouseup",b.onDocumentMouseUp));a.hasTouch&&(c.ontouchstart=function(a){b.onContainerTouchStart(a)},c.ontouchmove=function(a){b.onContainerTouchMove(a)},a.unbindDocumentTouchEnd||(a.unbindDocumentTouchEnd=B(d,"touchend",b.onDocumentTouchEnd)))},destroy:function(){var b=this;b.unDocMouseMove&&b.unDocMouseMove();this.unbindContainerMouseLeave();
-a.chartCount||(a.unbindDocumentMouseUp&&(a.unbindDocumentMouseUp=a.unbindDocumentMouseUp()),a.unbindDocumentTouchEnd&&(a.unbindDocumentTouchEnd=a.unbindDocumentTouchEnd()));clearInterval(b.tooltipTimeout);a.objectEach(b,function(a,c){b[c]=null})}}})(K);(function(a){var B=a.charts,H=a.each,E=a.extend,q=a.map,f=a.noop,l=a.pick;E(a.Pointer.prototype,{pinchTranslate:function(a,f,l,q,c,b){this.zoomHor&&this.pinchTranslateDirection(!0,a,f,l,q,c,b);this.zoomVert&&this.pinchTranslateDirection(!1,a,f,l,q,
-c,b)},pinchTranslateDirection:function(a,f,l,q,c,b,m,d){var h=this.chart,k=a?"x":"y",e=a?"X":"Y",p="chart"+e,r=a?"width":"height",n=h["plot"+(a?"Left":"Top")],z,t,D=d||1,C=h.inverted,x=h.bounds[a?"h":"v"],F=1===f.length,A=f[0][p],J=l[0][p],G=!F&&f[1][p],g=!F&&l[1][p],w;l=function(){!F&&20<Math.abs(A-G)&&(D=d||Math.abs(J-g)/Math.abs(A-G));t=(n-J)/D+A;z=h["plot"+(a?"Width":"Height")]/D};l();f=t;f<x.min?(f=x.min,w=!0):f+z>x.max&&(f=x.max-z,w=!0);w?(J-=.8*(J-m[k][0]),F||(g-=.8*(g-m[k][1])),l()):m[k]=
-[J,g];C||(b[k]=t-n,b[r]=z);b=C?1/D:D;c[r]=z;c[k]=f;q[C?a?"scaleY":"scaleX":"scale"+e]=D;q["translate"+e]=b*n+(J-b*A)},pinch:function(a){var n=this,t=n.chart,u=n.pinchDown,c=a.touches,b=c.length,m=n.lastValidTouch,d=n.hasZoom,h=n.selectionMarker,k={},e=1===b&&(n.inClass(a.target,"highcharts-tracker")&&t.runTrackerClick||n.runChartClick),p={};1<b&&(n.initiated=!0);d&&n.initiated&&!e&&a.preventDefault();q(c,function(a){return n.normalize(a)});"touchstart"===a.type?(H(c,function(a,b){u[b]={chartX:a.chartX,
-chartY:a.chartY}}),m.x=[u[0].chartX,u[1]&&u[1].chartX],m.y=[u[0].chartY,u[1]&&u[1].chartY],H(t.axes,function(a){if(a.zoomEnabled){var b=t.bounds[a.horiz?"h":"v"],c=a.minPixelPadding,d=a.toPixels(l(a.options.min,a.dataMin)),e=a.toPixels(l(a.options.max,a.dataMax)),h=Math.max(d,e);b.min=Math.min(a.pos,Math.min(d,e)-c);b.max=Math.max(a.pos+a.len,h+c)}}),n.res=!0):n.followTouchMove&&1===b?this.runPointActions(n.normalize(a)):u.length&&(h||(n.selectionMarker=h=E({destroy:f,touch:!0},t.plotBox)),n.pinchTranslate(u,
-c,k,h,p,m),n.hasPinched=d,n.scaleGroups(k,p),n.res&&(n.res=!1,this.reset(!1,0)))},touch:function(f,n){var t=this.chart,q,c;if(t.index!==a.hoverChartIndex)this.onContainerMouseLeave({relatedTarget:!0});a.hoverChartIndex=t.index;1===f.touches.length?(f=this.normalize(f),(c=t.isInsidePlot(f.chartX-t.plotLeft,f.chartY-t.plotTop))&&!t.openMenu?(n&&this.runPointActions(f),"touchmove"===f.type&&(n=this.pinchDown,q=n[0]?4<=Math.sqrt(Math.pow(n[0].chartX-f.chartX,2)+Math.pow(n[0].chartY-f.chartY,2)):!1),l(q,
-!0)&&this.pinch(f)):n&&this.reset()):2===f.touches.length&&this.pinch(f)},onContainerTouchStart:function(a){this.zoomOption(a);this.touch(a,!0)},onContainerTouchMove:function(a){this.touch(a)},onDocumentTouchEnd:function(f){B[a.hoverChartIndex]&&B[a.hoverChartIndex].pointer.drop(f)}})})(K);(function(a){var B=a.addEvent,H=a.charts,E=a.css,q=a.doc,f=a.extend,l=a.noop,t=a.Pointer,n=a.removeEvent,v=a.win,u=a.wrap;if(!a.hasTouch&&(v.PointerEvent||v.MSPointerEvent)){var c={},b=!!v.PointerEvent,m=function(){var b=
-[];b.item=function(a){return this[a]};a.objectEach(c,function(a){b.push({pageX:a.pageX,pageY:a.pageY,target:a.target})});return b},d=function(b,c,d,f){"touch"!==b.pointerType&&b.pointerType!==b.MSPOINTER_TYPE_TOUCH||!H[a.hoverChartIndex]||(f(b),f=H[a.hoverChartIndex].pointer,f[c]({type:d,target:b.currentTarget,preventDefault:l,touches:m()}))};f(t.prototype,{onContainerPointerDown:function(a){d(a,"onContainerTouchStart","touchstart",function(a){c[a.pointerId]={pageX:a.pageX,pageY:a.pageY,target:a.currentTarget}})},
-onContainerPointerMove:function(a){d(a,"onContainerTouchMove","touchmove",function(a){c[a.pointerId]={pageX:a.pageX,pageY:a.pageY};c[a.pointerId].target||(c[a.pointerId].target=a.currentTarget)})},onDocumentPointerUp:function(a){d(a,"onDocumentTouchEnd","touchend",function(a){delete c[a.pointerId]})},batchMSEvents:function(a){a(this.chart.container,b?"pointerdown":"MSPointerDown",this.onContainerPointerDown);a(this.chart.container,b?"pointermove":"MSPointerMove",this.onContainerPointerMove);a(q,b?
-"pointerup":"MSPointerUp",this.onDocumentPointerUp)}});u(t.prototype,"init",function(a,b,c){a.call(this,b,c);this.hasZoom&&E(b.container,{"-ms-touch-action":"none","touch-action":"none"})});u(t.prototype,"setDOMEvents",function(a){a.apply(this);(this.hasZoom||this.followTouchMove)&&this.batchMSEvents(B)});u(t.prototype,"destroy",function(a){this.batchMSEvents(n);a.call(this)})}})(K);(function(a){var B=a.addEvent,H=a.css,E=a.discardElement,q=a.defined,f=a.each,l=a.isFirefox,t=a.marginNames,n=a.merge,
-v=a.pick,u=a.setAnimation,c=a.stableSort,b=a.win,m=a.wrap;a.Legend=function(a,b){this.init(a,b)};a.Legend.prototype={init:function(a,b){this.chart=a;this.setOptions(b);b.enabled&&(this.render(),B(this.chart,"endResize",function(){this.legend.positionCheckboxes()}))},setOptions:function(a){var b=v(a.padding,8);this.options=a;this.itemStyle=a.itemStyle;this.itemHiddenStyle=n(this.itemStyle,a.itemHiddenStyle);this.itemMarginTop=a.itemMarginTop||0;this.padding=b;this.initialItemY=b-5;this.itemHeight=
-this.maxItemWidth=0;this.symbolWidth=v(a.symbolWidth,16);this.pages=[]},update:function(a,b){var c=this.chart;this.setOptions(n(!0,this.options,a));this.destroy();c.isDirtyLegend=c.isDirtyBox=!0;v(b,!0)&&c.redraw()},colorizeItem:function(a,b){a.legendGroup[b?"removeClass":"addClass"]("highcharts-legend-item-hidden");var c=this.options,d=a.legendItem,h=a.legendLine,f=a.legendSymbol,m=this.itemHiddenStyle.color,c=b?c.itemStyle.color:m,l=b?a.color||m:m,n=a.options&&a.options.marker,D={fill:l};d&&d.css({fill:c,
-color:c});h&&h.attr({stroke:l});f&&(n&&f.isMarker&&(D=a.pointAttribs(),b||(D.stroke=D.fill=m)),f.attr(D))},positionItem:function(a){var b=this.options,c=b.symbolPadding,b=!b.rtl,d=a._legendItemPos,f=d[0],d=d[1],m=a.checkbox;(a=a.legendGroup)&&a.element&&a.translate(b?f:this.legendWidth-f-2*c-4,d);m&&(m.x=f,m.y=d)},destroyItem:function(a){var b=a.checkbox;f(["legendItem","legendLine","legendSymbol","legendGroup"],function(b){a[b]&&(a[b]=a[b].destroy())});b&&E(a.checkbox)},destroy:function(){function a(a){this[a]&&
-(this[a]=this[a].destroy())}f(this.getAllItems(),function(b){f(["legendItem","legendGroup"],a,b)});f("clipRect up down pager nav box title group".split(" "),a,this);this.display=null},positionCheckboxes:function(){var a=this.group&&this.group.alignAttr,b,c=this.clipHeight||this.legendHeight,e=this.titleHeight;a&&(b=a.translateY,f(this.allItems,function(d){var h=d.checkbox,k;h&&(k=b+e+h.y+(this.scrollOffset||0)+3,H(h,{left:a.translateX+d.checkboxOffset+h.x-20+"px",top:k+"px",display:k>b-6&&k<b+c-6?
-"":"none"}))},this))},renderTitle:function(){var a=this.options,b=this.padding,c=a.title,e=0;c.text&&(this.title||(this.title=this.chart.renderer.label(c.text,b-3,b-4,null,null,null,a.useHTML,null,"legend-title").attr({zIndex:1}).css(c.style).add(this.group)),a=this.title.getBBox(),e=a.height,this.offsetWidth=a.width,this.contentGroup.attr({translateY:e}));this.titleHeight=e},setText:function(b){var c=this.options;b.legendItem.attr({text:c.labelFormat?a.format(c.labelFormat,b,this.chart.time):c.labelFormatter.call(b)})},
-renderItem:function(a){var b=this.chart,c=b.renderer,d=this.options,f="horizontal"===d.layout,m=this.symbolWidth,l=d.symbolPadding,z=this.itemStyle,q=this.itemHiddenStyle,D=this.padding,C=f?v(d.itemDistance,20):0,x=!d.rtl,F=d.width,A=d.itemMarginBottom||0,J=this.itemMarginTop,G=a.legendItem,g=!a.series,w=!g&&a.series.drawLegendSymbol?a.series:a,t=w.options,u=this.createCheckboxForItem&&t&&t.showCheckbox,t=m+l+C+(u?20:0),N=d.useHTML,O=a.options.className;G||(a.legendGroup=c.g("legend-item").addClass("highcharts-"+
-w.type+"-series highcharts-color-"+a.colorIndex+(O?" "+O:"")+(g?" highcharts-series-"+a.index:"")).attr({zIndex:1}).add(this.scrollGroup),a.legendItem=G=c.text("",x?m+l:-l,this.baseline||0,N).css(n(a.visible?z:q)).attr({align:x?"left":"right",zIndex:2}).add(a.legendGroup),this.baseline||(m=z.fontSize,this.fontMetrics=c.fontMetrics(m,G),this.baseline=this.fontMetrics.f+3+J,G.attr("y",this.baseline)),this.symbolHeight=d.symbolHeight||this.fontMetrics.f,w.drawLegendSymbol(this,a),this.setItemEvents&&
-this.setItemEvents(a,G,N),u&&this.createCheckboxForItem(a));this.colorizeItem(a,a.visible);z.width||G.css({width:(d.itemWidth||d.width||b.spacingBox.width)-t});this.setText(a);c=G.getBBox();z=a.checkboxOffset=d.itemWidth||a.legendItemWidth||c.width+t;this.itemHeight=c=Math.round(a.legendItemHeight||c.height||this.symbolHeight);f&&this.itemX-D+z>(F||b.spacingBox.width-2*D-d.x)&&(this.itemX=D,this.itemY+=J+this.lastLineHeight+A,this.lastLineHeight=0);this.maxItemWidth=Math.max(this.maxItemWidth,z);
-this.lastItemY=J+this.itemY+A;this.lastLineHeight=Math.max(c,this.lastLineHeight);a._legendItemPos=[this.itemX,this.itemY];f?this.itemX+=z:(this.itemY+=J+c+A,this.lastLineHeight=c);this.offsetWidth=F||Math.max((f?this.itemX-D-(a.checkbox?0:C):z)+D,this.offsetWidth)},getAllItems:function(){var a=[];f(this.chart.series,function(b){var c=b&&b.options;b&&v(c.showInLegend,q(c.linkedTo)?!1:void 0,!0)&&(a=a.concat(b.legendItems||("point"===c.legendType?b.data:b)))});return a},getAlignment:function(){var a=
-this.options;return a.floating?"":a.align.charAt(0)+a.verticalAlign.charAt(0)+a.layout.charAt(0)},adjustMargins:function(a,b){var c=this.chart,d=this.options,h=this.getAlignment();h&&f([/(lth|ct|rth)/,/(rtv|rm|rbv)/,/(rbh|cb|lbh)/,/(lbv|lm|ltv)/],function(e,k){e.test(h)&&!q(a[k])&&(c[t[k]]=Math.max(c[t[k]],c.legend[(k+1)%2?"legendHeight":"legendWidth"]+[1,-1,-1,1][k]*d[k%2?"x":"y"]+v(d.margin,12)+b[k]+(0===k?c.titleOffset+c.options.title.margin:0)))})},render:function(){var a=this,b=a.chart,k=b.renderer,
-e=a.group,m,l,t,z,q=a.box,D=a.options,C=a.padding;a.itemX=C;a.itemY=a.initialItemY;a.offsetWidth=0;a.lastItemY=0;e||(a.group=e=k.g("legend").attr({zIndex:7}).add(),a.contentGroup=k.g().attr({zIndex:1}).add(e),a.scrollGroup=k.g().add(a.contentGroup));a.renderTitle();m=a.getAllItems();c(m,function(a,b){return(a.options&&a.options.legendIndex||0)-(b.options&&b.options.legendIndex||0)});D.reversed&&m.reverse();a.allItems=m;a.display=l=!!m.length;a.lastLineHeight=0;f(m,function(b){a.renderItem(b)});t=
-(D.width||a.offsetWidth)+C;z=a.lastItemY+a.lastLineHeight+a.titleHeight;z=a.handleOverflow(z);z+=C;q||(a.box=q=k.rect().addClass("highcharts-legend-box").attr({r:D.borderRadius}).add(e),q.isNew=!0);q.attr({stroke:D.borderColor,"stroke-width":D.borderWidth||0,fill:D.backgroundColor||"none"}).shadow(D.shadow);0<t&&0<z&&(q[q.isNew?"attr":"animate"](q.crisp.call({},{x:0,y:0,width:t,height:z},q.strokeWidth())),q.isNew=!1);q[l?"show":"hide"]();a.legendWidth=t;a.legendHeight=z;f(m,function(b){a.positionItem(b)});
-l&&(k=b.spacingBox,/(lth|ct|rth)/.test(a.getAlignment())&&(k=n(k,{y:k.y+b.titleOffset+b.options.title.margin})),e.align(n(D,{width:t,height:z}),!0,k));b.isResizing||this.positionCheckboxes()},handleOverflow:function(a){var b=this,c=this.chart,d=c.renderer,m=this.options,l=m.y,n=this.padding,c=c.spacingBox.height+("top"===m.verticalAlign?-l:l)-n,l=m.maxHeight,z,q=this.clipRect,D=m.navigation,t=v(D.animation,!0),x=D.arrowSize||12,F=this.nav,A=this.pages,J,G=this.allItems,g=function(a){"number"===typeof a?
-q.attr({height:a}):q&&(b.clipRect=q.destroy(),b.contentGroup.clip());b.contentGroup.div&&(b.contentGroup.div.style.clip=a?"rect("+n+"px,9999px,"+(n+a)+"px,0)":"auto")};"horizontal"!==m.layout||"middle"===m.verticalAlign||m.floating||(c/=2);l&&(c=Math.min(c,l));A.length=0;a>c&&!1!==D.enabled?(this.clipHeight=z=Math.max(c-20-this.titleHeight-n,0),this.currentPage=v(this.currentPage,1),this.fullHeight=a,f(G,function(a,b){var c=a._legendItemPos[1],d=Math.round(a.legendItem.getBBox().height),g=A.length;
-if(!g||c-A[g-1]>z&&(J||c)!==A[g-1])A.push(J||c),g++;a.pageIx=g-1;J&&(G[b-1].pageIx=g-1);b===G.length-1&&c+d-A[g-1]>z&&(A.push(c),a.pageIx=g);c!==J&&(J=c)}),q||(q=b.clipRect=d.clipRect(0,n,9999,0),b.contentGroup.clip(q)),g(z),F||(this.nav=F=d.g().attr({zIndex:1}).add(this.group),this.up=d.symbol("triangle",0,0,x,x).on("click",function(){b.scroll(-1,t)}).add(F),this.pager=d.text("",15,10).addClass("highcharts-legend-navigation").css(D.style).add(F),this.down=d.symbol("triangle-down",0,0,x,x).on("click",
-function(){b.scroll(1,t)}).add(F)),b.scroll(0),a=c):F&&(g(),this.nav=F.destroy(),this.scrollGroup.attr({translateY:1}),this.clipHeight=0);return a},scroll:function(a,b){var c=this.pages,d=c.length;a=this.currentPage+a;var h=this.clipHeight,f=this.options.navigation,m=this.pager,l=this.padding;a>d&&(a=d);0<a&&(void 0!==b&&u(b,this.chart),this.nav.attr({translateX:l,translateY:h+this.padding+7+this.titleHeight,visibility:"visible"}),this.up.attr({"class":1===a?"highcharts-legend-nav-inactive":"highcharts-legend-nav-active"}),
-m.attr({text:a+"/"+d}),this.down.attr({x:18+this.pager.getBBox().width,"class":a===d?"highcharts-legend-nav-inactive":"highcharts-legend-nav-active"}),this.up.attr({fill:1===a?f.inactiveColor:f.activeColor}).css({cursor:1===a?"default":"pointer"}),this.down.attr({fill:a===d?f.inactiveColor:f.activeColor}).css({cursor:a===d?"default":"pointer"}),this.scrollOffset=-c[a-1]+this.initialItemY,this.scrollGroup.animate({translateY:this.scrollOffset}),this.currentPage=a,this.positionCheckboxes())}};a.LegendSymbolMixin=
-{drawRectangle:function(a,b){var c=a.symbolHeight,d=a.options.squareSymbol;b.legendSymbol=this.chart.renderer.rect(d?(a.symbolWidth-c)/2:0,a.baseline-c+1,d?c:a.symbolWidth,c,v(a.options.symbolRadius,c/2)).addClass("highcharts-point").attr({zIndex:3}).add(b.legendGroup)},drawLineMarker:function(a){var b=this.options,c=b.marker,d=a.symbolWidth,f=a.symbolHeight,m=f/2,l=this.chart.renderer,z=this.legendGroup;a=a.baseline-Math.round(.3*a.fontMetrics.b);var q;q={"stroke-width":b.lineWidth||0};b.dashStyle&&
-(q.dashstyle=b.dashStyle);this.legendLine=l.path(["M",0,a,"L",d,a]).addClass("highcharts-graph").attr(q).add(z);c&&!1!==c.enabled&&(b=Math.min(v(c.radius,m),m),0===this.symbol.indexOf("url")&&(c=n(c,{width:f,height:f}),b=0),this.legendSymbol=c=l.symbol(this.symbol,d/2-b,a-b,2*b,2*b,c).addClass("highcharts-point").add(z),c.isMarker=!0)}};(/Trident\/7\.0/.test(b.navigator.userAgent)||l)&&m(a.Legend.prototype,"positionItem",function(a,b){var c=this,d=function(){b._legendItemPos&&a.call(c,b)};d();setTimeout(d)})})(K);
-(function(a){var B=a.addEvent,H=a.animate,E=a.animObject,q=a.attr,f=a.doc,l=a.Axis,t=a.createElement,n=a.defaultOptions,v=a.discardElement,u=a.charts,c=a.css,b=a.defined,m=a.each,d=a.extend,h=a.find,k=a.fireEvent,e=a.grep,p=a.isNumber,r=a.isObject,I=a.isString,z=a.Legend,M=a.marginNames,D=a.merge,C=a.objectEach,x=a.Pointer,F=a.pick,A=a.pInt,J=a.removeEvent,G=a.seriesTypes,g=a.splat,w=a.syncTimeout,L=a.win,P=a.Chart=function(){this.getArgs.apply(this,arguments)};a.chart=function(a,b,c){return new P(a,
-b,c)};d(P.prototype,{callbacks:[],getArgs:function(){var a=[].slice.call(arguments);if(I(a[0])||a[0].nodeName)this.renderTo=a.shift();this.init(a[0],a[1])},init:function(b,c){var g,d,e=b.series,h=b.plotOptions||{};b.series=null;g=D(n,b);for(d in g.plotOptions)g.plotOptions[d].tooltip=h[d]&&D(h[d].tooltip)||void 0;g.tooltip.userOptions=b.chart&&b.chart.forExport&&b.tooltip.userOptions||b.tooltip;g.series=b.series=e;this.userOptions=b;d=g.chart;e=d.events;this.margin=[];this.spacing=[];this.bounds=
-{h:{},v:{}};this.labelCollectors=[];this.callback=c;this.isResizing=0;this.options=g;this.axes=[];this.series=[];this.time=b.time&&a.keys(b.time).length?new a.Time(b.time):a.time;this.hasCartesianSeries=d.showAxes;var k=this;k.index=u.length;u.push(k);a.chartCount++;e&&C(e,function(a,b){B(k,b,a)});k.xAxis=[];k.yAxis=[];k.pointCount=k.colorCounter=k.symbolCounter=0;k.firstRender()},initSeries:function(b){var c=this.options.chart;(c=G[b.type||c.type||c.defaultSeriesType])||a.error(17,!0);c=new c;c.init(this,
-b);return c},orderSeries:function(a){var b=this.series;for(a=a||0;a<b.length;a++)b[a]&&(b[a].index=a,b[a].name=b[a].getName())},isInsidePlot:function(a,b,c){var g=c?b:a;a=c?a:b;return 0<=g&&g<=this.plotWidth&&0<=a&&a<=this.plotHeight},redraw:function(b){var c=this.axes,g=this.series,e=this.pointer,h=this.legend,f=this.isDirtyLegend,x,l,p=this.hasCartesianSeries,A=this.isDirtyBox,F,n=this.renderer,w=n.isHidden(),r=[];this.setResponsive&&this.setResponsive(!1);a.setAnimation(b,this);w&&this.temporaryDisplay();
-this.layOutTitles();for(b=g.length;b--;)if(F=g[b],F.options.stacking&&(x=!0,F.isDirty)){l=!0;break}if(l)for(b=g.length;b--;)F=g[b],F.options.stacking&&(F.isDirty=!0);m(g,function(a){a.isDirty&&"point"===a.options.legendType&&(a.updateTotals&&a.updateTotals(),f=!0);a.isDirtyData&&k(a,"updatedData")});f&&h.options.enabled&&(h.render(),this.isDirtyLegend=!1);x&&this.getStacks();p&&m(c,function(a){a.updateNames();a.setScale()});this.getMargins();p&&(m(c,function(a){a.isDirty&&(A=!0)}),m(c,function(a){var b=
-a.min+","+a.max;a.extKey!==b&&(a.extKey=b,r.push(function(){k(a,"afterSetExtremes",d(a.eventArgs,a.getExtremes()));delete a.eventArgs}));(A||x)&&a.redraw()}));A&&this.drawChartBox();k(this,"predraw");m(g,function(a){(A||a.isDirty)&&a.visible&&a.redraw();a.isDirtyData=!1});e&&e.reset(!0);n.draw();k(this,"redraw");k(this,"render");w&&this.temporaryDisplay(!0);m(r,function(a){a.call()})},get:function(a){function b(b){return b.id===a||b.options&&b.options.id===a}var c,g=this.series,d;c=h(this.axes,b)||
-h(this.series,b);for(d=0;!c&&d<g.length;d++)c=h(g[d].points||[],b);return c},getAxes:function(){var a=this,b=this.options,c=b.xAxis=g(b.xAxis||{}),b=b.yAxis=g(b.yAxis||{});k(this,"beforeGetAxes");m(c,function(a,b){a.index=b;a.isX=!0});m(b,function(a,b){a.index=b});c=c.concat(b);m(c,function(b){new l(a,b)})},getSelectedPoints:function(){var a=[];m(this.series,function(b){a=a.concat(e(b.data||[],function(a){return a.selected}))});return a},getSelectedSeries:function(){return e(this.series,function(a){return a.selected})},
-setTitle:function(a,b,c){var g=this,d=g.options,e;e=d.title=D({style:{color:"#333333",fontSize:d.isStock?"16px":"18px"}},d.title,a);d=d.subtitle=D({style:{color:"#666666"}},d.subtitle,b);m([["title",a,e],["subtitle",b,d]],function(a,b){var c=a[0],d=g[c],e=a[1];a=a[2];d&&e&&(g[c]=d=d.destroy());a&&!d&&(g[c]=g.renderer.text(a.text,0,0,a.useHTML).attr({align:a.align,"class":"highcharts-"+c,zIndex:a.zIndex||4}).add(),g[c].update=function(a){g.setTitle(!b&&a,b&&a)},g[c].css(a.style))});g.layOutTitles(c)},
-layOutTitles:function(a){var b=0,c,g=this.renderer,e=this.spacingBox;m(["title","subtitle"],function(a){var c=this[a],h=this.options[a];a="title"===a?-3:h.verticalAlign?0:b+2;var k;c&&(k=h.style.fontSize,k=g.fontMetrics(k,c).b,c.css({width:(h.width||e.width+h.widthAdjust)+"px"}).align(d({y:a+k},h),!1,"spacingBox"),h.floating||h.verticalAlign||(b=Math.ceil(b+c.getBBox(h.useHTML).height)))},this);c=this.titleOffset!==b;this.titleOffset=b;!this.isDirtyBox&&c&&(this.isDirtyBox=c,this.hasRendered&&F(a,
-!0)&&this.isDirtyBox&&this.redraw())},getChartSize:function(){var c=this.options.chart,g=c.width,c=c.height,d=this.renderTo;b(g)||(this.containerWidth=a.getStyle(d,"width"));b(c)||(this.containerHeight=a.getStyle(d,"height"));this.chartWidth=Math.max(0,g||this.containerWidth||600);this.chartHeight=Math.max(0,a.relativeLength(c,this.chartWidth)||(1<this.containerHeight?this.containerHeight:400))},temporaryDisplay:function(b){var c=this.renderTo;if(b)for(;c&&c.style;)c.hcOrigStyle&&(a.css(c,c.hcOrigStyle),
-delete c.hcOrigStyle),c.hcOrigDetached&&(f.body.removeChild(c),c.hcOrigDetached=!1),c=c.parentNode;else for(;c&&c.style;){f.body.contains(c)||c.parentNode||(c.hcOrigDetached=!0,f.body.appendChild(c));if("none"===a.getStyle(c,"display",!1)||c.hcOricDetached)c.hcOrigStyle={display:c.style.display,height:c.style.height,overflow:c.style.overflow},b={display:"block",overflow:"hidden"},c!==this.renderTo&&(b.height=0),a.css(c,b),c.offsetWidth||c.style.setProperty("display","block","important");c=c.parentNode;
-if(c===f.body)break}},setClassName:function(a){this.container.className="highcharts-container "+(a||"")},getContainer:function(){var b,c=this.options,g=c.chart,e,h;b=this.renderTo;var k=a.uniqueKey(),x;b||(this.renderTo=b=g.renderTo);I(b)&&(this.renderTo=b=f.getElementById(b));b||a.error(13,!0);e=A(q(b,"data-highcharts-chart"));p(e)&&u[e]&&u[e].hasRendered&&u[e].destroy();q(b,"data-highcharts-chart",this.index);b.innerHTML="";g.skipClone||b.offsetWidth||this.temporaryDisplay();this.getChartSize();
-e=this.chartWidth;h=this.chartHeight;x=d({position:"relative",overflow:"hidden",width:e+"px",height:h+"px",textAlign:"left",lineHeight:"normal",zIndex:0,"-webkit-tap-highlight-color":"rgba(0,0,0,0)"},g.style);this.container=b=t("div",{id:k},x,b);this._cursor=b.style.cursor;this.renderer=new (a[g.renderer]||a.Renderer)(b,e,h,null,g.forExport,c.exporting&&c.exporting.allowHTML);this.setClassName(g.className);this.renderer.setStyle(g.style);this.renderer.chartIndex=this.index},getMargins:function(a){var c=
-this.spacing,g=this.margin,d=this.titleOffset;this.resetMargins();d&&!b(g[0])&&(this.plotTop=Math.max(this.plotTop,d+this.options.title.margin+c[0]));this.legend&&this.legend.display&&this.legend.adjustMargins(g,c);this.extraMargin&&(this[this.extraMargin.type]=(this[this.extraMargin.type]||0)+this.extraMargin.value);this.adjustPlotArea&&this.adjustPlotArea();a||this.getAxisMargins()},getAxisMargins:function(){var a=this,c=a.axisOffset=[0,0,0,0],g=a.margin;a.hasCartesianSeries&&m(a.axes,function(a){a.visible&&
-a.getOffset()});m(M,function(d,e){b(g[e])||(a[d]+=c[e])});a.setChartSize()},reflow:function(c){var g=this,d=g.options.chart,e=g.renderTo,h=b(d.width)&&b(d.height),k=d.width||a.getStyle(e,"width"),d=d.height||a.getStyle(e,"height"),e=c?c.target:L;if(!h&&!g.isPrinting&&k&&d&&(e===L||e===f)){if(k!==g.containerWidth||d!==g.containerHeight)clearTimeout(g.reflowTimeout),g.reflowTimeout=w(function(){g.container&&g.setSize(void 0,void 0,!1)},c?100:0);g.containerWidth=k;g.containerHeight=d}},initReflow:function(){var a=
-this,b;b=B(L,"resize",function(b){a.reflow(b)});B(a,"destroy",b)},setSize:function(b,g,d){var e=this,h=e.renderer;e.isResizing+=1;a.setAnimation(d,e);e.oldChartHeight=e.chartHeight;e.oldChartWidth=e.chartWidth;void 0!==b&&(e.options.chart.width=b);void 0!==g&&(e.options.chart.height=g);e.getChartSize();b=h.globalAnimation;(b?H:c)(e.container,{width:e.chartWidth+"px",height:e.chartHeight+"px"},b);e.setChartSize(!0);h.setSize(e.chartWidth,e.chartHeight,d);m(e.axes,function(a){a.isDirty=!0;a.setScale()});
-e.isDirtyLegend=!0;e.isDirtyBox=!0;e.layOutTitles();e.getMargins();e.redraw(d);e.oldChartHeight=null;k(e,"resize");w(function(){e&&k(e,"endResize",null,function(){--e.isResizing})},E(b).duration)},setChartSize:function(a){var b=this.inverted,c=this.renderer,g=this.chartWidth,d=this.chartHeight,e=this.options.chart,h=this.spacing,k=this.clipOffset,f,x,l,p;this.plotLeft=f=Math.round(this.plotLeft);this.plotTop=x=Math.round(this.plotTop);this.plotWidth=l=Math.max(0,Math.round(g-f-this.marginRight));
-this.plotHeight=p=Math.max(0,Math.round(d-x-this.marginBottom));this.plotSizeX=b?p:l;this.plotSizeY=b?l:p;this.plotBorderWidth=e.plotBorderWidth||0;this.spacingBox=c.spacingBox={x:h[3],y:h[0],width:g-h[3]-h[1],height:d-h[0]-h[2]};this.plotBox=c.plotBox={x:f,y:x,width:l,height:p};g=2*Math.floor(this.plotBorderWidth/2);b=Math.ceil(Math.max(g,k[3])/2);c=Math.ceil(Math.max(g,k[0])/2);this.clipBox={x:b,y:c,width:Math.floor(this.plotSizeX-Math.max(g,k[1])/2-b),height:Math.max(0,Math.floor(this.plotSizeY-
-Math.max(g,k[2])/2-c))};a||m(this.axes,function(a){a.setAxisSize();a.setAxisTranslation()})},resetMargins:function(){var a=this,b=a.options.chart;m(["margin","spacing"],function(c){var g=b[c],d=r(g)?g:[g,g,g,g];m(["Top","Right","Bottom","Left"],function(g,e){a[c][e]=F(b[c+g],d[e])})});m(M,function(b,c){a[b]=F(a.margin[c],a.spacing[c])});a.axisOffset=[0,0,0,0];a.clipOffset=[0,0,0,0]},drawChartBox:function(){var a=this.options.chart,b=this.renderer,c=this.chartWidth,g=this.chartHeight,d=this.chartBackground,
-e=this.plotBackground,h=this.plotBorder,f,x=this.plotBGImage,m=a.backgroundColor,l=a.plotBackgroundColor,p=a.plotBackgroundImage,A,F=this.plotLeft,n=this.plotTop,w=this.plotWidth,r=this.plotHeight,z=this.plotBox,G=this.clipRect,J=this.clipBox,q="animate";d||(this.chartBackground=d=b.rect().addClass("highcharts-background").add(),q="attr");f=a.borderWidth||0;A=f+(a.shadow?8:0);m={fill:m||"none"};if(f||d["stroke-width"])m.stroke=a.borderColor,m["stroke-width"]=f;d.attr(m).shadow(a.shadow);d[q]({x:A/
-2,y:A/2,width:c-A-f%2,height:g-A-f%2,r:a.borderRadius});q="animate";e||(q="attr",this.plotBackground=e=b.rect().addClass("highcharts-plot-background").add());e[q](z);e.attr({fill:l||"none"}).shadow(a.plotShadow);p&&(x?x.animate(z):this.plotBGImage=b.image(p,F,n,w,r).add());G?G.animate({width:J.width,height:J.height}):this.clipRect=b.clipRect(J);q="animate";h||(q="attr",this.plotBorder=h=b.rect().addClass("highcharts-plot-border").attr({zIndex:1}).add());h.attr({stroke:a.plotBorderColor,"stroke-width":a.plotBorderWidth||
-0,fill:"none"});h[q](h.crisp({x:F,y:n,width:w,height:r},-h.strokeWidth()));this.isDirtyBox=!1;k(this,"afterDrawChartBox")},propFromSeries:function(){var a=this,b=a.options.chart,c,g=a.options.series,d,e;m(["inverted","angular","polar"],function(h){c=G[b.type||b.defaultSeriesType];e=b[h]||c&&c.prototype[h];for(d=g&&g.length;!e&&d--;)(c=G[g[d].type])&&c.prototype[h]&&(e=!0);a[h]=e})},linkSeries:function(){var a=this,b=a.series;m(b,function(a){a.linkedSeries.length=0});m(b,function(b){var c=b.options.linkedTo;
-I(c)&&(c=":previous"===c?a.series[b.index-1]:a.get(c))&&c.linkedParent!==b&&(c.linkedSeries.push(b),b.linkedParent=c,b.visible=F(b.options.visible,c.options.visible,b.visible))})},renderSeries:function(){m(this.series,function(a){a.translate();a.render()})},renderLabels:function(){var a=this,b=a.options.labels;b.items&&m(b.items,function(c){var g=d(b.style,c.style),e=A(g.left)+a.plotLeft,h=A(g.top)+a.plotTop+12;delete g.left;delete g.top;a.renderer.text(c.html,e,h).attr({zIndex:2}).css(g).add()})},
-render:function(){var a=this.axes,b=this.renderer,c=this.options,g,d,e;this.setTitle();this.legend=new z(this,c.legend);this.getStacks&&this.getStacks();this.getMargins(!0);this.setChartSize();c=this.plotWidth;g=this.plotHeight=Math.max(this.plotHeight-21,0);m(a,function(a){a.setScale()});this.getAxisMargins();d=1.1<c/this.plotWidth;e=1.05<g/this.plotHeight;if(d||e)m(a,function(a){(a.horiz&&d||!a.horiz&&e)&&a.setTickInterval(!0)}),this.getMargins();this.drawChartBox();this.hasCartesianSeries&&m(a,
-function(a){a.visible&&a.render()});this.seriesGroup||(this.seriesGroup=b.g("series-group").attr({zIndex:3}).add());this.renderSeries();this.renderLabels();this.addCredits();this.setResponsive&&this.setResponsive();this.hasRendered=!0},addCredits:function(a){var b=this;a=D(!0,this.options.credits,a);a.enabled&&!this.credits&&(this.credits=this.renderer.text(a.text+(this.mapCredits||""),0,0).addClass("highcharts-credits").on("click",function(){a.href&&(L.location.href=a.href)}).attr({align:a.position.align,
-zIndex:8}).css(a.style).add().align(a.position),this.credits.update=function(a){b.credits=b.credits.destroy();b.addCredits(a)})},destroy:function(){var b=this,c=b.axes,g=b.series,d=b.container,e,h=d&&d.parentNode;k(b,"destroy");b.renderer.forExport?a.erase(u,b):u[b.index]=void 0;a.chartCount--;b.renderTo.removeAttribute("data-highcharts-chart");J(b);for(e=c.length;e--;)c[e]=c[e].destroy();this.scroller&&this.scroller.destroy&&this.scroller.destroy();for(e=g.length;e--;)g[e]=g[e].destroy();m("title subtitle chartBackground plotBackground plotBGImage plotBorder seriesGroup clipRect credits pointer rangeSelector legend resetZoomButton tooltip renderer".split(" "),
-function(a){var c=b[a];c&&c.destroy&&(b[a]=c.destroy())});d&&(d.innerHTML="",J(d),h&&v(d));C(b,function(a,c){delete b[c]})},firstRender:function(){var a=this,b=a.options;if(!a.isReadyToRender||a.isReadyToRender()){a.getContainer();k(a,"init");a.resetMargins();a.setChartSize();a.propFromSeries();a.getAxes();m(b.series||[],function(b){a.initSeries(b)});a.linkSeries();k(a,"beforeRender");x&&(a.pointer=new x(a,b));a.render();if(!a.renderer.imgCount&&a.onload)a.onload();a.temporaryDisplay(!0)}},onload:function(){m([this.callback].concat(this.callbacks),
-function(a){a&&void 0!==this.index&&a.apply(this,[this])},this);k(this,"load");k(this,"render");b(this.index)&&!1!==this.options.chart.reflow&&this.initReflow();this.onload=null}})})(K);(function(a){var B,H=a.each,E=a.extend,q=a.erase,f=a.fireEvent,l=a.format,t=a.isArray,n=a.isNumber,v=a.pick,u=a.removeEvent;a.Point=B=function(){};a.Point.prototype={init:function(a,b,m){this.series=a;this.color=a.color;this.applyOptions(b,m);a.options.colorByPoint?(b=a.options.colors||a.chart.options.colors,this.color=
-this.color||b[a.colorCounter],b=b.length,m=a.colorCounter,a.colorCounter++,a.colorCounter===b&&(a.colorCounter=0)):m=a.colorIndex;this.colorIndex=v(this.colorIndex,m);a.chart.pointCount++;f(this,"afterInit");return this},applyOptions:function(a,b){var c=this.series,d=c.options.pointValKey||c.pointValKey;a=B.prototype.optionsToObject.call(this,a);E(this,a);this.options=this.options?E(this.options,a):a;a.group&&delete this.group;d&&(this.y=this[d]);this.isNull=v(this.isValid&&!this.isValid(),null===
-this.x||!n(this.y,!0));this.selected&&(this.state="select");"name"in this&&void 0===b&&c.xAxis&&c.xAxis.hasNames&&(this.x=c.xAxis.nameToX(this));void 0===this.x&&c&&(this.x=void 0===b?c.autoIncrement(this):b);return this},optionsToObject:function(a){var b={},c=this.series,d=c.options.keys,h=d||c.pointArrayMap||["y"],k=h.length,e=0,f=0;if(n(a)||null===a)b[h[0]]=a;else if(t(a))for(!d&&a.length>k&&(c=typeof a[0],"string"===c?b.name=a[0]:"number"===c&&(b.x=a[0]),e++);f<k;)d&&void 0===a[e]||(b[h[f]]=a[e]),
-e++,f++;else"object"===typeof a&&(b=a,a.dataLabels&&(c._hasPointLabels=!0),a.marker&&(c._hasPointMarkers=!0));return b},getClassName:function(){return"highcharts-point"+(this.selected?" highcharts-point-select":"")+(this.negative?" highcharts-negative":"")+(this.isNull?" highcharts-null-point":"")+(void 0!==this.colorIndex?" highcharts-color-"+this.colorIndex:"")+(this.options.className?" "+this.options.className:"")+(this.zone&&this.zone.className?" "+this.zone.className.replace("highcharts-negative",
-""):"")},getZone:function(){var a=this.series,b=a.zones,a=a.zoneAxis||"y",f=0,d;for(d=b[f];this[a]>=d.value;)d=b[++f];d&&d.color&&!this.options.color&&(this.color=d.color);return d},destroy:function(){var a=this.series.chart,b=a.hoverPoints,f;a.pointCount--;b&&(this.setState(),q(b,this),b.length||(a.hoverPoints=null));if(this===a.hoverPoint)this.onMouseOut();if(this.graphic||this.dataLabel)u(this),this.destroyElements();this.legendItem&&a.legend.destroyItem(this);for(f in this)this[f]=null},destroyElements:function(){for(var a=
-["graphic","dataLabel","dataLabelUpper","connector","shadowGroup"],b,f=6;f--;)b=a[f],this[b]&&(this[b]=this[b].destroy())},getLabelConfig:function(){return{x:this.category,y:this.y,color:this.color,colorIndex:this.colorIndex,key:this.name||this.category,series:this.series,point:this,percentage:this.percentage,total:this.total||this.stackTotal}},tooltipFormatter:function(a){var b=this.series,c=b.tooltipOptions,d=v(c.valueDecimals,""),h=c.valuePrefix||"",k=c.valueSuffix||"";H(b.pointArrayMap||["y"],
-function(b){b="{point."+b;if(h||k)a=a.replace(b+"}",h+b+"}"+k);a=a.replace(b+"}",b+":,."+d+"f}")});return l(a,{point:this,series:this.series},b.chart.time)},firePointEvent:function(a,b,m){var c=this,h=this.series.options;(h.point.events[a]||c.options&&c.options.events&&c.options.events[a])&&this.importEvents();"click"===a&&h.allowPointSelect&&(m=function(a){c.select&&c.select(null,a.ctrlKey||a.metaKey||a.shiftKey)});f(this,a,b,m)},visible:!0}})(K);(function(a){var B=a.addEvent,H=a.animObject,E=a.arrayMax,
-q=a.arrayMin,f=a.correctFloat,l=a.defaultOptions,t=a.defaultPlotOptions,n=a.defined,v=a.each,u=a.erase,c=a.extend,b=a.fireEvent,m=a.grep,d=a.isArray,h=a.isNumber,k=a.isString,e=a.merge,p=a.objectEach,r=a.pick,I=a.removeEvent,z=a.splat,M=a.SVGElement,D=a.syncTimeout,C=a.win;a.Series=a.seriesType("line",null,{lineWidth:2,allowPointSelect:!1,showCheckbox:!1,animation:{duration:1E3},events:{},marker:{lineWidth:0,lineColor:"#ffffff",enabledThreshold:2,radius:4,states:{normal:{animation:!0},hover:{animation:{duration:50},
-enabled:!0,radiusPlus:2,lineWidthPlus:1},select:{fillColor:"#cccccc",lineColor:"#000000",lineWidth:2}}},point:{events:{}},dataLabels:{align:"center",formatter:function(){return null===this.y?"":a.numberFormat(this.y,-1)},style:{fontSize:"11px",fontWeight:"bold",color:"contrast",textOutline:"1px contrast"},verticalAlign:"bottom",x:0,y:0,padding:5},cropThreshold:300,pointRange:0,softThreshold:!0,states:{normal:{animation:!0},hover:{animation:{duration:50},lineWidthPlus:1,marker:{},halo:{size:10,opacity:.25}},
-select:{marker:{}}},stickyTracking:!0,turboThreshold:1E3,findNearestPointBy:"x"},{isCartesian:!0,pointClass:a.Point,sorted:!0,requireSorting:!0,directTouch:!1,axisTypes:["xAxis","yAxis"],colorCounter:0,parallelArrays:["x","y"],coll:"series",init:function(a,b){var d=this,e,h=a.series,g;d.chart=a;d.options=b=d.setOptions(b);d.linkedSeries=[];d.bindAxes();c(d,{name:b.name,state:"",visible:!1!==b.visible,selected:!0===b.selected});e=b.events;p(e,function(a,b){B(d,b,a)});if(e&&e.click||b.point&&b.point.events&&
-b.point.events.click||b.allowPointSelect)a.runTrackerClick=!0;d.getColor();d.getSymbol();v(d.parallelArrays,function(a){d[a+"Data"]=[]});d.setData(b.data,!1);d.isCartesian&&(a.hasCartesianSeries=!0);h.length&&(g=h[h.length-1]);d._i=r(g&&g._i,-1)+1;a.orderSeries(this.insert(h))},insert:function(a){var b=this.options.index,c;if(h(b)){for(c=a.length;c--;)if(b>=r(a[c].options.index,a[c]._i)){a.splice(c+1,0,this);break}-1===c&&a.unshift(this);c+=1}else a.push(this);return r(c,a.length-1)},bindAxes:function(){var b=
-this,c=b.options,d=b.chart,e;v(b.axisTypes||[],function(h){v(d[h],function(a){e=a.options;if(c[h]===e.index||void 0!==c[h]&&c[h]===e.id||void 0===c[h]&&0===e.index)b.insert(a.series),b[h]=a,a.isDirty=!0});b[h]||b.optionalAxis===h||a.error(18,!0)})},updateParallelArrays:function(a,b){var c=a.series,d=arguments,e=h(b)?function(g){var d="y"===g&&c.toYData?c.toYData(a):a[g];c[g+"Data"][b]=d}:function(a){Array.prototype[b].apply(c[a+"Data"],Array.prototype.slice.call(d,2))};v(c.parallelArrays,e)},autoIncrement:function(){var a=
-this.options,b=this.xIncrement,c,d=a.pointIntervalUnit,e=this.chart.time,b=r(b,a.pointStart,0);this.pointInterval=c=r(this.pointInterval,a.pointInterval,1);d&&(a=new e.Date(b),"day"===d?e.set("Date",a,e.get("Date",a)+c):"month"===d?e.set("Month",a,e.get("Month",a)+c):"year"===d&&e.set("FullYear",a,e.get("FullYear",a)+c),c=a.getTime()-b);this.xIncrement=b+c;return b},setOptions:function(a){var b=this.chart,c=b.options,d=c.plotOptions,h=(b.userOptions||{}).plotOptions||{},g=d[this.type];this.userOptions=
-a;b=e(g,d.series,a);this.tooltipOptions=e(l.tooltip,l.plotOptions.series&&l.plotOptions.series.tooltip,l.plotOptions[this.type].tooltip,c.tooltip.userOptions,d.series&&d.series.tooltip,d[this.type].tooltip,a.tooltip);this.stickyTracking=r(a.stickyTracking,h[this.type]&&h[this.type].stickyTracking,h.series&&h.series.stickyTracking,this.tooltipOptions.shared&&!this.noSharedTooltip?!0:b.stickyTracking);null===g.marker&&delete b.marker;this.zoneAxis=b.zoneAxis;a=this.zones=(b.zones||[]).slice();!b.negativeColor&&
-!b.negativeFillColor||b.zones||a.push({value:b[this.zoneAxis+"Threshold"]||b.threshold||0,className:"highcharts-negative",color:b.negativeColor,fillColor:b.negativeFillColor});a.length&&n(a[a.length-1].value)&&a.push({color:this.color,fillColor:this.fillColor});return b},getName:function(){return this.name||"Series "+(this.index+1)},getCyclic:function(a,b,c){var d,e=this.chart,g=this.userOptions,h=a+"Index",k=a+"Counter",f=c?c.length:r(e.options.chart[a+"Count"],e[a+"Count"]);b||(d=r(g[h],g["_"+h]),
-n(d)||(e.series.length||(e[k]=0),g["_"+h]=d=e[k]%f,e[k]+=1),c&&(b=c[d]));void 0!==d&&(this[h]=d);this[a]=b},getColor:function(){this.options.colorByPoint?this.options.color=null:this.getCyclic("color",this.options.color||t[this.type].color,this.chart.options.colors)},getSymbol:function(){this.getCyclic("symbol",this.options.marker.symbol,this.chart.options.symbols)},drawLegendSymbol:a.LegendSymbolMixin.drawLineMarker,setData:function(b,c,e,f){var m=this,g=m.points,l=g&&g.length||0,x,p=m.options,F=
-m.chart,n=null,A=m.xAxis,z=p.turboThreshold,q=this.xData,D=this.yData,t=(x=m.pointArrayMap)&&x.length;b=b||[];x=b.length;c=r(c,!0);if(!1!==f&&x&&l===x&&!m.cropped&&!m.hasGroupedData&&m.visible)v(b,function(a,b){g[b].update&&a!==p.data[b]&&g[b].update(a,!1,null,!1)});else{m.xIncrement=null;m.colorCounter=0;v(this.parallelArrays,function(a){m[a+"Data"].length=0});if(z&&x>z){for(e=0;null===n&&e<x;)n=b[e],e++;if(h(n))for(e=0;e<x;e++)q[e]=this.autoIncrement(),D[e]=b[e];else if(d(n))if(t)for(e=0;e<x;e++)n=
-b[e],q[e]=n[0],D[e]=n.slice(1,t+1);else for(e=0;e<x;e++)n=b[e],q[e]=n[0],D[e]=n[1];else a.error(12)}else for(e=0;e<x;e++)void 0!==b[e]&&(n={series:m},m.pointClass.prototype.applyOptions.apply(n,[b[e]]),m.updateParallelArrays(n,e));D&&k(D[0])&&a.error(14,!0);m.data=[];m.options.data=m.userOptions.data=b;for(e=l;e--;)g[e]&&g[e].destroy&&g[e].destroy();A&&(A.minRange=A.userMinRange);m.isDirty=F.isDirtyBox=!0;m.isDirtyData=!!g;e=!1}"point"===p.legendType&&(this.processData(),this.generatePoints());c&&
-F.redraw(e)},processData:function(b){var c=this.xData,d=this.yData,e=c.length,h;h=0;var g,k,f=this.xAxis,m,l=this.options;m=l.cropThreshold;var x=this.getExtremesFromAll||l.getExtremesFromAll,p=this.isCartesian,l=f&&f.val2lin,n=f&&f.isLog,r=this.requireSorting,z,q;if(p&&!this.isDirty&&!f.isDirty&&!this.yAxis.isDirty&&!b)return!1;f&&(b=f.getExtremes(),z=b.min,q=b.max);if(p&&this.sorted&&!x&&(!m||e>m||this.forceCrop))if(c[e-1]<z||c[0]>q)c=[],d=[];else if(c[0]<z||c[e-1]>q)h=this.cropData(this.xData,
-this.yData,z,q),c=h.xData,d=h.yData,h=h.start,g=!0;for(m=c.length||1;--m;)e=n?l(c[m])-l(c[m-1]):c[m]-c[m-1],0<e&&(void 0===k||e<k)?k=e:0>e&&r&&(a.error(15),r=!1);this.cropped=g;this.cropStart=h;this.processedXData=c;this.processedYData=d;this.closestPointRange=k},cropData:function(a,b,c,d){var e=a.length,g=0,h=e,k=r(this.cropShoulder,1),f;for(f=0;f<e;f++)if(a[f]>=c){g=Math.max(0,f-k);break}for(c=f;c<e;c++)if(a[c]>d){h=c+k;break}return{xData:a.slice(g,h),yData:b.slice(g,h),start:g,end:h}},generatePoints:function(){var a=
-this.options,b=a.data,c=this.data,d,e=this.processedXData,g=this.processedYData,h=this.pointClass,k=e.length,f=this.cropStart||0,m,l=this.hasGroupedData,a=a.keys,p,n=[],r;c||l||(c=[],c.length=b.length,c=this.data=c);a&&l&&(this.options.keys=!1);for(r=0;r<k;r++)m=f+r,l?(p=(new h).init(this,[e[r]].concat(z(g[r]))),p.dataGroup=this.groupMap[r]):(p=c[m])||void 0===b[m]||(c[m]=p=(new h).init(this,b[m],e[r])),p&&(p.index=m,n[r]=p);this.options.keys=a;if(c&&(k!==(d=c.length)||l))for(r=0;r<d;r++)r!==f||l||
-(r+=k),c[r]&&(c[r].destroyElements(),c[r].plotX=void 0);this.data=c;this.points=n},getExtremes:function(a){var b=this.yAxis,c=this.processedXData,e,k=[],g=0;e=this.xAxis.getExtremes();var f=e.min,m=e.max,l,p,x,n;a=a||this.stackedYData||this.processedYData||[];e=a.length;for(n=0;n<e;n++)if(p=c[n],x=a[n],l=(h(x,!0)||d(x))&&(!b.positiveValuesOnly||x.length||0<x),p=this.getExtremesFromAll||this.options.getExtremesFromAll||this.cropped||(c[n+1]||p)>=f&&(c[n-1]||p)<=m,l&&p)if(l=x.length)for(;l--;)"number"===
-typeof x[l]&&(k[g++]=x[l]);else k[g++]=x;this.dataMin=q(k);this.dataMax=E(k)},translate:function(){this.processedXData||this.processData();this.generatePoints();var a=this.options,c=a.stacking,e=this.xAxis,d=e.categories,k=this.yAxis,g=this.points,m=g.length,l=!!this.modifyValue,p=a.pointPlacement,z="between"===p||h(p),q=a.threshold,D=a.startFromThreshold?q:0,t,C,v,u,M=Number.MAX_VALUE;"between"===p&&(p=.5);h(p)&&(p*=r(a.pointRange||e.pointRange));for(a=0;a<m;a++){var I=g[a],B=I.x,E=I.y;C=I.low;var H=
-c&&k.stacks[(this.negStacks&&E<(D?0:q)?"-":"")+this.stackKey],K;k.positiveValuesOnly&&null!==E&&0>=E&&(I.isNull=!0);I.plotX=t=f(Math.min(Math.max(-1E5,e.translate(B,0,0,0,1,p,"flags"===this.type)),1E5));c&&this.visible&&!I.isNull&&H&&H[B]&&(u=this.getStackIndicator(u,B,this.index),K=H[B],E=K.points[u.key],C=E[0],E=E[1],C===D&&u.key===H[B].base&&(C=r(q,k.min)),k.positiveValuesOnly&&0>=C&&(C=null),I.total=I.stackTotal=K.total,I.percentage=K.total&&I.y/K.total*100,I.stackY=E,K.setOffset(this.pointXOffset||
-0,this.barW||0));I.yBottom=n(C)?Math.min(Math.max(-1E5,k.translate(C,0,1,0,1)),1E5):null;l&&(E=this.modifyValue(E,I));I.plotY=C="number"===typeof E&&Infinity!==E?Math.min(Math.max(-1E5,k.translate(E,0,1,0,1)),1E5):void 0;I.isInside=void 0!==C&&0<=C&&C<=k.len&&0<=t&&t<=e.len;I.clientX=z?f(e.translate(B,0,0,0,1,p)):t;I.negative=I.y<(q||0);I.category=d&&void 0!==d[I.x]?d[I.x]:I.x;I.isNull||(void 0!==v&&(M=Math.min(M,Math.abs(t-v))),v=t);I.zone=this.zones.length&&I.getZone()}this.closestPointRangePx=
-M;b(this,"afterTranslate")},getValidPoints:function(a,b){var c=this.chart;return m(a||this.points||[],function(a){return b&&!c.isInsidePlot(a.plotX,a.plotY,c.inverted)?!1:!a.isNull})},setClip:function(a){var b=this.chart,c=this.options,e=b.renderer,d=b.inverted,g=this.clipBox,h=g||b.clipBox,k=this.sharedClipKey||["_sharedClip",a&&a.duration,a&&a.easing,h.height,c.xAxis,c.yAxis].join(),f=b[k],m=b[k+"m"];f||(a&&(h.width=0,d&&(h.x=b.plotSizeX),b[k+"m"]=m=e.clipRect(d?b.plotSizeX+99:-99,d?-b.plotLeft:
--b.plotTop,99,d?b.chartWidth:b.chartHeight)),b[k]=f=e.clipRect(h),f.count={length:0});a&&!f.count[this.index]&&(f.count[this.index]=!0,f.count.length+=1);!1!==c.clip&&(this.group.clip(a||g?f:b.clipRect),this.markerGroup.clip(m),this.sharedClipKey=k);a||(f.count[this.index]&&(delete f.count[this.index],--f.count.length),0===f.count.length&&k&&b[k]&&(g||(b[k]=b[k].destroy()),b[k+"m"]&&(b[k+"m"]=b[k+"m"].destroy())))},animate:function(a){var b=this.chart,c=H(this.options.animation),e;a?this.setClip(c):
-(e=this.sharedClipKey,(a=b[e])&&a.animate({width:b.plotSizeX,x:0},c),b[e+"m"]&&b[e+"m"].animate({width:b.plotSizeX+99,x:0},c),this.animate=null)},afterAnimate:function(){this.setClip();b(this,"afterAnimate");this.finishedAnimating=!0},drawPoints:function(){var a=this.points,b=this.chart,c,e,d,g,h=this.options.marker,k,f,m,l=this[this.specialGroup]||this.markerGroup,p,n=r(h.enabled,this.xAxis.isRadial?!0:null,this.closestPointRangePx>=h.enabledThreshold*h.radius);if(!1!==h.enabled||this._hasPointMarkers)for(c=
-0;c<a.length;c++)e=a[c],g=e.graphic,k=e.marker||{},f=!!e.marker,d=n&&void 0===k.enabled||k.enabled,m=e.isInside,d&&!e.isNull?(d=r(k.symbol,this.symbol),p=this.markerAttribs(e,e.selected&&"select"),g?g[m?"show":"hide"](!0).animate(p):m&&(0<p.width||e.hasImage)&&(e.graphic=g=b.renderer.symbol(d,p.x,p.y,p.width,p.height,f?k:h).add(l)),g&&g.attr(this.pointAttribs(e,e.selected&&"select")),g&&g.addClass(e.getClassName(),!0)):g&&(e.graphic=g.destroy())},markerAttribs:function(a,b){var c=this.options.marker,
-e=a.marker||{},d=e.symbol||c.symbol,g=r(e.radius,c.radius);b&&(c=c.states[b],b=e.states&&e.states[b],g=r(b&&b.radius,c&&c.radius,g+(c&&c.radiusPlus||0)));a.hasImage=d&&0===d.indexOf("url");a.hasImage&&(g=0);a={x:Math.floor(a.plotX)-g,y:a.plotY-g};g&&(a.width=a.height=2*g);return a},pointAttribs:function(a,b){var c=this.options.marker,e=a&&a.options,d=e&&e.marker||{},g=this.color,h=e&&e.color,k=a&&a.color,e=r(d.lineWidth,c.lineWidth);a=a&&a.zone&&a.zone.color;g=h||a||k||g;a=d.fillColor||c.fillColor||
-g;g=d.lineColor||c.lineColor||g;b&&(c=c.states[b],b=d.states&&d.states[b]||{},e=r(b.lineWidth,c.lineWidth,e+r(b.lineWidthPlus,c.lineWidthPlus,0)),a=b.fillColor||c.fillColor||a,g=b.lineColor||c.lineColor||g);return{stroke:g,"stroke-width":e,fill:a}},destroy:function(){var a=this,c=a.chart,e=/AppleWebKit\/533/.test(C.navigator.userAgent),d,h,g=a.data||[],k,f;b(a,"destroy");I(a);v(a.axisTypes||[],function(b){(f=a[b])&&f.series&&(u(f.series,a),f.isDirty=f.forceRedraw=!0)});a.legendItem&&a.chart.legend.destroyItem(a);
-for(h=g.length;h--;)(k=g[h])&&k.destroy&&k.destroy();a.points=null;clearTimeout(a.animationTimeout);p(a,function(a,b){a instanceof M&&!a.survive&&(d=e&&"group"===b?"hide":"destroy",a[d]())});c.hoverSeries===a&&(c.hoverSeries=null);u(c.series,a);c.orderSeries();p(a,function(b,c){delete a[c]})},getGraphPath:function(a,b,c){var e=this,d=e.options,g=d.step,h,k=[],f=[],m;a=a||e.points;(h=a.reversed)&&a.reverse();(g={right:1,center:2}[g]||g&&3)&&h&&(g=4-g);!d.connectNulls||b||c||(a=this.getValidPoints(a));
-v(a,function(h,l){var p=h.plotX,x=h.plotY,r=a[l-1];(h.leftCliff||r&&r.rightCliff)&&!c&&(m=!0);h.isNull&&!n(b)&&0<l?m=!d.connectNulls:h.isNull&&!b?m=!0:(0===l||m?l=["M",h.plotX,h.plotY]:e.getPointSpline?l=e.getPointSpline(a,h,l):g?(l=1===g?["L",r.plotX,x]:2===g?["L",(r.plotX+p)/2,r.plotY,"L",(r.plotX+p)/2,x]:["L",p,r.plotY],l.push("L",p,x)):l=["L",p,x],f.push(h.x),g&&f.push(h.x),k.push.apply(k,l),m=!1)});k.xMap=f;return e.graphPath=k},drawGraph:function(){var a=this,b=this.options,c=(this.gappedPath||
-this.getGraphPath).call(this),e=[["graph","highcharts-graph",b.lineColor||this.color,b.dashStyle]];v(this.zones,function(c,d){e.push(["zone-graph-"+d,"highcharts-graph highcharts-zone-graph-"+d+" "+(c.className||""),c.color||a.color,c.dashStyle||b.dashStyle])});v(e,function(e,d){var g=e[0],h=a[g];h?(h.endX=a.preventGraphAnimation?null:c.xMap,h.animate({d:c})):c.length&&(a[g]=a.chart.renderer.path(c).addClass(e[1]).attr({zIndex:1}).add(a.group),h={stroke:e[2],"stroke-width":b.lineWidth,fill:a.fillGraph&&
-a.color||"none"},e[3]?h.dashstyle=e[3]:"square"!==b.linecap&&(h["stroke-linecap"]=h["stroke-linejoin"]="round"),h=a[g].attr(h).shadow(2>d&&b.shadow));h&&(h.startX=c.xMap,h.isArea=c.isArea)})},applyZones:function(){var a=this,b=this.chart,c=b.renderer,e=this.zones,d,g,h=this.clips||[],k,f=this.graph,m=this.area,l=Math.max(b.chartWidth,b.chartHeight),p=this[(this.zoneAxis||"y")+"Axis"],n,z,q=b.inverted,D,t,C,u,M=!1;e.length&&(f||m)&&p&&void 0!==p.min&&(z=p.reversed,D=p.horiz,f&&f.hide(),m&&m.hide(),
-n=p.getExtremes(),v(e,function(e,x){d=z?D?b.plotWidth:0:D?0:p.toPixels(n.min);d=Math.min(Math.max(r(g,d),0),l);g=Math.min(Math.max(Math.round(p.toPixels(r(e.value,n.max),!0)),0),l);M&&(d=g=p.toPixels(n.max));t=Math.abs(d-g);C=Math.min(d,g);u=Math.max(d,g);p.isXAxis?(k={x:q?u:C,y:0,width:t,height:l},D||(k.x=b.plotHeight-k.x)):(k={x:0,y:q?u:C,width:l,height:t},D&&(k.y=b.plotWidth-k.y));q&&c.isVML&&(k=p.isXAxis?{x:0,y:z?C:u,height:k.width,width:b.chartWidth}:{x:k.y-b.plotLeft-b.spacingBox.x,y:0,width:k.height,
-height:b.chartHeight});h[x]?h[x].animate(k):(h[x]=c.clipRect(k),f&&a["zone-graph-"+x].clip(h[x]),m&&a["zone-area-"+x].clip(h[x]));M=e.value>n.max}),this.clips=h)},invertGroups:function(a){function b(){v(["group","markerGroup"],function(b){c[b]&&(e.renderer.isVML&&c[b].attr({width:c.yAxis.len,height:c.xAxis.len}),c[b].width=c.yAxis.len,c[b].height=c.xAxis.len,c[b].invert(a))})}var c=this,e=c.chart,d;c.xAxis&&(d=B(e,"resize",b),B(c,"destroy",d),b(a),c.invertGroups=b)},plotGroup:function(a,b,c,e,d){var g=
-this[a],h=!g;h&&(this[a]=g=this.chart.renderer.g().attr({zIndex:e||.1}).add(d));g.addClass("highcharts-"+b+" highcharts-series-"+this.index+" highcharts-"+this.type+"-series "+(n(this.colorIndex)?"highcharts-color-"+this.colorIndex+" ":"")+(this.options.className||"")+(g.hasClass("highcharts-tracker")?" highcharts-tracker":""),!0);g.attr({visibility:c})[h?"attr":"animate"](this.getPlotBox());return g},getPlotBox:function(){var a=this.chart,b=this.xAxis,c=this.yAxis;a.inverted&&(b=c,c=this.xAxis);
-return{translateX:b?b.left:a.plotLeft,translateY:c?c.top:a.plotTop,scaleX:1,scaleY:1}},render:function(){var a=this,c=a.chart,e,d=a.options,h=!!a.animate&&c.renderer.isSVG&&H(d.animation).duration,g=a.visible?"inherit":"hidden",k=d.zIndex,f=a.hasRendered,m=c.seriesGroup,l=c.inverted;e=a.plotGroup("group","series",g,k,m);a.markerGroup=a.plotGroup("markerGroup","markers",g,k,m);h&&a.animate(!0);e.inverted=a.isCartesian?l:!1;a.drawGraph&&(a.drawGraph(),a.applyZones());a.drawDataLabels&&a.drawDataLabels();
-a.visible&&a.drawPoints();a.drawTracker&&!1!==a.options.enableMouseTracking&&a.drawTracker();a.invertGroups(l);!1===d.clip||a.sharedClipKey||f||e.clip(c.clipRect);h&&a.animate();f||(a.animationTimeout=D(function(){a.afterAnimate()},h));a.isDirty=!1;a.hasRendered=!0;b(a,"afterRender")},redraw:function(){var a=this.chart,b=this.isDirty||this.isDirtyData,c=this.group,e=this.xAxis,d=this.yAxis;c&&(a.inverted&&c.attr({width:a.plotWidth,height:a.plotHeight}),c.animate({translateX:r(e&&e.left,a.plotLeft),
-translateY:r(d&&d.top,a.plotTop)}));this.translate();this.render();b&&delete this.kdTree},kdAxisArray:["clientX","plotY"],searchPoint:function(a,b){var c=this.xAxis,e=this.yAxis,d=this.chart.inverted;return this.searchKDTree({clientX:d?c.len-a.chartY+c.pos:a.chartX-c.pos,plotY:d?e.len-a.chartX+e.pos:a.chartY-e.pos},b)},buildKDTree:function(){function a(c,e,d){var g,h;if(h=c&&c.length)return g=b.kdAxisArray[e%d],c.sort(function(a,b){return a[g]-b[g]}),h=Math.floor(h/2),{point:c[h],left:a(c.slice(0,
-h),e+1,d),right:a(c.slice(h+1),e+1,d)}}this.buildingKdTree=!0;var b=this,c=-1<b.options.findNearestPointBy.indexOf("y")?2:1;delete b.kdTree;D(function(){b.kdTree=a(b.getValidPoints(null,!b.directTouch),c,c);b.buildingKdTree=!1},b.options.kdNow?0:1)},searchKDTree:function(a,b){function c(a,b,k,f){var m=b.point,l=e.kdAxisArray[k%f],p,r,z=m;r=n(a[d])&&n(m[d])?Math.pow(a[d]-m[d],2):null;p=n(a[g])&&n(m[g])?Math.pow(a[g]-m[g],2):null;p=(r||0)+(p||0);m.dist=n(p)?Math.sqrt(p):Number.MAX_VALUE;m.distX=n(r)?
-Math.sqrt(r):Number.MAX_VALUE;l=a[l]-m[l];p=0>l?"left":"right";r=0>l?"right":"left";b[p]&&(p=c(a,b[p],k+1,f),z=p[h]<z[h]?p:m);b[r]&&Math.sqrt(l*l)<z[h]&&(a=c(a,b[r],k+1,f),z=a[h]<z[h]?a:z);return z}var e=this,d=this.kdAxisArray[0],g=this.kdAxisArray[1],h=b?"distX":"dist";b=-1<e.options.findNearestPointBy.indexOf("y")?2:1;this.kdTree||this.buildingKdTree||this.buildKDTree();if(this.kdTree)return c(a,this.kdTree,b,b)}})})(K);(function(a){var B=a.Axis,H=a.Chart,E=a.correctFloat,q=a.defined,f=a.destroyObjectProperties,
-l=a.each,t=a.format,n=a.objectEach,v=a.pick,u=a.Series;a.StackItem=function(a,b,f,d,h){var c=a.chart.inverted;this.axis=a;this.isNegative=f;this.options=b;this.x=d;this.total=null;this.points={};this.stack=h;this.rightCliff=this.leftCliff=0;this.alignOptions={align:b.align||(c?f?"left":"right":"center"),verticalAlign:b.verticalAlign||(c?"middle":f?"bottom":"top"),y:v(b.y,c?4:f?14:-6),x:v(b.x,c?f?-6:6:0)};this.textAlign=b.textAlign||(c?f?"right":"left":"center")};a.StackItem.prototype={destroy:function(){f(this,
-this.axis)},render:function(a){var b=this.axis.chart,c=this.options,d=c.format,d=d?t(d,this,b.time):c.formatter.call(this);this.label?this.label.attr({text:d,visibility:"hidden"}):this.label=b.renderer.text(d,null,null,c.useHTML).css(c.style).attr({align:this.textAlign,rotation:c.rotation,visibility:"hidden"}).add(a)},setOffset:function(a,b){var c=this.axis,d=c.chart,h=c.translate(c.usePercentage?100:this.total,0,0,0,1),c=c.translate(0),c=Math.abs(h-c);a=d.xAxis[0].translate(this.x)+a;h=this.getStackBox(d,
-this,a,h,b,c);if(b=this.label)b.align(this.alignOptions,null,h),h=b.alignAttr,b[!1===this.options.crop||d.isInsidePlot(h.x,h.y)?"show":"hide"](!0)},getStackBox:function(a,b,f,d,h,k){var c=b.axis.reversed,m=a.inverted;a=a.plotHeight;b=b.isNegative&&!c||!b.isNegative&&c;return{x:m?b?d:d-k:f,y:m?a-f-h:b?a-d-k:a-d,width:m?k:h,height:m?h:k}}};H.prototype.getStacks=function(){var a=this;l(a.yAxis,function(a){a.stacks&&a.hasVisibleSeries&&(a.oldStacks=a.stacks)});l(a.series,function(b){!b.options.stacking||
-!0!==b.visible&&!1!==a.options.chart.ignoreHiddenSeries||(b.stackKey=b.type+v(b.options.stack,""))})};B.prototype.buildStacks=function(){var a=this.series,b=v(this.options.reversedStacks,!0),f=a.length,d;if(!this.isXAxis){this.usePercentage=!1;for(d=f;d--;)a[b?d:f-d-1].setStackedPoints();for(d=0;d<f;d++)a[d].modifyStacks()}};B.prototype.renderStackTotals=function(){var a=this.chart,b=a.renderer,f=this.stacks,d=this.stackTotalGroup;d||(this.stackTotalGroup=d=b.g("stack-labels").attr({visibility:"visible",
-zIndex:6}).add());d.translate(a.plotLeft,a.plotTop);n(f,function(a){n(a,function(a){a.render(d)})})};B.prototype.resetStacks=function(){var a=this,b=a.stacks;a.isXAxis||n(b,function(b){n(b,function(c,h){c.touched<a.stacksTouched?(c.destroy(),delete b[h]):(c.total=null,c.cumulative=null)})})};B.prototype.cleanStacks=function(){var a;this.isXAxis||(this.oldStacks&&(a=this.stacks=this.oldStacks),n(a,function(a){n(a,function(a){a.cumulative=a.total})}))};u.prototype.setStackedPoints=function(){if(this.options.stacking&&
-(!0===this.visible||!1===this.chart.options.chart.ignoreHiddenSeries)){var c=this.processedXData,b=this.processedYData,f=[],d=b.length,h=this.options,k=h.threshold,e=v(h.startFromThreshold&&k,0),l=h.stack,h=h.stacking,n=this.stackKey,t="-"+n,z=this.negStacks,u=this.yAxis,D=u.stacks,C=u.oldStacks,x,F,A,J,G,g,w;u.stacksTouched+=1;for(G=0;G<d;G++)g=c[G],w=b[G],x=this.getStackIndicator(x,g,this.index),J=x.key,A=(F=z&&w<(e?0:k))?t:n,D[A]||(D[A]={}),D[A][g]||(C[A]&&C[A][g]?(D[A][g]=C[A][g],D[A][g].total=
-null):D[A][g]=new a.StackItem(u,u.options.stackLabels,F,g,l)),A=D[A][g],null!==w?(A.points[J]=A.points[this.index]=[v(A.cumulative,e)],q(A.cumulative)||(A.base=J),A.touched=u.stacksTouched,0<x.index&&!1===this.singleStacks&&(A.points[J][0]=A.points[this.index+","+g+",0"][0])):A.points[J]=A.points[this.index]=null,"percent"===h?(F=F?n:t,z&&D[F]&&D[F][g]?(F=D[F][g],A.total=F.total=Math.max(F.total,A.total)+Math.abs(w)||0):A.total=E(A.total+(Math.abs(w)||0))):A.total=E(A.total+(w||0)),A.cumulative=v(A.cumulative,
-e)+(w||0),null!==w&&(A.points[J].push(A.cumulative),f[G]=A.cumulative);"percent"===h&&(u.usePercentage=!0);this.stackedYData=f;u.oldStacks={}}};u.prototype.modifyStacks=function(){var a=this,b=a.stackKey,f=a.yAxis.stacks,d=a.processedXData,h,k=a.options.stacking;a[k+"Stacker"]&&l([b,"-"+b],function(b){for(var c=d.length,e,l;c--;)if(e=d[c],h=a.getStackIndicator(h,e,a.index,b),l=(e=f[b]&&f[b][e])&&e.points[h.key])a[k+"Stacker"](l,e,c)})};u.prototype.percentStacker=function(a,b,f){b=b.total?100/b.total:
-0;a[0]=E(a[0]*b);a[1]=E(a[1]*b);this.stackedYData[f]=a[1]};u.prototype.getStackIndicator=function(a,b,f,d){!q(a)||a.x!==b||d&&a.key!==d?a={x:b,index:0,key:d}:a.index++;a.key=[f,b,a.index].join();return a}})(K);(function(a){var B=a.addEvent,H=a.animate,E=a.Axis,q=a.createElement,f=a.css,l=a.defined,t=a.each,n=a.erase,v=a.extend,u=a.fireEvent,c=a.inArray,b=a.isNumber,m=a.isObject,d=a.isArray,h=a.merge,k=a.objectEach,e=a.pick,p=a.Point,r=a.Series,I=a.seriesTypes,z=a.setAnimation,M=a.splat;v(a.Chart.prototype,
-{addSeries:function(a,b,c){var d,h=this;a&&(b=e(b,!0),u(h,"addSeries",{options:a},function(){d=h.initSeries(a);h.isDirtyLegend=!0;h.linkSeries();b&&h.redraw(c)}));return d},addAxis:function(a,b,c,d){var k=b?"xAxis":"yAxis",f=this.options;a=h(a,{index:this[k].length,isX:b});b=new E(this,a);f[k]=M(f[k]||{});f[k].push(a);e(c,!0)&&this.redraw(d);return b},showLoading:function(a){var b=this,c=b.options,e=b.loadingDiv,d=c.loading,h=function(){e&&f(e,{left:b.plotLeft+"px",top:b.plotTop+"px",width:b.plotWidth+
-"px",height:b.plotHeight+"px"})};e||(b.loadingDiv=e=q("div",{className:"highcharts-loading highcharts-loading-hidden"},null,b.container),b.loadingSpan=q("span",{className:"highcharts-loading-inner"},null,e),B(b,"redraw",h));e.className="highcharts-loading";b.loadingSpan.innerHTML=a||c.lang.loading;f(e,v(d.style,{zIndex:10}));f(b.loadingSpan,d.labelStyle);b.loadingShown||(f(e,{opacity:0,display:""}),H(e,{opacity:d.style.opacity||.5},{duration:d.showDuration||0}));b.loadingShown=!0;h()},hideLoading:function(){var a=
-this.options,b=this.loadingDiv;b&&(b.className="highcharts-loading highcharts-loading-hidden",H(b,{opacity:0},{duration:a.loading.hideDuration||100,complete:function(){f(b,{display:"none"})}}));this.loadingShown=!1},propsRequireDirtyBox:"backgroundColor borderColor borderWidth margin marginTop marginRight marginBottom marginLeft spacing spacingTop spacingRight spacingBottom spacingLeft borderRadius plotBackgroundColor plotBackgroundImage plotBorderColor plotBorderWidth plotShadow shadow".split(" "),
-propsRequireUpdateSeries:"chart.inverted chart.polar chart.ignoreHiddenSeries chart.type colors plotOptions time tooltip".split(" "),update:function(a,d,f){var p=this,m={credits:"addCredits",title:"setTitle",subtitle:"setSubtitle"},n=a.chart,r,g,z=[];if(n){h(!0,p.options.chart,n);"className"in n&&p.setClassName(n.className);if("inverted"in n||"polar"in n)p.propFromSeries(),r=!0;"alignTicks"in n&&(r=!0);k(n,function(a,b){-1!==c("chart."+b,p.propsRequireUpdateSeries)&&(g=!0);-1!==c(b,p.propsRequireDirtyBox)&&
-(p.isDirtyBox=!0)});"style"in n&&p.renderer.setStyle(n.style)}a.colors&&(this.options.colors=a.colors);a.plotOptions&&h(!0,this.options.plotOptions,a.plotOptions);k(a,function(a,b){if(p[b]&&"function"===typeof p[b].update)p[b].update(a,!1);else if("function"===typeof p[m[b]])p[m[b]](a);"chart"!==b&&-1!==c(b,p.propsRequireUpdateSeries)&&(g=!0)});t("xAxis yAxis zAxis series colorAxis pane".split(" "),function(b){a[b]&&(t(M(a[b]),function(a,c){(c=l(a.id)&&p.get(a.id)||p[b][c])&&c.coll===b&&(c.update(a,
-!1),f&&(c.touched=!0));if(!c&&f)if("series"===b)p.addSeries(a,!1).touched=!0;else if("xAxis"===b||"yAxis"===b)p.addAxis(a,"xAxis"===b,!1).touched=!0}),f&&t(p[b],function(a){a.touched?delete a.touched:z.push(a)}))});t(z,function(a){a.remove(!1)});r&&t(p.axes,function(a){a.update({},!1)});g&&t(p.series,function(a){a.update({},!1)});a.loading&&h(!0,p.options.loading,a.loading);r=n&&n.width;n=n&&n.height;b(r)&&r!==p.chartWidth||b(n)&&n!==p.chartHeight?p.setSize(r,n):e(d,!0)&&p.redraw()},setSubtitle:function(a){this.setTitle(void 0,
-a)}});v(p.prototype,{update:function(a,b,c,d){function h(){k.applyOptions(a);null===k.y&&g&&(k.graphic=g.destroy());m(a,!0)&&(g&&g.element&&a&&a.marker&&void 0!==a.marker.symbol&&(k.graphic=g.destroy()),a&&a.dataLabels&&k.dataLabel&&(k.dataLabel=k.dataLabel.destroy()),k.connector&&(k.connector=k.connector.destroy()));p=k.index;f.updateParallelArrays(k,p);n.data[p]=m(n.data[p],!0)||m(a,!0)?k.options:a;f.isDirty=f.isDirtyData=!0;!f.fixedBox&&f.hasCartesianSeries&&(l.isDirtyBox=!0);"point"===n.legendType&&
-(l.isDirtyLegend=!0);b&&l.redraw(c)}var k=this,f=k.series,g=k.graphic,p,l=f.chart,n=f.options;b=e(b,!0);!1===d?h():k.firePointEvent("update",{options:a},h)},remove:function(a,b){this.series.removePoint(c(this,this.series.data),a,b)}});v(r.prototype,{addPoint:function(a,b,c,d){var h=this.options,k=this.data,f=this.chart,g=this.xAxis,g=g&&g.hasNames&&g.names,p=h.data,l,m,n=this.xData,r,z;b=e(b,!0);l={series:this};this.pointClass.prototype.applyOptions.apply(l,[a]);z=l.x;r=n.length;if(this.requireSorting&&
-z<n[r-1])for(m=!0;r&&n[r-1]>z;)r--;this.updateParallelArrays(l,"splice",r,0,0);this.updateParallelArrays(l,r);g&&l.name&&(g[z]=l.name);p.splice(r,0,a);m&&(this.data.splice(r,0,null),this.processData());"point"===h.legendType&&this.generatePoints();c&&(k[0]&&k[0].remove?k[0].remove(!1):(k.shift(),this.updateParallelArrays(l,"shift"),p.shift()));this.isDirtyData=this.isDirty=!0;b&&f.redraw(d)},removePoint:function(a,b,c){var d=this,h=d.data,k=h[a],f=d.points,g=d.chart,p=function(){f&&f.length===h.length&&
-f.splice(a,1);h.splice(a,1);d.options.data.splice(a,1);d.updateParallelArrays(k||{series:d},"splice",a,1);k&&k.destroy();d.isDirty=!0;d.isDirtyData=!0;b&&g.redraw()};z(c,g);b=e(b,!0);k?k.firePointEvent("remove",null,p):p()},remove:function(a,b,c){function d(){h.destroy();k.isDirtyLegend=k.isDirtyBox=!0;k.linkSeries();e(a,!0)&&k.redraw(b)}var h=this,k=h.chart;!1!==c?u(h,"remove",null,d):d()},update:function(a,b){var c=this,d=c.chart,k=c.userOptions,f=c.oldType||c.type,p=a.type||k.type||d.options.chart.type,
-g=I[f].prototype,l,m=["group","markerGroup","dataLabelsGroup"],n=["navigatorSeries","baseSeries"],r=c.finishedAnimating&&{animation:!1};if(Object.keys&&"data"===Object.keys(a).toString())return this.setData(a.data,b);n=m.concat(n);t(n,function(a){n[a]=c[a];delete c[a]});a=h(k,r,{index:c.index,pointStart:c.xData[0]},{data:c.options.data},a);c.remove(!1,null,!1);for(l in g)c[l]=void 0;v(c,I[p||f].prototype);t(n,function(a){c[a]=n[a]});c.init(d,a);a.zIndex!==k.zIndex&&t(m,function(b){c[b]&&c[b].attr({zIndex:a.zIndex})});
-c.oldType=f;d.linkSeries();e(b,!0)&&d.redraw(!1)}});v(E.prototype,{update:function(a,b){var c=this.chart;a=c.options[this.coll][this.options.index]=h(this.userOptions,a);this.destroy(!0);this.init(c,v(a,{events:void 0}));c.isDirtyBox=!0;e(b,!0)&&c.redraw()},remove:function(a){for(var b=this.chart,c=this.coll,h=this.series,k=h.length;k--;)h[k]&&h[k].remove(!1);n(b.axes,this);n(b[c],this);d(b.options[c])?b.options[c].splice(this.options.index,1):delete b.options[c];t(b[c],function(a,b){a.options.index=
-b});this.destroy();b.isDirtyBox=!0;e(a,!0)&&b.redraw()},setTitle:function(a,b){this.update({title:a},b)},setCategories:function(a,b){this.update({categories:a},b)}})})(K);(function(a){var B=a.color,H=a.each,E=a.map,q=a.pick,f=a.Series,l=a.seriesType;l("area","line",{softThreshold:!1,threshold:0},{singleStacks:!1,getStackPoints:function(f){var l=[],t=[],u=this.xAxis,c=this.yAxis,b=c.stacks[this.stackKey],m={},d=this.index,h=c.series,k=h.length,e,p=q(c.options.reversedStacks,!0)?1:-1,r;f=f||this.points;
-if(this.options.stacking){for(r=0;r<f.length;r++)f[r].leftNull=f[r].rightNull=null,m[f[r].x]=f[r];a.objectEach(b,function(a,b){null!==a.total&&t.push(b)});t.sort(function(a,b){return a-b});e=E(h,function(){return this.visible});H(t,function(a,h){var f=0,n,z;if(m[a]&&!m[a].isNull)l.push(m[a]),H([-1,1],function(c){var f=1===c?"rightNull":"leftNull",l=0,q=b[t[h+c]];if(q)for(r=d;0<=r&&r<k;)n=q.points[r],n||(r===d?m[a][f]=!0:e[r]&&(z=b[a].points[r])&&(l-=z[1]-z[0])),r+=p;m[a][1===c?"rightCliff":"leftCliff"]=
-l});else{for(r=d;0<=r&&r<k;){if(n=b[a].points[r]){f=n[1];break}r+=p}f=c.translate(f,0,1,0,1);l.push({isNull:!0,plotX:u.translate(a,0,0,0,1),x:a,plotY:f,yBottom:f})}})}return l},getGraphPath:function(a){var l=f.prototype.getGraphPath,t=this.options,u=t.stacking,c=this.yAxis,b,m,d=[],h=[],k=this.index,e,p=c.stacks[this.stackKey],r=t.threshold,I=c.getThreshold(t.threshold),z,t=t.connectNulls||"percent"===u,M=function(b,f,l){var m=a[b];b=u&&p[m.x].points[k];var n=m[l+"Null"]||0;l=m[l+"Cliff"]||0;var z,
-q,m=!0;l||n?(z=(n?b[0]:b[1])+l,q=b[0]+l,m=!!n):!u&&a[f]&&a[f].isNull&&(z=q=r);void 0!==z&&(h.push({plotX:e,plotY:null===z?I:c.getThreshold(z),isNull:m,isCliff:!0}),d.push({plotX:e,plotY:null===q?I:c.getThreshold(q),doCurve:!1}))};a=a||this.points;u&&(a=this.getStackPoints(a));for(b=0;b<a.length;b++)if(m=a[b].isNull,e=q(a[b].rectPlotX,a[b].plotX),z=q(a[b].yBottom,I),!m||t)t||M(b,b-1,"left"),m&&!u&&t||(h.push(a[b]),d.push({x:b,plotX:e,plotY:z})),t||M(b,b+1,"right");b=l.call(this,h,!0,!0);d.reversed=
-!0;m=l.call(this,d,!0,!0);m.length&&(m[0]="L");m=b.concat(m);l=l.call(this,h,!1,t);m.xMap=b.xMap;this.areaPath=m;return l},drawGraph:function(){this.areaPath=[];f.prototype.drawGraph.apply(this);var a=this,l=this.areaPath,v=this.options,u=[["area","highcharts-area",this.color,v.fillColor]];H(this.zones,function(c,b){u.push(["zone-area-"+b,"highcharts-area highcharts-zone-area-"+b+" "+c.className,c.color||a.color,c.fillColor||v.fillColor])});H(u,function(c){var b=c[0],f=a[b];f?(f.endX=a.preventGraphAnimation?
-null:l.xMap,f.animate({d:l})):(f=a[b]=a.chart.renderer.path(l).addClass(c[1]).attr({fill:q(c[3],B(c[2]).setOpacity(q(v.fillOpacity,.75)).get()),zIndex:0}).add(a.group),f.isArea=!0);f.startX=l.xMap;f.shiftUnit=v.step?2:1})},drawLegendSymbol:a.LegendSymbolMixin.drawRectangle})})(K);(function(a){var B=a.pick;a=a.seriesType;a("spline","line",{},{getPointSpline:function(a,E,q){var f=E.plotX,l=E.plotY,t=a[q-1];q=a[q+1];var n,v,u,c;if(t&&!t.isNull&&!1!==t.doCurve&&!E.isCliff&&q&&!q.isNull&&!1!==q.doCurve&&
-!E.isCliff){a=t.plotY;u=q.plotX;q=q.plotY;var b=0;n=(1.5*f+t.plotX)/2.5;v=(1.5*l+a)/2.5;u=(1.5*f+u)/2.5;c=(1.5*l+q)/2.5;u!==n&&(b=(c-v)*(u-f)/(u-n)+l-c);v+=b;c+=b;v>a&&v>l?(v=Math.max(a,l),c=2*l-v):v<a&&v<l&&(v=Math.min(a,l),c=2*l-v);c>q&&c>l?(c=Math.max(q,l),v=2*l-c):c<q&&c<l&&(c=Math.min(q,l),v=2*l-c);E.rightContX=u;E.rightContY=c}E=["C",B(t.rightContX,t.plotX),B(t.rightContY,t.plotY),B(n,f),B(v,l),f,l];t.rightContX=t.rightContY=null;return E}})})(K);(function(a){var B=a.seriesTypes.area.prototype,
-H=a.seriesType;H("areaspline","spline",a.defaultPlotOptions.area,{getStackPoints:B.getStackPoints,getGraphPath:B.getGraphPath,drawGraph:B.drawGraph,drawLegendSymbol:a.LegendSymbolMixin.drawRectangle})})(K);(function(a){var B=a.animObject,H=a.color,E=a.each,q=a.extend,f=a.isNumber,l=a.merge,t=a.pick,n=a.Series,v=a.seriesType,u=a.svg;v("column","line",{borderRadius:0,crisp:!0,groupPadding:.2,marker:null,pointPadding:.1,minPointLength:0,cropThreshold:50,pointRange:null,states:{hover:{halo:!1,brightness:.1},
-select:{color:"#cccccc",borderColor:"#000000"}},dataLabels:{align:null,verticalAlign:null,y:null},softThreshold:!1,startFromThreshold:!0,stickyTracking:!1,tooltip:{distance:6},threshold:0,borderColor:"#ffffff"},{cropShoulder:0,directTouch:!0,trackerGroups:["group","dataLabelsGroup"],negStacks:!0,init:function(){n.prototype.init.apply(this,arguments);var a=this,b=a.chart;b.hasRendered&&E(b.series,function(b){b.type===a.type&&(b.isDirty=!0)})},getColumnMetrics:function(){var a=this,b=a.options,f=a.xAxis,
-d=a.yAxis,h=f.reversed,k,e={},l=0;!1===b.grouping?l=1:E(a.chart.series,function(b){var c=b.options,h=b.yAxis,f;b.type!==a.type||!b.visible&&a.chart.options.chart.ignoreHiddenSeries||d.len!==h.len||d.pos!==h.pos||(c.stacking?(k=b.stackKey,void 0===e[k]&&(e[k]=l++),f=e[k]):!1!==c.grouping&&(f=l++),b.columnIndex=f)});var n=Math.min(Math.abs(f.transA)*(f.ordinalSlope||b.pointRange||f.closestPointRange||f.tickInterval||1),f.len),q=n*b.groupPadding,z=(n-2*q)/(l||1),b=Math.min(b.maxPointWidth||f.len,t(b.pointWidth,
-z*(1-2*b.pointPadding)));a.columnMetrics={width:b,offset:(z-b)/2+(q+((a.columnIndex||0)+(h?1:0))*z-n/2)*(h?-1:1)};return a.columnMetrics},crispCol:function(a,b,f,d){var c=this.chart,k=this.borderWidth,e=-(k%2?.5:0),k=k%2?.5:1;c.inverted&&c.renderer.isVML&&(k+=1);this.options.crisp&&(f=Math.round(a+f)+e,a=Math.round(a)+e,f-=a);d=Math.round(b+d)+k;e=.5>=Math.abs(b)&&.5<d;b=Math.round(b)+k;d-=b;e&&d&&(--b,d+=1);return{x:a,y:b,width:f,height:d}},translate:function(){var a=this,b=a.chart,f=a.options,d=
-a.dense=2>a.closestPointRange*a.xAxis.transA,d=a.borderWidth=t(f.borderWidth,d?0:1),h=a.yAxis,k=f.threshold,e=a.translatedThreshold=h.getThreshold(k),l=t(f.minPointLength,5),r=a.getColumnMetrics(),q=r.width,z=a.barW=Math.max(q,1+2*d),u=a.pointXOffset=r.offset;b.inverted&&(e-=.5);f.pointPadding&&(z=Math.ceil(z));n.prototype.translate.apply(a);E(a.points,function(c){var d=t(c.yBottom,e),f=999+Math.abs(d),f=Math.min(Math.max(-f,c.plotY),h.len+f),p=c.plotX+u,m=z,n=Math.min(f,d),r,g=Math.max(f,d)-n;l&&
-Math.abs(g)<l&&(g=l,r=!h.reversed&&!c.negative||h.reversed&&c.negative,c.y===k&&a.dataMax<=k&&h.min<k&&(r=!r),n=Math.abs(n-e)>l?d-l:e-(r?l:0));c.barX=p;c.pointWidth=q;c.tooltipPos=b.inverted?[h.len+h.pos-b.plotLeft-f,a.xAxis.len-p-m/2,g]:[p+m/2,f+h.pos-b.plotTop,g];c.shapeType="rect";c.shapeArgs=a.crispCol.apply(a,c.isNull?[p,e,m,0]:[p,n,m,g])})},getSymbol:a.noop,drawLegendSymbol:a.LegendSymbolMixin.drawRectangle,drawGraph:function(){this.group[this.dense?"addClass":"removeClass"]("highcharts-dense-data")},
-pointAttribs:function(a,b){var c=this.options,d,h=this.pointAttrToOptions||{};d=h.stroke||"borderColor";var f=h["stroke-width"]||"borderWidth",e=a&&a.color||this.color,p=a&&a[d]||c[d]||this.color||e,n=a&&a[f]||c[f]||this[f]||0,h=c.dashStyle;a&&this.zones.length&&(e=a.getZone(),e=a.options.color||e&&e.color||this.color);b&&(a=l(c.states[b],a.options.states&&a.options.states[b]||{}),b=a.brightness,e=a.color||void 0!==b&&H(e).brighten(a.brightness).get()||e,p=a[d]||p,n=a[f]||n,h=a.dashStyle||h);d={fill:e,
-stroke:p,"stroke-width":n};h&&(d.dashstyle=h);return d},drawPoints:function(){var a=this,b=this.chart,m=a.options,d=b.renderer,h=m.animationLimit||250,k;E(a.points,function(c){var e=c.graphic;if(f(c.plotY)&&null!==c.y){k=c.shapeArgs;if(e)e[b.pointCount<h?"animate":"attr"](l(k));else c.graphic=e=d[c.shapeType](k).add(c.group||a.group);m.borderRadius&&e.attr({r:m.borderRadius});e.attr(a.pointAttribs(c,c.selected&&"select")).shadow(m.shadow,null,m.stacking&&!m.borderRadius);e.addClass(c.getClassName(),
-!0)}else e&&(c.graphic=e.destroy())})},animate:function(a){var b=this,c=this.yAxis,d=b.options,h=this.chart.inverted,f={},e=h?"translateX":"translateY",l;u&&(a?(f.scaleY=.001,a=Math.min(c.pos+c.len,Math.max(c.pos,c.toPixels(d.threshold))),h?f.translateX=a-c.len:f.translateY=a,b.group.attr(f)):(l=b.group.attr(e),b.group.animate({scaleY:1},q(B(b.options.animation),{step:function(a,d){f[e]=l+d.pos*(c.pos-l);b.group.attr(f)}})),b.animate=null))},remove:function(){var a=this,b=a.chart;b.hasRendered&&E(b.series,
-function(b){b.type===a.type&&(b.isDirty=!0)});n.prototype.remove.apply(a,arguments)}})})(K);(function(a){a=a.seriesType;a("bar","column",null,{inverted:!0})})(K);(function(a){var B=a.Series;a=a.seriesType;a("scatter","line",{lineWidth:0,findNearestPointBy:"xy",marker:{enabled:!0},tooltip:{headerFormat:'\x3cspan style\x3d"color:{point.color}"\x3e\u25cf\x3c/span\x3e \x3cspan style\x3d"font-size: 0.85em"\x3e {series.name}\x3c/span\x3e\x3cbr/\x3e',pointFormat:"x: \x3cb\x3e{point.x}\x3c/b\x3e\x3cbr/\x3ey: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3e"}},
-{sorted:!1,requireSorting:!1,noSharedTooltip:!0,trackerGroups:["group","markerGroup","dataLabelsGroup"],takeOrdinalPosition:!1,drawGraph:function(){this.options.lineWidth&&B.prototype.drawGraph.call(this)}})})(K);(function(a){var B=a.deg2rad,H=a.isNumber,E=a.pick,q=a.relativeLength;a.CenteredSeriesMixin={getCenter:function(){var a=this.options,l=this.chart,t=2*(a.slicedOffset||0),n=l.plotWidth-2*t,l=l.plotHeight-2*t,v=a.center,v=[E(v[0],"50%"),E(v[1],"50%"),a.size||"100%",a.innerSize||0],u=Math.min(n,
-l),c,b;for(c=0;4>c;++c)b=v[c],a=2>c||2===c&&/%$/.test(b),v[c]=q(b,[n,l,u,v[2]][c])+(a?t:0);v[3]>v[2]&&(v[3]=v[2]);return v},getStartAndEndRadians:function(a,l){a=H(a)?a:0;l=H(l)&&l>a&&360>l-a?l:a+360;return{start:B*(a+-90),end:B*(l+-90)}}}})(K);(function(a){var B=a.addEvent,H=a.CenteredSeriesMixin,E=a.defined,q=a.each,f=a.extend,l=H.getStartAndEndRadians,t=a.inArray,n=a.noop,v=a.pick,u=a.Point,c=a.Series,b=a.seriesType,m=a.setAnimation;b("pie","line",{center:[null,null],clip:!1,colorByPoint:!0,dataLabels:{distance:30,
-enabled:!0,formatter:function(){return this.point.isNull?void 0:this.point.name},x:0},ignoreHiddenPoint:!0,legendType:"point",marker:null,size:null,showInLegend:!1,slicedOffset:10,stickyTracking:!1,tooltip:{followPointer:!0},borderColor:"#ffffff",borderWidth:1,states:{hover:{brightness:.1}}},{isCartesian:!1,requireSorting:!1,directTouch:!0,noSharedTooltip:!0,trackerGroups:["group","dataLabelsGroup"],axisTypes:[],pointAttribs:a.seriesTypes.column.prototype.pointAttribs,animate:function(a){var b=this,
-c=b.points,d=b.startAngleRad;a||(q(c,function(a){var c=a.graphic,e=a.shapeArgs;c&&(c.attr({r:a.startR||b.center[3]/2,start:d,end:d}),c.animate({r:e.r,start:e.start,end:e.end},b.options.animation))}),b.animate=null)},updateTotals:function(){var a,b=0,c=this.points,e=c.length,f,l=this.options.ignoreHiddenPoint;for(a=0;a<e;a++)f=c[a],b+=l&&!f.visible?0:f.isNull?0:f.y;this.total=b;for(a=0;a<e;a++)f=c[a],f.percentage=0<b&&(f.visible||!l)?f.y/b*100:0,f.total=b},generatePoints:function(){c.prototype.generatePoints.call(this);
-this.updateTotals()},translate:function(a){this.generatePoints();var b=0,c=this.options,e=c.slicedOffset,d=e+(c.borderWidth||0),f,m,n,q=l(c.startAngle,c.endAngle),t=this.startAngleRad=q.start,q=(this.endAngleRad=q.end)-t,u=this.points,x,F=c.dataLabels.distance,c=c.ignoreHiddenPoint,A,B=u.length,G;a||(this.center=a=this.getCenter());this.getX=function(b,c,e){n=Math.asin(Math.min((b-a[1])/(a[2]/2+e.labelDistance),1));return a[0]+(c?-1:1)*Math.cos(n)*(a[2]/2+e.labelDistance)};for(A=0;A<B;A++){G=u[A];
-G.labelDistance=v(G.options.dataLabels&&G.options.dataLabels.distance,F);this.maxLabelDistance=Math.max(this.maxLabelDistance||0,G.labelDistance);f=t+b*q;if(!c||G.visible)b+=G.percentage/100;m=t+b*q;G.shapeType="arc";G.shapeArgs={x:a[0],y:a[1],r:a[2]/2,innerR:a[3]/2,start:Math.round(1E3*f)/1E3,end:Math.round(1E3*m)/1E3};n=(m+f)/2;n>1.5*Math.PI?n-=2*Math.PI:n<-Math.PI/2&&(n+=2*Math.PI);G.slicedTranslation={translateX:Math.round(Math.cos(n)*e),translateY:Math.round(Math.sin(n)*e)};m=Math.cos(n)*a[2]/
-2;x=Math.sin(n)*a[2]/2;G.tooltipPos=[a[0]+.7*m,a[1]+.7*x];G.half=n<-Math.PI/2||n>Math.PI/2?1:0;G.angle=n;f=Math.min(d,G.labelDistance/5);G.labelPos=[a[0]+m+Math.cos(n)*G.labelDistance,a[1]+x+Math.sin(n)*G.labelDistance,a[0]+m+Math.cos(n)*f,a[1]+x+Math.sin(n)*f,a[0]+m,a[1]+x,0>G.labelDistance?"center":G.half?"right":"left",n]}},drawGraph:null,drawPoints:function(){var a=this,b=a.chart.renderer,c,e,l,m,n=a.options.shadow;n&&!a.shadowGroup&&(a.shadowGroup=b.g("shadow").add(a.group));q(a.points,function(d){e=
-d.graphic;if(d.isNull)e&&(d.graphic=e.destroy());else{m=d.shapeArgs;c=d.getTranslate();var h=d.shadowGroup;n&&!h&&(h=d.shadowGroup=b.g("shadow").add(a.shadowGroup));h&&h.attr(c);l=a.pointAttribs(d,d.selected&&"select");e?e.setRadialReference(a.center).attr(l).animate(f(m,c)):(d.graphic=e=b[d.shapeType](m).setRadialReference(a.center).attr(c).add(a.group),d.visible||e.attr({visibility:"hidden"}),e.attr(l).attr({"stroke-linejoin":"round"}).shadow(n,h));e.addClass(d.getClassName())}})},searchPoint:n,
-sortByAngle:function(a,b){a.sort(function(a,c){return void 0!==a.angle&&(c.angle-a.angle)*b})},drawLegendSymbol:a.LegendSymbolMixin.drawRectangle,getCenter:H.getCenter,getSymbol:n},{init:function(){u.prototype.init.apply(this,arguments);var a=this,b;a.name=v(a.name,"Slice");b=function(b){a.slice("select"===b.type)};B(a,"select",b);B(a,"unselect",b);return a},isValid:function(){return a.isNumber(this.y,!0)&&0<=this.y},setVisible:function(a,b){var c=this,e=c.series,d=e.chart,h=e.options.ignoreHiddenPoint;
-b=v(b,h);a!==c.visible&&(c.visible=c.options.visible=a=void 0===a?!c.visible:a,e.options.data[t(c,e.data)]=c.options,q(["graphic","dataLabel","connector","shadowGroup"],function(b){if(c[b])c[b][a?"show":"hide"](!0)}),c.legendItem&&d.legend.colorizeItem(c,a),a||"hover"!==c.state||c.setState(""),h&&(e.isDirty=!0),b&&d.redraw())},slice:function(a,b,c){var e=this.series;m(c,e.chart);v(b,!0);this.sliced=this.options.sliced=E(a)?a:!this.sliced;e.options.data[t(this,e.data)]=this.options;this.graphic.animate(this.getTranslate());
-this.shadowGroup&&this.shadowGroup.animate(this.getTranslate())},getTranslate:function(){return this.sliced?this.slicedTranslation:{translateX:0,translateY:0}},haloPath:function(a){var b=this.shapeArgs;return this.sliced||!this.visible?[]:this.series.chart.renderer.symbols.arc(b.x,b.y,b.r+a,b.r+a,{innerR:this.shapeArgs.r-1,start:b.start,end:b.end})}})})(K);(function(a){var B=a.addEvent,H=a.arrayMax,E=a.defined,q=a.each,f=a.extend,l=a.format,t=a.map,n=a.merge,v=a.noop,u=a.pick,c=a.relativeLength,b=
-a.Series,m=a.seriesTypes,d=a.stableSort;a.distribute=function(a,b){function c(a,b){return a.target-b.target}var f,h=!0,k=a,l=[],m;m=0;for(f=a.length;f--;)m+=a[f].size;if(m>b){d(a,function(a,b){return(b.rank||0)-(a.rank||0)});for(m=f=0;m<=b;)m+=a[f].size,f++;l=a.splice(f-1,a.length)}d(a,c);for(a=t(a,function(a){return{size:a.size,targets:[a.target],align:u(a.align,.5)}});h;){for(f=a.length;f--;)h=a[f],m=(Math.min.apply(0,h.targets)+Math.max.apply(0,h.targets))/2,h.pos=Math.min(Math.max(0,m-h.size*
-h.align),b-h.size);f=a.length;for(h=!1;f--;)0<f&&a[f-1].pos+a[f-1].size>a[f].pos&&(a[f-1].size+=a[f].size,a[f-1].targets=a[f-1].targets.concat(a[f].targets),a[f-1].align=.5,a[f-1].pos+a[f-1].size>b&&(a[f-1].pos=b-a[f-1].size),a.splice(f,1),h=!0)}f=0;q(a,function(a){var b=0;q(a.targets,function(){k[f].pos=a.pos+b;b+=k[f].size;f++})});k.push.apply(k,l);d(k,c)};b.prototype.drawDataLabels=function(){function b(a,b){var c=b.filter;return c?(b=c.operator,a=a[c.property],c=c.value,"\x3e"===b&&a>c||"\x3c"===
-b&&a<c||"\x3e\x3d"===b&&a>=c||"\x3c\x3d"===b&&a<=c||"\x3d\x3d"===b&&a==c||"\x3d\x3d\x3d"===b&&a===c?!0:!1):!0}var c=this,e=c.chart,d=c.options,f=d.dataLabels,m=c.points,z,t,v=c.hasRendered||0,C,x,F=u(f.defer,!!d.animation),A=e.renderer;if(f.enabled||c._hasPointLabels)c.dlProcessOptions&&c.dlProcessOptions(f),x=c.plotGroup("dataLabelsGroup","data-labels",F&&!v?"hidden":"visible",f.zIndex||6),F&&(x.attr({opacity:+v}),v||B(c,"afterAnimate",function(){c.visible&&x.show(!0);x[d.animation?"animate":"attr"]({opacity:1},
-{duration:200})})),t=f,q(m,function(h){var k,g=h.dataLabel,m,p,q=h.connector,r=!g,v;z=h.dlOptions||h.options&&h.options.dataLabels;(k=u(z&&z.enabled,t.enabled)&&!h.isNull)&&(k=!0===b(h,z||f));k&&(f=n(t,z),m=h.getLabelConfig(),v=f[h.formatPrefix+"Format"]||f.format,C=E(v)?l(v,m,e.time):(f[h.formatPrefix+"Formatter"]||f.formatter).call(m,f),v=f.style,m=f.rotation,v.color=u(f.color,v.color,c.color,"#000000"),"contrast"===v.color&&(h.contrastColor=A.getContrast(h.color||c.color),v.color=f.inside||0>u(h.labelDistance,
-f.distance)||d.stacking?h.contrastColor:"#000000"),d.cursor&&(v.cursor=d.cursor),p={fill:f.backgroundColor,stroke:f.borderColor,"stroke-width":f.borderWidth,r:f.borderRadius||0,rotation:m,padding:f.padding,zIndex:1},a.objectEach(p,function(a,b){void 0===a&&delete p[b]}));!g||k&&E(C)?k&&E(C)&&(g?p.text=C:(g=h.dataLabel=m?A.text(C,0,-9999).addClass("highcharts-data-label"):A.label(C,0,-9999,f.shape,null,null,f.useHTML,null,"data-label"),g.addClass(" highcharts-data-label-color-"+h.colorIndex+" "+(f.className||
-"")+(f.useHTML?"highcharts-tracker":""))),g.attr(p),g.css(v).shadow(f.shadow),g.added||g.add(x),c.alignDataLabel(h,g,f,null,r)):(h.dataLabel=g=g.destroy(),q&&(h.connector=q.destroy()))});a.fireEvent(this,"afterDrawDataLabels")};b.prototype.alignDataLabel=function(a,b,c,d,l){var e=this.chart,h=e.inverted,k=u(a.dlBox&&a.dlBox.centerX,a.plotX,-9999),m=u(a.plotY,-9999),n=b.getBBox(),p,q=c.rotation,r=c.align,t=this.visible&&(a.series.forceDL||e.isInsidePlot(k,Math.round(m),h)||d&&e.isInsidePlot(k,h?d.x+
-1:d.y+d.height-1,h)),v="justify"===u(c.overflow,"justify");if(t&&(p=c.style.fontSize,p=e.renderer.fontMetrics(p,b).b,d=f({x:h?this.yAxis.len-m:k,y:Math.round(h?this.xAxis.len-k:m),width:0,height:0},d),f(c,{width:n.width,height:n.height}),q?(v=!1,k=e.renderer.rotCorr(p,q),k={x:d.x+c.x+d.width/2+k.x,y:d.y+c.y+{top:0,middle:.5,bottom:1}[c.verticalAlign]*d.height},b[l?"attr":"animate"](k).attr({align:r}),m=(q+720)%360,m=180<m&&360>m,"left"===r?k.y-=m?n.height:0:"center"===r?(k.x-=n.width/2,k.y-=n.height/
-2):"right"===r&&(k.x-=n.width,k.y-=m?0:n.height)):(b.align(c,null,d),k=b.alignAttr),v?a.isLabelJustified=this.justifyDataLabel(b,c,k,n,d,l):u(c.crop,!0)&&(t=e.isInsidePlot(k.x,k.y)&&e.isInsidePlot(k.x+n.width,k.y+n.height)),c.shape&&!q))b[l?"attr":"animate"]({anchorX:h?e.plotWidth-a.plotY:a.plotX,anchorY:h?e.plotHeight-a.plotX:a.plotY});t||(b.attr({y:-9999}),b.placed=!1)};b.prototype.justifyDataLabel=function(a,b,c,d,f,l){var e=this.chart,h=b.align,k=b.verticalAlign,m,n,p=a.box?0:a.padding||0;m=c.x+
-p;0>m&&("right"===h?b.align="left":b.x=-m,n=!0);m=c.x+d.width-p;m>e.plotWidth&&("left"===h?b.align="right":b.x=e.plotWidth-m,n=!0);m=c.y+p;0>m&&("bottom"===k?b.verticalAlign="top":b.y=-m,n=!0);m=c.y+d.height-p;m>e.plotHeight&&("top"===k?b.verticalAlign="bottom":b.y=e.plotHeight-m,n=!0);n&&(a.placed=!l,a.align(b,null,f));return n};m.pie&&(m.pie.prototype.drawDataLabels=function(){var c=this,d=c.data,e,f=c.chart,l=c.options.dataLabels,m=u(l.connectorPadding,10),n=u(l.connectorWidth,1),t=f.plotWidth,
-v=f.plotHeight,C,x=c.center,F=x[2]/2,A=x[1],B,G,g,w,L=[[],[]],P,N,O,K,y=[0,0,0,0];c.visible&&(l.enabled||c._hasPointLabels)&&(q(d,function(a){a.dataLabel&&a.visible&&a.dataLabel.shortened&&(a.dataLabel.attr({width:"auto"}).css({width:"auto",textOverflow:"clip"}),a.dataLabel.shortened=!1)}),b.prototype.drawDataLabels.apply(c),q(d,function(a){a.dataLabel&&a.visible&&(L[a.half].push(a),a.dataLabel._pos=null)}),q(L,function(b,d){var h,k,n=b.length,p=[],r;if(n)for(c.sortByAngle(b,d-.5),0<c.maxLabelDistance&&
-(h=Math.max(0,A-F-c.maxLabelDistance),k=Math.min(A+F+c.maxLabelDistance,f.plotHeight),q(b,function(a){0<a.labelDistance&&a.dataLabel&&(a.top=Math.max(0,A-F-a.labelDistance),a.bottom=Math.min(A+F+a.labelDistance,f.plotHeight),r=a.dataLabel.getBBox().height||21,a.positionsIndex=p.push({target:a.labelPos[1]-a.top+r/2,size:r,rank:a.y})-1)}),a.distribute(p,k+r-h)),K=0;K<n;K++)e=b[K],k=e.positionsIndex,g=e.labelPos,B=e.dataLabel,O=!1===e.visible?"hidden":"inherit",N=h=g[1],p&&E(p[k])&&(void 0===p[k].pos?
-O="hidden":(w=p[k].size,N=e.top+p[k].pos)),delete e.positionIndex,P=l.justify?x[0]+(d?-1:1)*(F+e.labelDistance):c.getX(N<e.top+2||N>e.bottom-2?h:N,d,e),B._attr={visibility:O,align:g[6]},B._pos={x:P+l.x+({left:m,right:-m}[g[6]]||0),y:N+l.y-10},g.x=P,g.y=N,u(l.crop,!0)&&(G=B.getBBox().width,h=null,P-G<m?(h=Math.round(G-P+m),y[3]=Math.max(h,y[3])):P+G>t-m&&(h=Math.round(P+G-t+m),y[1]=Math.max(h,y[1])),0>N-w/2?y[0]=Math.max(Math.round(-N+w/2),y[0]):N+w/2>v&&(y[2]=Math.max(Math.round(N+w/2-v),y[2])),B.sideOverflow=
-h)}),0===H(y)||this.verifyDataLabelOverflow(y))&&(this.placeDataLabels(),n&&q(this.points,function(a){var b;C=a.connector;if((B=a.dataLabel)&&B._pos&&a.visible&&0<a.labelDistance){O=B._attr.visibility;if(b=!C)a.connector=C=f.renderer.path().addClass("highcharts-data-label-connector  highcharts-color-"+a.colorIndex).add(c.dataLabelsGroup),C.attr({"stroke-width":n,stroke:l.connectorColor||a.color||"#666666"});C[b?"attr":"animate"]({d:c.connectorPath(a.labelPos)});C.attr("visibility",O)}else C&&(a.connector=
-C.destroy())}))},m.pie.prototype.connectorPath=function(a){var b=a.x,c=a.y;return u(this.options.dataLabels.softConnector,!0)?["M",b+("left"===a[6]?5:-5),c,"C",b,c,2*a[2]-a[4],2*a[3]-a[5],a[2],a[3],"L",a[4],a[5]]:["M",b+("left"===a[6]?5:-5),c,"L",a[2],a[3],"L",a[4],a[5]]},m.pie.prototype.placeDataLabels=function(){q(this.points,function(a){var b=a.dataLabel;b&&a.visible&&((a=b._pos)?(b.sideOverflow&&(b._attr.width=b.getBBox().width-b.sideOverflow,b.css({width:b._attr.width+"px",textOverflow:"ellipsis"}),
-b.shortened=!0),b.attr(b._attr),b[b.moved?"animate":"attr"](a),b.moved=!0):b&&b.attr({y:-9999}))},this)},m.pie.prototype.alignDataLabel=v,m.pie.prototype.verifyDataLabelOverflow=function(a){var b=this.center,e=this.options,d=e.center,f=e.minSize||80,h,l=null!==e.size;l||(null!==d[0]?h=Math.max(b[2]-Math.max(a[1],a[3]),f):(h=Math.max(b[2]-a[1]-a[3],f),b[0]+=(a[3]-a[1])/2),null!==d[1]?h=Math.max(Math.min(h,b[2]-Math.max(a[0],a[2])),f):(h=Math.max(Math.min(h,b[2]-a[0]-a[2]),f),b[1]+=(a[0]-a[2])/2),h<
-b[2]?(b[2]=h,b[3]=Math.min(c(e.innerSize||0,h),h),this.translate(b),this.drawDataLabels&&this.drawDataLabels()):l=!0);return l});m.column&&(m.column.prototype.alignDataLabel=function(a,c,d,f,l){var e=this.chart.inverted,h=a.series,k=a.dlBox||a.shapeArgs,m=u(a.below,a.plotY>u(this.translatedThreshold,h.yAxis.len)),p=u(d.inside,!!this.options.stacking);k&&(f=n(k),0>f.y&&(f.height+=f.y,f.y=0),k=f.y+f.height-h.yAxis.len,0<k&&(f.height-=k),e&&(f={x:h.yAxis.len-f.y-f.height,y:h.xAxis.len-f.x-f.width,width:f.height,
-height:f.width}),p||(e?(f.x+=m?0:f.width,f.width=0):(f.y+=m?f.height:0,f.height=0)));d.align=u(d.align,!e||p?"center":m?"right":"left");d.verticalAlign=u(d.verticalAlign,e||p?"middle":m?"top":"bottom");b.prototype.alignDataLabel.call(this,a,c,d,f,l);a.isLabelJustified&&a.contrastColor&&a.dataLabel.css({color:a.contrastColor})})})(K);(function(a){var B=a.Chart,H=a.each,E=a.objectEach,q=a.pick;a=a.addEvent;a(B.prototype,"render",function(){var a=[];H(this.labelCollectors||[],function(f){a=a.concat(f())});
-H(this.yAxis||[],function(f){f.options.stackLabels&&!f.options.stackLabels.allowOverlap&&E(f.stacks,function(f){E(f,function(f){a.push(f.label)})})});H(this.series||[],function(f){var l=f.options.dataLabels,n=f.dataLabelCollections||["dataLabel"];(l.enabled||f._hasPointLabels)&&!l.allowOverlap&&f.visible&&H(n,function(l){H(f.points,function(f){f[l]&&(f[l].labelrank=q(f.labelrank,f.shapeArgs&&f.shapeArgs.height),a.push(f[l]))})})});this.hideOverlappingLabels(a)});B.prototype.hideOverlappingLabels=
-function(a){var f=a.length,q,n,v,u,c,b,m,d,h,k=function(a,b,c,d,f,h,k,l){return!(f>a+c||f+k<a||h>b+d||h+l<b)};for(n=0;n<f;n++)if(q=a[n])q.oldOpacity=q.opacity,q.newOpacity=1,q.width||(v=q.getBBox(),q.width=v.width,q.height=v.height);a.sort(function(a,b){return(b.labelrank||0)-(a.labelrank||0)});for(n=0;n<f;n++)for(v=a[n],q=n+1;q<f;++q)if(u=a[q],v&&u&&v!==u&&v.placed&&u.placed&&0!==v.newOpacity&&0!==u.newOpacity&&(c=v.alignAttr,b=u.alignAttr,m=v.parentGroup,d=u.parentGroup,h=2*(v.box?0:v.padding||
-0),c=k(c.x+m.translateX,c.y+m.translateY,v.width-h,v.height-h,b.x+d.translateX,b.y+d.translateY,u.width-h,u.height-h)))(v.labelrank<u.labelrank?v:u).newOpacity=0;H(a,function(a){var b,c;a&&(c=a.newOpacity,a.oldOpacity!==c&&a.placed&&(c?a.show(!0):b=function(){a.hide()},a.alignAttr.opacity=c,a[a.isOld?"animate":"attr"](a.alignAttr,null,b)),a.isOld=!0)})}})(K);(function(a){var B=a.addEvent,H=a.Chart,E=a.createElement,q=a.css,f=a.defaultOptions,l=a.defaultPlotOptions,t=a.each,n=a.extend,v=a.fireEvent,
-u=a.hasTouch,c=a.inArray,b=a.isObject,m=a.Legend,d=a.merge,h=a.pick,k=a.Point,e=a.Series,p=a.seriesTypes,r=a.svg,I;I=a.TrackerMixin={drawTrackerPoint:function(){var a=this,b=a.chart.pointer,c=function(a){var c=b.getPointFromEvent(a);void 0!==c&&(b.isDirectTouch=!0,c.onMouseOver(a))};t(a.points,function(a){a.graphic&&(a.graphic.element.point=a);a.dataLabel&&(a.dataLabel.div?a.dataLabel.div.point=a:a.dataLabel.element.point=a)});a._hasTracking||(t(a.trackerGroups,function(d){if(a[d]){a[d].addClass("highcharts-tracker").on("mouseover",
-c).on("mouseout",function(a){b.onTrackerMouseOut(a)});if(u)a[d].on("touchstart",c);a.options.cursor&&a[d].css(q).css({cursor:a.options.cursor})}}),a._hasTracking=!0);v(this,"afterDrawTracker")},drawTrackerGraph:function(){var a=this,b=a.options,c=b.trackByArea,d=[].concat(c?a.areaPath:a.graphPath),e=d.length,f=a.chart,h=f.pointer,k=f.renderer,l=f.options.tooltip.snap,g=a.tracker,m,n=function(){if(f.hoverSeries!==a)a.onMouseOver()},p="rgba(192,192,192,"+(r?.0001:.002)+")";if(e&&!c)for(m=e+1;m--;)"M"===
-d[m]&&d.splice(m+1,0,d[m+1]-l,d[m+2],"L"),(m&&"M"===d[m]||m===e)&&d.splice(m,0,"L",d[m-2]+l,d[m-1]);g?g.attr({d:d}):a.graph&&(a.tracker=k.path(d).attr({"stroke-linejoin":"round",visibility:a.visible?"visible":"hidden",stroke:p,fill:c?p:"none","stroke-width":a.graph.strokeWidth()+(c?0:2*l),zIndex:2}).add(a.group),t([a.tracker,a.markerGroup],function(a){a.addClass("highcharts-tracker").on("mouseover",n).on("mouseout",function(a){h.onTrackerMouseOut(a)});b.cursor&&a.css({cursor:b.cursor});if(u)a.on("touchstart",
-n)}));v(this,"afterDrawTracker")}};p.column&&(p.column.prototype.drawTracker=I.drawTrackerPoint);p.pie&&(p.pie.prototype.drawTracker=I.drawTrackerPoint);p.scatter&&(p.scatter.prototype.drawTracker=I.drawTrackerPoint);n(m.prototype,{setItemEvents:function(a,b,c){var e=this,f=e.chart.renderer.boxWrapper,h="highcharts-legend-"+(a instanceof k?"point":"series")+"-active";(c?b:a.legendGroup).on("mouseover",function(){a.setState("hover");f.addClass(h);b.css(e.options.itemHoverStyle)}).on("mouseout",function(){b.css(d(a.visible?
-e.itemStyle:e.itemHiddenStyle));f.removeClass(h);a.setState()}).on("click",function(b){var c=function(){a.setVisible&&a.setVisible()};f.removeClass(h);b={browserEvent:b};a.firePointEvent?a.firePointEvent("legendItemClick",b,c):v(a,"legendItemClick",b,c)})},createCheckboxForItem:function(a){a.checkbox=E("input",{type:"checkbox",checked:a.selected,defaultChecked:a.selected},this.options.itemCheckboxStyle,this.chart.container);B(a.checkbox,"click",function(b){v(a.series||a,"checkboxClick",{checked:b.target.checked,
-item:a},function(){a.select()})})}});f.legend.itemStyle.cursor="pointer";n(H.prototype,{showResetZoom:function(){function a(){b.zoomOut()}var b=this,c=f.lang,d=b.options.chart.resetZoomButton,e=d.theme,h=e.states,k="chart"===d.relativeTo?null:"plotBox";v(this,"beforeShowResetZoom",null,function(){b.resetZoomButton=b.renderer.button(c.resetZoom,null,null,a,e,h&&h.hover).attr({align:d.position.align,title:c.resetZoomTitle}).addClass("highcharts-reset-zoom").add().align(d.position,!1,k)})},zoomOut:function(){var a=
-this;v(a,"selection",{resetSelection:!0},function(){a.zoom()})},zoom:function(a){var c,d=this.pointer,e=!1,f;!a||a.resetSelection?(t(this.axes,function(a){c=a.zoom()}),d.initiated=!1):t(a.xAxis.concat(a.yAxis),function(a){var b=a.axis;d[b.isXAxis?"zoomX":"zoomY"]&&(c=b.zoom(a.min,a.max),b.displayBtn&&(e=!0))});f=this.resetZoomButton;e&&!f?this.showResetZoom():!e&&b(f)&&(this.resetZoomButton=f.destroy());c&&this.redraw(h(this.options.chart.animation,a&&a.animation,100>this.pointCount))},pan:function(a,
-b){var c=this,d=c.hoverPoints,e;d&&t(d,function(a){a.setState()});t("xy"===b?[1,0]:[1],function(b){b=c[b?"xAxis":"yAxis"][0];var d=b.horiz,f=a[d?"chartX":"chartY"],d=d?"mouseDownX":"mouseDownY",h=c[d],g=(b.pointRange||0)/2,k=b.getExtremes(),l=b.toValue(h-f,!0)+g,m=b.toValue(h+b.len-f,!0)-g,n=m<l,h=n?m:l,l=n?l:m,m=Math.min(k.dataMin,g?k.min:b.toValue(b.toPixels(k.min)-b.minPixelPadding)),g=Math.max(k.dataMax,g?k.max:b.toValue(b.toPixels(k.max)+b.minPixelPadding)),n=m-h;0<n&&(l+=n,h=m);n=l-g;0<n&&(l=
-g,h-=n);b.series.length&&h!==k.min&&l!==k.max&&(b.setExtremes(h,l,!1,!1,{trigger:"pan"}),e=!0);c[d]=f});e&&c.redraw(!1);q(c.container,{cursor:"move"})}});n(k.prototype,{select:function(a,b){var d=this,e=d.series,f=e.chart;a=h(a,!d.selected);d.firePointEvent(a?"select":"unselect",{accumulate:b},function(){d.selected=d.options.selected=a;e.options.data[c(d,e.data)]=d.options;d.setState(a&&"select");b||t(f.getSelectedPoints(),function(a){a.selected&&a!==d&&(a.selected=a.options.selected=!1,e.options.data[c(a,
-e.data)]=a.options,a.setState(""),a.firePointEvent("unselect"))})})},onMouseOver:function(a){var b=this.series.chart,c=b.pointer;a=a?c.normalize(a):c.getChartCoordinatesFromPoint(this,b.inverted);c.runPointActions(a,this)},onMouseOut:function(){var a=this.series.chart;this.firePointEvent("mouseOut");t(a.hoverPoints||[],function(a){a.setState()});a.hoverPoints=a.hoverPoint=null},importEvents:function(){if(!this.hasImportedEvents){var b=this,c=d(b.series.options.point,b.options).events;b.events=c;a.objectEach(c,
-function(a,c){B(b,c,a)});this.hasImportedEvents=!0}},setState:function(a,b){var c=Math.floor(this.plotX),d=this.plotY,e=this.series,f=e.options.states[a||"normal"]||{},k=l[e.type].marker&&e.options.marker,m=k&&!1===k.enabled,p=k&&k.states&&k.states[a||"normal"]||{},g=!1===p.enabled,q=e.stateMarkerGraphic,r=this.marker||{},t=e.chart,u=e.halo,z,B=k&&e.markerAttribs;a=a||"";if(!(a===this.state&&!b||this.selected&&"select"!==a||!1===f.enabled||a&&(g||m&&!1===p.enabled)||a&&r.states&&r.states[a]&&!1===
-r.states[a].enabled)){B&&(z=e.markerAttribs(this,a));if(this.graphic)this.state&&this.graphic.removeClass("highcharts-point-"+this.state),a&&this.graphic.addClass("highcharts-point-"+a),this.graphic.animate(e.pointAttribs(this,a),h(t.options.chart.animation,f.animation)),z&&this.graphic.animate(z,h(t.options.chart.animation,p.animation,k.animation)),q&&q.hide();else{if(a&&p){k=r.symbol||e.symbol;q&&q.currentSymbol!==k&&(q=q.destroy());if(q)q[b?"animate":"attr"]({x:z.x,y:z.y});else k&&(e.stateMarkerGraphic=
-q=t.renderer.symbol(k,z.x,z.y,z.width,z.height).add(e.markerGroup),q.currentSymbol=k);q&&q.attr(e.pointAttribs(this,a))}q&&(q[a&&t.isInsidePlot(c,d,t.inverted)?"show":"hide"](),q.element.point=this)}(c=f.halo)&&c.size?(u||(e.halo=u=t.renderer.path().add((this.graphic||q).parentGroup)),u.show()[b?"animate":"attr"]({d:this.haloPath(c.size)}),u.attr({"class":"highcharts-halo highcharts-color-"+h(this.colorIndex,e.colorIndex)}),u.point=this,u.attr(n({fill:this.color||e.color,"fill-opacity":c.opacity,
-zIndex:-1},c.attributes))):u&&u.point&&u.point.haloPath&&u.animate({d:u.point.haloPath(0)},null,u.hide);this.state=a;v(this,"afterSetState")}},haloPath:function(a){return this.series.chart.renderer.symbols.circle(Math.floor(this.plotX)-a,this.plotY-a,2*a,2*a)}});n(e.prototype,{onMouseOver:function(){var a=this.chart,b=a.hoverSeries;if(b&&b!==this)b.onMouseOut();this.options.events.mouseOver&&v(this,"mouseOver");this.setState("hover");a.hoverSeries=this},onMouseOut:function(){var a=this.options,b=
-this.chart,c=b.tooltip,d=b.hoverPoint;b.hoverSeries=null;if(d)d.onMouseOut();this&&a.events.mouseOut&&v(this,"mouseOut");!c||this.stickyTracking||c.shared&&!this.noSharedTooltip||c.hide();this.setState()},setState:function(a){var b=this,c=b.options,d=b.graph,e=c.states,f=c.lineWidth,c=0;a=a||"";if(b.state!==a&&(t([b.group,b.markerGroup,b.dataLabelsGroup],function(c){c&&(b.state&&c.removeClass("highcharts-series-"+b.state),a&&c.addClass("highcharts-series-"+a))}),b.state=a,!e[a]||!1!==e[a].enabled)&&
-(a&&(f=e[a].lineWidth||f+(e[a].lineWidthPlus||0)),d&&!d.dashstyle))for(f={"stroke-width":f},d.animate(f,h(e[a||"normal"]&&e[a||"normal"].animation,b.chart.options.chart.animation));b["zone-graph-"+c];)b["zone-graph-"+c].attr(f),c+=1},setVisible:function(a,b){var c=this,d=c.chart,e=c.legendItem,f,h=d.options.chart.ignoreHiddenSeries,k=c.visible;f=(c.visible=a=c.options.visible=c.userOptions.visible=void 0===a?!k:a)?"show":"hide";t(["group","dataLabelsGroup","markerGroup","tracker","tt"],function(a){if(c[a])c[a][f]()});
-if(d.hoverSeries===c||(d.hoverPoint&&d.hoverPoint.series)===c)c.onMouseOut();e&&d.legend.colorizeItem(c,a);c.isDirty=!0;c.options.stacking&&t(d.series,function(a){a.options.stacking&&a.visible&&(a.isDirty=!0)});t(c.linkedSeries,function(b){b.setVisible(a,!1)});h&&(d.isDirtyBox=!0);!1!==b&&d.redraw();v(c,f)},show:function(){this.setVisible(!0)},hide:function(){this.setVisible(!1)},select:function(a){this.selected=a=void 0===a?!this.selected:a;this.checkbox&&(this.checkbox.checked=a);v(this,a?"select":
-"unselect")},drawTracker:I.drawTrackerGraph})})(K);(function(a){var B=a.Chart,H=a.each,E=a.inArray,q=a.isArray,f=a.isObject,l=a.pick,t=a.splat;B.prototype.setResponsive=function(f){var l=this.options.responsive,n=[],c=this.currentResponsive;l&&l.rules&&H(l.rules,function(b){void 0===b._id&&(b._id=a.uniqueKey());this.matchResponsiveRule(b,n,f)},this);var b=a.merge.apply(0,a.map(n,function(b){return a.find(l.rules,function(a){return a._id===b}).chartOptions})),n=n.toString()||void 0;n!==(c&&c.ruleIds)&&
-(c&&this.update(c.undoOptions,f),n?(this.currentResponsive={ruleIds:n,mergedOptions:b,undoOptions:this.currentOptions(b)},this.update(b,f)):this.currentResponsive=void 0)};B.prototype.matchResponsiveRule=function(a,f){var n=a.condition;(n.callback||function(){return this.chartWidth<=l(n.maxWidth,Number.MAX_VALUE)&&this.chartHeight<=l(n.maxHeight,Number.MAX_VALUE)&&this.chartWidth>=l(n.minWidth,0)&&this.chartHeight>=l(n.minHeight,0)}).call(this)&&f.push(a._id)};B.prototype.currentOptions=function(l){function n(c,
-b,l,d){var h;a.objectEach(c,function(a,c){if(!d&&-1<E(c,["series","xAxis","yAxis"]))for(a=t(a),l[c]=[],h=0;h<a.length;h++)b[c][h]&&(l[c][h]={},n(a[h],b[c][h],l[c][h],d+1));else f(a)?(l[c]=q(a)?[]:{},n(a,b[c]||{},l[c],d+1)):l[c]=b[c]||null})}var u={};n(l,this.options,u,0);return u}})(K);return K});
+(function(S,K){"object"===typeof module&&module.exports?module.exports=S.document?K(S):K: true?!(__WEBPACK_AMD_DEFINE_RESULT__ = (function(){return K(S)}).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):S.Highcharts=K(S)})("undefined"!==typeof window?window:this,function(S){var K=function(){var a="undefined"===typeof S?window:S,C=a.document,F=a.navigator&&a.navigator.userAgent||"",I=C&&C.createElementNS&&!!C.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect,n=/(edge|msie|trident)/i.test(F)&&!a.opera,f=-1!==F.indexOf("Firefox"),
+e=-1!==F.indexOf("Chrome"),u=f&&4>parseInt(F.split("Firefox/")[1],10);return a.Highcharts?a.Highcharts.error(16,!0):{product:"Highcharts",version:"6.2.0",deg2rad:2*Math.PI/360,doc:C,hasBidiBug:u,hasTouch:C&&void 0!==C.documentElement.ontouchstart,isMS:n,isWebKit:-1!==F.indexOf("AppleWebKit"),isFirefox:f,isChrome:e,isSafari:!e&&-1!==F.indexOf("Safari"),isTouchDevice:/(Mobile|Android|Windows Phone)/.test(F),SVG_NS:"http://www.w3.org/2000/svg",chartCount:0,seriesTypes:{},symbolSizes:{},svg:I,win:a,marginNames:["plotTop",
+"marginRight","marginBottom","plotLeft"],noop:function(){},charts:[]}}();(function(a){a.timers=[];var C=a.charts,F=a.doc,I=a.win;a.error=function(n,f){n=a.isNumber(n)?"Highcharts error #"+n+": www.highcharts.com/errors/"+n:n;if(f)throw Error(n);I.console&&console.log(n)};a.Fx=function(a,f,e){this.options=f;this.elem=a;this.prop=e};a.Fx.prototype={dSetter:function(){var a=this.paths[0],f=this.paths[1],e=[],u=this.now,x=a.length,t;if(1===u)e=this.toD;else if(x===f.length&&1>u)for(;x--;)t=parseFloat(a[x]),
+e[x]=isNaN(t)?f[x]:u*parseFloat(f[x]-t)+t;else e=f;this.elem.attr("d",e,null,!0)},update:function(){var a=this.elem,f=this.prop,e=this.now,u=this.options.step;if(this[f+"Setter"])this[f+"Setter"]();else a.attr?a.element&&a.attr(f,e,null,!0):a.style[f]=e+this.unit;u&&u.call(a,e,this)},run:function(n,f,e){var u=this,x=u.options,t=function(a){return t.stopped?!1:u.step(a)},w=I.requestAnimationFrame||function(a){setTimeout(a,13)},y=function(){for(var c=0;c<a.timers.length;c++)a.timers[c]()||a.timers.splice(c--,
+1);a.timers.length&&w(y)};n!==f||this.elem["forceAnimate:"+this.prop]?(this.startTime=+new Date,this.start=n,this.end=f,this.unit=e,this.now=this.start,this.pos=0,t.elem=this.elem,t.prop=this.prop,t()&&1===a.timers.push(t)&&w(y)):(delete x.curAnim[this.prop],x.complete&&0===a.keys(x.curAnim).length&&x.complete.call(this.elem))},step:function(n){var f=+new Date,e,u=this.options,x=this.elem,t=u.complete,w=u.duration,y=u.curAnim;x.attr&&!x.element?n=!1:n||f>=w+this.startTime?(this.now=this.end,this.pos=
+1,this.update(),e=y[this.prop]=!0,a.objectEach(y,function(a){!0!==a&&(e=!1)}),e&&t&&t.call(x),n=!1):(this.pos=u.easing((f-this.startTime)/w),this.now=this.start+(this.end-this.start)*this.pos,this.update(),n=!0);return n},initPath:function(n,f,e){function u(a){var b,k;for(d=a.length;d--;)b="M"===a[d]||"L"===a[d],k=/[a-zA-Z]/.test(a[d+3]),b&&k&&a.splice(d+1,0,a[d+1],a[d+2],a[d+1],a[d+2])}function x(a,h){for(;a.length<k;){a[0]=h[k-a.length];var c=a.slice(0,p);[].splice.apply(a,[0,0].concat(c));b&&(c=
+a.slice(a.length-p),[].splice.apply(a,[a.length,0].concat(c)),d--)}a[0]="M"}function t(a,d){for(var c=(k-a.length)/p;0<c&&c--;)q=a.slice().splice(a.length/v-p,p*v),q[0]=d[k-p-c*p],h&&(q[p-6]=q[p-2],q[p-5]=q[p-1]),[].splice.apply(a,[a.length/v,0].concat(q)),b&&c--}f=f||"";var w,y=n.startX,c=n.endX,h=-1<f.indexOf("C"),p=h?7:3,k,q,d;f=f.split(" ");e=e.slice();var b=n.isArea,v=b?2:1,J;h&&(u(f),u(e));if(y&&c){for(d=0;d<y.length;d++)if(y[d]===c[0]){w=d;break}else if(y[0]===c[c.length-y.length+d]){w=d;J=
+!0;break}void 0===w&&(f=[])}f.length&&a.isNumber(w)&&(k=e.length+w*v*p,J?(x(f,e),t(e,f)):(x(e,f),t(f,e)));return[f,e]},fillSetter:function(){a.Fx.prototype.strokeSetter.apply(this,arguments)},strokeSetter:function(){this.elem.attr(this.prop,a.color(this.start).tweenTo(a.color(this.end),this.pos),null,!0)}};a.merge=function(){var n,f=arguments,e,u={},x=function(e,n){"object"!==typeof e&&(e={});a.objectEach(n,function(y,c){!a.isObject(y,!0)||a.isClass(y)||a.isDOMElement(y)?e[c]=n[c]:e[c]=x(e[c]||{},
+y)});return e};!0===f[0]&&(u=f[1],f=Array.prototype.slice.call(f,2));e=f.length;for(n=0;n<e;n++)u=x(u,f[n]);return u};a.pInt=function(a,f){return parseInt(a,f||10)};a.isString=function(a){return"string"===typeof a};a.isArray=function(a){a=Object.prototype.toString.call(a);return"[object Array]"===a||"[object Array Iterator]"===a};a.isObject=function(n,f){return!!n&&"object"===typeof n&&(!f||!a.isArray(n))};a.isDOMElement=function(n){return a.isObject(n)&&"number"===typeof n.nodeType};a.isClass=function(n){var f=
+n&&n.constructor;return!(!a.isObject(n,!0)||a.isDOMElement(n)||!f||!f.name||"Object"===f.name)};a.isNumber=function(a){return"number"===typeof a&&!isNaN(a)&&Infinity>a&&-Infinity<a};a.erase=function(a,f){for(var e=a.length;e--;)if(a[e]===f){a.splice(e,1);break}};a.defined=function(a){return void 0!==a&&null!==a};a.attr=function(n,f,e){var u;a.isString(f)?a.defined(e)?n.setAttribute(f,e):n&&n.getAttribute&&((u=n.getAttribute(f))||"class"!==f||(u=n.getAttribute(f+"Name"))):a.defined(f)&&a.isObject(f)&&
+a.objectEach(f,function(a,e){n.setAttribute(e,a)});return u};a.splat=function(n){return a.isArray(n)?n:[n]};a.syncTimeout=function(a,f,e){if(f)return setTimeout(a,f,e);a.call(0,e)};a.clearTimeout=function(n){a.defined(n)&&clearTimeout(n)};a.extend=function(a,f){var e;a||(a={});for(e in f)a[e]=f[e];return a};a.pick=function(){var a=arguments,f,e,u=a.length;for(f=0;f<u;f++)if(e=a[f],void 0!==e&&null!==e)return e};a.css=function(n,f){a.isMS&&!a.svg&&f&&void 0!==f.opacity&&(f.filter="alpha(opacity\x3d"+
+100*f.opacity+")");a.extend(n.style,f)};a.createElement=function(n,f,e,u,x){n=F.createElement(n);var t=a.css;f&&a.extend(n,f);x&&t(n,{padding:0,border:"none",margin:0});e&&t(n,e);u&&u.appendChild(n);return n};a.extendClass=function(n,f){var e=function(){};e.prototype=new n;a.extend(e.prototype,f);return e};a.pad=function(a,f,e){return Array((f||2)+1-String(a).replace("-","").length).join(e||0)+a};a.relativeLength=function(a,f,e){return/%$/.test(a)?f*parseFloat(a)/100+(e||0):parseFloat(a)};a.wrap=
+function(a,f,e){var n=a[f];a[f]=function(){var a=Array.prototype.slice.call(arguments),t=arguments,w=this;w.proceed=function(){n.apply(w,arguments.length?arguments:t)};a.unshift(n);a=e.apply(this,a);w.proceed=null;return a}};a.datePropsToTimestamps=function(n){a.objectEach(n,function(f,e){a.isObject(f)&&"function"===typeof f.getTime?n[e]=f.getTime():(a.isObject(f)||a.isArray(f))&&a.datePropsToTimestamps(f)})};a.formatSingle=function(n,f,e){var u=/\.([0-9])/,x=a.defaultOptions.lang;/f$/.test(n)?(e=
+(e=n.match(u))?e[1]:-1,null!==f&&(f=a.numberFormat(f,e,x.decimalPoint,-1<n.indexOf(",")?x.thousandsSep:""))):f=(e||a.time).dateFormat(n,f);return f};a.format=function(n,f,e){for(var u="{",x=!1,t,w,y,c,h=[],p;n;){u=n.indexOf(u);if(-1===u)break;t=n.slice(0,u);if(x){t=t.split(":");w=t.shift().split(".");c=w.length;p=f;for(y=0;y<c;y++)p&&(p=p[w[y]]);t.length&&(p=a.formatSingle(t.join(":"),p,e));h.push(p)}else h.push(t);n=n.slice(u+1);u=(x=!x)?"}":"{"}h.push(n);return h.join("")};a.getMagnitude=function(a){return Math.pow(10,
+Math.floor(Math.log(a)/Math.LN10))};a.normalizeTickInterval=function(n,f,e,u,x){var t,w=n;e=a.pick(e,1);t=n/e;f||(f=x?[1,1.2,1.5,2,2.5,3,4,5,6,8,10]:[1,2,2.5,5,10],!1===u&&(1===e?f=a.grep(f,function(a){return 0===a%1}):.1>=e&&(f=[1/e])));for(u=0;u<f.length&&!(w=f[u],x&&w*e>=n||!x&&t<=(f[u]+(f[u+1]||f[u]))/2);u++);return w=a.correctFloat(w*e,-Math.round(Math.log(.001)/Math.LN10))};a.stableSort=function(a,f){var e=a.length,n,x;for(x=0;x<e;x++)a[x].safeI=x;a.sort(function(a,e){n=f(a,e);return 0===n?
+a.safeI-e.safeI:n});for(x=0;x<e;x++)delete a[x].safeI};a.arrayMin=function(a){for(var f=a.length,e=a[0];f--;)a[f]<e&&(e=a[f]);return e};a.arrayMax=function(a){for(var f=a.length,e=a[0];f--;)a[f]>e&&(e=a[f]);return e};a.destroyObjectProperties=function(n,f){a.objectEach(n,function(a,u){a&&a!==f&&a.destroy&&a.destroy();delete n[u]})};a.discardElement=function(n){var f=a.garbageBin;f||(f=a.createElement("div"));n&&f.appendChild(n);f.innerHTML=""};a.correctFloat=function(a,f){return parseFloat(a.toPrecision(f||
+14))};a.setAnimation=function(n,f){f.renderer.globalAnimation=a.pick(n,f.options.chart.animation,!0)};a.animObject=function(n){return a.isObject(n)?a.merge(n):{duration:n?500:0}};a.timeUnits={millisecond:1,second:1E3,minute:6E4,hour:36E5,day:864E5,week:6048E5,month:24192E5,year:314496E5};a.numberFormat=function(n,f,e,u){n=+n||0;f=+f;var x=a.defaultOptions.lang,t=(n.toString().split(".")[1]||"").split("e")[0].length,w,y,c=n.toString().split("e");-1===f?f=Math.min(t,20):a.isNumber(f)?f&&c[1]&&0>c[1]&&
+(w=f+ +c[1],0<=w?(c[0]=(+c[0]).toExponential(w).split("e")[0],f=w):(c[0]=c[0].split(".")[0]||0,n=20>f?(c[0]*Math.pow(10,c[1])).toFixed(f):0,c[1]=0)):f=2;y=(Math.abs(c[1]?c[0]:n)+Math.pow(10,-Math.max(f,t)-1)).toFixed(f);t=String(a.pInt(y));w=3<t.length?t.length%3:0;e=a.pick(e,x.decimalPoint);u=a.pick(u,x.thousandsSep);n=(0>n?"-":"")+(w?t.substr(0,w)+u:"");n+=t.substr(w).replace(/(\d{3})(?=\d)/g,"$1"+u);f&&(n+=e+y.slice(-f));c[1]&&0!==+n&&(n+="e"+c[1]);return n};Math.easeInOutSine=function(a){return-.5*
+(Math.cos(Math.PI*a)-1)};a.getStyle=function(n,f,e){if("width"===f)return Math.max(0,Math.min(n.offsetWidth,n.scrollWidth)-a.getStyle(n,"padding-left")-a.getStyle(n,"padding-right"));if("height"===f)return Math.max(0,Math.min(n.offsetHeight,n.scrollHeight)-a.getStyle(n,"padding-top")-a.getStyle(n,"padding-bottom"));I.getComputedStyle||a.error(27,!0);if(n=I.getComputedStyle(n,void 0))n=n.getPropertyValue(f),a.pick(e,"opacity"!==f)&&(n=a.pInt(n));return n};a.inArray=function(n,f,e){return(a.indexOfPolyfill||
+Array.prototype.indexOf).call(f,n,e)};a.grep=function(n,f){return(a.filterPolyfill||Array.prototype.filter).call(n,f)};a.find=Array.prototype.find?function(a,f){return a.find(f)}:function(a,f){var e,u=a.length;for(e=0;e<u;e++)if(f(a[e],e))return a[e]};a.some=function(n,f,e){return(a.somePolyfill||Array.prototype.some).call(n,f,e)};a.map=function(a,f){for(var e=[],u=0,x=a.length;u<x;u++)e[u]=f.call(a[u],a[u],u,a);return e};a.keys=function(n){return(a.keysPolyfill||Object.keys).call(void 0,n)};a.reduce=
+function(n,f,e){return(a.reducePolyfill||Array.prototype.reduce).apply(n,2<arguments.length?[f,e]:[f])};a.offset=function(a){var f=F.documentElement;a=a.parentElement||a.parentNode?a.getBoundingClientRect():{top:0,left:0};return{top:a.top+(I.pageYOffset||f.scrollTop)-(f.clientTop||0),left:a.left+(I.pageXOffset||f.scrollLeft)-(f.clientLeft||0)}};a.stop=function(n,f){for(var e=a.timers.length;e--;)a.timers[e].elem!==n||f&&f!==a.timers[e].prop||(a.timers[e].stopped=!0)};a.each=function(n,f,e){return(a.forEachPolyfill||
+Array.prototype.forEach).call(n,f,e)};a.objectEach=function(a,f,e){for(var u in a)a.hasOwnProperty(u)&&f.call(e||a[u],a[u],u,a)};a.addEvent=function(n,f,e,u){var x,t=n.addEventListener||a.addEventListenerPolyfill;x="function"===typeof n&&n.prototype?n.prototype.protoEvents=n.prototype.protoEvents||{}:n.hcEvents=n.hcEvents||{};a.Point&&n instanceof a.Point&&n.series&&n.series.chart&&(n.series.chart.runTrackerClick=!0);t&&t.call(n,f,e,!1);x[f]||(x[f]=[]);x[f].push(e);u&&a.isNumber(u.order)&&(e.order=
+u.order,x[f].sort(function(a,e){return a.order-e.order}));return function(){a.removeEvent(n,f,e)}};a.removeEvent=function(n,f,e){function u(e,c){var h=n.removeEventListener||a.removeEventListenerPolyfill;h&&h.call(n,e,c,!1)}function x(e){var c,h;n.nodeName&&(f?(c={},c[f]=!0):c=e,a.objectEach(c,function(a,k){if(e[k])for(h=e[k].length;h--;)u(k,e[k][h])}))}var t,w;a.each(["protoEvents","hcEvents"],function(y){var c=n[y];c&&(f?(t=c[f]||[],e?(w=a.inArray(e,t),-1<w&&(t.splice(w,1),c[f]=t),u(f,e)):(x(c),
+c[f]=[])):(x(c),n[y]={}))})};a.fireEvent=function(n,f,e,u){var x,t,w,y,c;e=e||{};F.createEvent&&(n.dispatchEvent||n.fireEvent)?(x=F.createEvent("Events"),x.initEvent(f,!0,!0),a.extend(x,e),n.dispatchEvent?n.dispatchEvent(x):n.fireEvent(f,x)):a.each(["protoEvents","hcEvents"],function(h){if(n[h])for(t=n[h][f]||[],w=t.length,e.target||a.extend(e,{preventDefault:function(){e.defaultPrevented=!0},target:n,type:f}),y=0;y<w;y++)(c=t[y])&&!1===c.call(n,e)&&e.preventDefault()});u&&!e.defaultPrevented&&u.call(n,
+e)};a.animate=function(n,f,e){var u,x="",t,w,y;a.isObject(e)||(y=arguments,e={duration:y[2],easing:y[3],complete:y[4]});a.isNumber(e.duration)||(e.duration=400);e.easing="function"===typeof e.easing?e.easing:Math[e.easing]||Math.easeInOutSine;e.curAnim=a.merge(f);a.objectEach(f,function(c,h){a.stop(n,h);w=new a.Fx(n,e,h);t=null;"d"===h?(w.paths=w.initPath(n,n.d,f.d),w.toD=f.d,u=0,t=1):n.attr?u=n.attr(h):(u=parseFloat(a.getStyle(n,h))||0,"opacity"!==h&&(x="px"));t||(t=c);t&&t.match&&t.match("px")&&
+(t=t.replace(/px/g,""));w.run(u,t,x)})};a.seriesType=function(n,f,e,u,x){var t=a.getOptions(),w=a.seriesTypes;t.plotOptions[n]=a.merge(t.plotOptions[f],e);w[n]=a.extendClass(w[f]||function(){},u);w[n].prototype.type=n;x&&(w[n].prototype.pointClass=a.extendClass(a.Point,x));return w[n]};a.uniqueKey=function(){var a=Math.random().toString(36).substring(2,9),f=0;return function(){return"highcharts-"+a+"-"+f++}}();I.jQuery&&(I.jQuery.fn.highcharts=function(){var n=[].slice.call(arguments);if(this[0])return n[0]?
+(new (a[a.isString(n[0])?n.shift():"Chart"])(this[0],n[0],n[1]),this):C[a.attr(this[0],"data-highcharts-chart")]})})(K);(function(a){var C=a.each,F=a.isNumber,I=a.map,n=a.merge,f=a.pInt;a.Color=function(e){if(!(this instanceof a.Color))return new a.Color(e);this.init(e)};a.Color.prototype={parsers:[{regex:/rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,parse:function(a){return[f(a[1]),f(a[2]),f(a[3]),parseFloat(a[4],10)]}},{regex:/rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,
+parse:function(a){return[f(a[1]),f(a[2]),f(a[3]),1]}}],names:{white:"#ffffff",black:"#000000"},init:function(e){var f,x,t,w;if((this.input=e=this.names[e&&e.toLowerCase?e.toLowerCase():""]||e)&&e.stops)this.stops=I(e.stops,function(e){return new a.Color(e[1])});else if(e&&e.charAt&&"#"===e.charAt()&&(f=e.length,e=parseInt(e.substr(1),16),7===f?x=[(e&16711680)>>16,(e&65280)>>8,e&255,1]:4===f&&(x=[(e&3840)>>4|(e&3840)>>8,(e&240)>>4|e&240,(e&15)<<4|e&15,1])),!x)for(t=this.parsers.length;t--&&!x;)w=this.parsers[t],
+(f=w.regex.exec(e))&&(x=w.parse(f));this.rgba=x||[]},get:function(a){var e=this.input,f=this.rgba,t;this.stops?(t=n(e),t.stops=[].concat(t.stops),C(this.stops,function(e,y){t.stops[y]=[t.stops[y][0],e.get(a)]})):t=f&&F(f[0])?"rgb"===a||!a&&1===f[3]?"rgb("+f[0]+","+f[1]+","+f[2]+")":"a"===a?f[3]:"rgba("+f.join(",")+")":e;return t},brighten:function(a){var e,x=this.rgba;if(this.stops)C(this.stops,function(e){e.brighten(a)});else if(F(a)&&0!==a)for(e=0;3>e;e++)x[e]+=f(255*a),0>x[e]&&(x[e]=0),255<x[e]&&
+(x[e]=255);return this},setOpacity:function(a){this.rgba[3]=a;return this},tweenTo:function(a,f){var e=this.rgba,t=a.rgba;t.length&&e&&e.length?(a=1!==t[3]||1!==e[3],f=(a?"rgba(":"rgb(")+Math.round(t[0]+(e[0]-t[0])*(1-f))+","+Math.round(t[1]+(e[1]-t[1])*(1-f))+","+Math.round(t[2]+(e[2]-t[2])*(1-f))+(a?","+(t[3]+(e[3]-t[3])*(1-f)):"")+")"):f=a.input||"none";return f}};a.color=function(e){return new a.Color(e)}})(K);(function(a){var C,F,I=a.addEvent,n=a.animate,f=a.attr,e=a.charts,u=a.color,x=a.css,
+t=a.createElement,w=a.defined,y=a.deg2rad,c=a.destroyObjectProperties,h=a.doc,p=a.each,k=a.extend,q=a.erase,d=a.grep,b=a.hasTouch,v=a.inArray,J=a.isArray,l=a.isFirefox,L=a.isMS,B=a.isObject,D=a.isString,m=a.isWebKit,G=a.merge,A=a.noop,N=a.objectEach,E=a.pick,g=a.pInt,r=a.removeEvent,M=a.stop,O=a.svg,H=a.SVG_NS,R=a.symbolSizes,Q=a.win;C=a.SVGElement=function(){return this};k(C.prototype,{opacity:1,SVG_NS:H,textProps:"direction fontSize fontWeight fontFamily fontStyle color lineHeight width textAlign textDecoration textOverflow textOutline cursor".split(" "),
+init:function(a,g){this.element="span"===g?t(g):h.createElementNS(this.SVG_NS,g);this.renderer=a},animate:function(z,g,r){g=a.animObject(E(g,this.renderer.globalAnimation,!0));0!==g.duration?(r&&(g.complete=r),n(this,z,g)):(this.attr(z,null,r),g.step&&g.step.call(this));return this},complexColor:function(z,g,r){var b=this.renderer,k,m,d,H,c,h,q,A,v,P,l,O=[],M;a.fireEvent(this.renderer,"complexColor",{args:arguments},function(){z.radialGradient?m="radialGradient":z.linearGradient&&(m="linearGradient");
+m&&(d=z[m],c=b.gradients,q=z.stops,P=r.radialReference,J(d)&&(z[m]=d={x1:d[0],y1:d[1],x2:d[2],y2:d[3],gradientUnits:"userSpaceOnUse"}),"radialGradient"===m&&P&&!w(d.gradientUnits)&&(H=d,d=G(d,b.getRadialAttr(P,H),{gradientUnits:"userSpaceOnUse"})),N(d,function(a,z){"id"!==z&&O.push(z,a)}),N(q,function(a){O.push(a)}),O=O.join(","),c[O]?l=c[O].attr("id"):(d.id=l=a.uniqueKey(),c[O]=h=b.createElement(m).attr(d).add(b.defs),h.radAttr=H,h.stops=[],p(q,function(z){0===z[1].indexOf("rgba")?(k=a.color(z[1]),
+A=k.get("rgb"),v=k.get("a")):(A=z[1],v=1);z=b.createElement("stop").attr({offset:z[0],"stop-color":A,"stop-opacity":v}).add(h);h.stops.push(z)})),M="url("+b.url+"#"+l+")",r.setAttribute(g,M),r.gradient=O,z.toString=function(){return M})})},applyTextOutline:function(z){var g=this.element,r,b,d,m,k;-1!==z.indexOf("contrast")&&(z=z.replace(/contrast/g,this.renderer.getContrast(g.style.fill)));z=z.split(" ");b=z[z.length-1];if((d=z[0])&&"none"!==d&&a.svg){this.fakeTS=!0;z=[].slice.call(g.getElementsByTagName("tspan"));
+this.ySetter=this.xSetter;d=d.replace(/(^[\d\.]+)(.*?)$/g,function(a,z,g){return 2*z+g});for(k=z.length;k--;)r=z[k],"highcharts-text-outline"===r.getAttribute("class")&&q(z,g.removeChild(r));m=g.firstChild;p(z,function(a,z){0===z&&(a.setAttribute("x",g.getAttribute("x")),z=g.getAttribute("y"),a.setAttribute("y",z||0),null===z&&g.setAttribute("y",0));a=a.cloneNode(1);f(a,{"class":"highcharts-text-outline",fill:b,stroke:b,"stroke-width":d,"stroke-linejoin":"round"});g.insertBefore(a,m)})}},attr:function(a,
+g,r,b){var z,d=this.element,m,k=this,c,H;"string"===typeof a&&void 0!==g&&(z=a,a={},a[z]=g);"string"===typeof a?k=(this[a+"Getter"]||this._defaultGetter).call(this,a,d):(N(a,function(z,g){c=!1;b||M(this,g);this.symbolName&&/^(x|y|width|height|r|start|end|innerR|anchorX|anchorY)$/.test(g)&&(m||(this.symbolAttr(a),m=!0),c=!0);!this.rotation||"x"!==g&&"y"!==g||(this.doTransform=!0);c||(H=this[g+"Setter"]||this._defaultSetter,H.call(this,z,g,d),this.shadows&&/^(width|height|visibility|x|y|d|transform|cx|cy|r)$/.test(g)&&
+this.updateShadows(g,z,H))},this),this.afterSetters());r&&r.call(this);return k},afterSetters:function(){this.doTransform&&(this.updateTransform(),this.doTransform=!1)},updateShadows:function(a,g,r){for(var z=this.shadows,d=z.length;d--;)r.call(z[d],"height"===a?Math.max(g-(z[d].cutHeight||0),0):"d"===a?this.d:g,a,z[d])},addClass:function(a,g){var z=this.attr("class")||"";-1===z.indexOf(a)&&(g||(a=(z+(z?" ":"")+a).replace("  "," ")),this.attr("class",a));return this},hasClass:function(a){return-1!==
+v(a,(this.attr("class")||"").split(" "))},removeClass:function(a){return this.attr("class",(this.attr("class")||"").replace(a,""))},symbolAttr:function(a){var z=this;p("x y r start end width height innerR anchorX anchorY".split(" "),function(g){z[g]=E(a[g],z[g])});z.attr({d:z.renderer.symbols[z.symbolName](z.x,z.y,z.width,z.height,z)})},clip:function(a){return this.attr("clip-path",a?"url("+this.renderer.url+"#"+a.id+")":"none")},crisp:function(a,g){var z;g=g||a.strokeWidth||0;z=Math.round(g)%2/2;
+a.x=Math.floor(a.x||this.x||0)+z;a.y=Math.floor(a.y||this.y||0)+z;a.width=Math.floor((a.width||this.width||0)-2*z);a.height=Math.floor((a.height||this.height||0)-2*z);w(a.strokeWidth)&&(a.strokeWidth=g);return a},css:function(a){var z=this.styles,r={},d=this.element,b,m="",c,H=!z,h=["textOutline","textOverflow","width"];a&&a.color&&(a.fill=a.color);z&&N(a,function(a,g){a!==z[g]&&(r[g]=a,H=!0)});H&&(z&&(a=k(z,r)),a&&(null===a.width||"auto"===a.width?delete this.textWidth:"text"===d.nodeName.toLowerCase()&&
+a.width&&(b=this.textWidth=g(a.width))),this.styles=a,b&&!O&&this.renderer.forExport&&delete a.width,d.namespaceURI===this.SVG_NS?(c=function(a,z){return"-"+z.toLowerCase()},N(a,function(a,z){-1===v(z,h)&&(m+=z.replace(/([A-Z])/g,c)+":"+a+";")}),m&&f(d,"style",m)):x(d,a),this.added&&("text"===this.element.nodeName&&this.renderer.buildText(this),a&&a.textOutline&&this.applyTextOutline(a.textOutline)));return this},strokeWidth:function(){return this["stroke-width"]||0},on:function(a,g){var z=this,r=
+z.element;b&&"click"===a?(r.ontouchstart=function(a){z.touchEventFired=Date.now();a.preventDefault();g.call(r,a)},r.onclick=function(a){(-1===Q.navigator.userAgent.indexOf("Android")||1100<Date.now()-(z.touchEventFired||0))&&g.call(r,a)}):r["on"+a]=g;return this},setRadialReference:function(a){var z=this.renderer.gradients[this.element.gradient];this.element.radialReference=a;z&&z.radAttr&&z.animate(this.renderer.getRadialAttr(a,z.radAttr));return this},translate:function(a,g){return this.attr({translateX:a,
+translateY:g})},invert:function(a){this.inverted=a;this.updateTransform();return this},updateTransform:function(){var a=this.translateX||0,g=this.translateY||0,r=this.scaleX,d=this.scaleY,b=this.inverted,m=this.rotation,k=this.matrix,c=this.element;b&&(a+=this.width,g+=this.height);a=["translate("+a+","+g+")"];w(k)&&a.push("matrix("+k.join(",")+")");b?a.push("rotate(90) scale(-1,1)"):m&&a.push("rotate("+m+" "+E(this.rotationOriginX,c.getAttribute("x"),0)+" "+E(this.rotationOriginY,c.getAttribute("y")||
+0)+")");(w(r)||w(d))&&a.push("scale("+E(r,1)+" "+E(d,1)+")");a.length&&c.setAttribute("transform",a.join(" "))},toFront:function(){var a=this.element;a.parentNode.appendChild(a);return this},align:function(a,g,r){var z,d,b,m,k={};d=this.renderer;b=d.alignedObjects;var c,H;if(a){if(this.alignOptions=a,this.alignByTranslate=g,!r||D(r))this.alignTo=z=r||"renderer",q(b,this),b.push(this),r=null}else a=this.alignOptions,g=this.alignByTranslate,z=this.alignTo;r=E(r,d[z],d);z=a.align;d=a.verticalAlign;b=
+(r.x||0)+(a.x||0);m=(r.y||0)+(a.y||0);"right"===z?c=1:"center"===z&&(c=2);c&&(b+=(r.width-(a.width||0))/c);k[g?"translateX":"x"]=Math.round(b);"bottom"===d?H=1:"middle"===d&&(H=2);H&&(m+=(r.height-(a.height||0))/H);k[g?"translateY":"y"]=Math.round(m);this[this.placed?"animate":"attr"](k);this.placed=!0;this.alignAttr=k;return this},getBBox:function(a,g){var z,r=this.renderer,d,b=this.element,m=this.styles,c,H=this.textStr,h,q=r.cache,A=r.cacheKeys,v=b.namespaceURI===this.SVG_NS,l;g=E(g,this.rotation);
+d=g*y;c=m&&m.fontSize;w(H)&&(l=H.toString(),-1===l.indexOf("\x3c")&&(l=l.replace(/[0-9]/g,"0")),l+=["",g||0,c,this.textWidth,m&&m.textOverflow].join());l&&!a&&(z=q[l]);if(!z){if(v||r.forExport){try{(h=this.fakeTS&&function(a){p(b.querySelectorAll(".highcharts-text-outline"),function(g){g.style.display=a})})&&h("none"),z=b.getBBox?k({},b.getBBox()):{width:b.offsetWidth,height:b.offsetHeight},h&&h("")}catch(X){}if(!z||0>z.width)z={width:0,height:0}}else z=this.htmlGetBBox();r.isSVG&&(a=z.width,r=z.height,
+v&&(z.height=r={"11px,17":14,"13px,20":16}[m&&m.fontSize+","+Math.round(r)]||r),g&&(z.width=Math.abs(r*Math.sin(d))+Math.abs(a*Math.cos(d)),z.height=Math.abs(r*Math.cos(d))+Math.abs(a*Math.sin(d))));if(l&&0<z.height){for(;250<A.length;)delete q[A.shift()];q[l]||A.push(l);q[l]=z}}return z},show:function(a){return this.attr({visibility:a?"inherit":"visible"})},hide:function(){return this.attr({visibility:"hidden"})},fadeOut:function(a){var g=this;g.animate({opacity:0},{duration:a||150,complete:function(){g.attr({y:-9999})}})},
+add:function(a){var g=this.renderer,z=this.element,r;a&&(this.parentGroup=a);this.parentInverted=a&&a.inverted;void 0!==this.textStr&&g.buildText(this);this.added=!0;if(!a||a.handleZ||this.zIndex)r=this.zIndexSetter();r||(a?a.element:g.box).appendChild(z);if(this.onAdd)this.onAdd();return this},safeRemoveChild:function(a){var g=a.parentNode;g&&g.removeChild(a)},destroy:function(){var a=this,g=a.element||{},r=a.renderer.isSVG&&"SPAN"===g.nodeName&&a.parentGroup,d=g.ownerSVGElement,b=a.clipPath;g.onclick=
+g.onmouseout=g.onmouseover=g.onmousemove=g.point=null;M(a);b&&d&&(p(d.querySelectorAll("[clip-path],[CLIP-PATH]"),function(a){var g=a.getAttribute("clip-path"),z=b.element.id;(-1<g.indexOf("(#"+z+")")||-1<g.indexOf('("#'+z+'")'))&&a.removeAttribute("clip-path")}),a.clipPath=b.destroy());if(a.stops){for(d=0;d<a.stops.length;d++)a.stops[d]=a.stops[d].destroy();a.stops=null}a.safeRemoveChild(g);for(a.destroyShadows();r&&r.div&&0===r.div.childNodes.length;)g=r.parentGroup,a.safeRemoveChild(r.div),delete r.div,
+r=g;a.alignTo&&q(a.renderer.alignedObjects,a);N(a,function(g,z){delete a[z]});return null},shadow:function(a,g,r){var z=[],d,b,m=this.element,k,c,H,h;if(!a)this.destroyShadows();else if(!this.shadows){c=E(a.width,3);H=(a.opacity||.15)/c;h=this.parentInverted?"(-1,-1)":"("+E(a.offsetX,1)+", "+E(a.offsetY,1)+")";for(d=1;d<=c;d++)b=m.cloneNode(0),k=2*c+1-2*d,f(b,{stroke:a.color||"#000000","stroke-opacity":H*d,"stroke-width":k,transform:"translate"+h,fill:"none"}),b.setAttribute("class",(b.getAttribute("class")||
+"")+" highcharts-shadow"),r&&(f(b,"height",Math.max(f(b,"height")-k,0)),b.cutHeight=k),g?g.element.appendChild(b):m.parentNode&&m.parentNode.insertBefore(b,m),z.push(b);this.shadows=z}return this},destroyShadows:function(){p(this.shadows||[],function(a){this.safeRemoveChild(a)},this);this.shadows=void 0},xGetter:function(a){"circle"===this.element.nodeName&&("x"===a?a="cx":"y"===a&&(a="cy"));return this._defaultGetter(a)},_defaultGetter:function(a){a=E(this[a+"Value"],this[a],this.element?this.element.getAttribute(a):
+null,0);/^[\-0-9\.]+$/.test(a)&&(a=parseFloat(a));return a},dSetter:function(a,g,r){a&&a.join&&(a=a.join(" "));/(NaN| {2}|^$)/.test(a)&&(a="M 0 0");this[g]!==a&&(r.setAttribute(g,a),this[g]=a)},dashstyleSetter:function(a){var r,z=this["stroke-width"];"inherit"===z&&(z=1);if(a=a&&a.toLowerCase()){a=a.replace("shortdashdotdot","3,1,1,1,1,1,").replace("shortdashdot","3,1,1,1").replace("shortdot","1,1,").replace("shortdash","3,1,").replace("longdash","8,3,").replace(/dot/g,"1,3,").replace("dash","4,3,").replace(/,$/,
+"").split(",");for(r=a.length;r--;)a[r]=g(a[r])*z;a=a.join(",").replace(/NaN/g,"none");this.element.setAttribute("stroke-dasharray",a)}},alignSetter:function(a){this.alignValue=a;this.element.setAttribute("text-anchor",{left:"start",center:"middle",right:"end"}[a])},opacitySetter:function(a,g,r){this[g]=a;r.setAttribute(g,a)},titleSetter:function(a){var g=this.element.getElementsByTagName("title")[0];g||(g=h.createElementNS(this.SVG_NS,"title"),this.element.appendChild(g));g.firstChild&&g.removeChild(g.firstChild);
+g.appendChild(h.createTextNode(String(E(a),"").replace(/<[^>]*>/g,"").replace(/&lt;/g,"\x3c").replace(/&gt;/g,"\x3e")))},textSetter:function(a){a!==this.textStr&&(delete this.bBox,this.textStr=a,this.added&&this.renderer.buildText(this))},fillSetter:function(a,g,r){"string"===typeof a?r.setAttribute(g,a):a&&this.complexColor(a,g,r)},visibilitySetter:function(a,g,r){"inherit"===a?r.removeAttribute(g):this[g]!==a&&r.setAttribute(g,a);this[g]=a},zIndexSetter:function(a,r){var z=this.renderer,d=this.parentGroup,
+b=(d||z).element||z.box,m,k=this.element,c,H,z=b===z.box;m=this.added;var h;w(a)?(k.setAttribute("data-z-index",a),a=+a,this[r]===a&&(m=!1)):w(this[r])&&k.removeAttribute("data-z-index");this[r]=a;if(m){(a=this.zIndex)&&d&&(d.handleZ=!0);r=b.childNodes;for(h=r.length-1;0<=h&&!c;h--)if(d=r[h],m=d.getAttribute("data-z-index"),H=!w(m),d!==k)if(0>a&&H&&!z&&!h)b.insertBefore(k,r[h]),c=!0;else if(g(m)<=a||H&&(!w(a)||0<=a))b.insertBefore(k,r[h+1]||null),c=!0;c||(b.insertBefore(k,r[z?3:0]||null),c=!0)}return c},
+_defaultSetter:function(a,g,r){r.setAttribute(g,a)}});C.prototype.yGetter=C.prototype.xGetter;C.prototype.translateXSetter=C.prototype.translateYSetter=C.prototype.rotationSetter=C.prototype.verticalAlignSetter=C.prototype.rotationOriginXSetter=C.prototype.rotationOriginYSetter=C.prototype.scaleXSetter=C.prototype.scaleYSetter=C.prototype.matrixSetter=function(a,g){this[g]=a;this.doTransform=!0};C.prototype["stroke-widthSetter"]=C.prototype.strokeSetter=function(a,g,r){this[g]=a;this.stroke&&this["stroke-width"]?
+(C.prototype.fillSetter.call(this,this.stroke,"stroke",r),r.setAttribute("stroke-width",this["stroke-width"]),this.hasStroke=!0):"stroke-width"===g&&0===a&&this.hasStroke&&(r.removeAttribute("stroke"),this.hasStroke=!1)};F=a.SVGRenderer=function(){this.init.apply(this,arguments)};k(F.prototype,{Element:C,SVG_NS:H,init:function(a,g,r,d,b,k){var z;d=this.createElement("svg").attr({version:"1.1","class":"highcharts-root"}).css(this.getStyle(d));z=d.element;a.appendChild(z);f(a,"dir","ltr");-1===a.innerHTML.indexOf("xmlns")&&
+f(z,"xmlns",this.SVG_NS);this.isSVG=!0;this.box=z;this.boxWrapper=d;this.alignedObjects=[];this.url=(l||m)&&h.getElementsByTagName("base").length?Q.location.href.split("#")[0].replace(/<[^>]*>/g,"").replace(/([\('\)])/g,"\\$1").replace(/ /g,"%20"):"";this.createElement("desc").add().element.appendChild(h.createTextNode("Created with Highcharts 6.2.0"));this.defs=this.createElement("defs").add();this.allowHTML=k;this.forExport=b;this.gradients={};this.cache={};this.cacheKeys=[];this.imgCount=0;this.setSize(g,
+r,!1);var c;l&&a.getBoundingClientRect&&(g=function(){x(a,{left:0,top:0});c=a.getBoundingClientRect();x(a,{left:Math.ceil(c.left)-c.left+"px",top:Math.ceil(c.top)-c.top+"px"})},g(),this.unSubPixelFix=I(Q,"resize",g))},getStyle:function(a){return this.style=k({fontFamily:'"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif',fontSize:"12px"},a)},setStyle:function(a){this.boxWrapper.css(this.getStyle(a))},isHidden:function(){return!this.boxWrapper.getBBox().width},destroy:function(){var a=
+this.defs;this.box=null;this.boxWrapper=this.boxWrapper.destroy();c(this.gradients||{});this.gradients=null;a&&(this.defs=a.destroy());this.unSubPixelFix&&this.unSubPixelFix();return this.alignedObjects=null},createElement:function(a){var g=new this.Element;g.init(this,a);return g},draw:A,getRadialAttr:function(a,g){return{cx:a[0]-a[2]/2+g.cx*a[2],cy:a[1]-a[2]/2+g.cy*a[2],r:g.r*a[2]}},truncate:function(a,g,r,d,b,m,k){var z=this,c=a.rotation,H,q=d?1:0,A=(r||d).length,v=A,p=[],l=function(a){g.firstChild&&
+g.removeChild(g.firstChild);a&&g.appendChild(h.createTextNode(a))},O=function(m,c){c=c||m;if(void 0===p[c])if(g.getSubStringLength)try{p[c]=b+g.getSubStringLength(0,d?c+1:c)}catch(Y){}else z.getSpanWidth&&(l(k(r||d,m)),p[c]=b+z.getSpanWidth(a,g));return p[c]},G,M;a.rotation=0;G=O(g.textContent.length);if(M=b+G>m){for(;q<=A;)v=Math.ceil((q+A)/2),d&&(H=k(d,v)),G=O(v,H&&H.length-1),q===A?q=A+1:G>m?A=v-1:q=v;0===A?l(""):r&&A===r.length-1||l(H||k(r||d,v))}d&&d.splice(0,v);a.actualWidth=G;a.rotation=c;
+return M},escapes:{"\x26":"\x26amp;","\x3c":"\x26lt;","\x3e":"\x26gt;","'":"\x26#39;",'"':"\x26quot;"},buildText:function(a){var r=a.element,b=this,m=b.forExport,c=E(a.textStr,"").toString(),z=-1!==c.indexOf("\x3c"),k=r.childNodes,q,A=f(r,"x"),l=a.styles,G=a.textWidth,M=l&&l.lineHeight,e=l&&l.textOutline,B=l&&"ellipsis"===l.textOverflow,R=l&&"nowrap"===l.whiteSpace,y=l&&l.fontSize,t,D,J=k.length,l=G&&!a.added&&this.box,w=function(a){var d;d=/(px|em)$/.test(a&&a.style.fontSize)?a.style.fontSize:y||
+b.style.fontSize||12;return M?g(M):b.fontMetrics(d,a.getAttribute("style")?a:r).h},Q=function(a,g){N(b.escapes,function(r,d){g&&-1!==v(r,g)||(a=a.toString().replace(new RegExp(r,"g"),d))});return a},u=function(a,g){var r;r=a.indexOf("\x3c");a=a.substring(r,a.indexOf("\x3e")-r);r=a.indexOf(g+"\x3d");if(-1!==r&&(r=r+g.length+1,g=a.charAt(r),'"'===g||"'"===g))return a=a.substring(r+1),a.substring(0,a.indexOf(g))};t=[c,B,R,M,e,y,G].join();if(t!==a.textCache){for(a.textCache=t;J--;)r.removeChild(k[J]);
+z||e||B||G||-1!==c.indexOf(" ")?(l&&l.appendChild(r),c=z?c.replace(/<(b|strong)>/g,'\x3cspan style\x3d"font-weight:bold"\x3e').replace(/<(i|em)>/g,'\x3cspan style\x3d"font-style:italic"\x3e').replace(/<a/g,"\x3cspan").replace(/<\/(b|strong|i|em|a)>/g,"\x3c/span\x3e").split(/<br.*?>/g):[c],c=d(c,function(a){return""!==a}),p(c,function(g,d){var c,z=0,k=0;g=g.replace(/^\s+|\s+$/g,"").replace(/<span/g,"|||\x3cspan").replace(/<\/span>/g,"\x3c/span\x3e|||");c=g.split("|||");p(c,function(g){if(""!==g||1===
+c.length){var v={},l=h.createElementNS(b.SVG_NS,"tspan"),p,M;(p=u(g,"class"))&&f(l,"class",p);if(p=u(g,"style"))p=p.replace(/(;| |^)color([ :])/,"$1fill$2"),f(l,"style",p);(M=u(g,"href"))&&!m&&(f(l,"onclick",'location.href\x3d"'+M+'"'),f(l,"class","highcharts-anchor"),x(l,{cursor:"pointer"}));g=Q(g.replace(/<[a-zA-Z\/](.|\n)*?>/g,"")||" ");if(" "!==g){l.appendChild(h.createTextNode(g));z?v.dx=0:d&&null!==A&&(v.x=A);f(l,v);r.appendChild(l);!z&&D&&(!O&&m&&x(l,{display:"block"}),f(l,"dy",w(l)));if(G){var e=
+g.replace(/([^\^])-/g,"$1- ").split(" "),v=!R&&(1<c.length||d||1<e.length);M=0;var t=w(l);if(B)q=b.truncate(a,l,g,void 0,0,Math.max(0,G-parseInt(y||12,10)),function(a,g){return a.substring(0,g)+"\u2026"});else if(v)for(;e.length;)e.length&&!R&&0<M&&(l=h.createElementNS(H,"tspan"),f(l,{dy:t,x:A}),p&&f(l,"style",p),l.appendChild(h.createTextNode(e.join(" ").replace(/- /g,"-"))),r.appendChild(l)),b.truncate(a,l,null,e,0===M?k:0,G,function(a,g){return e.slice(0,g).join(" ").replace(/- /g,"-")}),k=a.actualWidth,
+M++}z++}}});D=D||r.childNodes.length}),B&&q&&a.attr("title",Q(a.textStr,["\x26lt;","\x26gt;"])),l&&l.removeChild(r),e&&a.applyTextOutline&&a.applyTextOutline(e)):r.appendChild(h.createTextNode(Q(c)))}},getContrast:function(a){a=u(a).rgba;a[0]*=1;a[1]*=1.2;a[2]*=.5;return 459<a[0]+a[1]+a[2]?"#000000":"#FFFFFF"},button:function(a,g,r,d,b,c,m,H,h){var z=this.label(a,g,r,h,null,null,null,null,"button"),q=0;z.attr(G({padding:8,r:2},b));var A,v,l,p;b=G({fill:"#f7f7f7",stroke:"#cccccc","stroke-width":1,
+style:{color:"#333333",cursor:"pointer",fontWeight:"normal"}},b);A=b.style;delete b.style;c=G(b,{fill:"#e6e6e6"},c);v=c.style;delete c.style;m=G(b,{fill:"#e6ebf5",style:{color:"#000000",fontWeight:"bold"}},m);l=m.style;delete m.style;H=G(b,{style:{color:"#cccccc"}},H);p=H.style;delete H.style;I(z.element,L?"mouseover":"mouseenter",function(){3!==q&&z.setState(1)});I(z.element,L?"mouseout":"mouseleave",function(){3!==q&&z.setState(q)});z.setState=function(a){1!==a&&(z.state=q=a);z.removeClass(/highcharts-button-(normal|hover|pressed|disabled)/).addClass("highcharts-button-"+
+["normal","hover","pressed","disabled"][a||0]);z.attr([b,c,m,H][a||0]).css([A,v,l,p][a||0])};z.attr(b).css(k({cursor:"default"},A));return z.on("click",function(a){3!==q&&d.call(z,a)})},crispLine:function(a,g){a[1]===a[4]&&(a[1]=a[4]=Math.round(a[1])-g%2/2);a[2]===a[5]&&(a[2]=a[5]=Math.round(a[2])+g%2/2);return a},path:function(a){var g={fill:"none"};J(a)?g.d=a:B(a)&&k(g,a);return this.createElement("path").attr(g)},circle:function(a,g,r){a=B(a)?a:{x:a,y:g,r:r};g=this.createElement("circle");g.xSetter=
+g.ySetter=function(a,g,r){r.setAttribute("c"+g,a)};return g.attr(a)},arc:function(a,g,r,d,b,c){B(a)?(d=a,g=d.y,r=d.r,a=d.x):d={innerR:d,start:b,end:c};a=this.symbol("arc",a,g,r,r,d);a.r=r;return a},rect:function(a,g,r,d,b,c){b=B(a)?a.r:b;var m=this.createElement("rect");a=B(a)?a:void 0===a?{}:{x:a,y:g,width:Math.max(r,0),height:Math.max(d,0)};void 0!==c&&(a.strokeWidth=c,a=m.crisp(a));a.fill="none";b&&(a.r=b);m.rSetter=function(a,g,r){f(r,{rx:a,ry:a})};return m.attr(a)},setSize:function(a,g,r){var d=
+this.alignedObjects,b=d.length;this.width=a;this.height=g;for(this.boxWrapper.animate({width:a,height:g},{step:function(){this.attr({viewBox:"0 0 "+this.attr("width")+" "+this.attr("height")})},duration:E(r,!0)?void 0:0});b--;)d[b].align()},g:function(a){var g=this.createElement("g");return a?g.attr({"class":"highcharts-"+a}):g},image:function(a,g,r,d,b,c){var m={preserveAspectRatio:"none"},H,h=function(a,g){a.setAttributeNS?a.setAttributeNS("http://www.w3.org/1999/xlink","href",g):a.setAttribute("hc-svg-href",
+g)},q=function(g){h(H.element,a);c.call(H,g)};1<arguments.length&&k(m,{x:g,y:r,width:d,height:b});H=this.createElement("image").attr(m);c?(h(H.element,"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw\x3d\x3d"),m=new Q.Image,I(m,"load",q),m.src=a,m.complete&&q({})):h(H.element,a);return H},symbol:function(a,g,r,d,b,c){var m=this,H,q=/^url\((.*?)\)$/,A=q.test(a),v=!A&&(this.symbols[a]?a:"circle"),z=v&&this.symbols[v],l=w(g)&&z&&z.call(this.symbols,Math.round(g),Math.round(r),
+d,b,c),G,M;z?(H=this.path(l),H.attr("fill","none"),k(H,{symbolName:v,x:g,y:r,width:d,height:b}),c&&k(H,c)):A&&(G=a.match(q)[1],H=this.image(G),H.imgwidth=E(R[G]&&R[G].width,c&&c.width),H.imgheight=E(R[G]&&R[G].height,c&&c.height),M=function(){H.attr({width:H.width,height:H.height})},p(["width","height"],function(a){H[a+"Setter"]=function(a,g){var r={},d=this["img"+g],b="width"===g?"translateX":"translateY";this[g]=a;w(d)&&(this.element&&this.element.setAttribute(g,d),this.alignByTranslate||(r[b]=
+((this[g]||0)-d)/2,this.attr(r)))}}),w(g)&&H.attr({x:g,y:r}),H.isImg=!0,w(H.imgwidth)&&w(H.imgheight)?M():(H.attr({width:0,height:0}),t("img",{onload:function(){var a=e[m.chartIndex];0===this.width&&(x(this,{position:"absolute",top:"-999em"}),h.body.appendChild(this));R[G]={width:this.width,height:this.height};H.imgwidth=this.width;H.imgheight=this.height;H.element&&M();this.parentNode&&this.parentNode.removeChild(this);m.imgCount--;if(!m.imgCount&&a&&a.onload)a.onload()},src:G}),this.imgCount++));
+return H},symbols:{circle:function(a,g,r,d){return this.arc(a+r/2,g+d/2,r/2,d/2,{start:0,end:2*Math.PI,open:!1})},square:function(a,g,r,d){return["M",a,g,"L",a+r,g,a+r,g+d,a,g+d,"Z"]},triangle:function(a,g,r,d){return["M",a+r/2,g,"L",a+r,g+d,a,g+d,"Z"]},"triangle-down":function(a,g,r,d){return["M",a,g,"L",a+r,g,a+r/2,g+d,"Z"]},diamond:function(a,g,r,d){return["M",a+r/2,g,"L",a+r,g+d/2,a+r/2,g+d,a,g+d/2,"Z"]},arc:function(a,g,r,d,b){var c=b.start,m=b.r||r,H=b.r||d||r,k=b.end-.001;r=b.innerR;d=E(b.open,
+.001>Math.abs(b.end-b.start-2*Math.PI));var h=Math.cos(c),q=Math.sin(c),A=Math.cos(k),k=Math.sin(k);b=.001>b.end-c-Math.PI?0:1;m=["M",a+m*h,g+H*q,"A",m,H,0,b,1,a+m*A,g+H*k];w(r)&&m.push(d?"M":"L",a+r*A,g+r*k,"A",r,r,0,b,0,a+r*h,g+r*q);m.push(d?"":"Z");return m},callout:function(a,g,r,d,b){var c=Math.min(b&&b.r||0,r,d),m=c+6,H=b&&b.anchorX;b=b&&b.anchorY;var k;k=["M",a+c,g,"L",a+r-c,g,"C",a+r,g,a+r,g,a+r,g+c,"L",a+r,g+d-c,"C",a+r,g+d,a+r,g+d,a+r-c,g+d,"L",a+c,g+d,"C",a,g+d,a,g+d,a,g+d-c,"L",a,g+c,
+"C",a,g,a,g,a+c,g];H&&H>r?b>g+m&&b<g+d-m?k.splice(13,3,"L",a+r,b-6,a+r+6,b,a+r,b+6,a+r,g+d-c):k.splice(13,3,"L",a+r,d/2,H,b,a+r,d/2,a+r,g+d-c):H&&0>H?b>g+m&&b<g+d-m?k.splice(33,3,"L",a,b+6,a-6,b,a,b-6,a,g+c):k.splice(33,3,"L",a,d/2,H,b,a,d/2,a,g+c):b&&b>d&&H>a+m&&H<a+r-m?k.splice(23,3,"L",H+6,g+d,H,g+d+6,H-6,g+d,a+c,g+d):b&&0>b&&H>a+m&&H<a+r-m&&k.splice(3,3,"L",H-6,g,H,g-6,H+6,g,r-c,g);return k}},clipRect:function(g,r,d,b){var c=a.uniqueKey(),m=this.createElement("clipPath").attr({id:c}).add(this.defs);
+g=this.rect(g,r,d,b,0).add(m);g.id=c;g.clipPath=m;g.count=0;return g},text:function(a,g,r,d){var b={};if(d&&(this.allowHTML||!this.forExport))return this.html(a,g,r);b.x=Math.round(g||0);r&&(b.y=Math.round(r));w(a)&&(b.text=a);a=this.createElement("text").attr(b);d||(a.xSetter=function(a,g,r){var d=r.getElementsByTagName("tspan"),b,c=r.getAttribute(g),m;for(m=0;m<d.length;m++)b=d[m],b.getAttribute(g)===c&&b.setAttribute(g,a);r.setAttribute(g,a)});return a},fontMetrics:function(a,r){a=a||r&&r.style&&
+r.style.fontSize||this.style&&this.style.fontSize;a=/px/.test(a)?g(a):/em/.test(a)?parseFloat(a)*(r?this.fontMetrics(null,r.parentNode).f:16):12;r=24>a?a+3:Math.round(1.2*a);return{h:r,b:Math.round(.8*r),f:a}},rotCorr:function(a,g,r){var d=a;g&&r&&(d=Math.max(d*Math.cos(g*y),4));return{x:-a/3*Math.sin(g*y),y:d}},label:function(g,d,b,c,m,H,h,q,A){var v=this,l=v.g("button"!==A&&"label"),M=l.text=v.text("",0,0,h).attr({zIndex:1}),O,z,e=0,B=3,R=0,f,y,t,D,J,E={},N,x,Q=/^url\((.*?)\)$/.test(c),u=Q,L,n,
+P,T;A&&l.addClass("highcharts-"+A);u=Q;L=function(){return(N||0)%2/2};n=function(){var a=M.element.style,g={};z=(void 0===f||void 0===y||J)&&w(M.textStr)&&M.getBBox();l.width=(f||z.width||0)+2*B+R;l.height=(y||z.height||0)+2*B;x=B+v.fontMetrics(a&&a.fontSize,M).b;u&&(O||(l.box=O=v.symbols[c]||Q?v.symbol(c):v.rect(),O.addClass(("button"===A?"":"highcharts-label-box")+(A?" highcharts-"+A+"-box":"")),O.add(l),a=L(),g.x=a,g.y=(q?-x:0)+a),g.width=Math.round(l.width),g.height=Math.round(l.height),O.attr(k(g,
+E)),E={})};P=function(){var a=R+B,g;g=q?0:x;w(f)&&z&&("center"===J||"right"===J)&&(a+={center:.5,right:1}[J]*(f-z.width));if(a!==M.x||g!==M.y)M.attr("x",a),M.hasBoxWidthChanged&&(z=M.getBBox(!0),n()),void 0!==g&&M.attr("y",g);M.x=a;M.y=g};T=function(a,g){O?O.attr(a,g):E[a]=g};l.onAdd=function(){M.add(l);l.attr({text:g||0===g?g:"",x:d,y:b});O&&w(m)&&l.attr({anchorX:m,anchorY:H})};l.widthSetter=function(g){f=a.isNumber(g)?g:null};l.heightSetter=function(a){y=a};l["text-alignSetter"]=function(a){J=a};
+l.paddingSetter=function(a){w(a)&&a!==B&&(B=l.padding=a,P())};l.paddingLeftSetter=function(a){w(a)&&a!==R&&(R=a,P())};l.alignSetter=function(a){a={left:0,center:.5,right:1}[a];a!==e&&(e=a,z&&l.attr({x:t}))};l.textSetter=function(a){void 0!==a&&M.textSetter(a);n();P()};l["stroke-widthSetter"]=function(a,g){a&&(u=!0);N=this["stroke-width"]=a;T(g,a)};l.strokeSetter=l.fillSetter=l.rSetter=function(a,g){"r"!==g&&("fill"===g&&a&&(u=!0),l[g]=a);T(g,a)};l.anchorXSetter=function(a,g){m=l.anchorX=a;T(g,Math.round(a)-
+L()-t)};l.anchorYSetter=function(a,g){H=l.anchorY=a;T(g,a-D)};l.xSetter=function(a){l.x=a;e&&(a-=e*((f||z.width)+2*B),l["forceAnimate:x"]=!0);t=Math.round(a);l.attr("translateX",t)};l.ySetter=function(a){D=l.y=Math.round(a);l.attr("translateY",D)};var V=l.css;return k(l,{css:function(a){if(a){var g={};a=G(a);p(l.textProps,function(r){void 0!==a[r]&&(g[r]=a[r],delete a[r])});M.css(g);"width"in g&&n()}return V.call(l,a)},getBBox:function(){return{width:z.width+2*B,height:z.height+2*B,x:z.x-B,y:z.y-
+B}},shadow:function(a){a&&(n(),O&&O.shadow(a));return l},destroy:function(){r(l.element,"mouseenter");r(l.element,"mouseleave");M&&(M=M.destroy());O&&(O=O.destroy());C.prototype.destroy.call(l);l=v=n=P=T=null}})}});a.Renderer=F})(K);(function(a){var C=a.attr,F=a.createElement,I=a.css,n=a.defined,f=a.each,e=a.extend,u=a.isFirefox,x=a.isMS,t=a.isWebKit,w=a.pick,y=a.pInt,c=a.SVGRenderer,h=a.win,p=a.wrap;e(a.SVGElement.prototype,{htmlCss:function(a){var c="SPAN"===this.element.tagName&&a&&"width"in a,
+d=w(c&&a.width,void 0);c&&(delete a.width,this.textWidth=d,this.htmlUpdateTransform());a&&"ellipsis"===a.textOverflow&&(a.whiteSpace="nowrap",a.overflow="hidden");this.styles=e(this.styles,a);I(this.element,a);return this},htmlGetBBox:function(){var a=this.element;return{x:a.offsetLeft,y:a.offsetTop,width:a.offsetWidth,height:a.offsetHeight}},htmlUpdateTransform:function(){if(this.added){var a=this.renderer,c=this.element,d=this.translateX||0,b=this.translateY||0,h=this.x||0,p=this.y||0,l=this.textAlign||
+"left",e={left:0,center:.5,right:1}[l],B=this.styles,t=B&&B.whiteSpace;I(c,{marginLeft:d,marginTop:b});this.shadows&&f(this.shadows,function(a){I(a,{marginLeft:d+1,marginTop:b+1})});this.inverted&&f(c.childNodes,function(d){a.invertChild(d,c)});if("SPAN"===c.tagName){var B=this.rotation,m=this.textWidth&&y(this.textWidth),G=[B,l,c.innerHTML,this.textWidth,this.textAlign].join(),A;(A=m!==this.oldTextWidth)&&!(A=m>this.oldTextWidth)&&((A=this.textPxLength)||(I(c,{width:"",whiteSpace:t||"nowrap"}),A=
+c.offsetWidth),A=A>m);A&&/[ \-]/.test(c.textContent||c.innerText)?(I(c,{width:m+"px",display:"block",whiteSpace:t||"normal"}),this.oldTextWidth=m,this.hasBoxWidthChanged=!0):this.hasBoxWidthChanged=!1;G!==this.cTT&&(t=a.fontMetrics(c.style.fontSize).b,!n(B)||B===(this.oldRotation||0)&&l===this.oldAlign||this.setSpanRotation(B,e,t),this.getSpanCorrection(!n(B)&&this.textPxLength||c.offsetWidth,t,e,B,l));I(c,{left:h+(this.xCorr||0)+"px",top:p+(this.yCorr||0)+"px"});this.cTT=G;this.oldRotation=B;this.oldAlign=
+l}}else this.alignOnAdd=!0},setSpanRotation:function(a,c,d){var b={},k=this.renderer.getTransformKey();b[k]=b.transform="rotate("+a+"deg)";b[k+(u?"Origin":"-origin")]=b.transformOrigin=100*c+"% "+d+"px";I(this.element,b)},getSpanCorrection:function(a,c,d){this.xCorr=-a*d;this.yCorr=-c}});e(c.prototype,{getTransformKey:function(){return x&&!/Edge/.test(h.navigator.userAgent)?"-ms-transform":t?"-webkit-transform":u?"MozTransform":h.opera?"-o-transform":""},html:function(a,c,d){var b=this.createElement("span"),
+k=b.element,h=b.renderer,l=h.isSVG,q=function(a,d){f(["opacity","visibility"],function(b){p(a,b+"Setter",function(a,b,c,m){a.call(this,b,c,m);d[c]=b})});a.addedSetters=!0};b.textSetter=function(a){a!==k.innerHTML&&delete this.bBox;this.textStr=a;k.innerHTML=w(a,"");b.doTransform=!0};l&&q(b,b.element.style);b.xSetter=b.ySetter=b.alignSetter=b.rotationSetter=function(a,d){"align"===d&&(d="textAlign");b[d]=a;b.doTransform=!0};b.afterSetters=function(){this.doTransform&&(this.htmlUpdateTransform(),this.doTransform=
+!1)};b.attr({text:a,x:Math.round(c),y:Math.round(d)}).css({fontFamily:this.style.fontFamily,fontSize:this.style.fontSize,position:"absolute"});k.style.whiteSpace="nowrap";b.css=b.htmlCss;l&&(b.add=function(a){var d,c=h.box.parentNode,l=[];if(this.parentGroup=a){if(d=a.div,!d){for(;a;)l.push(a),a=a.parentGroup;f(l.reverse(),function(a){function m(g,d){a[d]=g;"translateX"===d?k.left=g+"px":k.top=g+"px";a.doTransform=!0}var k,g=C(a.element,"class");g&&(g={className:g});d=a.div=a.div||F("div",g,{position:"absolute",
+left:(a.translateX||0)+"px",top:(a.translateY||0)+"px",display:a.display,opacity:a.opacity,pointerEvents:a.styles&&a.styles.pointerEvents},d||c);k=d.style;e(a,{classSetter:function(a){return function(g){this.element.setAttribute("class",g);a.className=g}}(d),on:function(){l[0].div&&b.on.apply({element:l[0].div},arguments);return a},translateXSetter:m,translateYSetter:m});a.addedSetters||q(a,k)})}}else d=c;d.appendChild(k);b.added=!0;b.alignOnAdd&&b.htmlUpdateTransform();return b});return b}})})(K);
+(function(a){var C=a.defined,F=a.each,I=a.extend,n=a.merge,f=a.pick,e=a.timeUnits,u=a.win;a.Time=function(a){this.update(a,!1)};a.Time.prototype={defaultOptions:{},update:function(a){var e=f(a&&a.useUTC,!0),w=this;this.options=a=n(!0,this.options||{},a);this.Date=a.Date||u.Date;this.timezoneOffset=(this.useUTC=e)&&a.timezoneOffset;this.getTimezoneOffset=this.timezoneOffsetFunction();(this.variableTimezone=!(e&&!a.getTimezoneOffset&&!a.timezone))||this.timezoneOffset?(this.get=function(a,c){var h=
+c.getTime(),p=h-w.getTimezoneOffset(c);c.setTime(p);a=c["getUTC"+a]();c.setTime(h);return a},this.set=function(a,c,h){var p;if("Milliseconds"===a||"Seconds"===a||"Minutes"===a&&0===c.getTimezoneOffset()%60)c["set"+a](h);else p=w.getTimezoneOffset(c),p=c.getTime()-p,c.setTime(p),c["setUTC"+a](h),a=w.getTimezoneOffset(c),p=c.getTime()+a,c.setTime(p)}):e?(this.get=function(a,c){return c["getUTC"+a]()},this.set=function(a,c,h){return c["setUTC"+a](h)}):(this.get=function(a,c){return c["get"+a]()},this.set=
+function(a,c,h){return c["set"+a](h)})},makeTime:function(e,t,w,y,c,h){var p,k,q;this.useUTC?(p=this.Date.UTC.apply(0,arguments),k=this.getTimezoneOffset(p),p+=k,q=this.getTimezoneOffset(p),k!==q?p+=q-k:k-36E5!==this.getTimezoneOffset(p-36E5)||a.isSafari||(p-=36E5)):p=(new this.Date(e,t,f(w,1),f(y,0),f(c,0),f(h,0))).getTime();return p},timezoneOffsetFunction:function(){var e=this,f=this.options,w=u.moment;if(!this.useUTC)return function(a){return 6E4*(new Date(a)).getTimezoneOffset()};if(f.timezone){if(w)return function(a){return 6E4*
+-w.tz(a,f.timezone).utcOffset()};a.error(25)}return this.useUTC&&f.getTimezoneOffset?function(a){return 6E4*f.getTimezoneOffset(a)}:function(){return 6E4*(e.timezoneOffset||0)}},dateFormat:function(e,f,w){if(!a.defined(f)||isNaN(f))return a.defaultOptions.lang.invalidDate||"";e=a.pick(e,"%Y-%m-%d %H:%M:%S");var t=this,c=new this.Date(f),h=this.get("Hours",c),p=this.get("Day",c),k=this.get("Date",c),q=this.get("Month",c),d=this.get("FullYear",c),b=a.defaultOptions.lang,v=b.weekdays,J=b.shortWeekdays,
+l=a.pad,c=a.extend({a:J?J[p]:v[p].substr(0,3),A:v[p],d:l(k),e:l(k,2," "),w:p,b:b.shortMonths[q],B:b.months[q],m:l(q+1),o:q+1,y:d.toString().substr(2,2),Y:d,H:l(h),k:h,I:l(h%12||12),l:h%12||12,M:l(t.get("Minutes",c)),p:12>h?"AM":"PM",P:12>h?"am":"pm",S:l(c.getSeconds()),L:l(Math.floor(f%1E3),3)},a.dateFormats);a.objectEach(c,function(a,d){for(;-1!==e.indexOf("%"+d);)e=e.replace("%"+d,"function"===typeof a?a.call(t,f):a)});return w?e.substr(0,1).toUpperCase()+e.substr(1):e},resolveDTLFormat:function(e){return a.isObject(e,
+!0)?e:(e=a.splat(e),{main:e[0],from:e[1],to:e[2]})},getTimeTicks:function(a,t,w,y){var c=this,h=[],p,k={},q;p=new c.Date(t);var d=a.unitRange,b=a.count||1,v;y=f(y,1);if(C(t)){c.set("Milliseconds",p,d>=e.second?0:b*Math.floor(c.get("Milliseconds",p)/b));d>=e.second&&c.set("Seconds",p,d>=e.minute?0:b*Math.floor(c.get("Seconds",p)/b));d>=e.minute&&c.set("Minutes",p,d>=e.hour?0:b*Math.floor(c.get("Minutes",p)/b));d>=e.hour&&c.set("Hours",p,d>=e.day?0:b*Math.floor(c.get("Hours",p)/b));d>=e.day&&c.set("Date",
+p,d>=e.month?1:b*Math.floor(c.get("Date",p)/b));d>=e.month&&(c.set("Month",p,d>=e.year?0:b*Math.floor(c.get("Month",p)/b)),q=c.get("FullYear",p));d>=e.year&&c.set("FullYear",p,q-q%b);d===e.week&&(q=c.get("Day",p),c.set("Date",p,c.get("Date",p)-q+y+(q<y?-7:0)));q=c.get("FullYear",p);y=c.get("Month",p);var J=c.get("Date",p),l=c.get("Hours",p);t=p.getTime();c.variableTimezone&&(v=w-t>4*e.month||c.getTimezoneOffset(t)!==c.getTimezoneOffset(w));t=p.getTime();for(p=1;t<w;)h.push(t),t=d===e.year?c.makeTime(q+
+p*b,0):d===e.month?c.makeTime(q,y+p*b):!v||d!==e.day&&d!==e.week?v&&d===e.hour&&1<b?c.makeTime(q,y,J,l+p*b):t+d*b:c.makeTime(q,y,J+p*b*(d===e.day?1:7)),p++;h.push(t);d<=e.hour&&1E4>h.length&&F(h,function(a){0===a%18E5&&"000000000"===c.dateFormat("%H%M%S%L",a)&&(k[a]="day")})}h.info=I(a,{higherRanks:k,totalRange:d*b});return h}}})(K);(function(a){var C=a.color,F=a.merge;a.defaultOptions={colors:"#7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1".split(" "),symbols:["circle",
+"diamond","square","triangle","triangle-down"],lang:{loading:"Loading...",months:"January February March April May June July August September October November December".split(" "),shortMonths:"Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" "),weekdays:"Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" "),decimalPoint:".",numericSymbols:"kMGTPE".split(""),resetZoom:"Reset zoom",resetZoomTitle:"Reset zoom level 1:1",thousandsSep:" "},global:{},time:a.Time.prototype.defaultOptions,
+chart:{borderRadius:0,defaultSeriesType:"line",ignoreHiddenSeries:!0,spacing:[10,10,15,10],resetZoomButton:{theme:{zIndex:6},position:{align:"right",x:-10,y:10}},width:null,height:null,borderColor:"#335cad",backgroundColor:"#ffffff",plotBorderColor:"#cccccc"},title:{text:"Chart title",align:"center",margin:15,widthAdjust:-44},subtitle:{text:"",align:"center",widthAdjust:-44},plotOptions:{},labels:{style:{position:"absolute",color:"#333333"}},legend:{enabled:!0,align:"center",alignColumns:!0,layout:"horizontal",
+labelFormatter:function(){return this.name},borderColor:"#999999",borderRadius:0,navigation:{activeColor:"#003399",inactiveColor:"#cccccc"},itemStyle:{color:"#333333",fontSize:"12px",fontWeight:"bold",textOverflow:"ellipsis"},itemHoverStyle:{color:"#000000"},itemHiddenStyle:{color:"#cccccc"},shadow:!1,itemCheckboxStyle:{position:"absolute",width:"13px",height:"13px"},squareSymbol:!0,symbolPadding:5,verticalAlign:"bottom",x:0,y:0,title:{style:{fontWeight:"bold"}}},loading:{labelStyle:{fontWeight:"bold",
+position:"relative",top:"45%"},style:{position:"absolute",backgroundColor:"#ffffff",opacity:.5,textAlign:"center"}},tooltip:{enabled:!0,animation:a.svg,borderRadius:3,dateTimeLabelFormats:{millisecond:"%A, %b %e, %H:%M:%S.%L",second:"%A, %b %e, %H:%M:%S",minute:"%A, %b %e, %H:%M",hour:"%A, %b %e, %H:%M",day:"%A, %b %e, %Y",week:"Week from %A, %b %e, %Y",month:"%B %Y",year:"%Y"},footerFormat:"",padding:8,snap:a.isTouchDevice?25:10,backgroundColor:C("#f7f7f7").setOpacity(.85).get(),borderWidth:1,headerFormat:'\x3cspan style\x3d"font-size: 10px"\x3e{point.key}\x3c/span\x3e\x3cbr/\x3e',
+pointFormat:'\x3cspan style\x3d"color:{point.color}"\x3e\u25cf\x3c/span\x3e {series.name}: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3e',shadow:!0,style:{color:"#333333",cursor:"default",fontSize:"12px",pointerEvents:"none",whiteSpace:"nowrap"}},credits:{enabled:!0,href:"https://www.highcharts.com",position:{align:"right",x:-10,verticalAlign:"bottom",y:-5},style:{cursor:"pointer",color:"#999999",fontSize:"9px"},text:"Highcharts.com"}};a.setOptions=function(C){a.defaultOptions=F(!0,a.defaultOptions,C);
+a.time.update(F(a.defaultOptions.global,a.defaultOptions.time),!1);return a.defaultOptions};a.getOptions=function(){return a.defaultOptions};a.defaultPlotOptions=a.defaultOptions.plotOptions;a.time=new a.Time(F(a.defaultOptions.global,a.defaultOptions.time));a.dateFormat=function(C,n,f){return a.time.dateFormat(C,n,f)}})(K);(function(a){var C=a.correctFloat,F=a.defined,I=a.destroyObjectProperties,n=a.fireEvent,f=a.isNumber,e=a.merge,u=a.pick,x=a.deg2rad;a.Tick=function(a,e,f,c,h){this.axis=a;this.pos=
+e;this.type=f||"";this.isNewLabel=this.isNew=!0;this.parameters=h||{};this.tickmarkOffset=this.parameters.tickmarkOffset;this.options=this.parameters.options;f||c||this.addLabel()};a.Tick.prototype={addLabel:function(){var f=this,w=f.axis,y=w.options,c=w.chart,h=w.categories,p=w.names,k=f.pos,q=u(f.options&&f.options.labels,y.labels),d=w.tickPositions,b=k===d[0],v=k===d[d.length-1],h=this.parameters.category||(h?u(h[k],p[k],k):k),J=f.label,d=d.info,l,n,B,D;w.isDatetimeAxis&&d&&(n=c.time.resolveDTLFormat(y.dateTimeLabelFormats[!y.grid&&
+d.higherRanks[k]||d.unitName]),l=n.main);f.isFirst=b;f.isLast=v;f.formatCtx={axis:w,chart:c,isFirst:b,isLast:v,dateTimeLabelFormat:l,tickPositionInfo:d,value:w.isLog?C(w.lin2log(h)):h,pos:k};y=w.labelFormatter.call(f.formatCtx,this.formatCtx);if(D=n&&n.list)f.shortenLabel=function(){for(B=0;B<D.length;B++)if(J.attr({text:w.labelFormatter.call(a.extend(f.formatCtx,{dateTimeLabelFormat:D[B]}))}),J.getBBox().width<w.getSlotWidth(f)-2*u(q.padding,5))return;J.attr({text:""})};if(F(J))J&&J.textStr!==y&&
+(!J.textWidth||q.style&&q.style.width||J.styles.width||J.css({width:null}),J.attr({text:y}));else{if(f.label=J=F(y)&&q.enabled?c.renderer.text(y,0,0,q.useHTML).css(e(q.style)).add(w.labelGroup):null)J.textPxLength=J.getBBox().width;f.rotation=0}},getLabelSize:function(){return this.label?this.label.getBBox()[this.axis.horiz?"height":"width"]:0},handleOverflow:function(a){var e=this.axis,f=e.options.labels,c=a.x,h=e.chart.chartWidth,p=e.chart.spacing,k=u(e.labelLeft,Math.min(e.pos,p[3])),p=u(e.labelRight,
+Math.max(e.isRadial?0:e.pos+e.len,h-p[1])),q=this.label,d=this.rotation,b={left:0,center:.5,right:1}[e.labelAlign||q.attr("align")],v=q.getBBox().width,J=e.getSlotWidth(this),l=J,t=1,B,D={};if(d||"justify"!==u(f.overflow,"justify"))0>d&&c-b*v<k?B=Math.round(c/Math.cos(d*x)-k):0<d&&c+b*v>p&&(B=Math.round((h-c)/Math.cos(d*x)));else if(h=c+(1-b)*v,c-b*v<k?l=a.x+l*(1-b)-k:h>p&&(l=p-a.x+l*b,t=-1),l=Math.min(J,l),l<J&&"center"===e.labelAlign&&(a.x+=t*(J-l-b*(J-Math.min(v,l)))),v>l||e.autoRotation&&(q.styles||
+{}).width)B=l;B&&(this.shortenLabel?this.shortenLabel():(D.width=B,(f.style||{}).textOverflow||(D.textOverflow="ellipsis"),q.css(D)))},getPosition:function(e,f,y,c){var h=this.axis,p=h.chart,k=c&&p.oldChartHeight||p.chartHeight;e={x:e?a.correctFloat(h.translate(f+y,null,null,c)+h.transB):h.left+h.offset+(h.opposite?(c&&p.oldChartWidth||p.chartWidth)-h.right-h.left:0),y:e?k-h.bottom+h.offset-(h.opposite?h.height:0):a.correctFloat(k-h.translate(f+y,null,null,c)-h.transB)};n(this,"afterGetPosition",
+{pos:e});return e},getLabelPosition:function(a,e,f,c,h,p,k,q){var d=this.axis,b=d.transA,v=d.reversed,J=d.staggerLines,l=d.tickRotCorr||{x:0,y:0},t=h.y,B=c||d.reserveSpaceDefault?0:-d.labelOffset*("center"===d.labelAlign?.5:1),D={};F(t)||(t=0===d.side?f.rotation?-8:-f.getBBox().height:2===d.side?l.y+8:Math.cos(f.rotation*x)*(l.y-f.getBBox(!1,0).height/2));a=a+h.x+B+l.x-(p&&c?p*b*(v?-1:1):0);e=e+t-(p&&!c?p*b*(v?1:-1):0);J&&(f=k/(q||1)%J,d.opposite&&(f=J-f-1),e+=d.labelOffset/J*f);D.x=a;D.y=Math.round(e);
+n(this,"afterGetLabelPosition",{pos:D});return D},getMarkPath:function(a,e,f,c,h,p){return p.crispLine(["M",a,e,"L",a+(h?0:-f),e+(h?f:0)],c)},renderGridLine:function(a,e,f){var c=this.axis,h=c.options,p=this.gridLine,k={},q=this.pos,d=this.type,b=u(this.tickmarkOffset,c.tickmarkOffset),v=c.chart.renderer,J=d?d+"Grid":"grid",l=h[J+"LineWidth"],t=h[J+"LineColor"],h=h[J+"LineDashStyle"];p||(k.stroke=t,k["stroke-width"]=l,h&&(k.dashstyle=h),d||(k.zIndex=1),a&&(e=0),this.gridLine=p=v.path().attr(k).addClass("highcharts-"+
+(d?d+"-":"")+"grid-line").add(c.gridGroup));if(p&&(f=c.getPlotLinePath(q+b,p.strokeWidth()*f,a,"pass")))p[a||this.isNew?"attr":"animate"]({d:f,opacity:e})},renderMark:function(a,e,f){var c=this.axis,h=c.options,p=c.chart.renderer,k=this.type,q=k?k+"Tick":"tick",d=c.tickSize(q),b=this.mark,v=!b,J=a.x;a=a.y;var l=u(h[q+"Width"],!k&&c.isXAxis?1:0),h=h[q+"Color"];d&&(c.opposite&&(d[0]=-d[0]),v&&(this.mark=b=p.path().addClass("highcharts-"+(k?k+"-":"")+"tick").add(c.axisGroup),b.attr({stroke:h,"stroke-width":l})),
+b[v?"attr":"animate"]({d:this.getMarkPath(J,a,d[0],b.strokeWidth()*f,c.horiz,p),opacity:e}))},renderLabel:function(a,e,y,c){var h=this.axis,p=h.horiz,k=h.options,q=this.label,d=k.labels,b=d.step,h=u(this.tickmarkOffset,h.tickmarkOffset),v=!0,J=a.x;a=a.y;q&&f(J)&&(q.xy=a=this.getLabelPosition(J,a,q,p,d,h,c,b),this.isFirst&&!this.isLast&&!u(k.showFirstLabel,1)||this.isLast&&!this.isFirst&&!u(k.showLastLabel,1)?v=!1:!p||d.step||d.rotation||e||0===y||this.handleOverflow(a),b&&c%b&&(v=!1),v&&f(a.y)?(a.opacity=
+y,q[this.isNewLabel?"attr":"animate"](a),this.isNewLabel=!1):(q.attr("y",-9999),this.isNewLabel=!0))},render:function(e,f,y){var c=this.axis,h=c.horiz,p=this.pos,k=u(this.tickmarkOffset,c.tickmarkOffset),p=this.getPosition(h,p,k,f),k=p.x,q=p.y,c=h&&k===c.pos+c.len||!h&&q===c.pos?-1:1;y=u(y,1);this.isActive=!0;this.renderGridLine(f,y,c);this.renderMark(p,y,c);this.renderLabel(p,f,y,e);this.isNew=!1;a.fireEvent(this,"afterRender")},destroy:function(){I(this,this.axis)}}})(K);var W=function(a){var C=
+a.addEvent,F=a.animObject,I=a.arrayMax,n=a.arrayMin,f=a.color,e=a.correctFloat,u=a.defaultOptions,x=a.defined,t=a.deg2rad,w=a.destroyObjectProperties,y=a.each,c=a.extend,h=a.fireEvent,p=a.format,k=a.getMagnitude,q=a.grep,d=a.inArray,b=a.isArray,v=a.isNumber,J=a.isString,l=a.merge,L=a.normalizeTickInterval,B=a.objectEach,D=a.pick,m=a.removeEvent,G=a.splat,A=a.syncTimeout,N=a.Tick,E=function(){this.init.apply(this,arguments)};a.extend(E.prototype,{defaultOptions:{dateTimeLabelFormats:{millisecond:{main:"%H:%M:%S.%L",
+range:!1},second:{main:"%H:%M:%S",range:!1},minute:{main:"%H:%M",range:!1},hour:{main:"%H:%M",range:!1},day:{main:"%e. %b"},week:{main:"%e. %b"},month:{main:"%b '%y"},year:{main:"%Y"}},endOnTick:!1,labels:{enabled:!0,indentation:10,x:0,style:{color:"#666666",cursor:"default",fontSize:"11px"}},maxPadding:.01,minorTickLength:2,minorTickPosition:"outside",minPadding:.01,startOfWeek:1,startOnTick:!1,tickLength:10,tickPixelInterval:100,tickmarkPlacement:"between",tickPosition:"outside",title:{align:"middle",
+style:{color:"#666666"}},type:"linear",minorGridLineColor:"#f2f2f2",minorGridLineWidth:1,minorTickColor:"#999999",lineColor:"#ccd6eb",lineWidth:1,gridLineColor:"#e6e6e6",tickColor:"#ccd6eb"},defaultYAxisOptions:{endOnTick:!0,maxPadding:.05,minPadding:.05,tickPixelInterval:72,showLastLabel:!0,labels:{x:-8},startOnTick:!0,title:{rotation:270,text:"Values"},stackLabels:{allowOverlap:!1,enabled:!1,formatter:function(){return a.numberFormat(this.total,-1)},style:{color:"#000000",fontSize:"11px",fontWeight:"bold",
+textOutline:"1px contrast"}},gridLineWidth:1,lineWidth:0},defaultLeftAxisOptions:{labels:{x:-15},title:{rotation:270}},defaultRightAxisOptions:{labels:{x:15},title:{rotation:90}},defaultBottomAxisOptions:{labels:{autoRotation:[-45],x:0},title:{rotation:0}},defaultTopAxisOptions:{labels:{autoRotation:[-45],x:0},title:{rotation:0}},init:function(a,r){var g=r.isX,b=this;b.chart=a;b.horiz=a.inverted&&!b.isZAxis?!g:g;b.isXAxis=g;b.coll=b.coll||(g?"xAxis":"yAxis");h(this,"init",{userOptions:r});b.opposite=
+r.opposite;b.side=r.side||(b.horiz?b.opposite?0:2:b.opposite?1:3);b.setOptions(r);var c=this.options,m=c.type;b.labelFormatter=c.labels.formatter||b.defaultLabelFormatter;b.userOptions=r;b.minPixelPadding=0;b.reversed=c.reversed;b.visible=!1!==c.visible;b.zoomEnabled=!1!==c.zoomEnabled;b.hasNames="category"===m||!0===c.categories;b.categories=c.categories||b.hasNames;b.names||(b.names=[],b.names.keys={});b.plotLinesAndBandsGroups={};b.isLog="logarithmic"===m;b.isDatetimeAxis="datetime"===m;b.positiveValuesOnly=
+b.isLog&&!b.allowNegativeLog;b.isLinked=x(c.linkedTo);b.ticks={};b.labelEdge=[];b.minorTicks={};b.plotLinesAndBands=[];b.alternateBands={};b.len=0;b.minRange=b.userMinRange=c.minRange||c.maxZoom;b.range=c.range;b.offset=c.offset||0;b.stacks={};b.oldStacks={};b.stacksTouched=0;b.max=null;b.min=null;b.crosshair=D(c.crosshair,G(a.options.tooltip.crosshairs)[g?0:1],!1);r=b.options.events;-1===d(b,a.axes)&&(g?a.axes.splice(a.xAxis.length,0,b):a.axes.push(b),a[b.coll].push(b));b.series=b.series||[];a.inverted&&
+!b.isZAxis&&g&&void 0===b.reversed&&(b.reversed=!0);B(r,function(a,g){C(b,g,a)});b.lin2log=c.linearToLogConverter||b.lin2log;b.isLog&&(b.val2lin=b.log2lin,b.lin2val=b.lin2log);h(this,"afterInit")},setOptions:function(a){this.options=l(this.defaultOptions,"yAxis"===this.coll&&this.defaultYAxisOptions,[this.defaultTopAxisOptions,this.defaultRightAxisOptions,this.defaultBottomAxisOptions,this.defaultLeftAxisOptions][this.side],l(u[this.coll],a));h(this,"afterSetOptions",{userOptions:a})},defaultLabelFormatter:function(){var g=
+this.axis,r=this.value,b=g.chart.time,d=g.categories,c=this.dateTimeLabelFormat,m=u.lang,k=m.numericSymbols,m=m.numericSymbolMagnitude||1E3,h=k&&k.length,l,q=g.options.labels.format,g=g.isLog?Math.abs(r):g.tickInterval;if(q)l=p(q,this,b);else if(d)l=r;else if(c)l=b.dateFormat(c,r);else if(h&&1E3<=g)for(;h--&&void 0===l;)b=Math.pow(m,h+1),g>=b&&0===10*r%b&&null!==k[h]&&0!==r&&(l=a.numberFormat(r/b,-1)+k[h]);void 0===l&&(l=1E4<=Math.abs(r)?a.numberFormat(r,-1):a.numberFormat(r,-1,void 0,""));return l},
+getSeriesExtremes:function(){var a=this,r=a.chart;h(this,"getSeriesExtremes",null,function(){a.hasVisibleSeries=!1;a.dataMin=a.dataMax=a.threshold=null;a.softThreshold=!a.isXAxis;a.buildStacks&&a.buildStacks();y(a.series,function(g){if(g.visible||!r.options.chart.ignoreHiddenSeries){var b=g.options,d=b.threshold,c;a.hasVisibleSeries=!0;a.positiveValuesOnly&&0>=d&&(d=null);if(a.isXAxis)b=g.xData,b.length&&(g=n(b),c=I(b),v(g)||g instanceof Date||(b=q(b,v),g=n(b),c=I(b)),b.length&&(a.dataMin=Math.min(D(a.dataMin,
+b[0],g),g),a.dataMax=Math.max(D(a.dataMax,b[0],c),c)));else if(g.getExtremes(),c=g.dataMax,g=g.dataMin,x(g)&&x(c)&&(a.dataMin=Math.min(D(a.dataMin,g),g),a.dataMax=Math.max(D(a.dataMax,c),c)),x(d)&&(a.threshold=d),!b.softThreshold||a.positiveValuesOnly)a.softThreshold=!1}})});h(this,"afterGetSeriesExtremes")},translate:function(a,r,b,d,c,m){var g=this.linkedParent||this,k=1,H=0,l=d?g.oldTransA:g.transA;d=d?g.oldMin:g.min;var h=g.minPixelPadding;c=(g.isOrdinal||g.isBroken||g.isLog&&c)&&g.lin2val;l||
+(l=g.transA);b&&(k*=-1,H=g.len);g.reversed&&(k*=-1,H-=k*(g.sector||g.len));r?(a=(a*k+H-h)/l+d,c&&(a=g.lin2val(a))):(c&&(a=g.val2lin(a)),a=v(d)?k*(a-d)*l+H+k*h+(v(m)?l*m:0):void 0);return a},toPixels:function(a,r){return this.translate(a,!1,!this.horiz,null,!0)+(r?0:this.pos)},toValue:function(a,r){return this.translate(a-(r?0:this.pos),!0,!this.horiz,null,!0)},getPlotLinePath:function(a,r,b,d,c){var g=this.chart,m=this.left,k=this.top,H,l,h=b&&g.oldChartHeight||g.chartHeight,q=b&&g.oldChartWidth||
+g.chartWidth,A;H=this.transB;var e=function(a,g,r){if("pass"!==d&&a<g||a>r)d?a=Math.min(Math.max(g,a),r):A=!0;return a};c=D(c,this.translate(a,null,null,b));c=Math.min(Math.max(-1E5,c),1E5);a=b=Math.round(c+H);H=l=Math.round(h-c-H);v(c)?this.horiz?(H=k,l=h-this.bottom,a=b=e(a,m,m+this.width)):(a=m,b=q-this.right,H=l=e(H,k,k+this.height)):(A=!0,d=!1);return A&&!d?null:g.renderer.crispLine(["M",a,H,"L",b,l],r||1)},getLinearTickPositions:function(a,r,b){var g,d=e(Math.floor(r/a)*a);b=e(Math.ceil(b/a)*
+a);var c=[],m;e(d+a)===d&&(m=20);if(this.single)return[r];for(r=d;r<=b;){c.push(r);r=e(r+a,m);if(r===g)break;g=r}return c},getMinorTickInterval:function(){var a=this.options;return!0===a.minorTicks?D(a.minorTickInterval,"auto"):!1===a.minorTicks?null:a.minorTickInterval},getMinorTickPositions:function(){var a=this,r=a.options,b=a.tickPositions,d=a.minorTickInterval,c=[],m=a.pointRangePadding||0,k=a.min-m,m=a.max+m,l=m-k;if(l&&l/d<a.len/3)if(a.isLog)y(this.paddedTicks,function(g,r,b){r&&c.push.apply(c,
+a.getLogTickPositions(d,b[r-1],b[r],!0))});else if(a.isDatetimeAxis&&"auto"===this.getMinorTickInterval())c=c.concat(a.getTimeTicks(a.normalizeTimeTickInterval(d),k,m,r.startOfWeek));else for(r=k+(b[0]-k)%d;r<=m&&r!==c[0];r+=d)c.push(r);0!==c.length&&a.trimTicks(c);return c},adjustForMinRange:function(){var a=this.options,r=this.min,b=this.max,d,c,m,k,l,h,q,v;this.isXAxis&&void 0===this.minRange&&!this.isLog&&(x(a.min)||x(a.max)?this.minRange=null:(y(this.series,function(a){h=a.xData;for(k=q=a.xIncrement?
+1:h.length-1;0<k;k--)if(l=h[k]-h[k-1],void 0===m||l<m)m=l}),this.minRange=Math.min(5*m,this.dataMax-this.dataMin)));b-r<this.minRange&&(c=this.dataMax-this.dataMin>=this.minRange,v=this.minRange,d=(v-b+r)/2,d=[r-d,D(a.min,r-d)],c&&(d[2]=this.isLog?this.log2lin(this.dataMin):this.dataMin),r=I(d),b=[r+v,D(a.max,r+v)],c&&(b[2]=this.isLog?this.log2lin(this.dataMax):this.dataMax),b=n(b),b-r<v&&(d[0]=b-v,d[1]=D(a.min,b-v),r=I(d)));this.min=r;this.max=b},getClosest:function(){var a;this.categories?a=1:y(this.series,
+function(g){var r=g.closestPointRange,b=g.visible||!g.chart.options.chart.ignoreHiddenSeries;!g.noSharedTooltip&&x(r)&&b&&(a=x(a)?Math.min(a,r):r)});return a},nameToX:function(a){var g=b(this.categories),c=g?this.categories:this.names,m=a.options.x,k;a.series.requireSorting=!1;x(m)||(m=!1===this.options.uniqueNames?a.series.autoIncrement():g?d(a.name,c):D(c.keys[a.name],-1));-1===m?g||(k=c.length):k=m;void 0!==k&&(this.names[k]=a.name,this.names.keys[a.name]=k);return k},updateNames:function(){var g=
+this,r=this.names;0<r.length&&(y(a.keys(r.keys),function(a){delete r.keys[a]}),r.length=0,this.minRange=this.userMinRange,y(this.series||[],function(a){a.xIncrement=null;if(!a.points||a.isDirtyData)a.processData(),a.generatePoints();y(a.points,function(r,b){var d;r.options&&(d=g.nameToX(r),void 0!==d&&d!==r.x&&(r.x=d,a.xData[b]=d))})}))},setAxisTranslation:function(a){var g=this,b=g.max-g.min,d=g.axisPointRange||0,c,m=0,k=0,l=g.linkedParent,q=!!g.categories,v=g.transA,A=g.isXAxis;if(A||q||d)c=g.getClosest(),
+l?(m=l.minPointOffset,k=l.pointRangePadding):y(g.series,function(a){var b=q?1:A?D(a.options.pointRange,c,0):g.axisPointRange||0;a=a.options.pointPlacement;d=Math.max(d,b);g.single||(m=Math.max(m,J(a)?0:b/2),k=Math.max(k,"on"===a?0:b))}),l=g.ordinalSlope&&c?g.ordinalSlope/c:1,g.minPointOffset=m*=l,g.pointRangePadding=k*=l,g.pointRange=Math.min(d,b),A&&(g.closestPointRange=c);a&&(g.oldTransA=v);g.translationSlope=g.transA=v=g.staticScale||g.len/(b+k||1);g.transB=g.horiz?g.left:g.bottom;g.minPixelPadding=
+v*m;h(this,"afterSetAxisTranslation")},minFromRange:function(){return this.max-this.range},setTickInterval:function(g){var b=this,d=b.chart,c=b.options,m=b.isLog,l=b.isDatetimeAxis,q=b.isXAxis,A=b.isLinked,p=c.maxPadding,f=c.minPadding,G=c.tickInterval,B=c.tickPixelInterval,J=b.categories,E=v(b.threshold)?b.threshold:null,N=b.softThreshold,w,t,u,n;l||J||A||this.getTickAmount();u=D(b.userMin,c.min);n=D(b.userMax,c.max);A?(b.linkedParent=d[b.coll][c.linkedTo],d=b.linkedParent.getExtremes(),b.min=D(d.min,
+d.dataMin),b.max=D(d.max,d.dataMax),c.type!==b.linkedParent.options.type&&a.error(11,1)):(!N&&x(E)&&(b.dataMin>=E?(w=E,f=0):b.dataMax<=E&&(t=E,p=0)),b.min=D(u,w,b.dataMin),b.max=D(n,t,b.dataMax));m&&(b.positiveValuesOnly&&!g&&0>=Math.min(b.min,D(b.dataMin,b.min))&&a.error(10,1),b.min=e(b.log2lin(b.min),15),b.max=e(b.log2lin(b.max),15));b.range&&x(b.max)&&(b.userMin=b.min=u=Math.max(b.dataMin,b.minFromRange()),b.userMax=n=b.max,b.range=null);h(b,"foundExtremes");b.beforePadding&&b.beforePadding();
+b.adjustForMinRange();!(J||b.axisPointRange||b.usePercentage||A)&&x(b.min)&&x(b.max)&&(d=b.max-b.min)&&(!x(u)&&f&&(b.min-=d*f),!x(n)&&p&&(b.max+=d*p));v(c.softMin)&&!v(b.userMin)&&(b.min=Math.min(b.min,c.softMin));v(c.softMax)&&!v(b.userMax)&&(b.max=Math.max(b.max,c.softMax));v(c.floor)&&(b.min=Math.max(b.min,c.floor));v(c.ceiling)&&(b.max=Math.min(b.max,c.ceiling));N&&x(b.dataMin)&&(E=E||0,!x(u)&&b.min<E&&b.dataMin>=E?b.min=E:!x(n)&&b.max>E&&b.dataMax<=E&&(b.max=E));b.tickInterval=b.min===b.max||
+void 0===b.min||void 0===b.max?1:A&&!G&&B===b.linkedParent.options.tickPixelInterval?G=b.linkedParent.tickInterval:D(G,this.tickAmount?(b.max-b.min)/Math.max(this.tickAmount-1,1):void 0,J?1:(b.max-b.min)*B/Math.max(b.len,B));q&&!g&&y(b.series,function(a){a.processData(b.min!==b.oldMin||b.max!==b.oldMax)});b.setAxisTranslation(!0);b.beforeSetTickPositions&&b.beforeSetTickPositions();b.postProcessTickInterval&&(b.tickInterval=b.postProcessTickInterval(b.tickInterval));b.pointRange&&!G&&(b.tickInterval=
+Math.max(b.pointRange,b.tickInterval));g=D(c.minTickInterval,b.isDatetimeAxis&&b.closestPointRange);!G&&b.tickInterval<g&&(b.tickInterval=g);l||m||G||(b.tickInterval=L(b.tickInterval,null,k(b.tickInterval),D(c.allowDecimals,!(.5<b.tickInterval&&5>b.tickInterval&&1E3<b.max&&9999>b.max)),!!this.tickAmount));this.tickAmount||(b.tickInterval=b.unsquish());this.setTickPositions()},setTickPositions:function(){var g=this.options,b,d=g.tickPositions;b=this.getMinorTickInterval();var c=g.tickPositioner,m=
+g.startOnTick,k=g.endOnTick;this.tickmarkOffset=this.categories&&"between"===g.tickmarkPlacement&&1===this.tickInterval?.5:0;this.minorTickInterval="auto"===b&&this.tickInterval?this.tickInterval/5:b;this.single=this.min===this.max&&x(this.min)&&!this.tickAmount&&(parseInt(this.min,10)===this.min||!1!==g.allowDecimals);this.tickPositions=b=d&&d.slice();!b&&(!this.ordinalPositions&&(this.max-this.min)/this.tickInterval>Math.max(2*this.len,200)?(b=[this.min,this.max],a.error(19)):b=this.isDatetimeAxis?
+this.getTimeTicks(this.normalizeTimeTickInterval(this.tickInterval,g.units),this.min,this.max,g.startOfWeek,this.ordinalPositions,this.closestPointRange,!0):this.isLog?this.getLogTickPositions(this.tickInterval,this.min,this.max):this.getLinearTickPositions(this.tickInterval,this.min,this.max),b.length>this.len&&(b=[b[0],b.pop()],b[0]===b[1]&&(b.length=1)),this.tickPositions=b,c&&(c=c.apply(this,[this.min,this.max])))&&(this.tickPositions=b=c);this.paddedTicks=b.slice(0);this.trimTicks(b,m,k);this.isLinked||
+(this.single&&2>b.length&&(this.min-=.5,this.max+=.5),d||c||this.adjustTickAmount());h(this,"afterSetTickPositions")},trimTicks:function(a,b,d){var g=a[0],c=a[a.length-1],m=this.minPointOffset||0;if(!this.isLinked){if(b&&-Infinity!==g)this.min=g;else for(;this.min-m>a[0];)a.shift();if(d)this.max=c;else for(;this.max+m<a[a.length-1];)a.pop();0===a.length&&x(g)&&!this.options.tickPositions&&a.push((c+g)/2)}},alignToOthers:function(){var a={},b,d=this.options;!1===this.chart.options.chart.alignTicks||
+!1===d.alignTicks||!1===d.startOnTick||!1===d.endOnTick||this.isLog||y(this.chart[this.coll],function(g){var d=g.options,d=[g.horiz?d.left:d.top,d.width,d.height,d.pane].join();g.series.length&&(a[d]?b=!0:a[d]=1)});return b},getTickAmount:function(){var a=this.options,b=a.tickAmount,d=a.tickPixelInterval;!x(a.tickInterval)&&this.len<d&&!this.isRadial&&!this.isLog&&a.startOnTick&&a.endOnTick&&(b=2);!b&&this.alignToOthers()&&(b=Math.ceil(this.len/d)+1);4>b&&(this.finalTickAmt=b,b=5);this.tickAmount=
+b},adjustTickAmount:function(){var a=this.tickInterval,b=this.tickPositions,d=this.tickAmount,c=this.finalTickAmt,m=b&&b.length,k=D(this.threshold,this.softThreshold?0:null);if(this.hasData()){if(m<d){for(;b.length<d;)b.length%2||this.min===k?b.push(e(b[b.length-1]+a)):b.unshift(e(b[0]-a));this.transA*=(m-1)/(d-1);this.min=b[0];this.max=b[b.length-1]}else m>d&&(this.tickInterval*=2,this.setTickPositions());if(x(c)){for(a=d=b.length;a--;)(3===c&&1===a%2||2>=c&&0<a&&a<d-1)&&b.splice(a,1);this.finalTickAmt=
+void 0}}},setScale:function(){var a,b;this.oldMin=this.min;this.oldMax=this.max;this.oldAxisLength=this.len;this.setAxisSize();b=this.len!==this.oldAxisLength;y(this.series,function(b){if(b.isDirtyData||b.isDirty||b.xAxis.isDirty)a=!0});b||a||this.isLinked||this.forceRedraw||this.userMin!==this.oldUserMin||this.userMax!==this.oldUserMax||this.alignToOthers()?(this.resetStacks&&this.resetStacks(),this.forceRedraw=!1,this.getSeriesExtremes(),this.setTickInterval(),this.oldUserMin=this.userMin,this.oldUserMax=
+this.userMax,this.isDirty||(this.isDirty=b||this.min!==this.oldMin||this.max!==this.oldMax)):this.cleanStacks&&this.cleanStacks();h(this,"afterSetScale")},setExtremes:function(a,b,d,m,k){var g=this,r=g.chart;d=D(d,!0);y(g.series,function(a){delete a.kdTree});k=c(k,{min:a,max:b});h(g,"setExtremes",k,function(){g.userMin=a;g.userMax=b;g.eventArgs=k;d&&r.redraw(m)})},zoom:function(a,b){var g=this.dataMin,d=this.dataMax,c=this.options,m=Math.min(g,D(c.min,g)),c=Math.max(d,D(c.max,d));if(a!==this.min||
+b!==this.max)this.allowZoomOutside||(x(g)&&(a<m&&(a=m),a>c&&(a=c)),x(d)&&(b<m&&(b=m),b>c&&(b=c))),this.displayBtn=void 0!==a||void 0!==b,this.setExtremes(a,b,!1,void 0,{trigger:"zoom"});return!0},setAxisSize:function(){var b=this.chart,d=this.options,c=d.offsets||[0,0,0,0],m=this.horiz,k=this.width=Math.round(a.relativeLength(D(d.width,b.plotWidth-c[3]+c[1]),b.plotWidth)),l=this.height=Math.round(a.relativeLength(D(d.height,b.plotHeight-c[0]+c[2]),b.plotHeight)),h=this.top=Math.round(a.relativeLength(D(d.top,
+b.plotTop+c[0]),b.plotHeight,b.plotTop)),d=this.left=Math.round(a.relativeLength(D(d.left,b.plotLeft+c[3]),b.plotWidth,b.plotLeft));this.bottom=b.chartHeight-l-h;this.right=b.chartWidth-k-d;this.len=Math.max(m?k:l,0);this.pos=m?d:h},getExtremes:function(){var a=this.isLog;return{min:a?e(this.lin2log(this.min)):this.min,max:a?e(this.lin2log(this.max)):this.max,dataMin:this.dataMin,dataMax:this.dataMax,userMin:this.userMin,userMax:this.userMax}},getThreshold:function(a){var b=this.isLog,g=b?this.lin2log(this.min):
+this.min,b=b?this.lin2log(this.max):this.max;null===a||-Infinity===a?a=g:Infinity===a?a=b:g>a?a=g:b<a&&(a=b);return this.translate(a,0,1,0,1)},autoLabelAlign:function(a){a=(D(a,0)-90*this.side+720)%360;return 15<a&&165>a?"right":195<a&&345>a?"left":"center"},tickSize:function(a){var b=this.options,g=b[a+"Length"],d=D(b[a+"Width"],"tick"===a&&this.isXAxis?1:0);if(d&&g)return"inside"===b[a+"Position"]&&(g=-g),[g,d]},labelMetrics:function(){var a=this.tickPositions&&this.tickPositions[0]||0;return this.chart.renderer.fontMetrics(this.options.labels.style&&
+this.options.labels.style.fontSize,this.ticks[a]&&this.ticks[a].label)},unsquish:function(){var a=this.options.labels,b=this.horiz,d=this.tickInterval,c=d,m=this.len/(((this.categories?1:0)+this.max-this.min)/d),k,l=a.rotation,h=this.labelMetrics(),q,v=Number.MAX_VALUE,A,p=function(a){a/=m||1;a=1<a?Math.ceil(a):1;return e(a*d)};b?(A=!a.staggerLines&&!a.step&&(x(l)?[l]:m<D(a.autoRotationLimit,80)&&a.autoRotation))&&y(A,function(a){var b;if(a===l||a&&-90<=a&&90>=a)q=p(Math.abs(h.h/Math.sin(t*a))),b=
+q+Math.abs(a/360),b<v&&(v=b,k=a,c=q)}):a.step||(c=p(h.h));this.autoRotation=A;this.labelRotation=D(k,l);return c},getSlotWidth:function(a){var b=this.chart,g=this.horiz,d=this.options.labels,c=Math.max(this.tickPositions.length-(this.categories?0:1),1),m=b.margin[3];return a&&a.slotWidth||g&&2>(d.step||0)&&!d.rotation&&(this.staggerLines||1)*this.len/c||!g&&(d.style&&parseInt(d.style.width,10)||m&&m-b.spacing[3]||.33*b.chartWidth)},renderUnsquish:function(){var a=this.chart,b=a.renderer,d=this.tickPositions,
+c=this.ticks,m=this.options.labels,k=m&&m.style||{},l=this.horiz,h=this.getSlotWidth(),q=Math.max(1,Math.round(h-2*(m.padding||5))),v={},A=this.labelMetrics(),e=m.style&&m.style.textOverflow,p,f,G=0,B;J(m.rotation)||(v.rotation=m.rotation||0);y(d,function(a){(a=c[a])&&a.label&&a.label.textPxLength>G&&(G=a.label.textPxLength)});this.maxLabelLength=G;if(this.autoRotation)G>q&&G>A.h?v.rotation=this.labelRotation:this.labelRotation=0;else if(h&&(p=q,!e))for(f="clip",q=d.length;!l&&q--;)if(B=d[q],B=c[B].label)B.styles&&
+"ellipsis"===B.styles.textOverflow?B.css({textOverflow:"clip"}):B.textPxLength>h&&B.css({width:h+"px"}),B.getBBox().height>this.len/d.length-(A.h-A.f)&&(B.specificTextOverflow="ellipsis");v.rotation&&(p=G>.5*a.chartHeight?.33*a.chartHeight:G,e||(f="ellipsis"));if(this.labelAlign=m.align||this.autoLabelAlign(this.labelRotation))v.align=this.labelAlign;y(d,function(a){var b=(a=c[a])&&a.label,g=k.width,d={};b&&(b.attr(v),a.shortenLabel?a.shortenLabel():p&&!g&&"nowrap"!==k.whiteSpace&&(p<b.textPxLength||
+"SPAN"===b.element.tagName)?(d.width=p,e||(d.textOverflow=b.specificTextOverflow||f),b.css(d)):b.styles&&b.styles.width&&!d.width&&!g&&b.css({width:null}),delete b.specificTextOverflow,a.rotation=v.rotation)},this);this.tickRotCorr=b.rotCorr(A.b,this.labelRotation||0,0!==this.side)},hasData:function(){return this.hasVisibleSeries||x(this.min)&&x(this.max)&&this.tickPositions&&0<this.tickPositions.length},addTitle:function(a){var b=this.chart.renderer,g=this.horiz,d=this.opposite,c=this.options.title,
+m;this.axisTitle||((m=c.textAlign)||(m=(g?{low:"left",middle:"center",high:"right"}:{low:d?"right":"left",middle:"center",high:d?"left":"right"})[c.align]),this.axisTitle=b.text(c.text,0,0,c.useHTML).attr({zIndex:7,rotation:c.rotation||0,align:m}).addClass("highcharts-axis-title").css(l(c.style)).add(this.axisGroup),this.axisTitle.isNew=!0);c.style.width||this.isRadial||this.axisTitle.css({width:this.len});this.axisTitle[a?"show":"hide"](!0)},generateTick:function(a){var b=this.ticks;b[a]?b[a].addLabel():
+b[a]=new N(this,a)},getOffset:function(){var a=this,b=a.chart,d=b.renderer,c=a.options,m=a.tickPositions,k=a.ticks,l=a.horiz,q=a.side,v=b.inverted&&!a.isZAxis?[1,0,3,2][q]:q,A,e,p=0,G,f=0,J=c.title,E=c.labels,N=0,w=b.axisOffset,b=b.clipOffset,t=[-1,1,1,-1][q],u=c.className,n=a.axisParent;A=a.hasData();a.showAxis=e=A||D(c.showEmpty,!0);a.staggerLines=a.horiz&&E.staggerLines;a.axisGroup||(a.gridGroup=d.g("grid").attr({zIndex:c.gridZIndex||1}).addClass("highcharts-"+this.coll.toLowerCase()+"-grid "+
+(u||"")).add(n),a.axisGroup=d.g("axis").attr({zIndex:c.zIndex||2}).addClass("highcharts-"+this.coll.toLowerCase()+" "+(u||"")).add(n),a.labelGroup=d.g("axis-labels").attr({zIndex:E.zIndex||7}).addClass("highcharts-"+a.coll.toLowerCase()+"-labels "+(u||"")).add(n));A||a.isLinked?(y(m,function(b,g){a.generateTick(b,g)}),a.renderUnsquish(),a.reserveSpaceDefault=0===q||2===q||{1:"left",3:"right"}[q]===a.labelAlign,D(E.reserveSpace,"center"===a.labelAlign?!0:null,a.reserveSpaceDefault)&&y(m,function(a){N=
+Math.max(k[a].getLabelSize(),N)}),a.staggerLines&&(N*=a.staggerLines),a.labelOffset=N*(a.opposite?-1:1)):B(k,function(a,b){a.destroy();delete k[b]});J&&J.text&&!1!==J.enabled&&(a.addTitle(e),e&&!1!==J.reserveSpace&&(a.titleOffset=p=a.axisTitle.getBBox()[l?"height":"width"],G=J.offset,f=x(G)?0:D(J.margin,l?5:10)));a.renderLine();a.offset=t*D(c.offset,w[q]);a.tickRotCorr=a.tickRotCorr||{x:0,y:0};d=0===q?-a.labelMetrics().h:2===q?a.tickRotCorr.y:0;f=Math.abs(N)+f;N&&(f=f-d+t*(l?D(E.y,a.tickRotCorr.y+
+8*t):E.x));a.axisTitleMargin=D(G,f);a.getMaxLabelDimensions&&(a.maxLabelDimensions=a.getMaxLabelDimensions(k,m));l=this.tickSize("tick");w[q]=Math.max(w[q],a.axisTitleMargin+p+t*a.offset,f,A&&m.length&&l?l[0]+t*a.offset:0);c=c.offset?0:2*Math.floor(a.axisLine.strokeWidth()/2);b[v]=Math.max(b[v],c);h(this,"afterGetOffset")},getLinePath:function(a){var b=this.chart,g=this.opposite,d=this.offset,c=this.horiz,m=this.left+(g?this.width:0)+d,d=b.chartHeight-this.bottom-(g?this.height:0)+d;g&&(a*=-1);return b.renderer.crispLine(["M",
+c?this.left:m,c?d:this.top,"L",c?b.chartWidth-this.right:m,c?d:b.chartHeight-this.bottom],a)},renderLine:function(){this.axisLine||(this.axisLine=this.chart.renderer.path().addClass("highcharts-axis-line").add(this.axisGroup),this.axisLine.attr({stroke:this.options.lineColor,"stroke-width":this.options.lineWidth,zIndex:7}))},getTitlePosition:function(){var a=this.horiz,b=this.left,d=this.top,c=this.len,m=this.options.title,k=a?b:d,l=this.opposite,h=this.offset,q=m.x||0,v=m.y||0,A=this.axisTitle,e=
+this.chart.renderer.fontMetrics(m.style&&m.style.fontSize,A),A=Math.max(A.getBBox(null,0).height-e.h-1,0),c={low:k+(a?0:c),middle:k+c/2,high:k+(a?c:0)}[m.align],b=(a?d+this.height:b)+(a?1:-1)*(l?-1:1)*this.axisTitleMargin+[-A,A,e.f,-A][this.side];return{x:a?c+q:b+(l?this.width:0)+h+q,y:a?b+v-(l?this.height:0)+h:c+v}},renderMinorTick:function(a){var b=this.chart.hasRendered&&v(this.oldMin),d=this.minorTicks;d[a]||(d[a]=new N(this,a,"minor"));b&&d[a].isNew&&d[a].render(null,!0);d[a].render(null,!1,
+1)},renderTick:function(a,b){var d=this.isLinked,g=this.ticks,c=this.chart.hasRendered&&v(this.oldMin);if(!d||a>=this.min&&a<=this.max)g[a]||(g[a]=new N(this,a)),c&&g[a].isNew&&g[a].render(b,!0,-1),g[a].render(b)},render:function(){var b=this,d=b.chart,c=b.options,m=b.isLog,k=b.isLinked,l=b.tickPositions,q=b.axisTitle,e=b.ticks,p=b.minorTicks,f=b.alternateBands,G=c.stackLabels,J=c.alternateGridColor,E=b.tickmarkOffset,D=b.axisLine,t=b.showAxis,w=F(d.renderer.globalAnimation),u,n;b.labelEdge.length=
+0;b.overlap=!1;y([e,p,f],function(a){B(a,function(a){a.isActive=!1})});if(b.hasData()||k)b.minorTickInterval&&!b.categories&&y(b.getMinorTickPositions(),function(a){b.renderMinorTick(a)}),l.length&&(y(l,function(a,d){b.renderTick(a,d)}),E&&(0===b.min||b.single)&&(e[-1]||(e[-1]=new N(b,-1,null,!0)),e[-1].render(-1))),J&&y(l,function(c,g){n=void 0!==l[g+1]?l[g+1]+E:b.max-E;0===g%2&&c<b.max&&n<=b.max+(d.polar?-E:E)&&(f[c]||(f[c]=new a.PlotLineOrBand(b)),u=c+E,f[c].options={from:m?b.lin2log(u):u,to:m?
+b.lin2log(n):n,color:J},f[c].render(),f[c].isActive=!0)}),b._addedPlotLB||(y((c.plotLines||[]).concat(c.plotBands||[]),function(a){b.addPlotBandOrLine(a)}),b._addedPlotLB=!0);y([e,p,f],function(a){var b,c=[],g=w.duration;B(a,function(a,b){a.isActive||(a.render(b,!1,0),a.isActive=!1,c.push(b))});A(function(){for(b=c.length;b--;)a[c[b]]&&!a[c[b]].isActive&&(a[c[b]].destroy(),delete a[c[b]])},a!==f&&d.hasRendered&&g?g:0)});D&&(D[D.isPlaced?"animate":"attr"]({d:this.getLinePath(D.strokeWidth())}),D.isPlaced=
+!0,D[t?"show":"hide"](!0));q&&t&&(c=b.getTitlePosition(),v(c.y)?(q[q.isNew?"attr":"animate"](c),q.isNew=!1):(q.attr("y",-9999),q.isNew=!0));G&&G.enabled&&b.renderStackTotals();b.isDirty=!1;h(this,"afterRender")},redraw:function(){this.visible&&(this.render(),y(this.plotLinesAndBands,function(a){a.render()}));y(this.series,function(a){a.isDirty=!0})},keepProps:"extKey hcEvents names series userMax userMin".split(" "),destroy:function(a){var b=this,c=b.stacks,g=b.plotLinesAndBands,k;h(this,"destroy",
+{keepEvents:a});a||m(b);B(c,function(a,b){w(a);c[b]=null});y([b.ticks,b.minorTicks,b.alternateBands],function(a){w(a)});if(g)for(a=g.length;a--;)g[a].destroy();y("stackTotalGroup axisLine axisTitle axisGroup gridGroup labelGroup cross scrollbar".split(" "),function(a){b[a]&&(b[a]=b[a].destroy())});for(k in b.plotLinesAndBandsGroups)b.plotLinesAndBandsGroups[k]=b.plotLinesAndBandsGroups[k].destroy();B(b,function(a,c){-1===d(c,b.keepProps)&&delete b[c]})},drawCrosshair:function(a,b){var d,c=this.crosshair,
+g=D(c.snap,!0),m,k=this.cross;h(this,"drawCrosshair",{e:a,point:b});a||(a=this.cross&&this.cross.e);if(this.crosshair&&!1!==(x(b)||!g)){g?x(b)&&(m=D(b.crosshairPos,this.isXAxis?b.plotX:this.len-b.plotY)):m=a&&(this.horiz?a.chartX-this.pos:this.len-a.chartY+this.pos);x(m)&&(d=this.getPlotLinePath(b&&(this.isXAxis?b.x:D(b.stackY,b.y)),null,null,null,m)||null);if(!x(d)){this.hideCrosshair();return}g=this.categories&&!this.isRadial;k||(this.cross=k=this.chart.renderer.path().addClass("highcharts-crosshair highcharts-crosshair-"+
+(g?"category ":"thin ")+c.className).attr({zIndex:D(c.zIndex,2)}).add(),k.attr({stroke:c.color||(g?f("#ccd6eb").setOpacity(.25).get():"#cccccc"),"stroke-width":D(c.width,1)}).css({"pointer-events":"none"}),c.dashStyle&&k.attr({dashstyle:c.dashStyle}));k.show().attr({d:d});g&&!c.width&&k.attr({"stroke-width":this.transA});this.cross.e=a}else this.hideCrosshair();h(this,"afterDrawCrosshair",{e:a,point:b})},hideCrosshair:function(){this.cross&&this.cross.hide()}});return a.Axis=E}(K);(function(a){var C=
+a.Axis,F=a.getMagnitude,I=a.normalizeTickInterval,n=a.timeUnits;C.prototype.getTimeTicks=function(){return this.chart.time.getTimeTicks.apply(this.chart.time,arguments)};C.prototype.normalizeTimeTickInterval=function(a,e){var f=e||[["millisecond",[1,2,5,10,20,25,50,100,200,500]],["second",[1,2,5,10,15,30]],["minute",[1,2,5,10,15,30]],["hour",[1,2,3,4,6,8,12]],["day",[1,2]],["week",[1,2]],["month",[1,2,3,4,6]],["year",null]];e=f[f.length-1];var x=n[e[0]],t=e[1],w;for(w=0;w<f.length&&!(e=f[w],x=n[e[0]],
+t=e[1],f[w+1]&&a<=(x*t[t.length-1]+n[f[w+1][0]])/2);w++);x===n.year&&a<5*x&&(t=[1,2,5]);a=I(a/x,t,"year"===e[0]?Math.max(F(a/x),1):1);return{unitRange:x,count:a,unitName:e[0]}}})(K);(function(a){var C=a.Axis,F=a.getMagnitude,I=a.map,n=a.normalizeTickInterval,f=a.pick;C.prototype.getLogTickPositions=function(a,u,x,t){var e=this.options,y=this.len,c=[];t||(this._minorAutoInterval=null);if(.5<=a)a=Math.round(a),c=this.getLinearTickPositions(a,u,x);else if(.08<=a)for(var y=Math.floor(u),h,p,k,q,d,e=.3<
+a?[1,2,4]:.15<a?[1,2,4,6,8]:[1,2,3,4,5,6,7,8,9];y<x+1&&!d;y++)for(p=e.length,h=0;h<p&&!d;h++)k=this.log2lin(this.lin2log(y)*e[h]),k>u&&(!t||q<=x)&&void 0!==q&&c.push(q),q>x&&(d=!0),q=k;else u=this.lin2log(u),x=this.lin2log(x),a=t?this.getMinorTickInterval():e.tickInterval,a=f("auto"===a?null:a,this._minorAutoInterval,e.tickPixelInterval/(t?5:1)*(x-u)/((t?y/this.tickPositions.length:y)||1)),a=n(a,null,F(a)),c=I(this.getLinearTickPositions(a,u,x),this.log2lin),t||(this._minorAutoInterval=a/5);t||(this.tickInterval=
+a);return c};C.prototype.log2lin=function(a){return Math.log(a)/Math.LN10};C.prototype.lin2log=function(a){return Math.pow(10,a)}})(K);(function(a,C){var F=a.arrayMax,I=a.arrayMin,n=a.defined,f=a.destroyObjectProperties,e=a.each,u=a.erase,x=a.merge,t=a.pick;a.PlotLineOrBand=function(a,e){this.axis=a;e&&(this.options=e,this.id=e.id)};a.PlotLineOrBand.prototype={render:function(){a.fireEvent(this,"render");var e=this,f=e.axis,c=f.horiz,h=e.options,p=h.label,k=e.label,q=h.to,d=h.from,b=h.value,v=n(d)&&
+n(q),J=n(b),l=e.svgElem,u=!l,B=[],D=h.color,m=t(h.zIndex,0),G=h.events,B={"class":"highcharts-plot-"+(v?"band ":"line ")+(h.className||"")},A={},N=f.chart.renderer,E=v?"bands":"lines";f.isLog&&(d=f.log2lin(d),q=f.log2lin(q),b=f.log2lin(b));J?(B.stroke=D,B["stroke-width"]=h.width,h.dashStyle&&(B.dashstyle=h.dashStyle)):v&&(D&&(B.fill=D),h.borderWidth&&(B.stroke=h.borderColor,B["stroke-width"]=h.borderWidth));A.zIndex=m;E+="-"+m;(D=f.plotLinesAndBandsGroups[E])||(f.plotLinesAndBandsGroups[E]=D=N.g("plot-"+
+E).attr(A).add());u&&(e.svgElem=l=N.path().attr(B).add(D));if(J)B=f.getPlotLinePath(b,l.strokeWidth());else if(v)B=f.getPlotBandPath(d,q,h);else return;u&&B&&B.length?(l.attr({d:B}),G&&a.objectEach(G,function(a,b){l.on(b,function(a){G[b].apply(e,[a])})})):l&&(B?(l.show(),l.animate({d:B})):(l.hide(),k&&(e.label=k=k.destroy())));p&&n(p.text)&&B&&B.length&&0<f.width&&0<f.height&&!B.isFlat?(p=x({align:c&&v&&"center",x:c?!v&&4:10,verticalAlign:!c&&v&&"middle",y:c?v?16:10:v?6:-4,rotation:c&&!v&&90},p),
+this.renderLabel(p,B,v,m)):k&&k.hide();return e},renderLabel:function(a,e,c,h){var p=this.label,k=this.axis.chart.renderer;p||(p={align:a.textAlign||a.align,rotation:a.rotation,"class":"highcharts-plot-"+(c?"band":"line")+"-label "+(a.className||"")},p.zIndex=h,this.label=p=k.text(a.text,0,0,a.useHTML).attr(p).add(),p.css(a.style));h=e.xBounds||[e[1],e[4],c?e[6]:e[1]];e=e.yBounds||[e[2],e[5],c?e[7]:e[2]];c=I(h);k=I(e);p.align(a,!1,{x:c,y:k,width:F(h)-c,height:F(e)-k});p.show()},destroy:function(){u(this.axis.plotLinesAndBands,
+this);delete this.axis;f(this)}};a.extend(C.prototype,{getPlotBandPath:function(a,e){var c=this.getPlotLinePath(e,null,null,!0),h=this.getPlotLinePath(a,null,null,!0),p=[],k=this.horiz,q=1,d;a=a<this.min&&e<this.min||a>this.max&&e>this.max;if(h&&c)for(a&&(d=h.toString()===c.toString(),q=0),a=0;a<h.length;a+=6)k&&c[a+1]===h[a+1]?(c[a+1]+=q,c[a+4]+=q):k||c[a+2]!==h[a+2]||(c[a+2]+=q,c[a+5]+=q),p.push("M",h[a+1],h[a+2],"L",h[a+4],h[a+5],c[a+4],c[a+5],c[a+1],c[a+2],"z"),p.isFlat=d;return p},addPlotBand:function(a){return this.addPlotBandOrLine(a,
+"plotBands")},addPlotLine:function(a){return this.addPlotBandOrLine(a,"plotLines")},addPlotBandOrLine:function(e,f){var c=(new a.PlotLineOrBand(this,e)).render(),h=this.userOptions;c&&(f&&(h[f]=h[f]||[],h[f].push(e)),this.plotLinesAndBands.push(c));return c},removePlotBandOrLine:function(a){for(var f=this.plotLinesAndBands,c=this.options,h=this.userOptions,p=f.length;p--;)f[p].id===a&&f[p].destroy();e([c.plotLines||[],h.plotLines||[],c.plotBands||[],h.plotBands||[]],function(c){for(p=c.length;p--;)c[p].id===
+a&&u(c,c[p])})},removePlotBand:function(a){this.removePlotBandOrLine(a)},removePlotLine:function(a){this.removePlotBandOrLine(a)}})})(K,W);(function(a){var C=a.doc,F=a.each,I=a.extend,n=a.format,f=a.isNumber,e=a.map,u=a.merge,x=a.pick,t=a.splat,w=a.syncTimeout,y=a.timeUnits;a.Tooltip=function(){this.init.apply(this,arguments)};a.Tooltip.prototype={init:function(a,h){this.chart=a;this.options=h;this.crosshairs=[];this.now={x:0,y:0};this.isHidden=!0;this.split=h.split&&!a.inverted;this.shared=h.shared||
+this.split;this.outside=h.outside&&!this.split},cleanSplit:function(a){F(this.chart.series,function(c){var h=c&&c.tt;h&&(!h.isActive||a?c.tt=h.destroy():h.isActive=!1)})},getLabel:function(){var c=this.chart.renderer,h=this.options,e;this.label||(this.outside&&(this.container=e=a.doc.createElement("div"),e.className="highcharts-tooltip-container",a.css(e,{position:"absolute",top:"1px",pointerEvents:h.style&&h.style.pointerEvents}),a.doc.body.appendChild(e),this.renderer=c=new a.Renderer(e,0,0)),this.split?
+this.label=c.g("tooltip"):(this.label=c.label("",0,0,h.shape||"callout",null,null,h.useHTML,null,"tooltip").attr({padding:h.padding,r:h.borderRadius}),this.label.attr({fill:h.backgroundColor,"stroke-width":h.borderWidth}).css(h.style).shadow(h.shadow)),this.outside&&(this.label.attr({x:this.distance,y:this.distance}),this.label.xSetter=function(a){e.style.left=a+"px"},this.label.ySetter=function(a){e.style.top=a+"px"}),this.label.attr({zIndex:8}).add());return this.label},update:function(a){this.destroy();
+u(!0,this.chart.options.tooltip.userOptions,a);this.init(this.chart,u(!0,this.options,a))},destroy:function(){this.label&&(this.label=this.label.destroy());this.split&&this.tt&&(this.cleanSplit(this.chart,!0),this.tt=this.tt.destroy());this.renderer&&(this.renderer=this.renderer.destroy(),a.discardElement(this.container));a.clearTimeout(this.hideTimer);a.clearTimeout(this.tooltipTimeout)},move:function(c,h,e,k){var q=this,d=q.now,b=!1!==q.options.animation&&!q.isHidden&&(1<Math.abs(c-d.x)||1<Math.abs(h-
+d.y)),v=q.followPointer||1<q.len;I(d,{x:b?(2*d.x+c)/3:c,y:b?(d.y+h)/2:h,anchorX:v?void 0:b?(2*d.anchorX+e)/3:e,anchorY:v?void 0:b?(d.anchorY+k)/2:k});q.getLabel().attr(d);b&&(a.clearTimeout(this.tooltipTimeout),this.tooltipTimeout=setTimeout(function(){q&&q.move(c,h,e,k)},32))},hide:function(c){var h=this;a.clearTimeout(this.hideTimer);c=x(c,this.options.hideDelay,500);this.isHidden||(this.hideTimer=w(function(){h.getLabel()[c?"fadeOut":"hide"]();h.isHidden=!0},c))},getAnchor:function(a,h){var c=
+this.chart,k=c.pointer,q=c.inverted,d=c.plotTop,b=c.plotLeft,v=0,f=0,l,n;a=t(a);this.followPointer&&h?(void 0===h.chartX&&(h=k.normalize(h)),a=[h.chartX-c.plotLeft,h.chartY-d]):a[0].tooltipPos?a=a[0].tooltipPos:(F(a,function(a){l=a.series.yAxis;n=a.series.xAxis;v+=a.plotX+(!q&&n?n.left-b:0);f+=(a.plotLow?(a.plotLow+a.plotHigh)/2:a.plotY)+(!q&&l?l.top-d:0)}),v/=a.length,f/=a.length,a=[q?c.plotWidth-f:v,this.shared&&!q&&1<a.length&&h?h.chartY-d:q?c.plotHeight-v:f]);return e(a,Math.round)},getPosition:function(a,
+h,e){var c=this.chart,q=this.distance,d={},b=c.inverted&&e.h||0,v,f=this.outside,l=f?C.documentElement.clientWidth-2*q:c.chartWidth,p=f?Math.max(C.body.scrollHeight,C.documentElement.scrollHeight,C.body.offsetHeight,C.documentElement.offsetHeight,C.documentElement.clientHeight):c.chartHeight,B=c.pointer.chartPosition,D=["y",p,h,(f?B.top-q:0)+e.plotY+c.plotTop,f?0:c.plotTop,f?p:c.plotTop+c.plotHeight],m=["x",l,a,(f?B.left-q:0)+e.plotX+c.plotLeft,f?0:c.plotLeft,f?l:c.plotLeft+c.plotWidth],G=!this.followPointer&&
+x(e.ttBelow,!c.inverted===!!e.negative),A=function(a,c,g,m,k,l){var h=g<m-q,v=m+q+g<c,A=m-q-g;m+=q;if(G&&v)d[a]=m;else if(!G&&h)d[a]=A;else if(h)d[a]=Math.min(l-g,0>A-b?A:A-b);else if(v)d[a]=Math.max(k,m+b+g>c?m:m+b);else return!1},N=function(a,b,c,g){var m;g<q||g>b-q?m=!1:d[a]=g<c/2?1:g>b-c/2?b-c-2:g-c/2;return m},E=function(a){var b=D;D=m;m=b;v=a},g=function(){!1!==A.apply(0,D)?!1!==N.apply(0,m)||v||(E(!0),g()):v?d.x=d.y=0:(E(!0),g())};(c.inverted||1<this.len)&&E();g();return d},defaultFormatter:function(a){var c=
+this.points||t(this),e;e=[a.tooltipFooterHeaderFormatter(c[0])];e=e.concat(a.bodyFormatter(c));e.push(a.tooltipFooterHeaderFormatter(c[0],!0));return e},refresh:function(c,h){var e,k=this.options,q,d=c,b,v={},f=[];e=k.formatter||this.defaultFormatter;var v=this.shared,l;k.enabled&&(a.clearTimeout(this.hideTimer),this.followPointer=t(d)[0].series.tooltipOptions.followPointer,b=this.getAnchor(d,h),h=b[0],q=b[1],!v||d.series&&d.series.noSharedTooltip?v=d.getLabelConfig():(F(d,function(a){a.setState("hover");
+f.push(a.getLabelConfig())}),v={x:d[0].category,y:d[0].y},v.points=f,d=d[0]),this.len=f.length,v=e.call(v,this),l=d.series,this.distance=x(l.tooltipOptions.distance,16),!1===v?this.hide():(e=this.getLabel(),this.isHidden&&e.attr({opacity:1}).show(),this.split?this.renderSplit(v,t(c)):(k.style.width||e.css({width:this.chart.spacingBox.width}),e.attr({text:v&&v.join?v.join(""):v}),e.removeClass(/highcharts-color-[\d]+/g).addClass("highcharts-color-"+x(d.colorIndex,l.colorIndex)),e.attr({stroke:k.borderColor||
+d.color||l.color||"#666666"}),this.updatePosition({plotX:h,plotY:q,negative:d.negative,ttBelow:d.ttBelow,h:b[2]||0})),this.isHidden=!1))},renderSplit:function(c,h){var e=this,k=[],q=this.chart,d=q.renderer,b=!0,v=this.options,f=0,l,t=this.getLabel(),B=q.plotTop;a.isString(c)&&(c=[!1,c]);F(c.slice(0,h.length+1),function(a,c){if(!1!==a){c=h[c-1]||{isHeader:!0,plotX:h[0].plotX};var m=c.series||e,A=m.tt,p=c.series||{},E="highcharts-color-"+x(c.colorIndex,p.colorIndex,"none");A||(m.tt=A=d.label(null,null,
+null,"callout",null,null,v.useHTML).addClass("highcharts-tooltip-box "+E+(c.isHeader?" highcharts-tooltip-header":"")).attr({padding:v.padding,r:v.borderRadius,fill:v.backgroundColor,stroke:v.borderColor||c.color||p.color||"#333333","stroke-width":v.borderWidth}).add(t));A.isActive=!0;A.attr({text:a});A.css(v.style).shadow(v.shadow);a=A.getBBox();p=a.width+A.strokeWidth();c.isHeader?(f=a.height,q.xAxis[0].opposite&&(l=!0,B-=f),p=Math.max(0,Math.min(c.plotX+q.plotLeft-p/2,q.chartWidth+(q.scrollablePixels?
+q.scrollablePixels-q.marginRight:0)-p))):p=c.plotX+q.plotLeft-x(v.distance,16)-p;0>p&&(b=!1);a=(c.series&&c.series.yAxis&&c.series.yAxis.pos)+(c.plotY||0);a-=B;c.isHeader&&(a=l?-f:q.plotHeight+f);k.push({target:a,rank:c.isHeader?1:0,size:m.tt.getBBox().height+1,point:c,x:p,tt:A})}});this.cleanSplit();a.distribute(k,q.plotHeight+f);F(k,function(a){var c=a.point,d=c.series;a.tt.attr({visibility:void 0===a.pos?"hidden":"inherit",x:b||c.isHeader?a.x:c.plotX+q.plotLeft+x(v.distance,16),y:a.pos+B,anchorX:c.isHeader?
+c.plotX+q.plotLeft:c.plotX+d.xAxis.pos,anchorY:c.isHeader?q.plotTop+q.plotHeight/2:c.plotY+d.yAxis.pos})})},updatePosition:function(a){var c=this.chart,e=this.getLabel(),k=(this.options.positioner||this.getPosition).call(this,e.width,e.height,a),q=a.plotX+c.plotLeft;a=a.plotY+c.plotTop;var d;this.outside&&(d=(this.options.borderWidth||0)+2*this.distance,this.renderer.setSize(e.width+d,e.height+d,!1),q+=c.pointer.chartPosition.left-k.x,a+=c.pointer.chartPosition.top-k.y);this.move(Math.round(k.x),
+Math.round(k.y||0),q,a)},getDateFormat:function(a,h,e,k){var c=this.chart.time,d=c.dateFormat("%m-%d %H:%M:%S.%L",h),b,v,f={millisecond:15,second:12,minute:9,hour:6,day:3},l="millisecond";for(v in y){if(a===y.week&&+c.dateFormat("%w",h)===e&&"00:00:00.000"===d.substr(6)){v="week";break}if(y[v]>a){v=l;break}if(f[v]&&d.substr(f[v])!=="01-01 00:00:00.000".substr(f[v]))break;"week"!==v&&(l=v)}v&&(b=c.resolveDTLFormat(k[v]).main);return b},getXDateFormat:function(a,h,e){h=h.dateTimeLabelFormats;var c=
+e&&e.closestPointRange;return(c?this.getDateFormat(c,a.x,e.options.startOfWeek,h):h.day)||h.year},tooltipFooterHeaderFormatter:function(a,h){h=h?"footer":"header";var c=a.series,k=c.tooltipOptions,e=k.xDateFormat,d=c.xAxis,b=d&&"datetime"===d.options.type&&f(a.key),v=k[h+"Format"];b&&!e&&(e=this.getXDateFormat(a,k,d));b&&e&&F(a.point&&a.point.tooltipDateKeys||["key"],function(a){v=v.replace("{point."+a+"}","{point."+a+":"+e+"}")});return n(v,{point:a,series:c},this.chart.time)},bodyFormatter:function(a){return e(a,
+function(a){var c=a.series.tooltipOptions;return(c[(a.point.formatPrefix||"point")+"Formatter"]||a.point.tooltipFormatter).call(a.point,c[(a.point.formatPrefix||"point")+"Format"])})}}})(K);(function(a){var C=a.addEvent,F=a.attr,I=a.charts,n=a.color,f=a.css,e=a.defined,u=a.each,x=a.extend,t=a.find,w=a.fireEvent,y=a.isNumber,c=a.isObject,h=a.offset,p=a.pick,k=a.splat,q=a.Tooltip;a.Pointer=function(a,b){this.init(a,b)};a.Pointer.prototype={init:function(a,b){this.options=b;this.chart=a;this.runChartClick=
+b.chart.events&&!!b.chart.events.click;this.pinchDown=[];this.lastValidTouch={};q&&(a.tooltip=new q(a,b.tooltip),this.followTouchMove=p(b.tooltip.followTouchMove,!0));this.setDOMEvents()},zoomOption:function(a){var b=this.chart,c=b.options.chart,d=c.zoomType||"",b=b.inverted;/touch/.test(a.type)&&(d=p(c.pinchType,d));this.zoomX=a=/x/.test(d);this.zoomY=d=/y/.test(d);this.zoomHor=a&&!b||d&&b;this.zoomVert=d&&!b||a&&b;this.hasZoom=a||d},normalize:function(a,b){var c;c=a.touches?a.touches.length?a.touches.item(0):
+a.changedTouches[0]:a;b||(this.chartPosition=b=h(this.chart.container));return x(a,{chartX:Math.round(c.pageX-b.left),chartY:Math.round(c.pageY-b.top)})},getCoordinates:function(a){var b={xAxis:[],yAxis:[]};u(this.chart.axes,function(c){b[c.isXAxis?"xAxis":"yAxis"].push({axis:c,value:c.toValue(a[c.horiz?"chartX":"chartY"])})});return b},findNearestKDPoint:function(a,b,k){var d;u(a,function(a){var l=!(a.noSharedTooltip&&b)&&0>a.options.findNearestPointBy.indexOf("y");a=a.searchPoint(k,l);if((l=c(a,
+!0))&&!(l=!c(d,!0)))var l=d.distX-a.distX,e=d.dist-a.dist,h=(a.series.group&&a.series.group.zIndex)-(d.series.group&&d.series.group.zIndex),l=0<(0!==l&&b?l:0!==e?e:0!==h?h:d.series.index>a.series.index?-1:1);l&&(d=a)});return d},getPointFromEvent:function(a){a=a.target;for(var b;a&&!b;)b=a.point,a=a.parentNode;return b},getChartCoordinatesFromPoint:function(a,b){var c=a.series,d=c.xAxis,c=c.yAxis,k=p(a.clientX,a.plotX),e=a.shapeArgs;if(d&&c)return b?{chartX:d.len+d.pos-k,chartY:c.len+c.pos-a.plotY}:
+{chartX:k+d.pos,chartY:a.plotY+c.pos};if(e&&e.x&&e.y)return{chartX:e.x,chartY:e.y}},getHoverData:function(d,b,k,e,l,h,q){var v,m=[],f=q&&q.isBoosting;e=!(!e||!d);q=b&&!b.stickyTracking?[b]:a.grep(k,function(a){return a.visible&&!(!l&&a.directTouch)&&p(a.options.enableMouseTracking,!0)&&a.stickyTracking});b=(v=e?d:this.findNearestKDPoint(q,l,h))&&v.series;v&&(l&&!b.noSharedTooltip?(q=a.grep(k,function(a){return a.visible&&!(!l&&a.directTouch)&&p(a.options.enableMouseTracking,!0)&&!a.noSharedTooltip}),
+u(q,function(a){var b=t(a.points,function(a){return a.x===v.x&&!a.isNull});c(b)&&(f&&(b=a.getPoint(b)),m.push(b))})):m.push(v));return{hoverPoint:v,hoverSeries:b,hoverPoints:m}},runPointActions:function(c,b){var d=this.chart,k=d.tooltip&&d.tooltip.options.enabled?d.tooltip:void 0,l=k?k.shared:!1,e=b||d.hoverPoint,h=e&&e.series||d.hoverSeries,h=this.getHoverData(e,h,d.series,"touchmove"!==c.type&&(!!b||h&&h.directTouch&&this.isDirectTouch),l,c,{isBoosting:d.isBoosting}),q,e=h.hoverPoint;q=h.hoverPoints;
+b=(h=h.hoverSeries)&&h.tooltipOptions.followPointer;l=l&&h&&!h.noSharedTooltip;if(e&&(e!==d.hoverPoint||k&&k.isHidden)){u(d.hoverPoints||[],function(b){-1===a.inArray(b,q)&&b.setState()});u(q||[],function(a){a.setState("hover")});if(d.hoverSeries!==h)h.onMouseOver();d.hoverPoint&&d.hoverPoint.firePointEvent("mouseOut");if(!e.series)return;e.firePointEvent("mouseOver");d.hoverPoints=q;d.hoverPoint=e;k&&k.refresh(l?q:e,c)}else b&&k&&!k.isHidden&&(e=k.getAnchor([{}],c),k.updatePosition({plotX:e[0],plotY:e[1]}));
+this.unDocMouseMove||(this.unDocMouseMove=C(d.container.ownerDocument,"mousemove",function(b){var c=I[a.hoverChartIndex];if(c)c.pointer.onDocumentMouseMove(b)}));u(d.axes,function(b){var d=p(b.crosshair.snap,!0),m=d?a.find(q,function(a){return a.series[b.coll]===b}):void 0;m||!d?b.drawCrosshair(c,m):b.hideCrosshair()})},reset:function(a,b){var c=this.chart,d=c.hoverSeries,l=c.hoverPoint,e=c.hoverPoints,h=c.tooltip,q=h&&h.shared?e:l;a&&q&&u(k(q),function(b){b.series.isCartesian&&void 0===b.plotX&&
+(a=!1)});if(a)h&&q&&(h.refresh(q),h.shared&&e?u(e,function(a){a.setState(a.state,!0);a.series.isCartesian&&(a.series.xAxis.crosshair&&a.series.xAxis.drawCrosshair(null,a),a.series.yAxis.crosshair&&a.series.yAxis.drawCrosshair(null,a))}):l&&(l.setState(l.state,!0),u(c.axes,function(a){a.crosshair&&a.drawCrosshair(null,l)})));else{if(l)l.onMouseOut();e&&u(e,function(a){a.setState()});if(d)d.onMouseOut();h&&h.hide(b);this.unDocMouseMove&&(this.unDocMouseMove=this.unDocMouseMove());u(c.axes,function(a){a.hideCrosshair()});
+this.hoverX=c.hoverPoints=c.hoverPoint=null}},scaleGroups:function(a,b){var c=this.chart,d;u(c.series,function(k){d=a||k.getPlotBox();k.xAxis&&k.xAxis.zoomEnabled&&k.group&&(k.group.attr(d),k.markerGroup&&(k.markerGroup.attr(d),k.markerGroup.clip(b?c.clipRect:null)),k.dataLabelsGroup&&k.dataLabelsGroup.attr(d))});c.clipRect.attr(b||c.clipBox)},dragStart:function(a){var b=this.chart;b.mouseIsDown=a.type;b.cancelClick=!1;b.mouseDownX=this.mouseDownX=a.chartX;b.mouseDownY=this.mouseDownY=a.chartY},drag:function(a){var b=
+this.chart,c=b.options.chart,d=a.chartX,k=a.chartY,e=this.zoomHor,h=this.zoomVert,q=b.plotLeft,m=b.plotTop,f=b.plotWidth,A=b.plotHeight,p,E=this.selectionMarker,g=this.mouseDownX,r=this.mouseDownY,t=c.panKey&&a[c.panKey+"Key"];E&&E.touch||(d<q?d=q:d>q+f&&(d=q+f),k<m?k=m:k>m+A&&(k=m+A),this.hasDragged=Math.sqrt(Math.pow(g-d,2)+Math.pow(r-k,2)),10<this.hasDragged&&(p=b.isInsidePlot(g-q,r-m),b.hasCartesianSeries&&(this.zoomX||this.zoomY)&&p&&!t&&!E&&(this.selectionMarker=E=b.renderer.rect(q,m,e?1:f,
+h?1:A,0).attr({fill:c.selectionMarkerFill||n("#335cad").setOpacity(.25).get(),"class":"highcharts-selection-marker",zIndex:7}).add()),E&&e&&(d-=g,E.attr({width:Math.abs(d),x:(0<d?0:d)+g})),E&&h&&(d=k-r,E.attr({height:Math.abs(d),y:(0<d?0:d)+r})),p&&!E&&c.panning&&b.pan(a,c.panning)))},drop:function(a){var b=this,c=this.chart,d=this.hasPinched;if(this.selectionMarker){var k={originalEvent:a,xAxis:[],yAxis:[]},h=this.selectionMarker,q=h.attr?h.attr("x"):h.x,p=h.attr?h.attr("y"):h.y,m=h.attr?h.attr("width"):
+h.width,G=h.attr?h.attr("height"):h.height,A;if(this.hasDragged||d)u(c.axes,function(c){if(c.zoomEnabled&&e(c.min)&&(d||b[{xAxis:"zoomX",yAxis:"zoomY"}[c.coll]])){var h=c.horiz,g="touchend"===a.type?c.minPixelPadding:0,l=c.toValue((h?q:p)+g),h=c.toValue((h?q+m:p+G)-g);k[c.coll].push({axis:c,min:Math.min(l,h),max:Math.max(l,h)});A=!0}}),A&&w(c,"selection",k,function(a){c.zoom(x(a,d?{animation:!1}:null))});y(c.index)&&(this.selectionMarker=this.selectionMarker.destroy());d&&this.scaleGroups()}c&&y(c.index)&&
+(f(c.container,{cursor:c._cursor}),c.cancelClick=10<this.hasDragged,c.mouseIsDown=this.hasDragged=this.hasPinched=!1,this.pinchDown=[])},onContainerMouseDown:function(a){a=this.normalize(a);2!==a.button&&(this.zoomOption(a),a.preventDefault&&a.preventDefault(),this.dragStart(a))},onDocumentMouseUp:function(c){I[a.hoverChartIndex]&&I[a.hoverChartIndex].pointer.drop(c)},onDocumentMouseMove:function(a){var b=this.chart,c=this.chartPosition;a=this.normalize(a,c);!c||this.inClass(a.target,"highcharts-tracker")||
+b.isInsidePlot(a.chartX-b.plotLeft,a.chartY-b.plotTop)||this.reset()},onContainerMouseLeave:function(c){var b=I[a.hoverChartIndex];b&&(c.relatedTarget||c.toElement)&&(b.pointer.reset(),b.pointer.chartPosition=null)},onContainerMouseMove:function(c){var b=this.chart;e(a.hoverChartIndex)&&I[a.hoverChartIndex]&&I[a.hoverChartIndex].mouseIsDown||(a.hoverChartIndex=b.index);c=this.normalize(c);c.returnValue=!1;"mousedown"===b.mouseIsDown&&this.drag(c);!this.inClass(c.target,"highcharts-tracker")&&!b.isInsidePlot(c.chartX-
+b.plotLeft,c.chartY-b.plotTop)||b.openMenu||this.runPointActions(c)},inClass:function(a,b){for(var c;a;){if(c=F(a,"class")){if(-1!==c.indexOf(b))return!0;if(-1!==c.indexOf("highcharts-container"))return!1}a=a.parentNode}},onTrackerMouseOut:function(a){var b=this.chart.hoverSeries;a=a.relatedTarget||a.toElement;this.isDirectTouch=!1;if(!(!b||!a||b.stickyTracking||this.inClass(a,"highcharts-tooltip")||this.inClass(a,"highcharts-series-"+b.index)&&this.inClass(a,"highcharts-tracker")))b.onMouseOut()},
+onContainerClick:function(a){var b=this.chart,c=b.hoverPoint,d=b.plotLeft,k=b.plotTop;a=this.normalize(a);b.cancelClick||(c&&this.inClass(a.target,"highcharts-tracker")?(w(c.series,"click",x(a,{point:c})),b.hoverPoint&&c.firePointEvent("click",a)):(x(a,this.getCoordinates(a)),b.isInsidePlot(a.chartX-d,a.chartY-k)&&w(b,"click",a)))},setDOMEvents:function(){var c=this,b=c.chart.container,k=b.ownerDocument;b.onmousedown=function(a){c.onContainerMouseDown(a)};b.onmousemove=function(a){c.onContainerMouseMove(a)};
+b.onclick=function(a){c.onContainerClick(a)};this.unbindContainerMouseLeave=C(b,"mouseleave",c.onContainerMouseLeave);a.unbindDocumentMouseUp||(a.unbindDocumentMouseUp=C(k,"mouseup",c.onDocumentMouseUp));a.hasTouch&&(b.ontouchstart=function(a){c.onContainerTouchStart(a)},b.ontouchmove=function(a){c.onContainerTouchMove(a)},a.unbindDocumentTouchEnd||(a.unbindDocumentTouchEnd=C(k,"touchend",c.onDocumentTouchEnd)))},destroy:function(){var c=this;c.unDocMouseMove&&c.unDocMouseMove();this.unbindContainerMouseLeave();
+a.chartCount||(a.unbindDocumentMouseUp&&(a.unbindDocumentMouseUp=a.unbindDocumentMouseUp()),a.unbindDocumentTouchEnd&&(a.unbindDocumentTouchEnd=a.unbindDocumentTouchEnd()));clearInterval(c.tooltipTimeout);a.objectEach(c,function(a,d){c[d]=null})}}})(K);(function(a){var C=a.charts,F=a.each,I=a.extend,n=a.map,f=a.noop,e=a.pick;I(a.Pointer.prototype,{pinchTranslate:function(a,e,f,n,y,c){this.zoomHor&&this.pinchTranslateDirection(!0,a,e,f,n,y,c);this.zoomVert&&this.pinchTranslateDirection(!1,a,e,f,n,
+y,c)},pinchTranslateDirection:function(a,e,f,n,y,c,h,p){var k=this.chart,q=a?"x":"y",d=a?"X":"Y",b="chart"+d,v=a?"width":"height",t=k["plot"+(a?"Left":"Top")],l,u,B=p||1,D=k.inverted,m=k.bounds[a?"h":"v"],G=1===e.length,A=e[0][b],N=f[0][b],E=!G&&e[1][b],g=!G&&f[1][b],r;f=function(){!G&&20<Math.abs(A-E)&&(B=p||Math.abs(N-g)/Math.abs(A-E));u=(t-N)/B+A;l=k["plot"+(a?"Width":"Height")]/B};f();e=u;e<m.min?(e=m.min,r=!0):e+l>m.max&&(e=m.max-l,r=!0);r?(N-=.8*(N-h[q][0]),G||(g-=.8*(g-h[q][1])),f()):h[q]=
+[N,g];D||(c[q]=u-t,c[v]=l);c=D?1/B:B;y[v]=l;y[q]=e;n[D?a?"scaleY":"scaleX":"scale"+d]=B;n["translate"+d]=c*t+(N-c*A)},pinch:function(a){var u=this,t=u.chart,w=u.pinchDown,y=a.touches,c=y.length,h=u.lastValidTouch,p=u.hasZoom,k=u.selectionMarker,q={},d=1===c&&(u.inClass(a.target,"highcharts-tracker")&&t.runTrackerClick||u.runChartClick),b={};1<c&&(u.initiated=!0);p&&u.initiated&&!d&&a.preventDefault();n(y,function(a){return u.normalize(a)});"touchstart"===a.type?(F(y,function(a,b){w[b]={chartX:a.chartX,
+chartY:a.chartY}}),h.x=[w[0].chartX,w[1]&&w[1].chartX],h.y=[w[0].chartY,w[1]&&w[1].chartY],F(t.axes,function(a){if(a.zoomEnabled){var b=t.bounds[a.horiz?"h":"v"],c=a.minPixelPadding,d=a.toPixels(e(a.options.min,a.dataMin)),k=a.toPixels(e(a.options.max,a.dataMax)),h=Math.max(d,k);b.min=Math.min(a.pos,Math.min(d,k)-c);b.max=Math.max(a.pos+a.len,h+c)}}),u.res=!0):u.followTouchMove&&1===c?this.runPointActions(u.normalize(a)):w.length&&(k||(u.selectionMarker=k=I({destroy:f,touch:!0},t.plotBox)),u.pinchTranslate(w,
+y,q,k,b,h),u.hasPinched=p,u.scaleGroups(q,b),u.res&&(u.res=!1,this.reset(!1,0)))},touch:function(f,n){var t=this.chart,u,y;if(t.index!==a.hoverChartIndex)this.onContainerMouseLeave({relatedTarget:!0});a.hoverChartIndex=t.index;1===f.touches.length?(f=this.normalize(f),(y=t.isInsidePlot(f.chartX-t.plotLeft,f.chartY-t.plotTop))&&!t.openMenu?(n&&this.runPointActions(f),"touchmove"===f.type&&(n=this.pinchDown,u=n[0]?4<=Math.sqrt(Math.pow(n[0].chartX-f.chartX,2)+Math.pow(n[0].chartY-f.chartY,2)):!1),e(u,
+!0)&&this.pinch(f)):n&&this.reset()):2===f.touches.length&&this.pinch(f)},onContainerTouchStart:function(a){this.zoomOption(a);this.touch(a,!0)},onContainerTouchMove:function(a){this.touch(a)},onDocumentTouchEnd:function(e){C[a.hoverChartIndex]&&C[a.hoverChartIndex].pointer.drop(e)}})})(K);(function(a){var C=a.addEvent,F=a.charts,I=a.css,n=a.doc,f=a.extend,e=a.noop,u=a.Pointer,x=a.removeEvent,t=a.win,w=a.wrap;if(!a.hasTouch&&(t.PointerEvent||t.MSPointerEvent)){var y={},c=!!t.PointerEvent,h=function(){var c=
+[];c.item=function(a){return this[a]};a.objectEach(y,function(a){c.push({pageX:a.pageX,pageY:a.pageY,target:a.target})});return c},p=function(c,q,d,b){"touch"!==c.pointerType&&c.pointerType!==c.MSPOINTER_TYPE_TOUCH||!F[a.hoverChartIndex]||(b(c),b=F[a.hoverChartIndex].pointer,b[q]({type:d,target:c.currentTarget,preventDefault:e,touches:h()}))};f(u.prototype,{onContainerPointerDown:function(a){p(a,"onContainerTouchStart","touchstart",function(a){y[a.pointerId]={pageX:a.pageX,pageY:a.pageY,target:a.currentTarget}})},
+onContainerPointerMove:function(a){p(a,"onContainerTouchMove","touchmove",function(a){y[a.pointerId]={pageX:a.pageX,pageY:a.pageY};y[a.pointerId].target||(y[a.pointerId].target=a.currentTarget)})},onDocumentPointerUp:function(a){p(a,"onDocumentTouchEnd","touchend",function(a){delete y[a.pointerId]})},batchMSEvents:function(a){a(this.chart.container,c?"pointerdown":"MSPointerDown",this.onContainerPointerDown);a(this.chart.container,c?"pointermove":"MSPointerMove",this.onContainerPointerMove);a(n,c?
+"pointerup":"MSPointerUp",this.onDocumentPointerUp)}});w(u.prototype,"init",function(a,c,d){a.call(this,c,d);this.hasZoom&&I(c.container,{"-ms-touch-action":"none","touch-action":"none"})});w(u.prototype,"setDOMEvents",function(a){a.apply(this);(this.hasZoom||this.followTouchMove)&&this.batchMSEvents(C)});w(u.prototype,"destroy",function(a){this.batchMSEvents(x);a.call(this)})}})(K);(function(a){var C=a.addEvent,F=a.css,I=a.discardElement,n=a.defined,f=a.each,e=a.fireEvent,u=a.isFirefox,x=a.marginNames,
+t=a.merge,w=a.pick,y=a.setAnimation,c=a.stableSort,h=a.win,p=a.wrap;a.Legend=function(a,c){this.init(a,c)};a.Legend.prototype={init:function(a,c){this.chart=a;this.setOptions(c);c.enabled&&(this.render(),C(this.chart,"endResize",function(){this.legend.positionCheckboxes()}),this.proximate?this.unchartrender=C(this.chart,"render",function(){this.legend.proximatePositions();this.legend.positionItems()}):this.unchartrender&&this.unchartrender())},setOptions:function(a){var c=w(a.padding,8);this.options=
+a;this.itemStyle=a.itemStyle;this.itemHiddenStyle=t(this.itemStyle,a.itemHiddenStyle);this.itemMarginTop=a.itemMarginTop||0;this.padding=c;this.initialItemY=c-5;this.symbolWidth=w(a.symbolWidth,16);this.pages=[];this.proximate="proximate"===a.layout&&!this.chart.inverted},update:function(a,c){var d=this.chart;this.setOptions(t(!0,this.options,a));this.destroy();d.isDirtyLegend=d.isDirtyBox=!0;w(c,!0)&&d.redraw();e(this,"afterUpdate")},colorizeItem:function(a,c){a.legendGroup[c?"removeClass":"addClass"]("highcharts-legend-item-hidden");
+var d=this.options,b=a.legendItem,k=a.legendLine,h=a.legendSymbol,l=this.itemHiddenStyle.color,d=c?d.itemStyle.color:l,q=c?a.color||l:l,f=a.options&&a.options.marker,p={fill:q};b&&b.css({fill:d,color:d});k&&k.attr({stroke:q});h&&(f&&h.isMarker&&(p=a.pointAttribs(),c||(p.stroke=p.fill=l)),h.attr(p));e(this,"afterColorizeItem",{item:a,visible:c})},positionItems:function(){f(this.allItems,this.positionItem,this);this.chart.isResizing||this.positionCheckboxes()},positionItem:function(a){var c=this.options,
+d=c.symbolPadding,c=!c.rtl,b=a._legendItemPos,e=b[0],b=b[1],h=a.checkbox;if((a=a.legendGroup)&&a.element)a[n(a.translateY)?"animate":"attr"]({translateX:c?e:this.legendWidth-e-2*d-4,translateY:b});h&&(h.x=e,h.y=b)},destroyItem:function(a){var c=a.checkbox;f(["legendItem","legendLine","legendSymbol","legendGroup"],function(c){a[c]&&(a[c]=a[c].destroy())});c&&I(a.checkbox)},destroy:function(){function a(a){this[a]&&(this[a]=this[a].destroy())}f(this.getAllItems(),function(c){f(["legendItem","legendGroup"],
+a,c)});f("clipRect up down pager nav box title group".split(" "),a,this);this.display=null},positionCheckboxes:function(){var a=this.group&&this.group.alignAttr,c,d=this.clipHeight||this.legendHeight,b=this.titleHeight;a&&(c=a.translateY,f(this.allItems,function(e){var h=e.checkbox,k;h&&(k=c+b+h.y+(this.scrollOffset||0)+3,F(h,{left:a.translateX+e.checkboxOffset+h.x-20+"px",top:k+"px",display:this.proximate||k>c-6&&k<c+d-6?"":"none"}))},this))},renderTitle:function(){var a=this.options,c=this.padding,
+d=a.title,b=0;d.text&&(this.title||(this.title=this.chart.renderer.label(d.text,c-3,c-4,null,null,null,a.useHTML,null,"legend-title").attr({zIndex:1}).css(d.style).add(this.group)),a=this.title.getBBox(),b=a.height,this.offsetWidth=a.width,this.contentGroup.attr({translateY:b}));this.titleHeight=b},setText:function(c){var h=this.options;c.legendItem.attr({text:h.labelFormat?a.format(h.labelFormat,c,this.chart.time):h.labelFormatter.call(c)})},renderItem:function(a){var c=this.chart,d=c.renderer,b=
+this.options,h=this.symbolWidth,e=b.symbolPadding,l=this.itemStyle,k=this.itemHiddenStyle,f="horizontal"===b.layout?w(b.itemDistance,20):0,p=!b.rtl,m=a.legendItem,G=!a.series,A=!G&&a.series.drawLegendSymbol?a.series:a,n=A.options,n=this.createCheckboxForItem&&n&&n.showCheckbox,f=h+e+f+(n?20:0),E=b.useHTML,g=a.options.className;m||(a.legendGroup=d.g("legend-item").addClass("highcharts-"+A.type+"-series highcharts-color-"+a.colorIndex+(g?" "+g:"")+(G?" highcharts-series-"+a.index:"")).attr({zIndex:1}).add(this.scrollGroup),
+a.legendItem=m=d.text("",p?h+e:-e,this.baseline||0,E).css(t(a.visible?l:k)).attr({align:p?"left":"right",zIndex:2}).add(a.legendGroup),this.baseline||(h=l.fontSize,this.fontMetrics=d.fontMetrics(h,m),this.baseline=this.fontMetrics.f+3+this.itemMarginTop,m.attr("y",this.baseline)),this.symbolHeight=b.symbolHeight||this.fontMetrics.f,A.drawLegendSymbol(this,a),this.setItemEvents&&this.setItemEvents(a,m,E),n&&this.createCheckboxForItem(a));this.colorizeItem(a,a.visible);l.width||m.css({width:(b.itemWidth||
+b.width||c.spacingBox.width)-f});this.setText(a);c=m.getBBox();a.itemWidth=a.checkboxOffset=b.itemWidth||a.legendItemWidth||c.width+f;this.maxItemWidth=Math.max(this.maxItemWidth,a.itemWidth);this.totalItemWidth+=a.itemWidth;this.itemHeight=a.itemHeight=Math.round(a.legendItemHeight||c.height||this.symbolHeight)},layoutItem:function(a){var c=this.options,d=this.padding,b="horizontal"===c.layout,h=a.itemHeight,e=c.itemMarginBottom||0,l=this.itemMarginTop,k=b?w(c.itemDistance,20):0,f=c.width,p=f||this.chart.spacingBox.width-
+2*d-c.x,c=c.alignColumns&&this.totalItemWidth>p?this.maxItemWidth:a.itemWidth;b&&this.itemX-d+c>p&&(this.itemX=d,this.itemY+=l+this.lastLineHeight+e,this.lastLineHeight=0);this.lastItemY=l+this.itemY+e;this.lastLineHeight=Math.max(h,this.lastLineHeight);a._legendItemPos=[this.itemX,this.itemY];b?this.itemX+=c:(this.itemY+=l+h+e,this.lastLineHeight=h);this.offsetWidth=f||Math.max((b?this.itemX-d-(a.checkbox?0:k):c)+d,this.offsetWidth)},getAllItems:function(){var a=[];f(this.chart.series,function(c){var d=
+c&&c.options;c&&w(d.showInLegend,n(d.linkedTo)?!1:void 0,!0)&&(a=a.concat(c.legendItems||("point"===d.legendType?c.data:c)))});e(this,"afterGetAllItems",{allItems:a});return a},getAlignment:function(){var a=this.options;return this.proximate?a.align.charAt(0)+"tv":a.floating?"":a.align.charAt(0)+a.verticalAlign.charAt(0)+a.layout.charAt(0)},adjustMargins:function(a,c){var d=this.chart,b=this.options,h=this.getAlignment();h&&f([/(lth|ct|rth)/,/(rtv|rm|rbv)/,/(rbh|cb|lbh)/,/(lbv|lm|ltv)/],function(e,
+l){e.test(h)&&!n(a[l])&&(d[x[l]]=Math.max(d[x[l]],d.legend[(l+1)%2?"legendHeight":"legendWidth"]+[1,-1,-1,1][l]*b[l%2?"x":"y"]+w(b.margin,12)+c[l]+(0===l&&void 0!==d.options.title.margin?d.titleOffset+d.options.title.margin:0)))})},proximatePositions:function(){var c=this.chart,h=[],d="left"===this.options.align;f(this.allItems,function(b){var e,k;e=d;b.xAxis&&b.points&&(b.xAxis.options.reversed&&(e=!e),e=a.find(e?b.points:b.points.slice(0).reverse(),function(b){return a.isNumber(b.plotY)}),k=b.legendGroup.getBBox().height,
+h.push({target:b.visible?(e?e.plotY:b.xAxis.height)-.3*k:c.plotHeight,size:k,item:b}))},this);a.distribute(h,c.plotHeight);f(h,function(a){a.item._legendItemPos[1]=c.plotTop-c.spacing[0]+a.pos})},render:function(){var a=this.chart,h=a.renderer,d=this.group,b,e,p,l=this.box,n=this.options,B=this.padding;this.itemX=B;this.itemY=this.initialItemY;this.lastItemY=this.offsetWidth=0;d||(this.group=d=h.g("legend").attr({zIndex:7}).add(),this.contentGroup=h.g().attr({zIndex:1}).add(d),this.scrollGroup=h.g().add(this.contentGroup));
+this.renderTitle();b=this.getAllItems();c(b,function(a,b){return(a.options&&a.options.legendIndex||0)-(b.options&&b.options.legendIndex||0)});n.reversed&&b.reverse();this.allItems=b;this.display=e=!!b.length;this.itemHeight=this.totalItemWidth=this.maxItemWidth=this.lastLineHeight=0;f(b,this.renderItem,this);f(b,this.layoutItem,this);b=(n.width||this.offsetWidth)+B;p=this.lastItemY+this.lastLineHeight+this.titleHeight;p=this.handleOverflow(p);p+=B;l||(this.box=l=h.rect().addClass("highcharts-legend-box").attr({r:n.borderRadius}).add(d),
+l.isNew=!0);l.attr({stroke:n.borderColor,"stroke-width":n.borderWidth||0,fill:n.backgroundColor||"none"}).shadow(n.shadow);0<b&&0<p&&(l[l.isNew?"attr":"animate"](l.crisp.call({},{x:0,y:0,width:b,height:p},l.strokeWidth())),l.isNew=!1);l[e?"show":"hide"]();this.legendWidth=b;this.legendHeight=p;e&&(h=a.spacingBox,/(lth|ct|rth)/.test(this.getAlignment())&&(h=t(h,{y:h.y+a.titleOffset+a.options.title.margin})),d.align(t(n,{width:b,height:p,verticalAlign:this.proximate?"top":n.verticalAlign}),!0,h));this.proximate||
+this.positionItems()},handleOverflow:function(a){var c=this,d=this.chart,b=d.renderer,h=this.options,e=h.y,l=this.padding,d=d.spacingBox.height+("top"===h.verticalAlign?-e:e)-l,e=h.maxHeight,k,p=this.clipRect,n=h.navigation,m=w(n.animation,!0),G=n.arrowSize||12,A=this.nav,t=this.pages,E,g=this.allItems,r=function(a){"number"===typeof a?p.attr({height:a}):p&&(c.clipRect=p.destroy(),c.contentGroup.clip());c.contentGroup.div&&(c.contentGroup.div.style.clip=a?"rect("+l+"px,9999px,"+(l+a)+"px,0)":"auto")};
+"horizontal"!==h.layout||"middle"===h.verticalAlign||h.floating||(d/=2);e&&(d=Math.min(d,e));t.length=0;a>d&&!1!==n.enabled?(this.clipHeight=k=Math.max(d-20-this.titleHeight-l,0),this.currentPage=w(this.currentPage,1),this.fullHeight=a,f(g,function(a,b){var c=a._legendItemPos[1],d=Math.round(a.legendItem.getBBox().height),m=t.length;if(!m||c-t[m-1]>k&&(E||c)!==t[m-1])t.push(E||c),m++;a.pageIx=m-1;E&&(g[b-1].pageIx=m-1);b===g.length-1&&c+d-t[m-1]>k&&(t.push(c),a.pageIx=m);c!==E&&(E=c)}),p||(p=c.clipRect=
+b.clipRect(0,l,9999,0),c.contentGroup.clip(p)),r(k),A||(this.nav=A=b.g().attr({zIndex:1}).add(this.group),this.up=b.symbol("triangle",0,0,G,G).on("click",function(){c.scroll(-1,m)}).add(A),this.pager=b.text("",15,10).addClass("highcharts-legend-navigation").css(n.style).add(A),this.down=b.symbol("triangle-down",0,0,G,G).on("click",function(){c.scroll(1,m)}).add(A)),c.scroll(0),a=d):A&&(r(),this.nav=A.destroy(),this.scrollGroup.attr({translateY:1}),this.clipHeight=0);return a},scroll:function(a,c){var d=
+this.pages,b=d.length;a=this.currentPage+a;var h=this.clipHeight,e=this.options.navigation,l=this.pager,f=this.padding;a>b&&(a=b);0<a&&(void 0!==c&&y(c,this.chart),this.nav.attr({translateX:f,translateY:h+this.padding+7+this.titleHeight,visibility:"visible"}),this.up.attr({"class":1===a?"highcharts-legend-nav-inactive":"highcharts-legend-nav-active"}),l.attr({text:a+"/"+b}),this.down.attr({x:18+this.pager.getBBox().width,"class":a===b?"highcharts-legend-nav-inactive":"highcharts-legend-nav-active"}),
+this.up.attr({fill:1===a?e.inactiveColor:e.activeColor}).css({cursor:1===a?"default":"pointer"}),this.down.attr({fill:a===b?e.inactiveColor:e.activeColor}).css({cursor:a===b?"default":"pointer"}),this.scrollOffset=-d[a-1]+this.initialItemY,this.scrollGroup.animate({translateY:this.scrollOffset}),this.currentPage=a,this.positionCheckboxes())}};a.LegendSymbolMixin={drawRectangle:function(a,c){var d=a.symbolHeight,b=a.options.squareSymbol;c.legendSymbol=this.chart.renderer.rect(b?(a.symbolWidth-d)/2:
+0,a.baseline-d+1,b?d:a.symbolWidth,d,w(a.options.symbolRadius,d/2)).addClass("highcharts-point").attr({zIndex:3}).add(c.legendGroup)},drawLineMarker:function(a){var c=this.options,d=c.marker,b=a.symbolWidth,h=a.symbolHeight,e=h/2,l=this.chart.renderer,f=this.legendGroup;a=a.baseline-Math.round(.3*a.fontMetrics.b);var k;k={"stroke-width":c.lineWidth||0};c.dashStyle&&(k.dashstyle=c.dashStyle);this.legendLine=l.path(["M",0,a,"L",b,a]).addClass("highcharts-graph").attr(k).add(f);d&&!1!==d.enabled&&b&&
+(c=Math.min(w(d.radius,e),e),0===this.symbol.indexOf("url")&&(d=t(d,{width:h,height:h}),c=0),this.legendSymbol=d=l.symbol(this.symbol,b/2-c,a-c,2*c,2*c,d).addClass("highcharts-point").add(f),d.isMarker=!0)}};(/Trident\/7\.0/.test(h.navigator.userAgent)||u)&&p(a.Legend.prototype,"positionItem",function(a,c){var d=this,b=function(){c._legendItemPos&&a.call(d,c)};b();setTimeout(b)})})(K);(function(a){var C=a.addEvent,F=a.animate,I=a.animObject,n=a.attr,f=a.doc,e=a.Axis,u=a.createElement,x=a.defaultOptions,
+t=a.discardElement,w=a.charts,y=a.css,c=a.defined,h=a.each,p=a.extend,k=a.find,q=a.fireEvent,d=a.grep,b=a.isNumber,v=a.isObject,J=a.isString,l=a.Legend,L=a.marginNames,B=a.merge,D=a.objectEach,m=a.Pointer,G=a.pick,A=a.pInt,N=a.removeEvent,E=a.seriesTypes,g=a.splat,r=a.syncTimeout,M=a.win,O=a.Chart=function(){this.getArgs.apply(this,arguments)};a.chart=function(a,b,c){return new O(a,b,c)};p(O.prototype,{callbacks:[],getArgs:function(){var a=[].slice.call(arguments);if(J(a[0])||a[0].nodeName)this.renderTo=
+a.shift();this.init(a[0],a[1])},init:function(b,c){var d,g,m=b.series,h=b.plotOptions||{};q(this,"init",{args:arguments},function(){b.series=null;d=B(x,b);for(g in d.plotOptions)d.plotOptions[g].tooltip=h[g]&&B(h[g].tooltip)||void 0;d.tooltip.userOptions=b.chart&&b.chart.forExport&&b.tooltip.userOptions||b.tooltip;d.series=b.series=m;this.userOptions=b;var e=d.chart,l=e.events;this.margin=[];this.spacing=[];this.bounds={h:{},v:{}};this.labelCollectors=[];this.callback=c;this.isResizing=0;this.options=
+d;this.axes=[];this.series=[];this.time=b.time&&a.keys(b.time).length?new a.Time(b.time):a.time;this.hasCartesianSeries=e.showAxes;var f=this;f.index=w.length;w.push(f);a.chartCount++;l&&D(l,function(a,b){C(f,b,a)});f.xAxis=[];f.yAxis=[];f.pointCount=f.colorCounter=f.symbolCounter=0;q(f,"afterInit");f.firstRender()})},initSeries:function(b){var c=this.options.chart;(c=E[b.type||c.type||c.defaultSeriesType])||a.error(17,!0);c=new c;c.init(this,b);return c},orderSeries:function(a){var b=this.series;
+for(a=a||0;a<b.length;a++)b[a]&&(b[a].index=a,b[a].name=b[a].getName())},isInsidePlot:function(a,b,c){var d=c?b:a;a=c?a:b;return 0<=d&&d<=this.plotWidth&&0<=a&&a<=this.plotHeight},redraw:function(b){q(this,"beforeRedraw");var c=this.axes,d=this.series,g=this.pointer,m=this.legend,e=this.userOptions.legend,l=this.isDirtyLegend,f,A,k=this.hasCartesianSeries,r=this.isDirtyBox,G,v=this.renderer,H=v.isHidden(),E=[];this.setResponsive&&this.setResponsive(!1);a.setAnimation(b,this);H&&this.temporaryDisplay();
+this.layOutTitles();for(b=d.length;b--;)if(G=d[b],G.options.stacking&&(f=!0,G.isDirty)){A=!0;break}if(A)for(b=d.length;b--;)G=d[b],G.options.stacking&&(G.isDirty=!0);h(d,function(a){a.isDirty&&("point"===a.options.legendType?(a.updateTotals&&a.updateTotals(),l=!0):e&&(e.labelFormatter||e.labelFormat)&&(l=!0));a.isDirtyData&&q(a,"updatedData")});l&&m&&m.options.enabled&&(m.render(),this.isDirtyLegend=!1);f&&this.getStacks();k&&h(c,function(a){a.updateNames();a.updateYNames&&a.updateYNames();a.setScale()});
+this.getMargins();k&&(h(c,function(a){a.isDirty&&(r=!0)}),h(c,function(a){var b=a.min+","+a.max;a.extKey!==b&&(a.extKey=b,E.push(function(){q(a,"afterSetExtremes",p(a.eventArgs,a.getExtremes()));delete a.eventArgs}));(r||f)&&a.redraw()}));r&&this.drawChartBox();q(this,"predraw");h(d,function(a){(r||a.isDirty)&&a.visible&&a.redraw();a.isDirtyData=!1});g&&g.reset(!0);v.draw();q(this,"redraw");q(this,"render");H&&this.temporaryDisplay(!0);h(E,function(a){a.call()})},get:function(a){function b(b){return b.id===
+a||b.options&&b.options.id===a}var c,d=this.series,g;c=k(this.axes,b)||k(this.series,b);for(g=0;!c&&g<d.length;g++)c=k(d[g].points||[],b);return c},getAxes:function(){var a=this,b=this.options,c=b.xAxis=g(b.xAxis||{}),b=b.yAxis=g(b.yAxis||{});q(this,"getAxes");h(c,function(a,b){a.index=b;a.isX=!0});h(b,function(a,b){a.index=b});c=c.concat(b);h(c,function(b){new e(a,b)});q(this,"afterGetAxes")},getSelectedPoints:function(){var a=[];h(this.series,function(b){a=a.concat(d(b.data||[],function(a){return a.selected}))});
+return a},getSelectedSeries:function(){return d(this.series,function(a){return a.selected})},setTitle:function(a,b,c){var d=this,g=d.options,m;m=g.title=B({style:{color:"#333333",fontSize:g.isStock?"16px":"18px"}},g.title,a);g=g.subtitle=B({style:{color:"#666666"}},g.subtitle,b);h([["title",a,m],["subtitle",b,g]],function(a,b){var c=a[0],g=d[c],m=a[1];a=a[2];g&&m&&(d[c]=g=g.destroy());a&&!g&&(d[c]=d.renderer.text(a.text,0,0,a.useHTML).attr({align:a.align,"class":"highcharts-"+c,zIndex:a.zIndex||4}).add(),
+d[c].update=function(a){d.setTitle(!b&&a,b&&a)},d[c].css(a.style))});d.layOutTitles(c)},layOutTitles:function(a){var b=0,c,d=this.renderer,g=this.spacingBox;h(["title","subtitle"],function(a){var c=this[a],m=this.options[a];a="title"===a?-3:m.verticalAlign?0:b+2;var h;c&&(h=m.style.fontSize,h=d.fontMetrics(h,c).b,c.css({width:(m.width||g.width+m.widthAdjust)+"px"}).align(p({y:a+h},m),!1,"spacingBox"),m.floating||m.verticalAlign||(b=Math.ceil(b+c.getBBox(m.useHTML).height)))},this);c=this.titleOffset!==
+b;this.titleOffset=b;!this.isDirtyBox&&c&&(this.isDirtyBox=this.isDirtyLegend=c,this.hasRendered&&G(a,!0)&&this.isDirtyBox&&this.redraw())},getChartSize:function(){var b=this.options.chart,d=b.width,b=b.height,g=this.renderTo;c(d)||(this.containerWidth=a.getStyle(g,"width"));c(b)||(this.containerHeight=a.getStyle(g,"height"));this.chartWidth=Math.max(0,d||this.containerWidth||600);this.chartHeight=Math.max(0,a.relativeLength(b,this.chartWidth)||(1<this.containerHeight?this.containerHeight:400))},
+temporaryDisplay:function(b){var c=this.renderTo;if(b)for(;c&&c.style;)c.hcOrigStyle&&(a.css(c,c.hcOrigStyle),delete c.hcOrigStyle),c.hcOrigDetached&&(f.body.removeChild(c),c.hcOrigDetached=!1),c=c.parentNode;else for(;c&&c.style;){f.body.contains(c)||c.parentNode||(c.hcOrigDetached=!0,f.body.appendChild(c));if("none"===a.getStyle(c,"display",!1)||c.hcOricDetached)c.hcOrigStyle={display:c.style.display,height:c.style.height,overflow:c.style.overflow},b={display:"block",overflow:"hidden"},c!==this.renderTo&&
+(b.height=0),a.css(c,b),c.offsetWidth||c.style.setProperty("display","block","important");c=c.parentNode;if(c===f.body)break}},setClassName:function(a){this.container.className="highcharts-container "+(a||"")},getContainer:function(){var c,d=this.options,g=d.chart,m,h;c=this.renderTo;var e=a.uniqueKey(),l;c||(this.renderTo=c=g.renderTo);J(c)&&(this.renderTo=c=f.getElementById(c));c||a.error(13,!0);m=A(n(c,"data-highcharts-chart"));b(m)&&w[m]&&w[m].hasRendered&&w[m].destroy();n(c,"data-highcharts-chart",
+this.index);c.innerHTML="";g.skipClone||c.offsetWidth||this.temporaryDisplay();this.getChartSize();m=this.chartWidth;h=this.chartHeight;l=p({position:"relative",overflow:"hidden",width:m+"px",height:h+"px",textAlign:"left",lineHeight:"normal",zIndex:0,"-webkit-tap-highlight-color":"rgba(0,0,0,0)"},g.style);this.container=c=u("div",{id:e},l,c);this._cursor=c.style.cursor;this.renderer=new (a[g.renderer]||a.Renderer)(c,m,h,null,g.forExport,d.exporting&&d.exporting.allowHTML);this.setClassName(g.className);
+this.renderer.setStyle(g.style);this.renderer.chartIndex=this.index;q(this,"afterGetContainer")},getMargins:function(a){var b=this.spacing,d=this.margin,g=this.titleOffset;this.resetMargins();g&&!c(d[0])&&(this.plotTop=Math.max(this.plotTop,g+this.options.title.margin+b[0]));this.legend&&this.legend.display&&this.legend.adjustMargins(d,b);q(this,"getMargins");a||this.getAxisMargins()},getAxisMargins:function(){var a=this,b=a.axisOffset=[0,0,0,0],d=a.margin;a.hasCartesianSeries&&h(a.axes,function(a){a.visible&&
+a.getOffset()});h(L,function(g,m){c(d[m])||(a[g]+=b[m])});a.setChartSize()},reflow:function(b){var d=this,g=d.options.chart,m=d.renderTo,h=c(g.width)&&c(g.height),e=g.width||a.getStyle(m,"width"),g=g.height||a.getStyle(m,"height"),m=b?b.target:M;if(!h&&!d.isPrinting&&e&&g&&(m===M||m===f)){if(e!==d.containerWidth||g!==d.containerHeight)a.clearTimeout(d.reflowTimeout),d.reflowTimeout=r(function(){d.container&&d.setSize(void 0,void 0,!1)},b?100:0);d.containerWidth=e;d.containerHeight=g}},setReflow:function(a){var b=
+this;!1===a||this.unbindReflow?!1===a&&this.unbindReflow&&(this.unbindReflow=this.unbindReflow()):(this.unbindReflow=C(M,"resize",function(a){b.reflow(a)}),C(this,"destroy",this.unbindReflow))},setSize:function(b,c,d){var g=this,m=g.renderer;g.isResizing+=1;a.setAnimation(d,g);g.oldChartHeight=g.chartHeight;g.oldChartWidth=g.chartWidth;void 0!==b&&(g.options.chart.width=b);void 0!==c&&(g.options.chart.height=c);g.getChartSize();b=m.globalAnimation;(b?F:y)(g.container,{width:g.chartWidth+"px",height:g.chartHeight+
+"px"},b);g.setChartSize(!0);m.setSize(g.chartWidth,g.chartHeight,d);h(g.axes,function(a){a.isDirty=!0;a.setScale()});g.isDirtyLegend=!0;g.isDirtyBox=!0;g.layOutTitles();g.getMargins();g.redraw(d);g.oldChartHeight=null;q(g,"resize");r(function(){g&&q(g,"endResize",null,function(){--g.isResizing})},I(b).duration)},setChartSize:function(a){var b=this.inverted,c=this.renderer,g=this.chartWidth,d=this.chartHeight,m=this.options.chart,e=this.spacing,l=this.clipOffset,f,A,k,r;this.plotLeft=f=Math.round(this.plotLeft);
+this.plotTop=A=Math.round(this.plotTop);this.plotWidth=k=Math.max(0,Math.round(g-f-this.marginRight));this.plotHeight=r=Math.max(0,Math.round(d-A-this.marginBottom));this.plotSizeX=b?r:k;this.plotSizeY=b?k:r;this.plotBorderWidth=m.plotBorderWidth||0;this.spacingBox=c.spacingBox={x:e[3],y:e[0],width:g-e[3]-e[1],height:d-e[0]-e[2]};this.plotBox=c.plotBox={x:f,y:A,width:k,height:r};g=2*Math.floor(this.plotBorderWidth/2);b=Math.ceil(Math.max(g,l[3])/2);c=Math.ceil(Math.max(g,l[0])/2);this.clipBox={x:b,
+y:c,width:Math.floor(this.plotSizeX-Math.max(g,l[1])/2-b),height:Math.max(0,Math.floor(this.plotSizeY-Math.max(g,l[2])/2-c))};a||h(this.axes,function(a){a.setAxisSize();a.setAxisTranslation()});q(this,"afterSetChartSize",{skipAxes:a})},resetMargins:function(){var a=this,b=a.options.chart;h(["margin","spacing"],function(c){var g=b[c],d=v(g)?g:[g,g,g,g];h(["Top","Right","Bottom","Left"],function(g,m){a[c][m]=G(b[c+g],d[m])})});h(L,function(b,c){a[b]=G(a.margin[c],a.spacing[c])});a.axisOffset=[0,0,0,
+0];a.clipOffset=[0,0,0,0]},drawChartBox:function(){var a=this.options.chart,b=this.renderer,c=this.chartWidth,g=this.chartHeight,d=this.chartBackground,m=this.plotBackground,h=this.plotBorder,e,l=this.plotBGImage,f=a.backgroundColor,A=a.plotBackgroundColor,k=a.plotBackgroundImage,r,p=this.plotLeft,G=this.plotTop,v=this.plotWidth,E=this.plotHeight,n=this.plotBox,B=this.clipRect,t=this.clipBox,u="animate";d||(this.chartBackground=d=b.rect().addClass("highcharts-background").add(),u="attr");e=a.borderWidth||
+0;r=e+(a.shadow?8:0);f={fill:f||"none"};if(e||d["stroke-width"])f.stroke=a.borderColor,f["stroke-width"]=e;d.attr(f).shadow(a.shadow);d[u]({x:r/2,y:r/2,width:c-r-e%2,height:g-r-e%2,r:a.borderRadius});u="animate";m||(u="attr",this.plotBackground=m=b.rect().addClass("highcharts-plot-background").add());m[u](n);m.attr({fill:A||"none"}).shadow(a.plotShadow);k&&(l?l.animate(n):this.plotBGImage=b.image(k,p,G,v,E).add());B?B.animate({width:t.width,height:t.height}):this.clipRect=b.clipRect(t);u="animate";
+h||(u="attr",this.plotBorder=h=b.rect().addClass("highcharts-plot-border").attr({zIndex:1}).add());h.attr({stroke:a.plotBorderColor,"stroke-width":a.plotBorderWidth||0,fill:"none"});h[u](h.crisp({x:p,y:G,width:v,height:E},-h.strokeWidth()));this.isDirtyBox=!1;q(this,"afterDrawChartBox")},propFromSeries:function(){var a=this,b=a.options.chart,c,g=a.options.series,d,m;h(["inverted","angular","polar"],function(h){c=E[b.type||b.defaultSeriesType];m=b[h]||c&&c.prototype[h];for(d=g&&g.length;!m&&d--;)(c=
+E[g[d].type])&&c.prototype[h]&&(m=!0);a[h]=m})},linkSeries:function(){var a=this,b=a.series;h(b,function(a){a.linkedSeries.length=0});h(b,function(b){var c=b.options.linkedTo;J(c)&&(c=":previous"===c?a.series[b.index-1]:a.get(c))&&c.linkedParent!==b&&(c.linkedSeries.push(b),b.linkedParent=c,b.visible=G(b.options.visible,c.options.visible,b.visible))});q(this,"afterLinkSeries")},renderSeries:function(){h(this.series,function(a){a.translate();a.render()})},renderLabels:function(){var a=this,b=a.options.labels;
+b.items&&h(b.items,function(c){var g=p(b.style,c.style),d=A(g.left)+a.plotLeft,m=A(g.top)+a.plotTop+12;delete g.left;delete g.top;a.renderer.text(c.html,d,m).attr({zIndex:2}).css(g).add()})},render:function(){var a=this.axes,b=this.renderer,c=this.options,g,d,m;this.setTitle();this.legend=new l(this,c.legend);this.getStacks&&this.getStacks();this.getMargins(!0);this.setChartSize();c=this.plotWidth;g=this.plotHeight=Math.max(this.plotHeight-21,0);h(a,function(a){a.setScale()});this.getAxisMargins();
+d=1.1<c/this.plotWidth;m=1.05<g/this.plotHeight;if(d||m)h(a,function(a){(a.horiz&&d||!a.horiz&&m)&&a.setTickInterval(!0)}),this.getMargins();this.drawChartBox();this.hasCartesianSeries&&h(a,function(a){a.visible&&a.render()});this.seriesGroup||(this.seriesGroup=b.g("series-group").attr({zIndex:3}).add());this.renderSeries();this.renderLabels();this.addCredits();this.setResponsive&&this.setResponsive();this.hasRendered=!0},addCredits:function(a){var b=this;a=B(!0,this.options.credits,a);a.enabled&&
+!this.credits&&(this.credits=this.renderer.text(a.text+(this.mapCredits||""),0,0).addClass("highcharts-credits").on("click",function(){a.href&&(M.location.href=a.href)}).attr({align:a.position.align,zIndex:8}).css(a.style).add().align(a.position),this.credits.update=function(a){b.credits=b.credits.destroy();b.addCredits(a)})},destroy:function(){var b=this,c=b.axes,g=b.series,d=b.container,m,e=d&&d.parentNode;q(b,"destroy");b.renderer.forExport?a.erase(w,b):w[b.index]=void 0;a.chartCount--;b.renderTo.removeAttribute("data-highcharts-chart");
+N(b);for(m=c.length;m--;)c[m]=c[m].destroy();this.scroller&&this.scroller.destroy&&this.scroller.destroy();for(m=g.length;m--;)g[m]=g[m].destroy();h("title subtitle chartBackground plotBackground plotBGImage plotBorder seriesGroup clipRect credits pointer rangeSelector legend resetZoomButton tooltip renderer".split(" "),function(a){var c=b[a];c&&c.destroy&&(b[a]=c.destroy())});d&&(d.innerHTML="",N(d),e&&t(d));D(b,function(a,c){delete b[c]})},firstRender:function(){var a=this,b=a.options;if(!a.isReadyToRender||
+a.isReadyToRender()){a.getContainer();a.resetMargins();a.setChartSize();a.propFromSeries();a.getAxes();h(b.series||[],function(b){a.initSeries(b)});a.linkSeries();q(a,"beforeRender");m&&(a.pointer=new m(a,b));a.render();if(!a.renderer.imgCount&&a.onload)a.onload();a.temporaryDisplay(!0)}},onload:function(){h([this.callback].concat(this.callbacks),function(a){a&&void 0!==this.index&&a.apply(this,[this])},this);q(this,"load");q(this,"render");c(this.index)&&this.setReflow(this.options.chart.reflow);
+this.onload=null}})})(K);(function(a){var C=a.addEvent,F=a.Chart,I=a.each;C(F,"afterSetChartSize",function(n){var f=this.options.chart.scrollablePlotArea;(f=f&&f.minWidth)&&!this.renderer.forExport&&(this.scrollablePixels=f=Math.max(0,f-this.chartWidth))&&(this.plotWidth+=f,this.clipBox.width+=f,n.skipAxes||I(this.axes,function(e){1===e.side?e.getPlotLinePath=function(){var f=this.right,n;this.right=f-e.chart.scrollablePixels;n=a.Axis.prototype.getPlotLinePath.apply(this,arguments);this.right=f;return n}:
+(e.setAxisSize(),e.setAxisTranslation())}))});C(F,"render",function(){this.scrollablePixels?(this.setUpScrolling&&this.setUpScrolling(),this.applyFixed()):this.fixedDiv&&this.applyFixed()});F.prototype.setUpScrolling=function(){this.scrollingContainer=a.createElement("div",{className:"highcharts-scrolling"},{overflowX:"auto",WebkitOverflowScrolling:"touch"},this.renderTo);this.innerContainer=a.createElement("div",{className:"highcharts-inner-container"},null,this.scrollingContainer);this.innerContainer.appendChild(this.container);
+this.setUpScrolling=null};F.prototype.applyFixed=function(){var n=this.container,f,e,u=!this.fixedDiv;u&&(this.fixedDiv=a.createElement("div",{className:"highcharts-fixed"},{position:"absolute",overflow:"hidden",pointerEvents:"none",zIndex:2},null,!0),this.renderTo.insertBefore(this.fixedDiv,this.renderTo.firstChild),this.fixedRenderer=f=new a.Renderer(this.fixedDiv,0,0),this.scrollableMask=f.path().attr({fill:a.color(this.options.chart.backgroundColor||"#fff").setOpacity(.85).get(),zIndex:-1}).addClass("highcharts-scrollable-mask").add(),
+a.each([this.inverted?".highcharts-xaxis":".highcharts-yaxis",this.inverted?".highcharts-xaxis-labels":".highcharts-yaxis-labels",".highcharts-contextbutton",".highcharts-credits",".highcharts-legend",".highcharts-subtitle",".highcharts-title",".highcharts-legend-checkbox"],function(e){a.each(n.querySelectorAll(e),function(a){(a.namespaceURI===f.SVG_NS?f.box:f.box.parentNode).appendChild(a);a.style.pointerEvents="auto"})}));this.fixedRenderer.setSize(this.chartWidth,this.chartHeight);e=this.chartWidth+
+this.scrollablePixels;a.stop(this.container);this.container.style.width=e+"px";this.renderer.boxWrapper.attr({width:e,height:this.chartHeight,viewBox:[0,0,e,this.chartHeight].join(" ")});this.chartBackground.attr({width:e});u&&(e=this.options.chart.scrollablePlotArea,e.scrollPositionX&&(this.scrollingContainer.scrollLeft=this.scrollablePixels*e.scrollPositionX));u=this.axisOffset;e=this.plotTop-u[0]-1;var u=this.plotTop+this.plotHeight+u[2],x=this.plotLeft+this.plotWidth-this.scrollablePixels;this.scrollableMask.attr({d:this.scrollablePixels?
+["M",0,e,"L",this.plotLeft-1,e,"L",this.plotLeft-1,u,"L",0,u,"Z","M",x,e,"L",this.chartWidth,e,"L",this.chartWidth,u,"L",x,u,"Z"]:["M",0,0]})}})(K);(function(a){var C,F=a.each,I=a.extend,n=a.erase,f=a.fireEvent,e=a.format,u=a.isArray,x=a.isNumber,t=a.pick,w=a.uniqueKey,y=a.defined,c=a.removeEvent;a.Point=C=function(){};a.Point.prototype={init:function(a,c,e){this.series=a;this.color=a.color;this.applyOptions(c,e);this.id=y(this.id)?this.id:w();a.options.colorByPoint?(c=a.options.colors||a.chart.options.colors,
+this.color=this.color||c[a.colorCounter],c=c.length,e=a.colorCounter,a.colorCounter++,a.colorCounter===c&&(a.colorCounter=0)):e=a.colorIndex;this.colorIndex=t(this.colorIndex,e);a.chart.pointCount++;f(this,"afterInit");return this},applyOptions:function(a,c){var e=this.series,h=e.options.pointValKey||e.pointValKey;a=C.prototype.optionsToObject.call(this,a);I(this,a);this.options=this.options?I(this.options,a):a;a.group&&delete this.group;a.dataLabels&&delete this.dataLabels;h&&(this.y=this[h]);this.isNull=
+t(this.isValid&&!this.isValid(),null===this.x||!x(this.y,!0));this.selected&&(this.state="select");"name"in this&&void 0===c&&e.xAxis&&e.xAxis.hasNames&&(this.x=e.xAxis.nameToX(this));void 0===this.x&&e&&(this.x=void 0===c?e.autoIncrement(this):c);return this},setNestedProperty:function(c,e,f){f=f.split(".");a.reduce(f,function(c,d,b,h){c[d]=h.length-1===b?e:a.isObject(c[d],!0)?c[d]:{};return c[d]},c);return c},optionsToObject:function(c){var e={},h=this.series,f=h.options.keys,d=f||h.pointArrayMap||
+["y"],b=d.length,v=0,n=0;if(x(c)||null===c)e[d[0]]=c;else if(u(c))for(!f&&c.length>b&&(h=typeof c[0],"string"===h?e.name=c[0]:"number"===h&&(e.x=c[0]),v++);n<b;)f&&void 0===c[v]||(0<d[n].indexOf(".")?a.Point.prototype.setNestedProperty(e,c[v],d[n]):e[d[n]]=c[v]),v++,n++;else"object"===typeof c&&(e=c,c.dataLabels&&(h._hasPointLabels=!0),c.marker&&(h._hasPointMarkers=!0));return e},getClassName:function(){return"highcharts-point"+(this.selected?" highcharts-point-select":"")+(this.negative?" highcharts-negative":
+"")+(this.isNull?" highcharts-null-point":"")+(void 0!==this.colorIndex?" highcharts-color-"+this.colorIndex:"")+(this.options.className?" "+this.options.className:"")+(this.zone&&this.zone.className?" "+this.zone.className.replace("highcharts-negative",""):"")},getZone:function(){var a=this.series,c=a.zones,a=a.zoneAxis||"y",e=0,f;for(f=c[e];this[a]>=f.value;)f=c[++e];this.nonZonedColor||(this.nonZonedColor=this.color);this.color=f&&f.color&&!this.options.color?f.color:this.nonZonedColor;return f},
+destroy:function(){var a=this.series.chart,e=a.hoverPoints,f;a.pointCount--;e&&(this.setState(),n(e,this),e.length||(a.hoverPoints=null));if(this===a.hoverPoint)this.onMouseOut();if(this.graphic||this.dataLabel||this.dataLabels)c(this),this.destroyElements();this.legendItem&&a.legend.destroyItem(this);for(f in this)this[f]=null},destroyElements:function(){for(var a=["graphic","dataLabel","dataLabelUpper","connector","shadowGroup"],c,e=6;e--;)c=a[e],this[c]&&(this[c]=this[c].destroy());this.dataLabels&&
+(F(this.dataLabels,function(a){a.element&&a.destroy()}),delete this.dataLabels);this.connectors&&(F(this.connectors,function(a){a.element&&a.destroy()}),delete this.connectors)},getLabelConfig:function(){return{x:this.category,y:this.y,color:this.color,colorIndex:this.colorIndex,key:this.name||this.category,series:this.series,point:this,percentage:this.percentage,total:this.total||this.stackTotal}},tooltipFormatter:function(a){var c=this.series,h=c.tooltipOptions,f=t(h.valueDecimals,""),d=h.valuePrefix||
+"",b=h.valueSuffix||"";F(c.pointArrayMap||["y"],function(c){c="{point."+c;if(d||b)a=a.replace(RegExp(c+"}","g"),d+c+"}"+b);a=a.replace(RegExp(c+"}","g"),c+":,."+f+"f}")});return e(a,{point:this,series:this.series},c.chart.time)},firePointEvent:function(a,c,e){var h=this,d=this.series.options;(d.point.events[a]||h.options&&h.options.events&&h.options.events[a])&&this.importEvents();"click"===a&&d.allowPointSelect&&(e=function(a){h.select&&h.select(null,a.ctrlKey||a.metaKey||a.shiftKey)});f(this,a,
+c,e)},visible:!0}})(K);(function(a){var C=a.addEvent,F=a.animObject,I=a.arrayMax,n=a.arrayMin,f=a.correctFloat,e=a.defaultOptions,u=a.defaultPlotOptions,x=a.defined,t=a.each,w=a.erase,y=a.extend,c=a.fireEvent,h=a.grep,p=a.isArray,k=a.isNumber,q=a.isString,d=a.merge,b=a.objectEach,v=a.pick,J=a.removeEvent,l=a.splat,L=a.SVGElement,B=a.syncTimeout,D=a.win;a.Series=a.seriesType("line",null,{lineWidth:2,allowPointSelect:!1,showCheckbox:!1,animation:{duration:1E3},events:{},marker:{lineWidth:0,lineColor:"#ffffff",
+enabledThreshold:2,radius:4,states:{normal:{animation:!0},hover:{animation:{duration:50},enabled:!0,radiusPlus:2,lineWidthPlus:1},select:{fillColor:"#cccccc",lineColor:"#000000",lineWidth:2}}},point:{events:{}},dataLabels:{align:"center",formatter:function(){return null===this.y?"":a.numberFormat(this.y,-1)},style:{fontSize:"11px",fontWeight:"bold",color:"contrast",textOutline:"1px contrast"},verticalAlign:"bottom",x:0,y:0,padding:5},cropThreshold:300,pointRange:0,softThreshold:!0,states:{normal:{animation:!0},
+hover:{animation:{duration:50},lineWidthPlus:1,marker:{},halo:{size:10,opacity:.25}},select:{}},stickyTracking:!0,turboThreshold:1E3,findNearestPointBy:"x"},{isCartesian:!0,pointClass:a.Point,sorted:!0,requireSorting:!0,directTouch:!1,axisTypes:["xAxis","yAxis"],colorCounter:0,parallelArrays:["x","y"],coll:"series",init:function(a,d){var m=this,e,h=a.series,g;m.chart=a;m.options=d=m.setOptions(d);m.linkedSeries=[];m.bindAxes();y(m,{name:d.name,state:"",visible:!1!==d.visible,selected:!0===d.selected});
+e=d.events;b(e,function(a,b){C(m,b,a)});if(e&&e.click||d.point&&d.point.events&&d.point.events.click||d.allowPointSelect)a.runTrackerClick=!0;m.getColor();m.getSymbol();t(m.parallelArrays,function(a){m[a+"Data"]=[]});m.setData(d.data,!1);m.isCartesian&&(a.hasCartesianSeries=!0);h.length&&(g=h[h.length-1]);m._i=v(g&&g._i,-1)+1;a.orderSeries(this.insert(h));c(this,"afterInit")},insert:function(a){var b=this.options.index,c;if(k(b)){for(c=a.length;c--;)if(b>=v(a[c].options.index,a[c]._i)){a.splice(c+
+1,0,this);break}-1===c&&a.unshift(this);c+=1}else a.push(this);return v(c,a.length-1)},bindAxes:function(){var b=this,c=b.options,d=b.chart,e;t(b.axisTypes||[],function(m){t(d[m],function(a){e=a.options;if(c[m]===e.index||void 0!==c[m]&&c[m]===e.id||void 0===c[m]&&0===e.index)b.insert(a.series),b[m]=a,a.isDirty=!0});b[m]||b.optionalAxis===m||a.error(18,!0)})},updateParallelArrays:function(a,b){var c=a.series,d=arguments,m=k(b)?function(g){var d="y"===g&&c.toYData?c.toYData(a):a[g];c[g+"Data"][b]=
+d}:function(a){Array.prototype[b].apply(c[a+"Data"],Array.prototype.slice.call(d,2))};t(c.parallelArrays,m)},autoIncrement:function(){var a=this.options,b=this.xIncrement,c,d=a.pointIntervalUnit,e=this.chart.time,b=v(b,a.pointStart,0);this.pointInterval=c=v(this.pointInterval,a.pointInterval,1);d&&(a=new e.Date(b),"day"===d?e.set("Date",a,e.get("Date",a)+c):"month"===d?e.set("Month",a,e.get("Month",a)+c):"year"===d&&e.set("FullYear",a,e.get("FullYear",a)+c),c=a.getTime()-b);this.xIncrement=b+c;return b},
+setOptions:function(a){var b=this.chart,m=b.options,h=m.plotOptions,f=(b.userOptions||{}).plotOptions||{},g=h[this.type];this.userOptions=a;b=d(g,h.series,a);this.tooltipOptions=d(e.tooltip,e.plotOptions.series&&e.plotOptions.series.tooltip,e.plotOptions[this.type].tooltip,m.tooltip.userOptions,h.series&&h.series.tooltip,h[this.type].tooltip,a.tooltip);this.stickyTracking=v(a.stickyTracking,f[this.type]&&f[this.type].stickyTracking,f.series&&f.series.stickyTracking,this.tooltipOptions.shared&&!this.noSharedTooltip?
+!0:b.stickyTracking);null===g.marker&&delete b.marker;this.zoneAxis=b.zoneAxis;a=this.zones=(b.zones||[]).slice();!b.negativeColor&&!b.negativeFillColor||b.zones||a.push({value:b[this.zoneAxis+"Threshold"]||b.threshold||0,className:"highcharts-negative",color:b.negativeColor,fillColor:b.negativeFillColor});a.length&&x(a[a.length-1].value)&&a.push({color:this.color,fillColor:this.fillColor});c(this,"afterSetOptions",{options:b});return b},getName:function(){return this.name||"Series "+(this.index+
+1)},getCyclic:function(a,b,c){var d,e=this.chart,g=this.userOptions,m=a+"Index",h=a+"Counter",f=c?c.length:v(e.options.chart[a+"Count"],e[a+"Count"]);b||(d=v(g[m],g["_"+m]),x(d)||(e.series.length||(e[h]=0),g["_"+m]=d=e[h]%f,e[h]+=1),c&&(b=c[d]));void 0!==d&&(this[m]=d);this[a]=b},getColor:function(){this.options.colorByPoint?this.options.color=null:this.getCyclic("color",this.options.color||u[this.type].color,this.chart.options.colors)},getSymbol:function(){this.getCyclic("symbol",this.options.marker.symbol,
+this.chart.options.symbols)},drawLegendSymbol:a.LegendSymbolMixin.drawLineMarker,updateData:function(b){var c=this.options,d=this.points,e=[],m,g,h,f=this.requireSorting;t(b,function(b){var g;g=a.defined(b)&&this.pointClass.prototype.optionsToObject.call({series:this},b).x;k(g)&&(g=a.inArray(g,this.xData,h),-1===g||d[g].touched?e.push(b):b!==c.data[g]?(d[g].update(b,!1,null,!1),d[g].touched=!0,f&&(h=g+1)):d[g]&&(d[g].touched=!0),m=!0)},this);if(m)for(b=d.length;b--;)g=d[b],g.touched||g.remove(!1),
+g.touched=!1;else if(b.length===d.length)t(b,function(a,b){d[b].update&&a!==c.data[b]&&d[b].update(a,!1,null,!1)});else return!1;t(e,function(a){this.addPoint(a,!1)},this);return!0},setData:function(b,c,d,e){var m=this,g=m.points,h=g&&g.length||0,f,l=m.options,A=m.chart,G=null,n=m.xAxis,B=l.turboThreshold,u=this.xData,D=this.yData,y=(f=m.pointArrayMap)&&f.length,N;b=b||[];f=b.length;c=v(c,!0);!1!==e&&f&&h&&!m.cropped&&!m.hasGroupedData&&m.visible&&!m.isSeriesBoosting&&(N=this.updateData(b));if(!N){m.xIncrement=
+null;m.colorCounter=0;t(this.parallelArrays,function(a){m[a+"Data"].length=0});if(B&&f>B){for(d=0;null===G&&d<f;)G=b[d],d++;if(k(G))for(d=0;d<f;d++)u[d]=this.autoIncrement(),D[d]=b[d];else if(p(G))if(y)for(d=0;d<f;d++)G=b[d],u[d]=G[0],D[d]=G.slice(1,y+1);else for(d=0;d<f;d++)G=b[d],u[d]=G[0],D[d]=G[1];else a.error(12)}else for(d=0;d<f;d++)void 0!==b[d]&&(G={series:m},m.pointClass.prototype.applyOptions.apply(G,[b[d]]),m.updateParallelArrays(G,d));D&&q(D[0])&&a.error(14,!0);m.data=[];m.options.data=
+m.userOptions.data=b;for(d=h;d--;)g[d]&&g[d].destroy&&g[d].destroy();n&&(n.minRange=n.userMinRange);m.isDirty=A.isDirtyBox=!0;m.isDirtyData=!!g;d=!1}"point"===l.legendType&&(this.processData(),this.generatePoints());c&&A.redraw(d)},processData:function(b){var c=this.xData,d=this.yData,e=c.length,m;m=0;var g,h,f=this.xAxis,l,k=this.options;l=k.cropThreshold;var p=this.getExtremesFromAll||k.getExtremesFromAll,q=this.isCartesian,k=f&&f.val2lin,v=f&&f.isLog,n=this.requireSorting,B,t;if(q&&!this.isDirty&&
+!f.isDirty&&!this.yAxis.isDirty&&!b)return!1;f&&(b=f.getExtremes(),B=b.min,t=b.max);q&&this.sorted&&!p&&(!l||e>l||this.forceCrop)&&(c[e-1]<B||c[0]>t?(c=[],d=[]):this.yData&&(c[0]<B||c[e-1]>t)&&(m=this.cropData(this.xData,this.yData,B,t),c=m.xData,d=m.yData,m=m.start,g=!0));for(l=c.length||1;--l;)e=v?k(c[l])-k(c[l-1]):c[l]-c[l-1],0<e&&(void 0===h||e<h)?h=e:0>e&&n&&(a.error(15),n=!1);this.cropped=g;this.cropStart=m;this.processedXData=c;this.processedYData=d;this.closestPointRange=h},cropData:function(a,
+b,c,d,e){var g=a.length,m=0,h=g,f;e=v(e,this.cropShoulder,1);for(f=0;f<g;f++)if(a[f]>=c){m=Math.max(0,f-e);break}for(c=f;c<g;c++)if(a[c]>d){h=c+e;break}return{xData:a.slice(m,h),yData:b.slice(m,h),start:m,end:h}},generatePoints:function(){var a=this.options,b=a.data,c=this.data,d,e=this.processedXData,g=this.processedYData,h=this.pointClass,f=e.length,k=this.cropStart||0,p,q=this.hasGroupedData,a=a.keys,v,n=[],B;c||q||(c=[],c.length=b.length,c=this.data=c);a&&q&&(this.options.keys=!1);for(B=0;B<f;B++)p=
+k+B,q?(v=(new h).init(this,[e[B]].concat(l(g[B]))),v.dataGroup=this.groupMap[B],v.dataGroup.options&&(v.options=v.dataGroup.options,y(v,v.dataGroup.options))):(v=c[p])||void 0===b[p]||(c[p]=v=(new h).init(this,b[p],e[B])),v&&(v.index=p,n[B]=v);this.options.keys=a;if(c&&(f!==(d=c.length)||q))for(B=0;B<d;B++)B!==k||q||(B+=f),c[B]&&(c[B].destroyElements(),c[B].plotX=void 0);this.data=c;this.points=n},getExtremes:function(a){var b=this.yAxis,c=this.processedXData,d,e=[],g=0;d=this.xAxis.getExtremes();
+var m=d.min,h=d.max,f,l,q=this.requireSorting?1:0,v,B;a=a||this.stackedYData||this.processedYData||[];d=a.length;for(B=0;B<d;B++)if(l=c[B],v=a[B],f=(k(v,!0)||p(v))&&(!b.positiveValuesOnly||v.length||0<v),l=this.getExtremesFromAll||this.options.getExtremesFromAll||this.cropped||(c[B+q]||l)>=m&&(c[B-q]||l)<=h,f&&l)if(f=v.length)for(;f--;)"number"===typeof v[f]&&(e[g++]=v[f]);else e[g++]=v;this.dataMin=n(e);this.dataMax=I(e)},translate:function(){this.processedXData||this.processData();this.generatePoints();
+var a=this.options,b=a.stacking,d=this.xAxis,e=d.categories,h=this.yAxis,g=this.points,l=g.length,p=!!this.modifyValue,q=a.pointPlacement,B="between"===q||k(q),n=a.threshold,t=a.startFromThreshold?n:0,u,D,y,w,J=Number.MAX_VALUE;"between"===q&&(q=.5);k(q)&&(q*=v(a.pointRange||d.pointRange));for(a=0;a<l;a++){var L=g[a],C=L.x,F=L.y;D=L.low;var I=b&&h.stacks[(this.negStacks&&F<(t?0:n)?"-":"")+this.stackKey],K;h.positiveValuesOnly&&null!==F&&0>=F&&(L.isNull=!0);L.plotX=u=f(Math.min(Math.max(-1E5,d.translate(C,
+0,0,0,1,q,"flags"===this.type)),1E5));b&&this.visible&&!L.isNull&&I&&I[C]&&(w=this.getStackIndicator(w,C,this.index),K=I[C],F=K.points[w.key],D=F[0],F=F[1],D===t&&w.key===I[C].base&&(D=v(k(n)&&n,h.min)),h.positiveValuesOnly&&0>=D&&(D=null),L.total=L.stackTotal=K.total,L.percentage=K.total&&L.y/K.total*100,L.stackY=F,K.setOffset(this.pointXOffset||0,this.barW||0));L.yBottom=x(D)?Math.min(Math.max(-1E5,h.translate(D,0,1,0,1)),1E5):null;p&&(F=this.modifyValue(F,L));L.plotY=D="number"===typeof F&&Infinity!==
+F?Math.min(Math.max(-1E5,h.translate(F,0,1,0,1)),1E5):void 0;L.isInside=void 0!==D&&0<=D&&D<=h.len&&0<=u&&u<=d.len;L.clientX=B?f(d.translate(C,0,0,0,1,q)):u;L.negative=L.y<(n||0);L.category=e&&void 0!==e[L.x]?e[L.x]:L.x;L.isNull||(void 0!==y&&(J=Math.min(J,Math.abs(u-y))),y=u);L.zone=this.zones.length&&L.getZone()}this.closestPointRangePx=J;c(this,"afterTranslate")},getValidPoints:function(a,b){var c=this.chart;return h(a||this.points||[],function(a){return b&&!c.isInsidePlot(a.plotX,a.plotY,c.inverted)?
+!1:!a.isNull})},setClip:function(a){var b=this.chart,c=this.options,d=b.renderer,e=b.inverted,g=this.clipBox,m=g||b.clipBox,h=this.sharedClipKey||["_sharedClip",a&&a.duration,a&&a.easing,m.height,c.xAxis,c.yAxis].join(),f=b[h],l=b[h+"m"];f||(a&&(m.width=0,e&&(m.x=b.plotSizeX),b[h+"m"]=l=d.clipRect(e?b.plotSizeX+99:-99,e?-b.plotLeft:-b.plotTop,99,e?b.chartWidth:b.chartHeight)),b[h]=f=d.clipRect(m),f.count={length:0});a&&!f.count[this.index]&&(f.count[this.index]=!0,f.count.length+=1);!1!==c.clip&&
+(this.group.clip(a||g?f:b.clipRect),this.markerGroup.clip(l),this.sharedClipKey=h);a||(f.count[this.index]&&(delete f.count[this.index],--f.count.length),0===f.count.length&&h&&b[h]&&(g||(b[h]=b[h].destroy()),b[h+"m"]&&(b[h+"m"]=b[h+"m"].destroy())))},animate:function(a){var b=this.chart,c=F(this.options.animation),d;a?this.setClip(c):(d=this.sharedClipKey,(a=b[d])&&a.animate({width:b.plotSizeX,x:0},c),b[d+"m"]&&b[d+"m"].animate({width:b.plotSizeX+99,x:0},c),this.animate=null)},afterAnimate:function(){this.setClip();
+c(this,"afterAnimate");this.finishedAnimating=!0},drawPoints:function(){var a=this.points,b=this.chart,c,d,e,g,h=this.options.marker,f,l,k,p=this[this.specialGroup]||this.markerGroup,q,n=v(h.enabled,this.xAxis.isRadial?!0:null,this.closestPointRangePx>=h.enabledThreshold*h.radius);if(!1!==h.enabled||this._hasPointMarkers)for(c=0;c<a.length;c++)d=a[c],g=d.graphic,f=d.marker||{},l=!!d.marker,e=n&&void 0===f.enabled||f.enabled,k=d.isInside,e&&!d.isNull?(e=v(f.symbol,this.symbol),q=this.markerAttribs(d,
+d.selected&&"select"),g?g[k?"show":"hide"](!0).animate(q):k&&(0<q.width||d.hasImage)&&(d.graphic=g=b.renderer.symbol(e,q.x,q.y,q.width,q.height,l?f:h).add(p)),g&&g.attr(this.pointAttribs(d,d.selected&&"select")),g&&g.addClass(d.getClassName(),!0)):g&&(d.graphic=g.destroy())},markerAttribs:function(a,b){var c=this.options.marker,d=a.marker||{},e=d.symbol||c.symbol,g=v(d.radius,c.radius);b&&(c=c.states[b],b=d.states&&d.states[b],g=v(b&&b.radius,c&&c.radius,g+(c&&c.radiusPlus||0)));a.hasImage=e&&0===
+e.indexOf("url");a.hasImage&&(g=0);a={x:Math.floor(a.plotX)-g,y:a.plotY-g};g&&(a.width=a.height=2*g);return a},pointAttribs:function(a,b){var c=this.options.marker,d=a&&a.options,e=d&&d.marker||{},g=this.color,h=d&&d.color,m=a&&a.color,d=v(e.lineWidth,c.lineWidth);a=a&&a.zone&&a.zone.color;g=h||a||m||g;a=e.fillColor||c.fillColor||g;g=e.lineColor||c.lineColor||g;b&&(c=c.states[b],b=e.states&&e.states[b]||{},d=v(b.lineWidth,c.lineWidth,d+v(b.lineWidthPlus,c.lineWidthPlus,0)),a=b.fillColor||c.fillColor||
+a,g=b.lineColor||c.lineColor||g);return{stroke:g,"stroke-width":d,fill:a}},destroy:function(){var d=this,e=d.chart,h=/AppleWebKit\/533/.test(D.navigator.userAgent),f,l,g=d.data||[],k,p;c(d,"destroy");J(d);t(d.axisTypes||[],function(a){(p=d[a])&&p.series&&(w(p.series,d),p.isDirty=p.forceRedraw=!0)});d.legendItem&&d.chart.legend.destroyItem(d);for(l=g.length;l--;)(k=g[l])&&k.destroy&&k.destroy();d.points=null;a.clearTimeout(d.animationTimeout);b(d,function(a,b){a instanceof L&&!a.survive&&(f=h&&"group"===
+b?"hide":"destroy",a[f]())});e.hoverSeries===d&&(e.hoverSeries=null);w(e.series,d);e.orderSeries();b(d,function(a,b){delete d[b]})},getGraphPath:function(a,b,c){var d=this,e=d.options,g=e.step,h,m=[],f=[],l;a=a||d.points;(h=a.reversed)&&a.reverse();(g={right:1,center:2}[g]||g&&3)&&h&&(g=4-g);!e.connectNulls||b||c||(a=this.getValidPoints(a));t(a,function(h,k){var r=h.plotX,p=h.plotY,q=a[k-1];(h.leftCliff||q&&q.rightCliff)&&!c&&(l=!0);h.isNull&&!x(b)&&0<k?l=!e.connectNulls:h.isNull&&!b?l=!0:(0===k||
+l?k=["M",h.plotX,h.plotY]:d.getPointSpline?k=d.getPointSpline(a,h,k):g?(k=1===g?["L",q.plotX,p]:2===g?["L",(q.plotX+r)/2,q.plotY,"L",(q.plotX+r)/2,p]:["L",r,q.plotY],k.push("L",r,p)):k=["L",r,p],f.push(h.x),g&&(f.push(h.x),2===g&&f.push(h.x)),m.push.apply(m,k),l=!1)});m.xMap=f;return d.graphPath=m},drawGraph:function(){var a=this,b=this.options,c=(this.gappedPath||this.getGraphPath).call(this),d=[["graph","highcharts-graph",b.lineColor||this.color,b.dashStyle]],d=a.getZonesGraphs(d);t(d,function(d,
+g){var e=d[0],h=a[e];h?(h.endX=a.preventGraphAnimation?null:c.xMap,h.animate({d:c})):c.length&&(a[e]=a.chart.renderer.path(c).addClass(d[1]).attr({zIndex:1}).add(a.group),h={stroke:d[2],"stroke-width":b.lineWidth,fill:a.fillGraph&&a.color||"none"},d[3]?h.dashstyle=d[3]:"square"!==b.linecap&&(h["stroke-linecap"]=h["stroke-linejoin"]="round"),h=a[e].attr(h).shadow(2>g&&b.shadow));h&&(h.startX=c.xMap,h.isArea=c.isArea)})},getZonesGraphs:function(a){t(this.zones,function(b,c){a.push(["zone-graph-"+c,
+"highcharts-graph highcharts-zone-graph-"+c+" "+(b.className||""),b.color||this.color,b.dashStyle||this.options.dashStyle])},this);return a},applyZones:function(){var a=this,b=this.chart,c=b.renderer,d=this.zones,e,g,h=this.clips||[],f,l=this.graph,k=this.area,p=Math.max(b.chartWidth,b.chartHeight),q=this[(this.zoneAxis||"y")+"Axis"],n,B,u=b.inverted,D,y,w,x,J=!1;d.length&&(l||k)&&q&&void 0!==q.min&&(B=q.reversed,D=q.horiz,l&&!this.showLine&&l.hide(),k&&k.hide(),n=q.getExtremes(),t(d,function(d,m){e=
+B?D?b.plotWidth:0:D?0:q.toPixels(n.min);e=Math.min(Math.max(v(g,e),0),p);g=Math.min(Math.max(Math.round(q.toPixels(v(d.value,n.max),!0)),0),p);J&&(e=g=q.toPixels(n.max));y=Math.abs(e-g);w=Math.min(e,g);x=Math.max(e,g);q.isXAxis?(f={x:u?x:w,y:0,width:y,height:p},D||(f.x=b.plotHeight-f.x)):(f={x:0,y:u?x:w,width:p,height:y},D&&(f.y=b.plotWidth-f.y));u&&c.isVML&&(f=q.isXAxis?{x:0,y:B?w:x,height:f.width,width:b.chartWidth}:{x:f.y-b.plotLeft-b.spacingBox.x,y:0,width:f.height,height:b.chartHeight});h[m]?
+h[m].animate(f):(h[m]=c.clipRect(f),l&&a["zone-graph-"+m].clip(h[m]),k&&a["zone-area-"+m].clip(h[m]));J=d.value>n.max;a.resetZones&&0===g&&(g=void 0)}),this.clips=h)},invertGroups:function(a){function b(){t(["group","markerGroup"],function(b){c[b]&&(d.renderer.isVML&&c[b].attr({width:c.yAxis.len,height:c.xAxis.len}),c[b].width=c.yAxis.len,c[b].height=c.xAxis.len,c[b].invert(a))})}var c=this,d=c.chart,e;c.xAxis&&(e=C(d,"resize",b),C(c,"destroy",e),b(a),c.invertGroups=b)},plotGroup:function(a,b,c,d,
+e){var g=this[a],h=!g;h&&(this[a]=g=this.chart.renderer.g().attr({zIndex:d||.1}).add(e));g.addClass("highcharts-"+b+" highcharts-series-"+this.index+" highcharts-"+this.type+"-series "+(x(this.colorIndex)?"highcharts-color-"+this.colorIndex+" ":"")+(this.options.className||"")+(g.hasClass("highcharts-tracker")?" highcharts-tracker":""),!0);g.attr({visibility:c})[h?"attr":"animate"](this.getPlotBox());return g},getPlotBox:function(){var a=this.chart,b=this.xAxis,c=this.yAxis;a.inverted&&(b=c,c=this.xAxis);
+return{translateX:b?b.left:a.plotLeft,translateY:c?c.top:a.plotTop,scaleX:1,scaleY:1}},render:function(){var a=this,b=a.chart,d,e=a.options,h=!!a.animate&&b.renderer.isSVG&&F(e.animation).duration,g=a.visible?"inherit":"hidden",f=e.zIndex,l=a.hasRendered,k=b.seriesGroup,p=b.inverted;d=a.plotGroup("group","series",g,f,k);a.markerGroup=a.plotGroup("markerGroup","markers",g,f,k);h&&a.animate(!0);d.inverted=a.isCartesian?p:!1;a.drawGraph&&(a.drawGraph(),a.applyZones());a.drawDataLabels&&a.drawDataLabels();
+a.visible&&a.drawPoints();a.drawTracker&&!1!==a.options.enableMouseTracking&&a.drawTracker();a.invertGroups(p);!1===e.clip||a.sharedClipKey||l||d.clip(b.clipRect);h&&a.animate();l||(a.animationTimeout=B(function(){a.afterAnimate()},h));a.isDirty=!1;a.hasRendered=!0;c(a,"afterRender")},redraw:function(){var a=this.chart,b=this.isDirty||this.isDirtyData,c=this.group,d=this.xAxis,e=this.yAxis;c&&(a.inverted&&c.attr({width:a.plotWidth,height:a.plotHeight}),c.animate({translateX:v(d&&d.left,a.plotLeft),
+translateY:v(e&&e.top,a.plotTop)}));this.translate();this.render();b&&delete this.kdTree},kdAxisArray:["clientX","plotY"],searchPoint:function(a,b){var c=this.xAxis,d=this.yAxis,e=this.chart.inverted;return this.searchKDTree({clientX:e?c.len-a.chartY+c.pos:a.chartX-c.pos,plotY:e?d.len-a.chartX+d.pos:a.chartY-d.pos},b)},buildKDTree:function(){function a(c,d,g){var e,h;if(h=c&&c.length)return e=b.kdAxisArray[d%g],c.sort(function(a,b){return a[e]-b[e]}),h=Math.floor(h/2),{point:c[h],left:a(c.slice(0,
+h),d+1,g),right:a(c.slice(h+1),d+1,g)}}this.buildingKdTree=!0;var b=this,c=-1<b.options.findNearestPointBy.indexOf("y")?2:1;delete b.kdTree;B(function(){b.kdTree=a(b.getValidPoints(null,!b.directTouch),c,c);b.buildingKdTree=!1},b.options.kdNow?0:1)},searchKDTree:function(a,b){function c(a,b,f,l){var m=b.point,k=d.kdAxisArray[f%l],p,q,r=m;q=x(a[e])&&x(m[e])?Math.pow(a[e]-m[e],2):null;p=x(a[g])&&x(m[g])?Math.pow(a[g]-m[g],2):null;p=(q||0)+(p||0);m.dist=x(p)?Math.sqrt(p):Number.MAX_VALUE;m.distX=x(q)?
+Math.sqrt(q):Number.MAX_VALUE;k=a[k]-m[k];p=0>k?"left":"right";q=0>k?"right":"left";b[p]&&(p=c(a,b[p],f+1,l),r=p[h]<r[h]?p:m);b[q]&&Math.sqrt(k*k)<r[h]&&(a=c(a,b[q],f+1,l),r=a[h]<r[h]?a:r);return r}var d=this,e=this.kdAxisArray[0],g=this.kdAxisArray[1],h=b?"distX":"dist";b=-1<d.options.findNearestPointBy.indexOf("y")?2:1;this.kdTree||this.buildingKdTree||this.buildKDTree();if(this.kdTree)return c(a,this.kdTree,b,b)}})})(K);(function(a){var C=a.Axis,F=a.Chart,I=a.correctFloat,n=a.defined,f=a.destroyObjectProperties,
+e=a.each,u=a.format,x=a.objectEach,t=a.pick,w=a.Series;a.StackItem=function(a,c,e,f,k){var h=a.chart.inverted;this.axis=a;this.isNegative=e;this.options=c;this.x=f;this.total=null;this.points={};this.stack=k;this.rightCliff=this.leftCliff=0;this.alignOptions={align:c.align||(h?e?"left":"right":"center"),verticalAlign:c.verticalAlign||(h?"middle":e?"bottom":"top"),y:t(c.y,h?4:e?14:-6),x:t(c.x,h?e?-6:6:0)};this.textAlign=c.textAlign||(h?e?"right":"left":"center")};a.StackItem.prototype={destroy:function(){f(this,
+this.axis)},render:function(a){var c=this.axis.chart,e=this.options,f=e.format,f=f?u(f,this,c.time):e.formatter.call(this);this.label?this.label.attr({text:f,visibility:"hidden"}):this.label=c.renderer.text(f,null,null,e.useHTML).css(e.style).attr({align:this.textAlign,rotation:e.rotation,visibility:"hidden"}).add(a);this.label.labelrank=c.plotHeight},setOffset:function(a,c){var e=this.axis,f=e.chart,k=e.translate(e.usePercentage?100:this.total,0,0,0,1),q=e.translate(0),q=n(k)&&Math.abs(k-q);a=f.xAxis[0].translate(this.x)+
+a;e=n(k)&&this.getStackBox(f,this,a,k,c,q,e);(c=this.label)&&e&&(c.align(this.alignOptions,null,e),e=c.alignAttr,c[!1===this.options.crop||f.isInsidePlot(e.x,e.y)?"show":"hide"](!0))},getStackBox:function(a,c,e,f,k,q,d){var b=c.axis.reversed,h=a.inverted;a=d.height+d.pos-(h?a.plotLeft:a.plotTop);c=c.isNegative&&!b||!c.isNegative&&b;return{x:h?c?f:f-q:e,y:h?a-e-k:c?a-f-q:a-f,width:h?q:k,height:h?k:q}}};F.prototype.getStacks=function(){var a=this;e(a.yAxis,function(a){a.stacks&&a.hasVisibleSeries&&
+(a.oldStacks=a.stacks)});e(a.series,function(c){!c.options.stacking||!0!==c.visible&&!1!==a.options.chart.ignoreHiddenSeries||(c.stackKey=c.type+t(c.options.stack,""))})};C.prototype.buildStacks=function(){var a=this.series,c=t(this.options.reversedStacks,!0),e=a.length,f;if(!this.isXAxis){this.usePercentage=!1;for(f=e;f--;)a[c?f:e-f-1].setStackedPoints();for(f=0;f<e;f++)a[f].modifyStacks()}};C.prototype.renderStackTotals=function(){var a=this.chart,c=a.renderer,e=this.stacks,f=this.stackTotalGroup;
+f||(this.stackTotalGroup=f=c.g("stack-labels").attr({visibility:"visible",zIndex:6}).add());f.translate(a.plotLeft,a.plotTop);x(e,function(a){x(a,function(a){a.render(f)})})};C.prototype.resetStacks=function(){var a=this,c=a.stacks;a.isXAxis||x(c,function(c){x(c,function(e,h){e.touched<a.stacksTouched?(e.destroy(),delete c[h]):(e.total=null,e.cumulative=null)})})};C.prototype.cleanStacks=function(){var a;this.isXAxis||(this.oldStacks&&(a=this.stacks=this.oldStacks),x(a,function(a){x(a,function(a){a.cumulative=
+a.total})}))};w.prototype.setStackedPoints=function(){if(this.options.stacking&&(!0===this.visible||!1===this.chart.options.chart.ignoreHiddenSeries)){var e=this.processedXData,c=this.processedYData,h=[],f=c.length,k=this.options,q=k.threshold,d=t(k.startFromThreshold&&q,0),b=k.stack,k=k.stacking,v=this.stackKey,u="-"+v,l=this.negStacks,w=this.yAxis,B=w.stacks,D=w.oldStacks,m,G,A,x,E,g,r;w.stacksTouched+=1;for(E=0;E<f;E++)g=e[E],r=c[E],m=this.getStackIndicator(m,g,this.index),x=m.key,A=(G=l&&r<(d?
+0:q))?u:v,B[A]||(B[A]={}),B[A][g]||(D[A]&&D[A][g]?(B[A][g]=D[A][g],B[A][g].total=null):B[A][g]=new a.StackItem(w,w.options.stackLabels,G,g,b)),A=B[A][g],null!==r?(A.points[x]=A.points[this.index]=[t(A.cumulative,d)],n(A.cumulative)||(A.base=x),A.touched=w.stacksTouched,0<m.index&&!1===this.singleStacks&&(A.points[x][0]=A.points[this.index+","+g+",0"][0])):A.points[x]=A.points[this.index]=null,"percent"===k?(G=G?v:u,l&&B[G]&&B[G][g]?(G=B[G][g],A.total=G.total=Math.max(G.total,A.total)+Math.abs(r)||
+0):A.total=I(A.total+(Math.abs(r)||0))):A.total=I(A.total+(r||0)),A.cumulative=t(A.cumulative,d)+(r||0),null!==r&&(A.points[x].push(A.cumulative),h[E]=A.cumulative);"percent"===k&&(w.usePercentage=!0);this.stackedYData=h;w.oldStacks={}}};w.prototype.modifyStacks=function(){var a=this,c=a.stackKey,h=a.yAxis.stacks,f=a.processedXData,k,q=a.options.stacking;a[q+"Stacker"]&&e([c,"-"+c],function(c){for(var b=f.length,d,e;b--;)if(d=f[b],k=a.getStackIndicator(k,d,a.index,c),e=(d=h[c]&&h[c][d])&&d.points[k.key])a[q+
+"Stacker"](e,d,b)})};w.prototype.percentStacker=function(a,c,e){c=c.total?100/c.total:0;a[0]=I(a[0]*c);a[1]=I(a[1]*c);this.stackedYData[e]=a[1]};w.prototype.getStackIndicator=function(a,c,e,f){!n(a)||a.x!==c||f&&a.key!==f?a={x:c,index:0,key:f}:a.index++;a.key=[e,c,a.index].join();return a}})(K);(function(a){var C=a.addEvent,F=a.animate,I=a.Axis,n=a.createElement,f=a.css,e=a.defined,u=a.each,x=a.erase,t=a.extend,w=a.fireEvent,y=a.inArray,c=a.isNumber,h=a.isObject,p=a.isArray,k=a.merge,q=a.objectEach,
+d=a.pick,b=a.Point,v=a.Series,J=a.seriesTypes,l=a.setAnimation,L=a.splat;t(a.Chart.prototype,{addSeries:function(a,b,c){var e,h=this;a&&(b=d(b,!0),w(h,"addSeries",{options:a},function(){e=h.initSeries(a);h.isDirtyLegend=!0;h.linkSeries();w(h,"afterAddSeries");b&&h.redraw(c)}));return e},addAxis:function(a,b,c,e){var h=b?"xAxis":"yAxis",f=this.options;a=k(a,{index:this[h].length,isX:b});b=new I(this,a);f[h]=L(f[h]||{});f[h].push(a);d(c,!0)&&this.redraw(e);return b},showLoading:function(a){var b=this,
+c=b.options,d=b.loadingDiv,e=c.loading,h=function(){d&&f(d,{left:b.plotLeft+"px",top:b.plotTop+"px",width:b.plotWidth+"px",height:b.plotHeight+"px"})};d||(b.loadingDiv=d=n("div",{className:"highcharts-loading highcharts-loading-hidden"},null,b.container),b.loadingSpan=n("span",{className:"highcharts-loading-inner"},null,d),C(b,"redraw",h));d.className="highcharts-loading";b.loadingSpan.innerHTML=a||c.lang.loading;f(d,t(e.style,{zIndex:10}));f(b.loadingSpan,e.labelStyle);b.loadingShown||(f(d,{opacity:0,
+display:""}),F(d,{opacity:e.style.opacity||.5},{duration:e.showDuration||0}));b.loadingShown=!0;h()},hideLoading:function(){var a=this.options,b=this.loadingDiv;b&&(b.className="highcharts-loading highcharts-loading-hidden",F(b,{opacity:0},{duration:a.loading.hideDuration||100,complete:function(){f(b,{display:"none"})}}));this.loadingShown=!1},propsRequireDirtyBox:"backgroundColor borderColor borderWidth margin marginTop marginRight marginBottom marginLeft spacing spacingTop spacingRight spacingBottom spacingLeft borderRadius plotBackgroundColor plotBackgroundImage plotBorderColor plotBorderWidth plotShadow shadow".split(" "),
+propsRequireUpdateSeries:"chart.inverted chart.polar chart.ignoreHiddenSeries chart.type colors plotOptions time tooltip".split(" "),update:function(a,b,h,f){var l=this,m={credits:"addCredits",title:"setTitle",subtitle:"setSubtitle"},p=a.chart,g,r,v=[];w(l,"update",{options:a});if(p){k(!0,l.options.chart,p);"className"in p&&l.setClassName(p.className);"reflow"in p&&l.setReflow(p.reflow);if("inverted"in p||"polar"in p||"type"in p)l.propFromSeries(),g=!0;"alignTicks"in p&&(g=!0);q(p,function(a,b){-1!==
+y("chart."+b,l.propsRequireUpdateSeries)&&(r=!0);-1!==y(b,l.propsRequireDirtyBox)&&(l.isDirtyBox=!0)});"style"in p&&l.renderer.setStyle(p.style)}a.colors&&(this.options.colors=a.colors);a.plotOptions&&k(!0,this.options.plotOptions,a.plotOptions);q(a,function(a,b){if(l[b]&&"function"===typeof l[b].update)l[b].update(a,!1);else if("function"===typeof l[m[b]])l[m[b]](a);"chart"!==b&&-1!==y(b,l.propsRequireUpdateSeries)&&(r=!0)});u("xAxis yAxis zAxis series colorAxis pane".split(" "),function(b){var c;
+a[b]&&("series"===b&&(c=[],u(l[b],function(a,b){a.options.isInternal||c.push(b)})),u(L(a[b]),function(a,d){(d=e(a.id)&&l.get(a.id)||l[b][c?c[d]:d])&&d.coll===b&&(d.update(a,!1),h&&(d.touched=!0));if(!d&&h)if("series"===b)l.addSeries(a,!1).touched=!0;else if("xAxis"===b||"yAxis"===b)l.addAxis(a,"xAxis"===b,!1).touched=!0}),h&&u(l[b],function(a){a.touched||a.options.isInternal?delete a.touched:v.push(a)}))});u(v,function(a){a.remove&&a.remove(!1)});g&&u(l.axes,function(a){a.update({},!1)});r&&u(l.series,
+function(a){a.update({},!1)});a.loading&&k(!0,l.options.loading,a.loading);g=p&&p.width;p=p&&p.height;c(g)&&g!==l.chartWidth||c(p)&&p!==l.chartHeight?l.setSize(g,p,f):d(b,!0)&&l.redraw(f);w(l,"afterUpdate",{options:a})},setSubtitle:function(a){this.setTitle(void 0,a)}});t(b.prototype,{update:function(a,b,c,e){function f(){l.applyOptions(a);null===l.y&&g&&(l.graphic=g.destroy());h(a,!0)&&(g&&g.element&&a&&a.marker&&void 0!==a.marker.symbol&&(l.graphic=g.destroy()),a&&a.dataLabels&&l.dataLabel&&(l.dataLabel=
+l.dataLabel.destroy()),l.connector&&(l.connector=l.connector.destroy()));k=l.index;m.updateParallelArrays(l,k);p.data[k]=h(p.data[k],!0)||h(a,!0)?l.options:d(a,p.data[k]);m.isDirty=m.isDirtyData=!0;!m.fixedBox&&m.hasCartesianSeries&&(q.isDirtyBox=!0);"point"===p.legendType&&(q.isDirtyLegend=!0);b&&q.redraw(c)}var l=this,m=l.series,g=l.graphic,k,q=m.chart,p=m.options;b=d(b,!0);!1===e?f():l.firePointEvent("update",{options:a},f)},remove:function(a,b){this.series.removePoint(y(this,this.series.data),
+a,b)}});t(v.prototype,{addPoint:function(a,b,c,e){var h=this.options,f=this.data,l=this.chart,g=this.xAxis,g=g&&g.hasNames&&g.names,m=h.data,k,p,q=this.xData,v,n;b=d(b,!0);k={series:this};this.pointClass.prototype.applyOptions.apply(k,[a]);n=k.x;v=q.length;if(this.requireSorting&&n<q[v-1])for(p=!0;v&&q[v-1]>n;)v--;this.updateParallelArrays(k,"splice",v,0,0);this.updateParallelArrays(k,v);g&&k.name&&(g[n]=k.name);m.splice(v,0,a);p&&(this.data.splice(v,0,null),this.processData());"point"===h.legendType&&
+this.generatePoints();c&&(f[0]&&f[0].remove?f[0].remove(!1):(f.shift(),this.updateParallelArrays(k,"shift"),m.shift()));this.isDirtyData=this.isDirty=!0;b&&l.redraw(e)},removePoint:function(a,b,c){var e=this,h=e.data,f=h[a],m=e.points,g=e.chart,k=function(){m&&m.length===h.length&&m.splice(a,1);h.splice(a,1);e.options.data.splice(a,1);e.updateParallelArrays(f||{series:e},"splice",a,1);f&&f.destroy();e.isDirty=!0;e.isDirtyData=!0;b&&g.redraw()};l(c,g);b=d(b,!0);f?f.firePointEvent("remove",null,k):
+k()},remove:function(a,b,c){function e(){h.destroy();h.remove=null;f.isDirtyLegend=f.isDirtyBox=!0;f.linkSeries();d(a,!0)&&f.redraw(b)}var h=this,f=h.chart;!1!==c?w(h,"remove",null,e):e()},update:function(b,c){var e=this,h=e.chart,f=e.userOptions,l=e.oldType||e.type,q=b.type||f.type||h.options.chart.type,g=J[l].prototype,p,v=["group","markerGroup","dataLabelsGroup"],n=["navigatorSeries","baseSeries"],B=e.finishedAnimating&&{animation:!1},D=["data","name","turboThreshold"],x=a.keys(b),L=0<x.length;
+u(x,function(a){-1===y(a,D)&&(L=!1)});if(L)b.data&&this.setData(b.data,!1),b.name&&this.setName(b.name,!1);else{n=v.concat(n);u(n,function(a){n[a]=e[a];delete e[a]});b=k(f,B,{index:e.index,pointStart:d(f.pointStart,e.xData[0])},{data:e.options.data},b);e.remove(!1,null,!1);for(p in g)e[p]=void 0;J[q||l]?t(e,J[q||l].prototype):a.error(17,!0);u(n,function(a){e[a]=n[a]});e.init(h,b);b.zIndex!==f.zIndex&&u(v,function(a){e[a]&&e[a].attr({zIndex:b.zIndex})});e.oldType=l;h.linkSeries()}w(this,"afterUpdate");
+d(c,!0)&&h.redraw(L?void 0:!1)},setName:function(a){this.name=this.options.name=this.userOptions.name=a;this.chart.isDirtyLegend=!0}});t(I.prototype,{update:function(a,b){var c=this.chart,e=a&&a.events||{};a=k(this.userOptions,a);c.options[this.coll].indexOf&&(c.options[this.coll][c.options[this.coll].indexOf(this.userOptions)]=a);q(c.options[this.coll].events,function(a,b){"undefined"===typeof e[b]&&(e[b]=void 0)});this.destroy(!0);this.init(c,t(a,{events:e}));c.isDirtyBox=!0;d(b,!0)&&c.redraw()},
+remove:function(a){for(var b=this.chart,c=this.coll,e=this.series,h=e.length;h--;)e[h]&&e[h].remove(!1);x(b.axes,this);x(b[c],this);p(b.options[c])?b.options[c].splice(this.options.index,1):delete b.options[c];u(b[c],function(a,b){a.options.index=a.userOptions.index=b});this.destroy();b.isDirtyBox=!0;d(a,!0)&&b.redraw()},setTitle:function(a,b){this.update({title:a},b)},setCategories:function(a,b){this.update({categories:a},b)}})})(K);(function(a){var C=a.color,F=a.each,I=a.map,n=a.pick,f=a.Series,
+e=a.seriesType;e("area","line",{softThreshold:!1,threshold:0},{singleStacks:!1,getStackPoints:function(e){var f=[],t=[],u=this.xAxis,y=this.yAxis,c=y.stacks[this.stackKey],h={},p=this.index,k=y.series,q=k.length,d,b=n(y.options.reversedStacks,!0)?1:-1,v;e=e||this.points;if(this.options.stacking){for(v=0;v<e.length;v++)e[v].leftNull=e[v].rightNull=null,h[e[v].x]=e[v];a.objectEach(c,function(a,b){null!==a.total&&t.push(b)});t.sort(function(a,b){return a-b});d=I(k,function(){return this.visible});F(t,
+function(a,e){var l=0,k,n;if(h[a]&&!h[a].isNull)f.push(h[a]),F([-1,1],function(f){var l=1===f?"rightNull":"leftNull",m=0,u=c[t[e+f]];if(u)for(v=p;0<=v&&v<q;)k=u.points[v],k||(v===p?h[a][l]=!0:d[v]&&(n=c[a].points[v])&&(m-=n[1]-n[0])),v+=b;h[a][1===f?"rightCliff":"leftCliff"]=m});else{for(v=p;0<=v&&v<q;){if(k=c[a].points[v]){l=k[1];break}v+=b}l=y.translate(l,0,1,0,1);f.push({isNull:!0,plotX:u.translate(a,0,0,0,1),x:a,plotY:l,yBottom:l})}})}return f},getGraphPath:function(a){var e=f.prototype.getGraphPath,
+t=this.options,u=t.stacking,y=this.yAxis,c,h,p=[],k=[],q=this.index,d,b=y.stacks[this.stackKey],v=t.threshold,J=y.getThreshold(t.threshold),l,t=t.connectNulls||"percent"===u,L=function(c,e,h){var f=a[c];c=u&&b[f.x].points[q];var l=f[h+"Null"]||0;h=f[h+"Cliff"]||0;var m,n,f=!0;h||l?(m=(l?c[0]:c[1])+h,n=c[0]+h,f=!!l):!u&&a[e]&&a[e].isNull&&(m=n=v);void 0!==m&&(k.push({plotX:d,plotY:null===m?J:y.getThreshold(m),isNull:f,isCliff:!0}),p.push({plotX:d,plotY:null===n?J:y.getThreshold(n),doCurve:!1}))};a=
+a||this.points;u&&(a=this.getStackPoints(a));for(c=0;c<a.length;c++)if(h=a[c].isNull,d=n(a[c].rectPlotX,a[c].plotX),l=n(a[c].yBottom,J),!h||t)t||L(c,c-1,"left"),h&&!u&&t||(k.push(a[c]),p.push({x:c,plotX:d,plotY:l})),t||L(c,c+1,"right");c=e.call(this,k,!0,!0);p.reversed=!0;h=e.call(this,p,!0,!0);h.length&&(h[0]="L");h=c.concat(h);e=e.call(this,k,!1,t);h.xMap=c.xMap;this.areaPath=h;return e},drawGraph:function(){this.areaPath=[];f.prototype.drawGraph.apply(this);var a=this,e=this.areaPath,t=this.options,
+w=[["area","highcharts-area",this.color,t.fillColor]];F(this.zones,function(e,c){w.push(["zone-area-"+c,"highcharts-area highcharts-zone-area-"+c+" "+e.className,e.color||a.color,e.fillColor||t.fillColor])});F(w,function(f){var c=f[0],h=a[c];h?(h.endX=a.preventGraphAnimation?null:e.xMap,h.animate({d:e})):(h=a[c]=a.chart.renderer.path(e).addClass(f[1]).attr({fill:n(f[3],C(f[2]).setOpacity(n(t.fillOpacity,.75)).get()),zIndex:0}).add(a.group),h.isArea=!0);h.startX=e.xMap;h.shiftUnit=t.step?2:1})},drawLegendSymbol:a.LegendSymbolMixin.drawRectangle})})(K);
+(function(a){var C=a.pick;a=a.seriesType;a("spline","line",{},{getPointSpline:function(a,I,n){var f=I.plotX,e=I.plotY,u=a[n-1];n=a[n+1];var x,t,w,y;if(u&&!u.isNull&&!1!==u.doCurve&&!I.isCliff&&n&&!n.isNull&&!1!==n.doCurve&&!I.isCliff){a=u.plotY;w=n.plotX;n=n.plotY;var c=0;x=(1.5*f+u.plotX)/2.5;t=(1.5*e+a)/2.5;w=(1.5*f+w)/2.5;y=(1.5*e+n)/2.5;w!==x&&(c=(y-t)*(w-f)/(w-x)+e-y);t+=c;y+=c;t>a&&t>e?(t=Math.max(a,e),y=2*e-t):t<a&&t<e&&(t=Math.min(a,e),y=2*e-t);y>n&&y>e?(y=Math.max(n,e),t=2*e-y):y<n&&y<e&&
+(y=Math.min(n,e),t=2*e-y);I.rightContX=w;I.rightContY=y}I=["C",C(u.rightContX,u.plotX),C(u.rightContY,u.plotY),C(x,f),C(t,e),f,e];u.rightContX=u.rightContY=null;return I}})})(K);(function(a){var C=a.seriesTypes.area.prototype,F=a.seriesType;F("areaspline","spline",a.defaultPlotOptions.area,{getStackPoints:C.getStackPoints,getGraphPath:C.getGraphPath,drawGraph:C.drawGraph,drawLegendSymbol:a.LegendSymbolMixin.drawRectangle})})(K);(function(a){var C=a.animObject,F=a.color,I=a.each,n=a.extend,f=a.defined,
+e=a.isNumber,u=a.merge,x=a.pick,t=a.Series,w=a.seriesType,y=a.svg;w("column","line",{borderRadius:0,crisp:!0,groupPadding:.2,marker:null,pointPadding:.1,minPointLength:0,cropThreshold:50,pointRange:null,states:{hover:{halo:!1,brightness:.1},select:{color:"#cccccc",borderColor:"#000000"}},dataLabels:{align:null,verticalAlign:null,y:null},softThreshold:!1,startFromThreshold:!0,stickyTracking:!1,tooltip:{distance:6},threshold:0,borderColor:"#ffffff"},{cropShoulder:0,directTouch:!0,trackerGroups:["group",
+"dataLabelsGroup"],negStacks:!0,init:function(){t.prototype.init.apply(this,arguments);var a=this,e=a.chart;e.hasRendered&&I(e.series,function(c){c.type===a.type&&(c.isDirty=!0)})},getColumnMetrics:function(){var a=this,e=a.options,f=a.xAxis,k=a.yAxis,q=f.options.reversedStacks,q=f.reversed&&!q||!f.reversed&&q,d,b={},v=0;!1===e.grouping?v=1:I(a.chart.series,function(c){var e=c.options,f=c.yAxis,h;c.type!==a.type||!c.visible&&a.chart.options.chart.ignoreHiddenSeries||k.len!==f.len||k.pos!==f.pos||
+(e.stacking?(d=c.stackKey,void 0===b[d]&&(b[d]=v++),h=b[d]):!1!==e.grouping&&(h=v++),c.columnIndex=h)});var n=Math.min(Math.abs(f.transA)*(f.ordinalSlope||e.pointRange||f.closestPointRange||f.tickInterval||1),f.len),l=n*e.groupPadding,t=(n-2*l)/(v||1),e=Math.min(e.maxPointWidth||f.len,x(e.pointWidth,t*(1-2*e.pointPadding)));a.columnMetrics={width:e,offset:(t-e)/2+(l+((a.columnIndex||0)+(q?1:0))*t-n/2)*(q?-1:1)};return a.columnMetrics},crispCol:function(a,e,f,k){var c=this.chart,d=this.borderWidth,
+b=-(d%2?.5:0),d=d%2?.5:1;c.inverted&&c.renderer.isVML&&(d+=1);this.options.crisp&&(f=Math.round(a+f)+b,a=Math.round(a)+b,f-=a);k=Math.round(e+k)+d;b=.5>=Math.abs(e)&&.5<k;e=Math.round(e)+d;k-=e;b&&k&&(--e,k+=1);return{x:a,y:e,width:f,height:k}},translate:function(){var a=this,e=a.chart,p=a.options,k=a.dense=2>a.closestPointRange*a.xAxis.transA,k=a.borderWidth=x(p.borderWidth,k?0:1),q=a.yAxis,d=p.threshold,b=a.translatedThreshold=q.getThreshold(d),v=x(p.minPointLength,5),n=a.getColumnMetrics(),l=n.width,
+u=a.barW=Math.max(l,1+2*k),B=a.pointXOffset=n.offset;e.inverted&&(b-=.5);p.pointPadding&&(u=Math.ceil(u));t.prototype.translate.apply(a);I(a.points,function(c){var h=x(c.yBottom,b),k=999+Math.abs(h),p=l,k=Math.min(Math.max(-k,c.plotY),q.len+k),n=c.plotX+B,t=u,g=Math.min(k,h),r,w=Math.max(k,h)-g;v&&Math.abs(w)<v&&(w=v,r=!q.reversed&&!c.negative||q.reversed&&c.negative,c.y===d&&a.dataMax<=d&&q.min<d&&(r=!r),g=Math.abs(g-b)>v?h-v:b-(r?v:0));f(c.options.pointWidth)&&(p=t=Math.ceil(c.options.pointWidth),
+n-=Math.round((p-l)/2));c.barX=n;c.pointWidth=p;c.tooltipPos=e.inverted?[q.len+q.pos-e.plotLeft-k,a.xAxis.len-n-t/2,w]:[n+t/2,k+q.pos-e.plotTop,w];c.shapeType="rect";c.shapeArgs=a.crispCol.apply(a,c.isNull?[n,b,t,0]:[n,g,t,w])})},getSymbol:a.noop,drawLegendSymbol:a.LegendSymbolMixin.drawRectangle,drawGraph:function(){this.group[this.dense?"addClass":"removeClass"]("highcharts-dense-data")},pointAttribs:function(a,e){var c=this.options,f,h=this.pointAttrToOptions||{};f=h.stroke||"borderColor";var d=
+h["stroke-width"]||"borderWidth",b=a&&a.color||this.color,n=a&&a[f]||c[f]||this.color||b,t=a&&a[d]||c[d]||this[d]||0,h=c.dashStyle;a&&this.zones.length&&(b=a.getZone(),b=a.options.color||b&&b.color||this.color);e&&(a=u(c.states[e],a.options.states&&a.options.states[e]||{}),e=a.brightness,b=a.color||void 0!==e&&F(b).brighten(a.brightness).get()||b,n=a[f]||n,t=a[d]||t,h=a.dashStyle||h);f={fill:b,stroke:n,"stroke-width":t};h&&(f.dashstyle=h);return f},drawPoints:function(){var a=this,f=this.chart,p=
+a.options,k=f.renderer,q=p.animationLimit||250,d;I(a.points,function(b){var c=b.graphic,h=c&&f.pointCount<q?"animate":"attr";if(e(b.plotY)&&null!==b.y){d=b.shapeArgs;if(c)c[h](u(d));else b.graphic=c=k[b.shapeType](d).add(b.group||a.group);p.borderRadius&&c.attr({r:p.borderRadius});c[h](a.pointAttribs(b,b.selected&&"select")).shadow(p.shadow,null,p.stacking&&!p.borderRadius);c.addClass(b.getClassName(),!0)}else c&&(b.graphic=c.destroy())})},animate:function(a){var c=this,e=this.yAxis,f=c.options,q=
+this.chart.inverted,d={},b=q?"translateX":"translateY",v;y&&(a?(d.scaleY=.001,a=Math.min(e.pos+e.len,Math.max(e.pos,e.toPixels(f.threshold))),q?d.translateX=a-e.len:d.translateY=a,c.group.attr(d)):(v=c.group.attr(b),c.group.animate({scaleY:1},n(C(c.options.animation),{step:function(a,f){d[b]=v+f.pos*(e.pos-v);c.group.attr(d)}})),c.animate=null))},remove:function(){var a=this,e=a.chart;e.hasRendered&&I(e.series,function(c){c.type===a.type&&(c.isDirty=!0)});t.prototype.remove.apply(a,arguments)}})})(K);
+(function(a){a=a.seriesType;a("bar","column",null,{inverted:!0})})(K);(function(a){var C=a.Series;a=a.seriesType;a("scatter","line",{lineWidth:0,findNearestPointBy:"xy",marker:{enabled:!0},tooltip:{headerFormat:'\x3cspan style\x3d"color:{point.color}"\x3e\u25cf\x3c/span\x3e \x3cspan style\x3d"font-size: 0.85em"\x3e {series.name}\x3c/span\x3e\x3cbr/\x3e',pointFormat:"x: \x3cb\x3e{point.x}\x3c/b\x3e\x3cbr/\x3ey: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3e"}},{sorted:!1,requireSorting:!1,noSharedTooltip:!0,
+trackerGroups:["group","markerGroup","dataLabelsGroup"],takeOrdinalPosition:!1,drawGraph:function(){this.options.lineWidth&&C.prototype.drawGraph.call(this)}})})(K);(function(a){var C=a.deg2rad,F=a.isNumber,I=a.pick,n=a.relativeLength;a.CenteredSeriesMixin={getCenter:function(){var a=this.options,e=this.chart,u=2*(a.slicedOffset||0),x=e.plotWidth-2*u,e=e.plotHeight-2*u,t=a.center,t=[I(t[0],"50%"),I(t[1],"50%"),a.size||"100%",a.innerSize||0],w=Math.min(x,e),y,c;for(y=0;4>y;++y)c=t[y],a=2>y||2===y&&
+/%$/.test(c),t[y]=n(c,[x,e,w,t[2]][y])+(a?u:0);t[3]>t[2]&&(t[3]=t[2]);return t},getStartAndEndRadians:function(a,e){a=F(a)?a:0;e=F(e)&&e>a&&360>e-a?e:a+360;return{start:C*(a+-90),end:C*(e+-90)}}}})(K);(function(a){var C=a.addEvent,F=a.CenteredSeriesMixin,I=a.defined,n=a.each,f=a.extend,e=F.getStartAndEndRadians,u=a.inArray,x=a.noop,t=a.pick,w=a.Point,y=a.Series,c=a.seriesType,h=a.setAnimation;c("pie","line",{center:[null,null],clip:!1,colorByPoint:!0,dataLabels:{allowOverlap:!0,distance:30,enabled:!0,
+formatter:function(){return this.point.isNull?void 0:this.point.name},x:0},ignoreHiddenPoint:!0,legendType:"point",marker:null,size:null,showInLegend:!1,slicedOffset:10,stickyTracking:!1,tooltip:{followPointer:!0},borderColor:"#ffffff",borderWidth:1,states:{hover:{brightness:.1}}},{isCartesian:!1,requireSorting:!1,directTouch:!0,noSharedTooltip:!0,trackerGroups:["group","dataLabelsGroup"],axisTypes:[],pointAttribs:a.seriesTypes.column.prototype.pointAttribs,animate:function(a){var c=this,e=c.points,
+d=c.startAngleRad;a||(n(e,function(a){var b=a.graphic,e=a.shapeArgs;b&&(b.attr({r:a.startR||c.center[3]/2,start:d,end:d}),b.animate({r:e.r,start:e.start,end:e.end},c.options.animation))}),c.animate=null)},updateTotals:function(){var a,c=0,e=this.points,d=e.length,b,f=this.options.ignoreHiddenPoint;for(a=0;a<d;a++)b=e[a],c+=f&&!b.visible?0:b.isNull?0:b.y;this.total=c;for(a=0;a<d;a++)b=e[a],b.percentage=0<c&&(b.visible||!f)?b.y/c*100:0,b.total=c},generatePoints:function(){y.prototype.generatePoints.call(this);
+this.updateTotals()},translate:function(a){this.generatePoints();var c=0,f=this.options,d=f.slicedOffset,b=d+(f.borderWidth||0),h,n,l,p=e(f.startAngle,f.endAngle),u=this.startAngleRad=p.start,p=(this.endAngleRad=p.end)-u,w=this.points,m,x=f.dataLabels.distance,f=f.ignoreHiddenPoint,A,y=w.length,E;a||(this.center=a=this.getCenter());this.getX=function(b,c,d){l=Math.asin(Math.min((b-a[1])/(a[2]/2+d.labelDistance),1));return a[0]+(c?-1:1)*Math.cos(l)*(a[2]/2+d.labelDistance)};for(A=0;A<y;A++){E=w[A];
+E.labelDistance=t(E.options.dataLabels&&E.options.dataLabels.distance,x);this.maxLabelDistance=Math.max(this.maxLabelDistance||0,E.labelDistance);h=u+c*p;if(!f||E.visible)c+=E.percentage/100;n=u+c*p;E.shapeType="arc";E.shapeArgs={x:a[0],y:a[1],r:a[2]/2,innerR:a[3]/2,start:Math.round(1E3*h)/1E3,end:Math.round(1E3*n)/1E3};l=(n+h)/2;l>1.5*Math.PI?l-=2*Math.PI:l<-Math.PI/2&&(l+=2*Math.PI);E.slicedTranslation={translateX:Math.round(Math.cos(l)*d),translateY:Math.round(Math.sin(l)*d)};n=Math.cos(l)*a[2]/
+2;m=Math.sin(l)*a[2]/2;E.tooltipPos=[a[0]+.7*n,a[1]+.7*m];E.half=l<-Math.PI/2||l>Math.PI/2?1:0;E.angle=l;h=Math.min(b,E.labelDistance/5);E.labelPos=[a[0]+n+Math.cos(l)*E.labelDistance,a[1]+m+Math.sin(l)*E.labelDistance,a[0]+n+Math.cos(l)*h,a[1]+m+Math.sin(l)*h,a[0]+n,a[1]+m,0>E.labelDistance?"center":E.half?"right":"left",l]}},drawGraph:null,drawPoints:function(){var a=this,c=a.chart.renderer,e,d,b,h,t=a.options.shadow;t&&!a.shadowGroup&&(a.shadowGroup=c.g("shadow").add(a.group));n(a.points,function(l){d=
+l.graphic;if(l.isNull)d&&(l.graphic=d.destroy());else{h=l.shapeArgs;e=l.getTranslate();var k=l.shadowGroup;t&&!k&&(k=l.shadowGroup=c.g("shadow").add(a.shadowGroup));k&&k.attr(e);b=a.pointAttribs(l,l.selected&&"select");d?d.setRadialReference(a.center).attr(b).animate(f(h,e)):(l.graphic=d=c[l.shapeType](h).setRadialReference(a.center).attr(e).add(a.group),d.attr(b).attr({"stroke-linejoin":"round"}).shadow(t,k));d.attr({visibility:l.visible?"inherit":"hidden"});d.addClass(l.getClassName())}})},searchPoint:x,
+sortByAngle:function(a,c){a.sort(function(a,d){return void 0!==a.angle&&(d.angle-a.angle)*c})},drawLegendSymbol:a.LegendSymbolMixin.drawRectangle,getCenter:F.getCenter,getSymbol:x},{init:function(){w.prototype.init.apply(this,arguments);var a=this,c;a.name=t(a.name,"Slice");c=function(c){a.slice("select"===c.type)};C(a,"select",c);C(a,"unselect",c);return a},isValid:function(){return a.isNumber(this.y,!0)&&0<=this.y},setVisible:function(a,c){var e=this,d=e.series,b=d.chart,f=d.options.ignoreHiddenPoint;
+c=t(c,f);a!==e.visible&&(e.visible=e.options.visible=a=void 0===a?!e.visible:a,d.options.data[u(e,d.data)]=e.options,n(["graphic","dataLabel","connector","shadowGroup"],function(b){if(e[b])e[b][a?"show":"hide"](!0)}),e.legendItem&&b.legend.colorizeItem(e,a),a||"hover"!==e.state||e.setState(""),f&&(d.isDirty=!0),c&&b.redraw())},slice:function(a,c,e){var d=this.series;h(e,d.chart);t(c,!0);this.sliced=this.options.sliced=I(a)?a:!this.sliced;d.options.data[u(this,d.data)]=this.options;this.graphic.animate(this.getTranslate());
+this.shadowGroup&&this.shadowGroup.animate(this.getTranslate())},getTranslate:function(){return this.sliced?this.slicedTranslation:{translateX:0,translateY:0}},haloPath:function(a){var c=this.shapeArgs;return this.sliced||!this.visible?[]:this.series.chart.renderer.symbols.arc(c.x,c.y,c.r+a,c.r+a,{innerR:this.shapeArgs.r-1,start:c.start,end:c.end})}})})(K);(function(a){var C=a.addEvent,F=a.arrayMax,I=a.defined,n=a.each,f=a.extend,e=a.format,u=a.map,x=a.merge,t=a.noop,w=a.pick,y=a.relativeLength,c=
+a.Series,h=a.seriesTypes,p=a.some,k=a.stableSort,q=a.isArray,d=a.splat;a.distribute=function(b,c,d){function e(a,b){return a.target-b.target}var f,h=!0,q=b,m=[],v;v=0;var t=q.reducedLen||c;for(f=b.length;f--;)v+=b[f].size;if(v>t){k(b,function(a,b){return(b.rank||0)-(a.rank||0)});for(v=f=0;v<=t;)v+=b[f].size,f++;m=b.splice(f-1,b.length)}k(b,e);for(b=u(b,function(a){return{size:a.size,targets:[a.target],align:w(a.align,.5)}});h;){for(f=b.length;f--;)h=b[f],v=(Math.min.apply(0,h.targets)+Math.max.apply(0,
+h.targets))/2,h.pos=Math.min(Math.max(0,v-h.size*h.align),c-h.size);f=b.length;for(h=!1;f--;)0<f&&b[f-1].pos+b[f-1].size>b[f].pos&&(b[f-1].size+=b[f].size,b[f-1].targets=b[f-1].targets.concat(b[f].targets),b[f-1].align=.5,b[f-1].pos+b[f-1].size>c&&(b[f-1].pos=c-b[f-1].size),b.splice(f,1),h=!0)}q.push.apply(q,m);f=0;p(b,function(b){var e=0;if(p(b.targets,function(){q[f].pos=b.pos+e;if(Math.abs(q[f].pos-q[f].target)>d)return n(q.slice(0,f+1),function(a){delete a.pos}),q.reducedLen=(q.reducedLen||c)-
+.1*c,q.reducedLen>.1*c&&a.distribute(q,c,d),!0;e+=q[f].size;f++}))return!0});k(q,e)};c.prototype.drawDataLabels=function(){function b(a,b){var c=b.filter;return c?(b=c.operator,a=a[c.property],c=c.value,"\x3e"===b&&a>c||"\x3c"===b&&a<c||"\x3e\x3d"===b&&a>=c||"\x3c\x3d"===b&&a<=c||"\x3d\x3d"===b&&a==c||"\x3d\x3d\x3d"===b&&a===c?!0:!1):!0}function c(a,b){var c=[],d;if(q(a)&&!q(b))c=u(a,function(a){return x(a,b)});else if(q(b)&&!q(a))c=u(b,function(b){return x(a,b)});else if(q(a)||q(b))for(d=Math.max(a.length,
+b.length);d--;)c[d]=x(a[d],b[d]);else c=x(a,b);return c}var f=this,h=f.chart,k=f.options,p=k.dataLabels,t=f.points,m,y=f.hasRendered||0,A,F=w(p.defer,!!k.animation),E=h.renderer,p=c(c(h.options.plotOptions&&h.options.plotOptions.series&&h.options.plotOptions.series.dataLabels,h.options.plotOptions&&h.options.plotOptions[f.type]&&h.options.plotOptions[f.type].dataLabels),p);if(q(p)||p.enabled||f._hasPointLabels)A=f.plotGroup("dataLabelsGroup","data-labels",F&&!y?"hidden":"visible",p.zIndex||6),F&&
+(A.attr({opacity:+y}),y||C(f,"afterAnimate",function(){f.visible&&A.show(!0);A[k.animation?"animate":"attr"]({opacity:1},{duration:200})})),n(t,function(g){m=d(c(p,g.dlOptions||g.options&&g.options.dataLabels));n(m,function(c,d){var l=c.enabled&&!g.isNull&&b(g,c),m,n,q,r,p=g.dataLabels?g.dataLabels[d]:g.dataLabel,v=g.connectors?g.connectors[d]:g.connector,t=!p;l&&(m=g.getLabelConfig(),n=c[g.formatPrefix+"Format"]||c.format,m=I(n)?e(n,m,h.time):(c[g.formatPrefix+"Formatter"]||c.formatter).call(m,c),
+n=c.style,q=c.rotation,n.color=w(c.color,n.color,f.color,"#000000"),"contrast"===n.color&&(g.contrastColor=E.getContrast(g.color||f.color),n.color=c.inside||0>w(c.distance,g.labelDistance)||k.stacking?g.contrastColor:"#000000"),k.cursor&&(n.cursor=k.cursor),r={fill:c.backgroundColor,stroke:c.borderColor,"stroke-width":c.borderWidth,r:c.borderRadius||0,rotation:q,padding:c.padding,zIndex:1},a.objectEach(r,function(a,b){void 0===a&&delete r[b]}));!p||l&&I(m)?l&&I(m)&&(p?r.text=m:(g.dataLabels=g.dataLabels||
+[],p=g.dataLabels[d]=q?E.text(m,0,-9999).addClass("highcharts-data-label"):E.label(m,0,-9999,c.shape,null,null,c.useHTML,null,"data-label"),d||(g.dataLabel=p),p.addClass(" highcharts-data-label-color-"+g.colorIndex+" "+(c.className||"")+(c.useHTML?" highcharts-tracker":""))),p.options=c,p.attr(r),p.css(n).shadow(c.shadow),p.added||p.add(A),f.alignDataLabel(g,p,c,null,t)):(g.dataLabel=g.dataLabel.destroy(),g.dataLabels&&(1===g.dataLabels.length?delete g.dataLabels:delete g.dataLabels[d]),d||delete g.dataLabel,
+v&&(g.connector=g.connector.destroy(),g.connectors&&(1===g.connectors.length?delete g.connectors:delete g.connectors[d])))})});a.fireEvent(this,"afterDrawDataLabels")};c.prototype.alignDataLabel=function(a,c,d,e,h){var b=this.chart,l=b.inverted,m=w(a.dlBox&&a.dlBox.centerX,a.plotX,-9999),k=w(a.plotY,-9999),n=c.getBBox(),q,p=d.rotation,g=d.align,r=this.visible&&(a.series.forceDL||b.isInsidePlot(m,Math.round(k),l)||e&&b.isInsidePlot(m,l?e.x+1:e.y+e.height-1,l)),v="justify"===w(d.overflow,"justify");
+if(r&&(q=d.style.fontSize,q=b.renderer.fontMetrics(q,c).b,e=f({x:l?this.yAxis.len-k:m,y:Math.round(l?this.xAxis.len-m:k),width:0,height:0},e),f(d,{width:n.width,height:n.height}),p?(v=!1,m=b.renderer.rotCorr(q,p),m={x:e.x+d.x+e.width/2+m.x,y:e.y+d.y+{top:0,middle:.5,bottom:1}[d.verticalAlign]*e.height},c[h?"attr":"animate"](m).attr({align:g}),k=(p+720)%360,k=180<k&&360>k,"left"===g?m.y-=k?n.height:0:"center"===g?(m.x-=n.width/2,m.y-=n.height/2):"right"===g&&(m.x-=n.width,m.y-=k?0:n.height),c.placed=
+!0,c.alignAttr=m):(c.align(d,null,e),m=c.alignAttr),v&&0<=e.height?a.isLabelJustified=this.justifyDataLabel(c,d,m,n,e,h):w(d.crop,!0)&&(r=b.isInsidePlot(m.x,m.y)&&b.isInsidePlot(m.x+n.width,m.y+n.height)),d.shape&&!p))c[h?"attr":"animate"]({anchorX:l?b.plotWidth-a.plotY:a.plotX,anchorY:l?b.plotHeight-a.plotX:a.plotY});r||(c.attr({y:-9999}),c.placed=!1)};c.prototype.justifyDataLabel=function(a,c,d,e,f,h){var b=this.chart,l=c.align,k=c.verticalAlign,n,q,p=a.box?0:a.padding||0;n=d.x+p;0>n&&("right"===
+l?c.align="left":c.x=-n,q=!0);n=d.x+e.width-p;n>b.plotWidth&&("left"===l?c.align="right":c.x=b.plotWidth-n,q=!0);n=d.y+p;0>n&&("bottom"===k?c.verticalAlign="top":c.y=-n,q=!0);n=d.y+e.height-p;n>b.plotHeight&&("top"===k?c.verticalAlign="bottom":c.y=b.plotHeight-n,q=!0);q&&(a.placed=!h,a.align(c,null,f));return q};h.pie&&(h.pie.prototype.drawDataLabels=function(){var b=this,d=b.data,e,f=b.chart,h=b.options.dataLabels,k=w(h.connectorPadding,10),q=w(h.connectorWidth,1),m=f.plotWidth,p=f.plotHeight,t=
+Math.round(f.chartWidth/3),u,x=b.center,g=x[2]/2,r=x[1],y,C,H,K,Q=[[],[]],z,P,T,S,U=[0,0,0,0];b.visible&&(h.enabled||b._hasPointLabels)&&(n(d,function(a){a.dataLabel&&a.visible&&a.dataLabel.shortened&&(a.dataLabel.attr({width:"auto"}).css({width:"auto",textOverflow:"clip"}),a.dataLabel.shortened=!1)}),c.prototype.drawDataLabels.apply(b),n(d,function(a){a.dataLabel&&(a.visible?(Q[a.half].push(a),a.dataLabel._pos=null,!I(h.style.width)&&!I(a.options.dataLabels&&a.options.dataLabels.style&&a.options.dataLabels.style.width)&&
+a.dataLabel.getBBox().width>t&&(a.dataLabel.css({width:.7*t}),a.dataLabel.shortened=!0)):(a.dataLabel=a.dataLabel.destroy(),a.dataLabels&&1===a.dataLabels.length&&delete a.dataLabels))}),n(Q,function(c,d){var l,q,t=c.length,v=[],u;if(t)for(b.sortByAngle(c,d-.5),0<b.maxLabelDistance&&(l=Math.max(0,r-g-b.maxLabelDistance),q=Math.min(r+g+b.maxLabelDistance,f.plotHeight),n(c,function(a){0<a.labelDistance&&a.dataLabel&&(a.top=Math.max(0,r-g-a.labelDistance),a.bottom=Math.min(r+g+a.labelDistance,f.plotHeight),
+u=a.dataLabel.getBBox().height||21,a.distributeBox={target:a.labelPos[1]-a.top+u/2,size:u,rank:a.y},v.push(a.distributeBox))}),l=q+u-l,a.distribute(v,l,l/5)),S=0;S<t;S++)e=c[S],H=e.labelPos,y=e.dataLabel,T=!1===e.visible?"hidden":"inherit",P=l=H[1],v&&I(e.distributeBox)&&(void 0===e.distributeBox.pos?T="hidden":(K=e.distributeBox.size,P=e.top+e.distributeBox.pos)),delete e.positionIndex,z=h.justify?x[0]+(d?-1:1)*(g+e.labelDistance):b.getX(P<e.top+2||P>e.bottom-2?l:P,d,e),y._attr={visibility:T,align:H[6]},
+y._pos={x:z+h.x+({left:k,right:-k}[H[6]]||0),y:P+h.y-10},H.x=z,H.y=P,w(h.crop,!0)&&(C=y.getBBox().width,l=null,z-C<k&&1===d?(l=Math.round(C-z+k),U[3]=Math.max(l,U[3])):z+C>m-k&&0===d&&(l=Math.round(z+C-m+k),U[1]=Math.max(l,U[1])),0>P-K/2?U[0]=Math.max(Math.round(-P+K/2),U[0]):P+K/2>p&&(U[2]=Math.max(Math.round(P+K/2-p),U[2])),y.sideOverflow=l)}),0===F(U)||this.verifyDataLabelOverflow(U))&&(this.placeDataLabels(),q&&n(this.points,function(a){var c;u=a.connector;if((y=a.dataLabel)&&y._pos&&a.visible&&
+0<a.labelDistance){T=y._attr.visibility;if(c=!u)a.connector=u=f.renderer.path().addClass("highcharts-data-label-connector  highcharts-color-"+a.colorIndex+(a.className?" "+a.className:"")).add(b.dataLabelsGroup),u.attr({"stroke-width":q,stroke:h.connectorColor||a.color||"#666666"});u[c?"attr":"animate"]({d:b.connectorPath(a.labelPos)});u.attr("visibility",T)}else u&&(a.connector=u.destroy())}))},h.pie.prototype.connectorPath=function(a){var b=a.x,c=a.y;return w(this.options.dataLabels.softConnector,
+!0)?["M",b+("left"===a[6]?5:-5),c,"C",b,c,2*a[2]-a[4],2*a[3]-a[5],a[2],a[3],"L",a[4],a[5]]:["M",b+("left"===a[6]?5:-5),c,"L",a[2],a[3],"L",a[4],a[5]]},h.pie.prototype.placeDataLabels=function(){n(this.points,function(a){var b=a.dataLabel;b&&a.visible&&((a=b._pos)?(b.sideOverflow&&(b._attr.width=b.getBBox().width-b.sideOverflow,b.css({width:b._attr.width+"px",textOverflow:(this.options.dataLabels.style||{}).textOverflow||"ellipsis"}),b.shortened=!0),b.attr(b._attr),b[b.moved?"animate":"attr"](a),b.moved=
+!0):b&&b.attr({y:-9999}))},this)},h.pie.prototype.alignDataLabel=t,h.pie.prototype.verifyDataLabelOverflow=function(a){var b=this.center,c=this.options,d=c.center,e=c.minSize||80,f,h=null!==c.size;h||(null!==d[0]?f=Math.max(b[2]-Math.max(a[1],a[3]),e):(f=Math.max(b[2]-a[1]-a[3],e),b[0]+=(a[3]-a[1])/2),null!==d[1]?f=Math.max(Math.min(f,b[2]-Math.max(a[0],a[2])),e):(f=Math.max(Math.min(f,b[2]-a[0]-a[2]),e),b[1]+=(a[0]-a[2])/2),f<b[2]?(b[2]=f,b[3]=Math.min(y(c.innerSize||0,f),f),this.translate(b),this.drawDataLabels&&
+this.drawDataLabels()):h=!0);return h});h.column&&(h.column.prototype.alignDataLabel=function(a,d,e,f,h){var b=this.chart.inverted,l=a.series,m=a.dlBox||a.shapeArgs,k=w(a.below,a.plotY>w(this.translatedThreshold,l.yAxis.len)),n=w(e.inside,!!this.options.stacking);m&&(f=x(m),0>f.y&&(f.height+=f.y,f.y=0),m=f.y+f.height-l.yAxis.len,0<m&&(f.height-=m),b&&(f={x:l.yAxis.len-f.y-f.height,y:l.xAxis.len-f.x-f.width,width:f.height,height:f.width}),n||(b?(f.x+=k?0:f.width,f.width=0):(f.y+=k?f.height:0,f.height=
+0)));e.align=w(e.align,!b||n?"center":k?"right":"left");e.verticalAlign=w(e.verticalAlign,b||n?"middle":k?"top":"bottom");c.prototype.alignDataLabel.call(this,a,d,e,f,h);a.isLabelJustified&&a.contrastColor&&d.css({color:a.contrastColor})})})(K);(function(a){var C=a.Chart,F=a.each,I=a.isArray,n=a.objectEach,f=a.pick;a=a.addEvent;a(C,"render",function(){var a=[];F(this.labelCollectors||[],function(e){a=a.concat(e())});F(this.yAxis||[],function(e){e.options.stackLabels&&!e.options.stackLabels.allowOverlap&&
+n(e.stacks,function(e){n(e,function(e){a.push(e.label)})})});F(this.series||[],function(e){var n=e.options.dataLabels;e.visible&&(!1!==n.enabled||e._hasPointLabels)&&F(e.points,function(e){if(e.visible){var n=I(e.dataLabels)?e.dataLabels:e.dataLabel?[e.dataLabel]:[];F(n,function(n){var c=n.options;n.labelrank=f(c.labelrank,e.labelrank,e.shapeArgs&&e.shapeArgs.height);c.allowOverlap||a.push(n)})}})});this.hideOverlappingLabels(a)});C.prototype.hideOverlappingLabels=function(a){var e=a.length,f=this.renderer,
+n,w,y,c,h,p,k=function(a,c,b,e,f,h,k,n){return!(f>a+b||f+k<a||h>c+e||h+n<c)};y=function(a){var c,b,e,h=a.box?0:a.padding||0;e=0;if(a&&(!a.alignAttr||a.placed))return c=a.alignAttr||{x:a.attr("x"),y:a.attr("y")},b=a.parentGroup,a.width||(e=a.getBBox(),a.width=e.width,a.height=e.height,e=f.fontMetrics(null,a.element).h),{x:c.x+(b.translateX||0)+h,y:c.y+(b.translateY||0)+h-e,width:a.width-2*h,height:a.height-2*h}};for(w=0;w<e;w++)if(n=a[w])n.oldOpacity=n.opacity,n.newOpacity=1,n.absoluteBox=y(n);a.sort(function(a,
+c){return(c.labelrank||0)-(a.labelrank||0)});for(w=0;w<e;w++)for(p=(y=a[w])&&y.absoluteBox,n=w+1;n<e;++n)if(h=(c=a[n])&&c.absoluteBox,p&&h&&y!==c&&0!==y.newOpacity&&0!==c.newOpacity&&(h=k(p.x,p.y,p.width,p.height,h.x,h.y,h.width,h.height)))(y.labelrank<c.labelrank?y:c).newOpacity=0;F(a,function(a){var c,b;a&&(b=a.newOpacity,a.oldOpacity!==b&&(a.alignAttr&&a.placed?(b?a.show(!0):c=function(){a.hide()},a.alignAttr.opacity=b,a[a.isOld?"animate":"attr"](a.alignAttr,null,c)):a.attr({opacity:b})),a.isOld=
+!0)})}})(K);(function(a){var C=a.addEvent,F=a.Chart,I=a.createElement,n=a.css,f=a.defaultOptions,e=a.defaultPlotOptions,u=a.each,x=a.extend,t=a.fireEvent,w=a.hasTouch,y=a.inArray,c=a.isObject,h=a.Legend,p=a.merge,k=a.pick,q=a.Point,d=a.Series,b=a.seriesTypes,v=a.svg,J;J=a.TrackerMixin={drawTrackerPoint:function(){var a=this,b=a.chart.pointer,c=function(a){var c=b.getPointFromEvent(a);void 0!==c&&(b.isDirectTouch=!0,c.onMouseOver(a))};u(a.points,function(a){a.graphic&&(a.graphic.element.point=a);a.dataLabel&&
+(a.dataLabel.div?a.dataLabel.div.point=a:a.dataLabel.element.point=a)});a._hasTracking||(u(a.trackerGroups,function(d){if(a[d]){a[d].addClass("highcharts-tracker").on("mouseover",c).on("mouseout",function(a){b.onTrackerMouseOut(a)});if(w)a[d].on("touchstart",c);a.options.cursor&&a[d].css(n).css({cursor:a.options.cursor})}}),a._hasTracking=!0);t(this,"afterDrawTracker")},drawTrackerGraph:function(){var a=this,b=a.options,c=b.trackByArea,d=[].concat(c?a.areaPath:a.graphPath),e=d.length,f=a.chart,h=
+f.pointer,k=f.renderer,n=f.options.tooltip.snap,g=a.tracker,q,p=function(){if(f.hoverSeries!==a)a.onMouseOver()},x="rgba(192,192,192,"+(v?.0001:.002)+")";if(e&&!c)for(q=e+1;q--;)"M"===d[q]&&d.splice(q+1,0,d[q+1]-n,d[q+2],"L"),(q&&"M"===d[q]||q===e)&&d.splice(q,0,"L",d[q-2]+n,d[q-1]);g?g.attr({d:d}):a.graph&&(a.tracker=k.path(d).attr({"stroke-linejoin":"round",stroke:x,fill:c?x:"none","stroke-width":a.graph.strokeWidth()+(c?0:2*n),visibility:a.visible?"visible":"hidden",zIndex:2}).addClass(c?"highcharts-tracker-area":
+"highcharts-tracker-line").add(a.group),u([a.tracker,a.markerGroup],function(a){a.addClass("highcharts-tracker").on("mouseover",p).on("mouseout",function(a){h.onTrackerMouseOut(a)});b.cursor&&a.css({cursor:b.cursor});if(w)a.on("touchstart",p)}));t(this,"afterDrawTracker")}};b.column&&(b.column.prototype.drawTracker=J.drawTrackerPoint);b.pie&&(b.pie.prototype.drawTracker=J.drawTrackerPoint);b.scatter&&(b.scatter.prototype.drawTracker=J.drawTrackerPoint);f.legend.itemStyle.cursor="pointer";x(h.prototype,
+{setItemEvents:function(a,b,c){var d=this,e=d.chart.renderer.boxWrapper,f="highcharts-legend-"+(a instanceof q?"point":"series")+"-active";(c?b:a.legendGroup).on("mouseover",function(){a.setState("hover");e.addClass(f);b.css(d.options.itemHoverStyle)}).on("mouseout",function(){b.css(p(a.visible?d.itemStyle:d.itemHiddenStyle));e.removeClass(f);a.setState()}).on("click",function(b){var c=function(){a.setVisible&&a.setVisible()};e.removeClass(f);b={browserEvent:b};a.firePointEvent?a.firePointEvent("legendItemClick",
+b,c):t(a,"legendItemClick",b,c)})},createCheckboxForItem:function(a){a.checkbox=I("input",{type:"checkbox",className:"highcharts-legend-checkbox",checked:a.selected,defaultChecked:a.selected},this.options.itemCheckboxStyle,this.chart.container);C(a.checkbox,"click",function(b){t(a.series||a,"checkboxClick",{checked:b.target.checked,item:a},function(){a.select()})})}});x(F.prototype,{showResetZoom:function(){function a(){b.zoomOut()}var b=this,c=f.lang,d=b.options.chart.resetZoomButton,e=d.theme,h=
+e.states,k="chart"===d.relativeTo?null:"plotBox";t(this,"beforeShowResetZoom",null,function(){b.resetZoomButton=b.renderer.button(c.resetZoom,null,null,a,e,h&&h.hover).attr({align:d.position.align,title:c.resetZoomTitle}).addClass("highcharts-reset-zoom").add().align(d.position,!1,k)})},zoomOut:function(){t(this,"selection",{resetSelection:!0},this.zoom)},zoom:function(a){var b,d=this.pointer,e=!1,f;!a||a.resetSelection?(u(this.axes,function(a){b=a.zoom()}),d.initiated=!1):u(a.xAxis.concat(a.yAxis),
+function(a){var c=a.axis;d[c.isXAxis?"zoomX":"zoomY"]&&(b=c.zoom(a.min,a.max),c.displayBtn&&(e=!0))});f=this.resetZoomButton;e&&!f?this.showResetZoom():!e&&c(f)&&(this.resetZoomButton=f.destroy());b&&this.redraw(k(this.options.chart.animation,a&&a.animation,100>this.pointCount))},pan:function(a,b){var c=this,d=c.hoverPoints,e;d&&u(d,function(a){a.setState()});u("xy"===b?[1,0]:[1],function(b){b=c[b?"xAxis":"yAxis"][0];var d=b.horiz,f=a[d?"chartX":"chartY"],d=d?"mouseDownX":"mouseDownY",h=c[d],g=(b.pointRange||
+0)/2,l=b.reversed&&!c.inverted||!b.reversed&&c.inverted?-1:1,m=b.getExtremes(),k=b.toValue(h-f,!0)+g*l,l=b.toValue(h+b.len-f,!0)-g*l,n=l<k,h=n?l:k,k=n?k:l,l=Math.min(m.dataMin,g?m.min:b.toValue(b.toPixels(m.min)-b.minPixelPadding)),g=Math.max(m.dataMax,g?m.max:b.toValue(b.toPixels(m.max)+b.minPixelPadding)),n=l-h;0<n&&(k+=n,h=l);n=k-g;0<n&&(k=g,h-=n);b.series.length&&h!==m.min&&k!==m.max&&(b.setExtremes(h,k,!1,!1,{trigger:"pan"}),e=!0);c[d]=f});e&&c.redraw(!1);n(c.container,{cursor:"move"})}});x(q.prototype,
+{select:function(a,b){var c=this,d=c.series,e=d.chart;a=k(a,!c.selected);c.firePointEvent(a?"select":"unselect",{accumulate:b},function(){c.selected=c.options.selected=a;d.options.data[y(c,d.data)]=c.options;c.setState(a&&"select");b||u(e.getSelectedPoints(),function(a){a.selected&&a!==c&&(a.selected=a.options.selected=!1,d.options.data[y(a,d.data)]=a.options,a.setState(""),a.firePointEvent("unselect"))})})},onMouseOver:function(a){var b=this.series.chart,c=b.pointer;a=a?c.normalize(a):c.getChartCoordinatesFromPoint(this,
+b.inverted);c.runPointActions(a,this)},onMouseOut:function(){var a=this.series.chart;this.firePointEvent("mouseOut");u(a.hoverPoints||[],function(a){a.setState()});a.hoverPoints=a.hoverPoint=null},importEvents:function(){if(!this.hasImportedEvents){var b=this,c=p(b.series.options.point,b.options).events;b.events=c;a.objectEach(c,function(a,c){C(b,c,a)});this.hasImportedEvents=!0}},setState:function(a,b){var c=Math.floor(this.plotX),d=this.plotY,f=this.series,h=f.options.states[a||"normal"]||{},l=
+e[f.type].marker&&f.options.marker,n=l&&!1===l.enabled,q=l&&l.states&&l.states[a||"normal"]||{},g=!1===q.enabled,p=f.stateMarkerGraphic,v=this.marker||{},u=f.chart,w=f.halo,y,C=l&&f.markerAttribs;a=a||"";if(!(a===this.state&&!b||this.selected&&"select"!==a||!1===h.enabled||a&&(g||n&&!1===q.enabled)||a&&v.states&&v.states[a]&&!1===v.states[a].enabled)){C&&(y=f.markerAttribs(this,a));if(this.graphic)this.state&&this.graphic.removeClass("highcharts-point-"+this.state),a&&this.graphic.addClass("highcharts-point-"+
+a),this.graphic.animate(f.pointAttribs(this,a),k(u.options.chart.animation,h.animation)),y&&this.graphic.animate(y,k(u.options.chart.animation,q.animation,l.animation)),p&&p.hide();else{if(a&&q){l=v.symbol||f.symbol;p&&p.currentSymbol!==l&&(p=p.destroy());if(p)p[b?"animate":"attr"]({x:y.x,y:y.y});else l&&(f.stateMarkerGraphic=p=u.renderer.symbol(l,y.x,y.y,y.width,y.height).add(f.markerGroup),p.currentSymbol=l);p&&p.attr(f.pointAttribs(this,a))}p&&(p[a&&u.isInsidePlot(c,d,u.inverted)?"show":"hide"](),
+p.element.point=this)}(c=h.halo)&&c.size?(w||(f.halo=w=u.renderer.path().add((this.graphic||p).parentGroup)),w.show()[b?"animate":"attr"]({d:this.haloPath(c.size)}),w.attr({"class":"highcharts-halo highcharts-color-"+k(this.colorIndex,f.colorIndex)+(this.className?" "+this.className:""),zIndex:-1}),w.point=this,w.attr(x({fill:this.color||f.color,"fill-opacity":c.opacity},c.attributes))):w&&w.point&&w.point.haloPath&&w.animate({d:w.point.haloPath(0)},null,w.hide);this.state=a;t(this,"afterSetState")}},
+haloPath:function(a){return this.series.chart.renderer.symbols.circle(Math.floor(this.plotX)-a,this.plotY-a,2*a,2*a)}});x(d.prototype,{onMouseOver:function(){var a=this.chart,b=a.hoverSeries;if(b&&b!==this)b.onMouseOut();this.options.events.mouseOver&&t(this,"mouseOver");this.setState("hover");a.hoverSeries=this},onMouseOut:function(){var a=this.options,b=this.chart,c=b.tooltip,d=b.hoverPoint;b.hoverSeries=null;if(d)d.onMouseOut();this&&a.events.mouseOut&&t(this,"mouseOut");!c||this.stickyTracking||
+c.shared&&!this.noSharedTooltip||c.hide();this.setState()},setState:function(a){var b=this,c=b.options,d=b.graph,e=c.states,f=c.lineWidth,c=0;a=a||"";if(b.state!==a&&(u([b.group,b.markerGroup,b.dataLabelsGroup],function(c){c&&(b.state&&c.removeClass("highcharts-series-"+b.state),a&&c.addClass("highcharts-series-"+a))}),b.state=a,!e[a]||!1!==e[a].enabled)&&(a&&(f=e[a].lineWidth||f+(e[a].lineWidthPlus||0)),d&&!d.dashstyle))for(f={"stroke-width":f},d.animate(f,k(e[a||"normal"]&&e[a||"normal"].animation,
+b.chart.options.chart.animation));b["zone-graph-"+c];)b["zone-graph-"+c].attr(f),c+=1},setVisible:function(a,b){var c=this,d=c.chart,e=c.legendItem,f,h=d.options.chart.ignoreHiddenSeries,k=c.visible;f=(c.visible=a=c.options.visible=c.userOptions.visible=void 0===a?!k:a)?"show":"hide";u(["group","dataLabelsGroup","markerGroup","tracker","tt"],function(a){if(c[a])c[a][f]()});if(d.hoverSeries===c||(d.hoverPoint&&d.hoverPoint.series)===c)c.onMouseOut();e&&d.legend.colorizeItem(c,a);c.isDirty=!0;c.options.stacking&&
+u(d.series,function(a){a.options.stacking&&a.visible&&(a.isDirty=!0)});u(c.linkedSeries,function(b){b.setVisible(a,!1)});h&&(d.isDirtyBox=!0);t(c,f);!1!==b&&d.redraw()},show:function(){this.setVisible(!0)},hide:function(){this.setVisible(!1)},select:function(a){this.selected=a=void 0===a?!this.selected:a;this.checkbox&&(this.checkbox.checked=a);t(this,a?"select":"unselect")},drawTracker:J.drawTrackerGraph})})(K);(function(a){var C=a.Chart,F=a.each,I=a.inArray,n=a.isArray,f=a.isObject,e=a.pick,u=a.splat;
+C.prototype.setResponsive=function(e){var f=this.options.responsive,n=[],u=this.currentResponsive;f&&f.rules&&F(f.rules,function(c){void 0===c._id&&(c._id=a.uniqueKey());this.matchResponsiveRule(c,n,e)},this);var c=a.merge.apply(0,a.map(n,function(c){return a.find(f.rules,function(a){return a._id===c}).chartOptions})),n=n.toString()||void 0;n!==(u&&u.ruleIds)&&(u&&this.update(u.undoOptions,e),n?(this.currentResponsive={ruleIds:n,mergedOptions:c,undoOptions:this.currentOptions(c)},this.update(c,e)):
+this.currentResponsive=void 0)};C.prototype.matchResponsiveRule=function(a,f){var n=a.condition;(n.callback||function(){return this.chartWidth<=e(n.maxWidth,Number.MAX_VALUE)&&this.chartHeight<=e(n.maxHeight,Number.MAX_VALUE)&&this.chartWidth>=e(n.minWidth,0)&&this.chartHeight>=e(n.minHeight,0)}).call(this)&&f.push(a._id)};C.prototype.currentOptions=function(e){function t(e,c,h,p){var k;a.objectEach(e,function(a,d){if(!p&&-1<I(d,["series","xAxis","yAxis"]))for(a=u(a),h[d]=[],k=0;k<a.length;k++)c[d][k]&&
+(h[d][k]={},t(a[k],c[d][k],h[d][k],p+1));else f(a)?(h[d]=n(a)?[]:{},t(a,c[d]||{},h[d],p+1)):h[d]=c[d]||null})}var w={};t(e,this.options,w,0);return w}})(K);return K});
+//# sourceMappingURL=highcharts.js.map
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -43508,7 +45125,7 @@ if (false) {
 }
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
