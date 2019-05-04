@@ -120,8 +120,7 @@ figure {
 }
 
 hr {
-  -webkit-box-sizing: content-box;
-          box-sizing: content-box;
+  box-sizing: content-box;
   height: 0;
 }
 
@@ -157,9 +156,9 @@ select {
 }
 
 button,
-html input[type="button"],
-input[type="reset"],
-input[type="submit"] {
+html input[type=button],
+input[type=reset],
+input[type=submit] {
   -webkit-appearance: button;
   cursor: pointer;
 }
@@ -179,26 +178,24 @@ input {
   line-height: normal;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+input[type=checkbox],
+input[type=radio] {
+  box-sizing: border-box;
   padding: 0;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
   height: auto;
 }
 
-input[type="search"] {
+input[type=search] {
   -webkit-appearance: textfield;
-  -webkit-box-sizing: content-box;
-          box-sizing: content-box;
+  box-sizing: content-box;
 }
 
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
+input[type=search]::-webkit-search-cancel-button,
+input[type=search]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -240,8 +237,7 @@ th {
     color: #000 !important;
     text-shadow: none !important;
     background: transparent !important;
-    -webkit-box-shadow: none !important;
-            box-shadow: none !important;
+    box-shadow: none !important;
   }
 
   a,
@@ -1389,19 +1385,17 @@ th {
 }
 
 * {
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
 *:before,
 *:after {
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
 html {
   font-size: 10px;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
@@ -1461,7 +1455,6 @@ img {
   background-color: #333;
   border: 1px solid #ddd;
   border-radius: 0;
-  -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   display: inline-block;
   max-width: 100%;
@@ -1500,7 +1493,7 @@ hr {
   clip: auto;
 }
 
-[role="button"] {
+[role=button] {
   cursor: pointer;
 }
 
@@ -1655,7 +1648,7 @@ small,
 
 mark,
 .mark {
-  padding: .2em;
+  padding: 0.2em;
   background-color: #fcf8e3;
 }
 
@@ -1702,7 +1695,7 @@ mark,
 
 a.text-primary:hover,
 a.text-primary:focus {
-  color: #a7a6a6;
+  color: #a7a7a7;
 }
 
 .text-success {
@@ -1751,7 +1744,7 @@ a.text-danger:focus {
 
 a.bg-primary:hover,
 a.bg-primary:focus {
-  background-color: #a7a6a6;
+  background-color: #a7a7a7;
 }
 
 .bg-success {
@@ -1904,7 +1897,7 @@ blockquote .small {
 blockquote footer:before,
 blockquote small:before,
 blockquote .small:before {
-  content: "\2014   \A0";
+  content: "\2014\A0";
 }
 
 .blockquote-reverse,
@@ -1931,7 +1924,7 @@ blockquote.pull-right .small:before {
 blockquote.pull-right footer:after,
 blockquote.pull-right small:after,
 blockquote.pull-right .small:after {
-  content: "\A0   \2014";
+  content: "\A0\2014";
 }
 
 address {
@@ -1961,16 +1954,14 @@ kbd {
   color: #fff;
   background-color: #333;
   border-radius: 3px;
-  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
-          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
 kbd kbd {
   padding: 0;
   font-size: 100%;
   font-weight: 700;
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
 }
 
 pre {
@@ -2073,7 +2064,7 @@ pre code {
   margin-left: 0;
 }
 
-.row-no-gutters [class*="col-"] {
+.row-no-gutters [class*=col-] {
   padding-right: 0;
   padding-left: 0;
 }
@@ -2148,11 +2139,11 @@ pre code {
 }
 
 .col-xs-1 {
-  width: 8.33333333%;
+  width: 8.3333333333%;
 }
 
 .col-xs-2 {
-  width: 16.66666667%;
+  width: 16.6666666667%;
 }
 
 .col-xs-3 {
@@ -2160,11 +2151,11 @@ pre code {
 }
 
 .col-xs-4 {
-  width: 33.33333333%;
+  width: 33.3333333333%;
 }
 
 .col-xs-5 {
-  width: 41.66666667%;
+  width: 41.6666666667%;
 }
 
 .col-xs-6 {
@@ -2172,11 +2163,11 @@ pre code {
 }
 
 .col-xs-7 {
-  width: 58.33333333%;
+  width: 58.3333333333%;
 }
 
 .col-xs-8 {
-  width: 66.66666667%;
+  width: 66.6666666667%;
 }
 
 .col-xs-9 {
@@ -2184,11 +2175,11 @@ pre code {
 }
 
 .col-xs-10 {
-  width: 83.33333333%;
+  width: 83.3333333333%;
 }
 
 .col-xs-11 {
-  width: 91.66666667%;
+  width: 91.6666666667%;
 }
 
 .col-xs-12 {
@@ -2200,11 +2191,11 @@ pre code {
 }
 
 .col-xs-pull-1 {
-  right: 8.33333333%;
+  right: 8.3333333333%;
 }
 
 .col-xs-pull-2 {
-  right: 16.66666667%;
+  right: 16.6666666667%;
 }
 
 .col-xs-pull-3 {
@@ -2212,11 +2203,11 @@ pre code {
 }
 
 .col-xs-pull-4 {
-  right: 33.33333333%;
+  right: 33.3333333333%;
 }
 
 .col-xs-pull-5 {
-  right: 41.66666667%;
+  right: 41.6666666667%;
 }
 
 .col-xs-pull-6 {
@@ -2224,11 +2215,11 @@ pre code {
 }
 
 .col-xs-pull-7 {
-  right: 58.33333333%;
+  right: 58.3333333333%;
 }
 
 .col-xs-pull-8 {
-  right: 66.66666667%;
+  right: 66.6666666667%;
 }
 
 .col-xs-pull-9 {
@@ -2236,11 +2227,11 @@ pre code {
 }
 
 .col-xs-pull-10 {
-  right: 83.33333333%;
+  right: 83.3333333333%;
 }
 
 .col-xs-pull-11 {
-  right: 91.66666667%;
+  right: 91.6666666667%;
 }
 
 .col-xs-pull-12 {
@@ -2252,11 +2243,11 @@ pre code {
 }
 
 .col-xs-push-1 {
-  left: 8.33333333%;
+  left: 8.3333333333%;
 }
 
 .col-xs-push-2 {
-  left: 16.66666667%;
+  left: 16.6666666667%;
 }
 
 .col-xs-push-3 {
@@ -2264,11 +2255,11 @@ pre code {
 }
 
 .col-xs-push-4 {
-  left: 33.33333333%;
+  left: 33.3333333333%;
 }
 
 .col-xs-push-5 {
-  left: 41.66666667%;
+  left: 41.6666666667%;
 }
 
 .col-xs-push-6 {
@@ -2276,11 +2267,11 @@ pre code {
 }
 
 .col-xs-push-7 {
-  left: 58.33333333%;
+  left: 58.3333333333%;
 }
 
 .col-xs-push-8 {
-  left: 66.66666667%;
+  left: 66.6666666667%;
 }
 
 .col-xs-push-9 {
@@ -2288,11 +2279,11 @@ pre code {
 }
 
 .col-xs-push-10 {
-  left: 83.33333333%;
+  left: 83.3333333333%;
 }
 
 .col-xs-push-11 {
-  left: 91.66666667%;
+  left: 91.6666666667%;
 }
 
 .col-xs-push-12 {
@@ -2304,11 +2295,11 @@ pre code {
 }
 
 .col-xs-offset-1 {
-  margin-left: 8.33333333%;
+  margin-left: 8.3333333333%;
 }
 
 .col-xs-offset-2 {
-  margin-left: 16.66666667%;
+  margin-left: 16.6666666667%;
 }
 
 .col-xs-offset-3 {
@@ -2316,11 +2307,11 @@ pre code {
 }
 
 .col-xs-offset-4 {
-  margin-left: 33.33333333%;
+  margin-left: 33.3333333333%;
 }
 
 .col-xs-offset-5 {
-  margin-left: 41.66666667%;
+  margin-left: 41.6666666667%;
 }
 
 .col-xs-offset-6 {
@@ -2328,11 +2319,11 @@ pre code {
 }
 
 .col-xs-offset-7 {
-  margin-left: 58.33333333%;
+  margin-left: 58.3333333333%;
 }
 
 .col-xs-offset-8 {
-  margin-left: 66.66666667%;
+  margin-left: 66.6666666667%;
 }
 
 .col-xs-offset-9 {
@@ -2340,11 +2331,11 @@ pre code {
 }
 
 .col-xs-offset-10 {
-  margin-left: 83.33333333%;
+  margin-left: 83.3333333333%;
 }
 
 .col-xs-offset-11 {
-  margin-left: 91.66666667%;
+  margin-left: 91.6666666667%;
 }
 
 .col-xs-offset-12 {
@@ -2368,11 +2359,11 @@ pre code {
   }
 
   .col-sm-1 {
-    width: 8.33333333%;
+    width: 8.3333333333%;
   }
 
   .col-sm-2 {
-    width: 16.66666667%;
+    width: 16.6666666667%;
   }
 
   .col-sm-3 {
@@ -2380,11 +2371,11 @@ pre code {
   }
 
   .col-sm-4 {
-    width: 33.33333333%;
+    width: 33.3333333333%;
   }
 
   .col-sm-5 {
-    width: 41.66666667%;
+    width: 41.6666666667%;
   }
 
   .col-sm-6 {
@@ -2392,11 +2383,11 @@ pre code {
   }
 
   .col-sm-7 {
-    width: 58.33333333%;
+    width: 58.3333333333%;
   }
 
   .col-sm-8 {
-    width: 66.66666667%;
+    width: 66.6666666667%;
   }
 
   .col-sm-9 {
@@ -2404,11 +2395,11 @@ pre code {
   }
 
   .col-sm-10 {
-    width: 83.33333333%;
+    width: 83.3333333333%;
   }
 
   .col-sm-11 {
-    width: 91.66666667%;
+    width: 91.6666666667%;
   }
 
   .col-sm-12 {
@@ -2420,11 +2411,11 @@ pre code {
   }
 
   .col-sm-pull-1 {
-    right: 8.33333333%;
+    right: 8.3333333333%;
   }
 
   .col-sm-pull-2 {
-    right: 16.66666667%;
+    right: 16.6666666667%;
   }
 
   .col-sm-pull-3 {
@@ -2432,11 +2423,11 @@ pre code {
   }
 
   .col-sm-pull-4 {
-    right: 33.33333333%;
+    right: 33.3333333333%;
   }
 
   .col-sm-pull-5 {
-    right: 41.66666667%;
+    right: 41.6666666667%;
   }
 
   .col-sm-pull-6 {
@@ -2444,11 +2435,11 @@ pre code {
   }
 
   .col-sm-pull-7 {
-    right: 58.33333333%;
+    right: 58.3333333333%;
   }
 
   .col-sm-pull-8 {
-    right: 66.66666667%;
+    right: 66.6666666667%;
   }
 
   .col-sm-pull-9 {
@@ -2456,11 +2447,11 @@ pre code {
   }
 
   .col-sm-pull-10 {
-    right: 83.33333333%;
+    right: 83.3333333333%;
   }
 
   .col-sm-pull-11 {
-    right: 91.66666667%;
+    right: 91.6666666667%;
   }
 
   .col-sm-pull-12 {
@@ -2472,11 +2463,11 @@ pre code {
   }
 
   .col-sm-push-1 {
-    left: 8.33333333%;
+    left: 8.3333333333%;
   }
 
   .col-sm-push-2 {
-    left: 16.66666667%;
+    left: 16.6666666667%;
   }
 
   .col-sm-push-3 {
@@ -2484,11 +2475,11 @@ pre code {
   }
 
   .col-sm-push-4 {
-    left: 33.33333333%;
+    left: 33.3333333333%;
   }
 
   .col-sm-push-5 {
-    left: 41.66666667%;
+    left: 41.6666666667%;
   }
 
   .col-sm-push-6 {
@@ -2496,11 +2487,11 @@ pre code {
   }
 
   .col-sm-push-7 {
-    left: 58.33333333%;
+    left: 58.3333333333%;
   }
 
   .col-sm-push-8 {
-    left: 66.66666667%;
+    left: 66.6666666667%;
   }
 
   .col-sm-push-9 {
@@ -2508,11 +2499,11 @@ pre code {
   }
 
   .col-sm-push-10 {
-    left: 83.33333333%;
+    left: 83.3333333333%;
   }
 
   .col-sm-push-11 {
-    left: 91.66666667%;
+    left: 91.6666666667%;
   }
 
   .col-sm-push-12 {
@@ -2524,11 +2515,11 @@ pre code {
   }
 
   .col-sm-offset-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.3333333333%;
   }
 
   .col-sm-offset-2 {
-    margin-left: 16.66666667%;
+    margin-left: 16.6666666667%;
   }
 
   .col-sm-offset-3 {
@@ -2536,11 +2527,11 @@ pre code {
   }
 
   .col-sm-offset-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.3333333333%;
   }
 
   .col-sm-offset-5 {
-    margin-left: 41.66666667%;
+    margin-left: 41.6666666667%;
   }
 
   .col-sm-offset-6 {
@@ -2548,11 +2539,11 @@ pre code {
   }
 
   .col-sm-offset-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.3333333333%;
   }
 
   .col-sm-offset-8 {
-    margin-left: 66.66666667%;
+    margin-left: 66.6666666667%;
   }
 
   .col-sm-offset-9 {
@@ -2560,11 +2551,11 @@ pre code {
   }
 
   .col-sm-offset-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.3333333333%;
   }
 
   .col-sm-offset-11 {
-    margin-left: 91.66666667%;
+    margin-left: 91.6666666667%;
   }
 
   .col-sm-offset-12 {
@@ -2589,11 +2580,11 @@ pre code {
   }
 
   .col-md-1 {
-    width: 8.33333333%;
+    width: 8.3333333333%;
   }
 
   .col-md-2 {
-    width: 16.66666667%;
+    width: 16.6666666667%;
   }
 
   .col-md-3 {
@@ -2601,11 +2592,11 @@ pre code {
   }
 
   .col-md-4 {
-    width: 33.33333333%;
+    width: 33.3333333333%;
   }
 
   .col-md-5 {
-    width: 41.66666667%;
+    width: 41.6666666667%;
   }
 
   .col-md-6 {
@@ -2613,11 +2604,11 @@ pre code {
   }
 
   .col-md-7 {
-    width: 58.33333333%;
+    width: 58.3333333333%;
   }
 
   .col-md-8 {
-    width: 66.66666667%;
+    width: 66.6666666667%;
   }
 
   .col-md-9 {
@@ -2625,11 +2616,11 @@ pre code {
   }
 
   .col-md-10 {
-    width: 83.33333333%;
+    width: 83.3333333333%;
   }
 
   .col-md-11 {
-    width: 91.66666667%;
+    width: 91.6666666667%;
   }
 
   .col-md-12 {
@@ -2641,11 +2632,11 @@ pre code {
   }
 
   .col-md-pull-1 {
-    right: 8.33333333%;
+    right: 8.3333333333%;
   }
 
   .col-md-pull-2 {
-    right: 16.66666667%;
+    right: 16.6666666667%;
   }
 
   .col-md-pull-3 {
@@ -2653,11 +2644,11 @@ pre code {
   }
 
   .col-md-pull-4 {
-    right: 33.33333333%;
+    right: 33.3333333333%;
   }
 
   .col-md-pull-5 {
-    right: 41.66666667%;
+    right: 41.6666666667%;
   }
 
   .col-md-pull-6 {
@@ -2665,11 +2656,11 @@ pre code {
   }
 
   .col-md-pull-7 {
-    right: 58.33333333%;
+    right: 58.3333333333%;
   }
 
   .col-md-pull-8 {
-    right: 66.66666667%;
+    right: 66.6666666667%;
   }
 
   .col-md-pull-9 {
@@ -2677,11 +2668,11 @@ pre code {
   }
 
   .col-md-pull-10 {
-    right: 83.33333333%;
+    right: 83.3333333333%;
   }
 
   .col-md-pull-11 {
-    right: 91.66666667%;
+    right: 91.6666666667%;
   }
 
   .col-md-pull-12 {
@@ -2693,11 +2684,11 @@ pre code {
   }
 
   .col-md-push-1 {
-    left: 8.33333333%;
+    left: 8.3333333333%;
   }
 
   .col-md-push-2 {
-    left: 16.66666667%;
+    left: 16.6666666667%;
   }
 
   .col-md-push-3 {
@@ -2705,11 +2696,11 @@ pre code {
   }
 
   .col-md-push-4 {
-    left: 33.33333333%;
+    left: 33.3333333333%;
   }
 
   .col-md-push-5 {
-    left: 41.66666667%;
+    left: 41.6666666667%;
   }
 
   .col-md-push-6 {
@@ -2717,11 +2708,11 @@ pre code {
   }
 
   .col-md-push-7 {
-    left: 58.33333333%;
+    left: 58.3333333333%;
   }
 
   .col-md-push-8 {
-    left: 66.66666667%;
+    left: 66.6666666667%;
   }
 
   .col-md-push-9 {
@@ -2729,11 +2720,11 @@ pre code {
   }
 
   .col-md-push-10 {
-    left: 83.33333333%;
+    left: 83.3333333333%;
   }
 
   .col-md-push-11 {
-    left: 91.66666667%;
+    left: 91.6666666667%;
   }
 
   .col-md-push-12 {
@@ -2745,11 +2736,11 @@ pre code {
   }
 
   .col-md-offset-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.3333333333%;
   }
 
   .col-md-offset-2 {
-    margin-left: 16.66666667%;
+    margin-left: 16.6666666667%;
   }
 
   .col-md-offset-3 {
@@ -2757,11 +2748,11 @@ pre code {
   }
 
   .col-md-offset-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.3333333333%;
   }
 
   .col-md-offset-5 {
-    margin-left: 41.66666667%;
+    margin-left: 41.6666666667%;
   }
 
   .col-md-offset-6 {
@@ -2769,11 +2760,11 @@ pre code {
   }
 
   .col-md-offset-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.3333333333%;
   }
 
   .col-md-offset-8 {
-    margin-left: 66.66666667%;
+    margin-left: 66.6666666667%;
   }
 
   .col-md-offset-9 {
@@ -2781,11 +2772,11 @@ pre code {
   }
 
   .col-md-offset-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.3333333333%;
   }
 
   .col-md-offset-11 {
-    margin-left: 91.66666667%;
+    margin-left: 91.6666666667%;
   }
 
   .col-md-offset-12 {
@@ -2810,11 +2801,11 @@ pre code {
   }
 
   .col-lg-1 {
-    width: 8.33333333%;
+    width: 8.3333333333%;
   }
 
   .col-lg-2 {
-    width: 16.66666667%;
+    width: 16.6666666667%;
   }
 
   .col-lg-3 {
@@ -2822,11 +2813,11 @@ pre code {
   }
 
   .col-lg-4 {
-    width: 33.33333333%;
+    width: 33.3333333333%;
   }
 
   .col-lg-5 {
-    width: 41.66666667%;
+    width: 41.6666666667%;
   }
 
   .col-lg-6 {
@@ -2834,11 +2825,11 @@ pre code {
   }
 
   .col-lg-7 {
-    width: 58.33333333%;
+    width: 58.3333333333%;
   }
 
   .col-lg-8 {
-    width: 66.66666667%;
+    width: 66.6666666667%;
   }
 
   .col-lg-9 {
@@ -2846,11 +2837,11 @@ pre code {
   }
 
   .col-lg-10 {
-    width: 83.33333333%;
+    width: 83.3333333333%;
   }
 
   .col-lg-11 {
-    width: 91.66666667%;
+    width: 91.6666666667%;
   }
 
   .col-lg-12 {
@@ -2862,11 +2853,11 @@ pre code {
   }
 
   .col-lg-pull-1 {
-    right: 8.33333333%;
+    right: 8.3333333333%;
   }
 
   .col-lg-pull-2 {
-    right: 16.66666667%;
+    right: 16.6666666667%;
   }
 
   .col-lg-pull-3 {
@@ -2874,11 +2865,11 @@ pre code {
   }
 
   .col-lg-pull-4 {
-    right: 33.33333333%;
+    right: 33.3333333333%;
   }
 
   .col-lg-pull-5 {
-    right: 41.66666667%;
+    right: 41.6666666667%;
   }
 
   .col-lg-pull-6 {
@@ -2886,11 +2877,11 @@ pre code {
   }
 
   .col-lg-pull-7 {
-    right: 58.33333333%;
+    right: 58.3333333333%;
   }
 
   .col-lg-pull-8 {
-    right: 66.66666667%;
+    right: 66.6666666667%;
   }
 
   .col-lg-pull-9 {
@@ -2898,11 +2889,11 @@ pre code {
   }
 
   .col-lg-pull-10 {
-    right: 83.33333333%;
+    right: 83.3333333333%;
   }
 
   .col-lg-pull-11 {
-    right: 91.66666667%;
+    right: 91.6666666667%;
   }
 
   .col-lg-pull-12 {
@@ -2914,11 +2905,11 @@ pre code {
   }
 
   .col-lg-push-1 {
-    left: 8.33333333%;
+    left: 8.3333333333%;
   }
 
   .col-lg-push-2 {
-    left: 16.66666667%;
+    left: 16.6666666667%;
   }
 
   .col-lg-push-3 {
@@ -2926,11 +2917,11 @@ pre code {
   }
 
   .col-lg-push-4 {
-    left: 33.33333333%;
+    left: 33.3333333333%;
   }
 
   .col-lg-push-5 {
-    left: 41.66666667%;
+    left: 41.6666666667%;
   }
 
   .col-lg-push-6 {
@@ -2938,11 +2929,11 @@ pre code {
   }
 
   .col-lg-push-7 {
-    left: 58.33333333%;
+    left: 58.3333333333%;
   }
 
   .col-lg-push-8 {
-    left: 66.66666667%;
+    left: 66.6666666667%;
   }
 
   .col-lg-push-9 {
@@ -2950,11 +2941,11 @@ pre code {
   }
 
   .col-lg-push-10 {
-    left: 83.33333333%;
+    left: 83.3333333333%;
   }
 
   .col-lg-push-11 {
-    left: 91.66666667%;
+    left: 91.6666666667%;
   }
 
   .col-lg-push-12 {
@@ -2966,11 +2957,11 @@ pre code {
   }
 
   .col-lg-offset-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.3333333333%;
   }
 
   .col-lg-offset-2 {
-    margin-left: 16.66666667%;
+    margin-left: 16.6666666667%;
   }
 
   .col-lg-offset-3 {
@@ -2978,11 +2969,11 @@ pre code {
   }
 
   .col-lg-offset-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.3333333333%;
   }
 
   .col-lg-offset-5 {
-    margin-left: 41.66666667%;
+    margin-left: 41.6666666667%;
   }
 
   .col-lg-offset-6 {
@@ -2990,11 +2981,11 @@ pre code {
   }
 
   .col-lg-offset-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.3333333333%;
   }
 
   .col-lg-offset-8 {
-    margin-left: 66.66666667%;
+    margin-left: 66.6666666667%;
   }
 
   .col-lg-offset-9 {
@@ -3002,11 +2993,11 @@ pre code {
   }
 
   .col-lg-offset-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.3333333333%;
   }
 
   .col-lg-offset-11 {
-    margin-left: 91.66666667%;
+    margin-left: 91.6666666667%;
   }
 
   .col-lg-offset-12 {
@@ -3018,14 +3009,14 @@ table {
   background-color: black;
 }
 
-table col[class*="col-"] {
+table col[class*=col-] {
   position: static;
   display: table-column;
   float: none;
 }
 
-table td[class*="col-"],
-table th[class*="col-"] {
+table td[class*=col-],
+table th[class*=col-] {
   position: static;
   display: table-cell;
   float: none;
@@ -3233,7 +3224,7 @@ th {
 }
 
 .table-responsive {
-  min-height: .01%;
+  min-height: 0.01%;
   overflow-x: auto;
 }
 
@@ -3315,36 +3306,34 @@ label {
   font-weight: 700;
 }
 
-input[type="search"] {
-  -webkit-box-sizing: border-box;
+input[type=search] {
   box-sizing: border-box;
   -webkit-appearance: none;
   -moz-appearance: none;
        appearance: none;
 }
 
-input[type="radio"],
-input[type="checkbox"] {
+input[type=radio],
+input[type=checkbox] {
   margin: 4px 0 0;
   margin-top: 1px \9;
   line-height: normal;
 }
 
-input[type="radio"][disabled],
-input[type="radio"].disabled,
-fieldset[disabled] input[type="radio"],
-input[type="checkbox"][disabled],
-input[type="checkbox"].disabled,
-fieldset[disabled]
-input[type="checkbox"] {
+input[type=radio][disabled],
+input[type=radio].disabled,
+fieldset[disabled] input[type=radio],
+input[type=checkbox][disabled],
+input[type=checkbox].disabled,
+fieldset[disabled] input[type=checkbox] {
   cursor: not-allowed;
 }
 
-input[type="file"] {
+input[type=file] {
   display: block;
 }
 
-input[type="range"] {
+input[type=range] {
   display: block;
   width: 100%;
 }
@@ -3354,9 +3343,9 @@ select[size] {
   height: auto;
 }
 
-input[type="file"]:focus,
-input[type="radio"]:focus,
-input[type="checkbox"]:focus {
+input[type=file]:focus,
+input[type=radio]:focus,
+input[type=checkbox]:focus {
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -3381,19 +3370,13 @@ output {
   background-image: none;
   border: 1px solid white;
   border-radius: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
-  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
 }
 
 .form-control:focus {
   border-color: white;
   outline: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 255, 255, 0.6);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
@@ -3418,7 +3401,7 @@ output {
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
-  background-color: #4d4c4c;
+  background-color: #4d4d4d;
   opacity: 1;
 }
 
@@ -3432,62 +3415,40 @@ textarea.form-control {
 }
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-  input[type="date"].form-control,
-  input[type="time"].form-control,
-  input[type="datetime-local"].form-control,
-  input[type="month"].form-control {
+  input[type=date].form-control,
+  input[type=time].form-control,
+  input[type=datetime-local].form-control,
+  input[type=month].form-control {
     line-height: 42px;
   }
 
-  input[type="date"].input-sm,
-  .input-group-sm > input[type="date"].form-control,
-  .input-group-sm > input[type="date"].input-group-addon,
-  .input-group-sm > .input-group-btn > input[type="date"].btn,
-  .input-group-sm input[type="date"],
-  input[type="time"].input-sm,
-  .input-group-sm > input[type="time"].form-control,
-  .input-group-sm > input[type="time"].input-group-addon,
-  .input-group-sm > .input-group-btn > input[type="time"].btn,
-  .input-group-sm
-  input[type="time"],
-  input[type="datetime-local"].input-sm,
-  .input-group-sm > input[type="datetime-local"].form-control,
-  .input-group-sm > input[type="datetime-local"].input-group-addon,
-  .input-group-sm > .input-group-btn > input[type="datetime-local"].btn,
-  .input-group-sm
-  input[type="datetime-local"],
-  input[type="month"].input-sm,
-  .input-group-sm > input[type="month"].form-control,
-  .input-group-sm > input[type="month"].input-group-addon,
-  .input-group-sm > .input-group-btn > input[type="month"].btn,
-  .input-group-sm
-  input[type="month"] {
+  input[type=date].input-sm,
+  .input-group-sm > .input-group-btn > input[type=date].btn,
+  .input-group-sm input[type=date],
+  input[type=time].input-sm,
+  .input-group-sm > .input-group-btn > input[type=time].btn,
+  .input-group-sm input[type=time],
+  input[type=datetime-local].input-sm,
+  .input-group-sm > .input-group-btn > input[type=datetime-local].btn,
+  .input-group-sm input[type=datetime-local],
+  input[type=month].input-sm,
+  .input-group-sm > .input-group-btn > input[type=month].btn,
+  .input-group-sm input[type=month] {
     line-height: 36px;
   }
 
-  input[type="date"].input-lg,
-  .input-group-lg > input[type="date"].form-control,
-  .input-group-lg > input[type="date"].input-group-addon,
-  .input-group-lg > .input-group-btn > input[type="date"].btn,
-  .input-group-lg input[type="date"],
-  input[type="time"].input-lg,
-  .input-group-lg > input[type="time"].form-control,
-  .input-group-lg > input[type="time"].input-group-addon,
-  .input-group-lg > .input-group-btn > input[type="time"].btn,
-  .input-group-lg
-  input[type="time"],
-  input[type="datetime-local"].input-lg,
-  .input-group-lg > input[type="datetime-local"].form-control,
-  .input-group-lg > input[type="datetime-local"].input-group-addon,
-  .input-group-lg > .input-group-btn > input[type="datetime-local"].btn,
-  .input-group-lg
-  input[type="datetime-local"],
-  input[type="month"].input-lg,
-  .input-group-lg > input[type="month"].form-control,
-  .input-group-lg > input[type="month"].input-group-addon,
-  .input-group-lg > .input-group-btn > input[type="month"].btn,
-  .input-group-lg
-  input[type="month"] {
+  input[type=date].input-lg,
+  .input-group-lg > .input-group-btn > input[type=date].btn,
+  .input-group-lg input[type=date],
+  input[type=time].input-lg,
+  .input-group-lg > .input-group-btn > input[type=time].btn,
+  .input-group-lg input[type=time],
+  input[type=datetime-local].input-lg,
+  .input-group-lg > .input-group-btn > input[type=datetime-local].btn,
+  .input-group-lg input[type=datetime-local],
+  input[type=month].input-lg,
+  .input-group-lg > .input-group-btn > input[type=month].btn,
+  .input-group-lg input[type=month] {
     line-height: 53px;
   }
 }
@@ -3507,8 +3468,7 @@ textarea.form-control {
 .radio.disabled label,
 fieldset[disabled] .radio label,
 .checkbox.disabled label,
-fieldset[disabled]
-.checkbox label {
+fieldset[disabled] .checkbox label {
   cursor: not-allowed;
 }
 
@@ -3521,10 +3481,10 @@ fieldset[disabled]
   cursor: pointer;
 }
 
-.radio input[type="radio"],
-.radio-inline input[type="radio"],
-.checkbox input[type="checkbox"],
-.checkbox-inline input[type="checkbox"] {
+.radio input[type=radio],
+.radio-inline input[type=radio],
+.checkbox input[type=checkbox],
+.checkbox-inline input[type=checkbox] {
   position: absolute;
   margin-top: 4px \9;
   margin-left: -20px;
@@ -3549,8 +3509,7 @@ fieldset[disabled]
 .radio-inline.disabled,
 fieldset[disabled] .radio-inline,
 .checkbox-inline.disabled,
-fieldset[disabled]
-.checkbox-inline {
+fieldset[disabled] .checkbox-inline {
   cursor: not-allowed;
 }
 
@@ -3749,13 +3708,11 @@ select[multiple].input-lg,
 
 .has-success .form-control {
   border-color: #3c763d;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .has-success .form-control:focus {
   border-color: #2b542c;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168;
 }
 
@@ -3784,13 +3741,11 @@ select[multiple].input-lg,
 
 .has-warning .form-control {
   border-color: #8a6d3b;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .has-warning .form-control:focus {
   border-color: #66512c;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c0a16b;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c0a16b;
 }
 
@@ -3819,13 +3774,11 @@ select[multiple].input-lg,
 
 .has-error .form-control {
   border-color: #a94442;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .has-error .form-control:focus {
   border-color: #843534;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
 }
 
@@ -3904,8 +3857,8 @@ select[multiple].input-lg,
     padding-left: 0;
   }
 
-  .form-inline .radio input[type="radio"],
-  .form-inline .checkbox input[type="checkbox"] {
+  .form-inline .radio input[type=radio],
+  .form-inline .checkbox input[type=checkbox] {
     position: relative;
     margin-left: 0;
   }
@@ -3977,8 +3930,7 @@ select[multiple].input-lg,
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  -ms-touch-action: manipulation;
-      touch-action: manipulation;
+  touch-action: manipulation;
   cursor: pointer;
   background-image: none;
   border: 1px solid transparent;
@@ -4013,7 +3965,6 @@ select[multiple].input-lg,
 .btn.active {
   background-image: none;
   outline: 0;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
@@ -4023,7 +3974,6 @@ fieldset[disabled] .btn {
   cursor: not-allowed;
   filter: alpha(opacity=65);
   opacity: 0.65;
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 
@@ -4101,13 +4051,13 @@ fieldset[disabled] .btn-default.focus {
 .btn-primary:focus,
 .btn-primary.focus {
   color: black;
-  background-color: #e6e5e5;
-  border-color: #b3b2b2;
+  background-color: #e6e6e6;
+  border-color: #b3b3b3;
 }
 
 .btn-primary:hover {
   color: black;
-  background-color: #e6e5e5;
+  background-color: #e6e6e6;
   border-color: #d4d4d4;
 }
 
@@ -4115,7 +4065,7 @@ fieldset[disabled] .btn-default.focus {
 .btn-primary.active,
 .open > .btn-primary.dropdown-toggle {
   color: black;
-  background-color: #e6e5e5;
+  background-color: #e6e6e6;
   background-image: none;
   border-color: #d4d4d4;
 }
@@ -4131,7 +4081,7 @@ fieldset[disabled] .btn-default.focus {
 .open > .btn-primary.dropdown-toggle.focus {
   color: black;
   background-color: #d4d4d4;
-  border-color: #b3b2b2;
+  border-color: #b3b3b3;
 }
 
 .btn-primary.disabled:hover,
@@ -4404,7 +4354,6 @@ fieldset[disabled] .btn-danger.focus {
 .btn-link[disabled],
 fieldset[disabled] .btn-link {
   background-color: transparent;
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 
@@ -4463,15 +4412,14 @@ fieldset[disabled] .btn-link:focus {
   margin-top: 5px;
 }
 
-input[type="submit"].btn-block,
-input[type="reset"].btn-block,
-input[type="button"].btn-block {
+input[type=submit].btn-block,
+input[type=reset].btn-block,
+input[type=button].btn-block {
   width: 100%;
 }
 
 .fade {
   opacity: 0;
-  -webkit-transition: opacity 0.15s linear;
   transition: opacity 0.15s linear;
 }
 
@@ -4499,11 +4447,8 @@ tbody.collapse.in {
   position: relative;
   height: 0;
   overflow: hidden;
-  -webkit-transition-property: height, visibility;
   transition-property: height, visibility;
-  -webkit-transition-duration: 0.35s;
   transition-duration: 0.35s;
-  -webkit-transition-timing-function: ease;
   transition-timing-function: ease;
 }
 
@@ -4546,7 +4491,6 @@ tbody.collapse.in {
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
 }
 
@@ -4783,12 +4727,10 @@ tbody.collapse.in {
 }
 
 .btn-group.open .dropdown-toggle {
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
 .btn-group.open .dropdown-toggle.btn-link {
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 
@@ -4893,10 +4835,10 @@ tbody.collapse.in {
   left: auto;
 }
 
-[data-toggle="buttons"] > .btn input[type="radio"],
-[data-toggle="buttons"] > .btn input[type="checkbox"],
-[data-toggle="buttons"] > .btn-group > .btn input[type="radio"],
-[data-toggle="buttons"] > .btn-group > .btn input[type="checkbox"] {
+[data-toggle=buttons] > .btn input[type=radio],
+[data-toggle=buttons] > .btn input[type=checkbox],
+[data-toggle=buttons] > .btn-group > .btn input[type=radio],
+[data-toggle=buttons] > .btn-group > .btn input[type=checkbox] {
   position: absolute;
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
@@ -4908,7 +4850,7 @@ tbody.collapse.in {
   border-collapse: separate;
 }
 
-.input-group[class*="col-"] {
+.input-group[class*=col-] {
   float: none;
   padding-right: 0;
   padding-left: 0;
@@ -4973,8 +4915,8 @@ tbody.collapse.in {
   border-radius: 6px;
 }
 
-.input-group-addon input[type="radio"],
-.input-group-addon input[type="checkbox"] {
+.input-group-addon input[type=radio],
+.input-group-addon input[type=checkbox] {
   margin-top: 0;
 }
 
@@ -5208,9 +5150,7 @@ tbody.collapse.in {
 .nav-tabs-justified > .active > a,
 .nav-tabs.nav-justified > .active > a,
 .nav-tabs-justified > .active > a:hover,
-.nav-tabs.nav-justified > .active > a:hover,
-.nav-tabs-justified > .active > a:focus,
-.nav-tabs.nav-justified > .active > a:focus {
+.nav-tabs-justified > .active > a:focus {
   border: 1px solid #ddd;
 }
 
@@ -5224,9 +5164,7 @@ tbody.collapse.in {
   .nav-tabs-justified > .active > a,
   .nav-tabs.nav-justified > .active > a,
   .nav-tabs-justified > .active > a:hover,
-  .nav-tabs.nav-justified > .active > a:hover,
-  .nav-tabs-justified > .active > a:focus,
-  .nav-tabs.nav-justified > .active > a:focus {
+  .nav-tabs-justified > .active > a:focus {
     border-bottom-color: #333;
   }
 }
@@ -5289,8 +5227,7 @@ tbody.collapse.in {
   padding-left: 15px;
   overflow-x: visible;
   border-top: 1px solid transparent;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -5312,8 +5249,7 @@ tbody.collapse.in {
   .navbar-collapse {
     width: auto;
     border-top: 0;
-    -webkit-box-shadow: none;
-            box-shadow: none;
+    box-shadow: none;
   }
 
   .navbar-collapse.collapse {
@@ -5478,8 +5414,7 @@ tbody.collapse.in {
     margin-top: 0;
     background-color: transparent;
     border: 0;
-    -webkit-box-shadow: none;
-            box-shadow: none;
+    box-shadow: none;
   }
 
   .navbar-nav .open .dropdown-menu > li > a,
@@ -5519,7 +5454,6 @@ tbody.collapse.in {
   margin-left: -15px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
   margin-top: 4px;
   margin-bottom: 4px;
@@ -5575,8 +5509,8 @@ tbody.collapse.in {
     padding-left: 0;
   }
 
-  .navbar-form .radio input[type="radio"],
-  .navbar-form .checkbox input[type="checkbox"] {
+  .navbar-form .radio input[type=radio],
+  .navbar-form .checkbox input[type=checkbox] {
     position: relative;
     margin-left: 0;
   }
@@ -5604,7 +5538,6 @@ tbody.collapse.in {
     margin-right: 0;
     margin-left: 0;
     border: 0;
-    -webkit-box-shadow: none;
     box-shadow: none;
   }
 }
@@ -5670,7 +5603,7 @@ tbody.collapse.in {
 
 .navbar-default {
   background-color: #f8f8f8;
-  border-color: #1a1919;
+  border-color: #1a1a1a;
 }
 
 .navbar-default .navbar-brand {
@@ -5679,7 +5612,7 @@ tbody.collapse.in {
 
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
-  color: #5e5d5d;
+  color: #5e5e5e;
   background-color: transparent;
 }
 
@@ -5759,7 +5692,7 @@ tbody.collapse.in {
 
 .navbar-default .navbar-collapse,
 .navbar-default .navbar-form {
-  border-color: #1a1919;
+  border-color: #1a1a1a;
 }
 
 .navbar-default .navbar-link {
@@ -6101,7 +6034,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 
 .label {
   display: inline;
-  padding: .2em .6em .3em;
+  padding: 0.2em 0.6em 0.3em;
   font-size: 75%;
   font-weight: 700;
   line-height: 1;
@@ -6109,7 +6042,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
-  border-radius: .25em;
+  border-radius: 0.25em;
 }
 
 .label:empty {
@@ -6143,7 +6076,7 @@ a.label:focus {
 
 .label-primary[href]:hover,
 .label-primary[href]:focus {
-  background-color: #a7a6a6;
+  background-color: #a7a7a7;
 }
 
 .label-success {
@@ -6207,7 +6140,6 @@ a.label:focus {
 }
 
 .btn-xs .badge,
-.btn-group-xs > .btn .badge,
 .btn-group-xs > .btn .badge {
   top: 0;
   padding: 1px 5px;
@@ -6298,7 +6230,6 @@ a.badge:focus {
   background-color: #333;
   border: 1px solid #ddd;
   border-radius: 0;
-  -webkit-transition: border 0.2s ease-in-out;
   transition: border 0.2s ease-in-out;
 }
 
@@ -6442,7 +6373,6 @@ a.thumbnail.active {
   overflow: hidden;
   background-color: #f5f5f5;
   border-radius: 0;
-  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -6455,9 +6385,7 @@ a.thumbnail.active {
   color: #fff;
   text-align: center;
   background-color: #c0c0c0;
-  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  -webkit-transition: width 0.6s ease;
   transition: width 0.6s ease;
 }
 
@@ -6577,7 +6505,7 @@ a.thumbnail.active {
   padding: 10px 15px;
   margin-bottom: -1px;
   background-color: #fff;
-  border: 1px solid #1a1919;
+  border: 1px solid #1a1a1a;
 }
 
 .list-group-item:first-child {
@@ -6813,7 +6741,6 @@ button.list-group-item-danger.active:focus {
   background-color: transparent;
   border: 1px solid transparent;
   border-radius: 0;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
@@ -6860,7 +6787,7 @@ button.list-group-item-danger.active:focus {
 .panel-footer {
   padding: 10px 15px;
   background-color: #f5f5f5;
-  border-top: 1px solid #1a1919;
+  border-top: 1px solid #1a1a1a;
   border-bottom-right-radius: -1;
   border-bottom-left-radius: -1;
 }
@@ -7081,7 +7008,7 @@ button.list-group-item-danger.active:focus {
 
 .panel-group .panel-heading + .panel-collapse > .panel-body,
 .panel-group .panel-heading + .panel-collapse > .list-group {
-  border-top: 1px solid #1a1919;
+  border-top: 1px solid #1a1a1a;
 }
 
 .panel-group .panel-footer {
@@ -7089,21 +7016,21 @@ button.list-group-item-danger.active:focus {
 }
 
 .panel-group .panel-footer + .panel-collapse .panel-body {
-  border-bottom: 1px solid #1a1919;
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .panel-default {
-  border-color: #1a1919;
+  border-color: #1a1a1a;
 }
 
 .panel-default > .panel-heading {
   color: #333333;
   background-color: transparent;
-  border-color: #1a1919;
+  border-color: #1a1a1a;
 }
 
 .panel-default > .panel-heading + .panel-collapse > .panel-body {
-  border-top-color: #1a1919;
+  border-top-color: #1a1a1a;
 }
 
 .panel-default > .panel-heading .badge {
@@ -7112,7 +7039,7 @@ button.list-group-item-danger.active:focus {
 }
 
 .panel-default > .panel-footer + .panel-collapse > .panel-body {
-  border-bottom-color: #1a1919;
+  border-bottom-color: #1a1a1a;
 }
 
 .panel-primary {
@@ -7267,7 +7194,6 @@ button.list-group-item-danger.active:focus {
   background-color: #f5f5f5;
   border: 1px solid #e3e3e3;
   border-radius: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
@@ -7336,7 +7262,6 @@ button.close {
 .modal.fade .modal-dialog {
   -webkit-transform: translate(0, -25%);
   transform: translate(0, -25%);
-  -webkit-transition: -webkit-transform 0.3s ease-out;
   transition: -webkit-transform 0.3s ease-out;
   transition: transform 0.3s ease-out;
   transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
@@ -7365,7 +7290,6 @@ button.close {
   border: 1px solid #999;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
-  -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   outline: 0;
 }
@@ -7463,7 +7387,6 @@ button.close {
   }
 
   .modal-content {
-    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   }
 
@@ -7637,7 +7560,6 @@ button.close {
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -7770,7 +7692,6 @@ button.close {
 .carousel-inner > .item {
   position: relative;
   display: none;
-  -webkit-transition: 0.6s ease-in-out left;
   transition: 0.6s ease-in-out left;
 }
 
@@ -7784,7 +7705,6 @@ button.close {
 
 @media all and (transform-3d), (-webkit-transform-3d) {
   .carousel-inner > .item {
-    -webkit-transition: -webkit-transform 0.6s ease-in-out;
     transition: -webkit-transform 0.6s ease-in-out;
     transition: transform 0.6s ease-in-out;
     transition: transform 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
@@ -7865,24 +7785,22 @@ button.close {
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   filter: alpha(opacity=50);
   opacity: 0.5;
 }
 
 .carousel-control.left {
-  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.5)), to(rgba(0, 0, 0, 0.0001)));
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#80000000", endColorstr="#00000000", GradientType=1);
   background-repeat: repeat-x;
 }
 
 .carousel-control.right {
   right: 0;
   left: auto;
-  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.0001)), to(rgba(0, 0, 0, 0.5)));
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00000000", endColorstr="#80000000", GradientType=1);
   background-repeat: repeat-x;
 }
 
@@ -7954,7 +7872,7 @@ button.close {
   text-indent: -999px;
   cursor: pointer;
   background-color: #000 \9;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   border: 1px solid #fff;
   border-radius: 10px;
 }
@@ -8343,12 +8261,12 @@ button.close {
 .flag-icon {
   position: relative;
   display: inline-block;
-  width: 1.33333333em;
+  width: 1.3333333333em;
   line-height: 1em;
 }
 
 .flag-icon:before {
-  content: '\A0';
+  content: "\A0";
 }
 
 .flag-icon.flag-icon-squared {
@@ -8356,2051 +8274,2051 @@ button.close {
 }
 
 .flag-icon-ad {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ad.svg?2d9288138275b189625c8c2c264648ec);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ad.svg?2d9288138275b189625c8c2c264648ec);
 }
 
 .flag-icon-ad.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ad.svg?800207334fe3f06f5cefab0e161ee27d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ad.svg?800207334fe3f06f5cefab0e161ee27d);
 }
 
 .flag-icon-ae {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ae.svg?998cc1fc1b86c9e1f5e381ed49bcb73c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ae.svg?998cc1fc1b86c9e1f5e381ed49bcb73c);
 }
 
 .flag-icon-ae.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ae.svg?8fc34d937ede25b6e171274b804b1e7f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ae.svg?8fc34d937ede25b6e171274b804b1e7f);
 }
 
 .flag-icon-af {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/af.svg?1e73c9eec7a1fe8d8a4a28de746bb09c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/af.svg?1e73c9eec7a1fe8d8a4a28de746bb09c);
 }
 
 .flag-icon-af.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/af.svg?ddee87a8c4cdbc2a60b5d4ddc3a1549a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/af.svg?ddee87a8c4cdbc2a60b5d4ddc3a1549a);
 }
 
 .flag-icon-ag {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ag.svg?b8b828913dc2d38b6afaed59032f2ad9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ag.svg?b8b828913dc2d38b6afaed59032f2ad9);
 }
 
 .flag-icon-ag.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ag.svg?441882c5d5489780f1ab6b44927e5cd3);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ag.svg?441882c5d5489780f1ab6b44927e5cd3);
 }
 
 .flag-icon-ai {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ai.svg?7b4552df49750bda95a7fb860851ba60);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ai.svg?7b4552df49750bda95a7fb860851ba60);
 }
 
 .flag-icon-ai.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ai.svg?377c542ad344b6c40fd30645601fdb01);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ai.svg?377c542ad344b6c40fd30645601fdb01);
 }
 
 .flag-icon-al {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/al.svg?4ed11fa46f929442468e9904abdbcc4a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/al.svg?4ed11fa46f929442468e9904abdbcc4a);
 }
 
 .flag-icon-al.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/al.svg?0663234670e1d6679628d6f4fbae4e90);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/al.svg?0663234670e1d6679628d6f4fbae4e90);
 }
 
 .flag-icon-am {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/am.svg?cb2561270555c1b1e80318bc637c05ea);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/am.svg?cb2561270555c1b1e80318bc637c05ea);
 }
 
 .flag-icon-am.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/am.svg?41e6105650bb108b46e153f4f043e027);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/am.svg?41e6105650bb108b46e153f4f043e027);
 }
 
 .flag-icon-ao {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ao.svg?b69218a9dc7ff91ce97305c35b9f8991);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ao.svg?b69218a9dc7ff91ce97305c35b9f8991);
 }
 
 .flag-icon-ao.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ao.svg?3e1baa0864a908f0cb27d06e155300ba);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ao.svg?3e1baa0864a908f0cb27d06e155300ba);
 }
 
 .flag-icon-aq {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/aq.svg?02ad59b3dcbdd872f74d3c112f474794);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/aq.svg?02ad59b3dcbdd872f74d3c112f474794);
 }
 
 .flag-icon-aq.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/aq.svg?328821fe6adacfa7bee4f57da5d4e5c6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/aq.svg?328821fe6adacfa7bee4f57da5d4e5c6);
 }
 
 .flag-icon-ar {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ar.svg?5261e632249ca9ab5b916055603be1f6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ar.svg?5261e632249ca9ab5b916055603be1f6);
 }
 
 .flag-icon-ar.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ar.svg?53647ae9f056d46e03205f791f2b66e3);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ar.svg?53647ae9f056d46e03205f791f2b66e3);
 }
 
 .flag-icon-as {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/as.svg?23e6ae7d55de1077626007fdfe9a5822);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/as.svg?23e6ae7d55de1077626007fdfe9a5822);
 }
 
 .flag-icon-as.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/as.svg?078ba7453c7f253d3f2ceea4b8b57d37);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/as.svg?078ba7453c7f253d3f2ceea4b8b57d37);
 }
 
 .flag-icon-at {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/at.svg?fa4cf0437de30e8cbf8952b91ffbbc3a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/at.svg?fa4cf0437de30e8cbf8952b91ffbbc3a);
 }
 
 .flag-icon-at.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/at.svg?0721b30720785a8a481ea634b50445ff);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/at.svg?0721b30720785a8a481ea634b50445ff);
 }
 
 .flag-icon-au {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/au.svg?bb307e7fab6969ba6d3ff7d2ceeb6288);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/au.svg?bb307e7fab6969ba6d3ff7d2ceeb6288);
 }
 
 .flag-icon-au.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/au.svg?f6b7907ce4405df5f8c7d1abbbadafd5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/au.svg?f6b7907ce4405df5f8c7d1abbbadafd5);
 }
 
 .flag-icon-aw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/aw.svg?3f52fb17e14398c3a3d8e5cece4f9009);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/aw.svg?3f52fb17e14398c3a3d8e5cece4f9009);
 }
 
 .flag-icon-aw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/aw.svg?0cd7e031771900e86d3fe8dcd81e5556);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/aw.svg?0cd7e031771900e86d3fe8dcd81e5556);
 }
 
 .flag-icon-ax {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ax.svg?f8c4019f81d13aade8e732ab4a6baf32);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ax.svg?f8c4019f81d13aade8e732ab4a6baf32);
 }
 
 .flag-icon-ax.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ax.svg?e939bf2ecb653b16e31928f62f14161b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ax.svg?e939bf2ecb653b16e31928f62f14161b);
 }
 
 .flag-icon-az {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/az.svg?198dbef38643afbd74b6d1cbe6da9ec8);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/az.svg?198dbef38643afbd74b6d1cbe6da9ec8);
 }
 
 .flag-icon-az.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/az.svg?1edff1247e1846c4e074a479684ea6ee);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/az.svg?1edff1247e1846c4e074a479684ea6ee);
 }
 
 .flag-icon-ba {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ba.svg?7d6f56d23d025c0f0368ac2f85d7f8af);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ba.svg?7d6f56d23d025c0f0368ac2f85d7f8af);
 }
 
 .flag-icon-ba.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ba.svg?d5ef14f05acaac11a4844e9b3bbedb00);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ba.svg?d5ef14f05acaac11a4844e9b3bbedb00);
 }
 
 .flag-icon-bb {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bb.svg?fe3ac3fea6f1abd9cfce0635cc6d610b);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bb.svg?fe3ac3fea6f1abd9cfce0635cc6d610b);
 }
 
 .flag-icon-bb.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bb.svg?0c916c1c17d5652f5e92b773aa1d4e2a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bb.svg?0c916c1c17d5652f5e92b773aa1d4e2a);
 }
 
 .flag-icon-bd {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bd.svg?a7978d3d0cb45d9a6dfae8569f7c9969);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bd.svg?a7978d3d0cb45d9a6dfae8569f7c9969);
 }
 
 .flag-icon-bd.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bd.svg?b2af31760187b0f75eb6789dda71f62f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bd.svg?b2af31760187b0f75eb6789dda71f62f);
 }
 
 .flag-icon-be {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/be.svg?5739940da79d5fa8e595e64c05669c2a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/be.svg?5739940da79d5fa8e595e64c05669c2a);
 }
 
 .flag-icon-be.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/be.svg?f34903cc86f134e4aa0aab9ff6a9e571);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/be.svg?f34903cc86f134e4aa0aab9ff6a9e571);
 }
 
 .flag-icon-bf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bf.svg?57907e6611d0ab08eed5631443cdd447);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bf.svg?57907e6611d0ab08eed5631443cdd447);
 }
 
 .flag-icon-bf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bf.svg?348494c4020e910a1c5ebf26ad17c27b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bf.svg?348494c4020e910a1c5ebf26ad17c27b);
 }
 
 .flag-icon-bg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bg.svg?494aa5696f310b06328d4768c4bacdcc);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bg.svg?494aa5696f310b06328d4768c4bacdcc);
 }
 
 .flag-icon-bg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bg.svg?44d83f951206160867dedeb992217279);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bg.svg?44d83f951206160867dedeb992217279);
 }
 
 .flag-icon-bh {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bh.svg?7510653e469a48d869e109f7cc5fe930);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bh.svg?7510653e469a48d869e109f7cc5fe930);
 }
 
 .flag-icon-bh.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bh.svg?18fac7d81bf6f7575b9f7486ee55cfcd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bh.svg?18fac7d81bf6f7575b9f7486ee55cfcd);
 }
 
 .flag-icon-bi {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bi.svg?12a40d8db0b02233e8bdfe888231bfdb);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bi.svg?12a40d8db0b02233e8bdfe888231bfdb);
 }
 
 .flag-icon-bi.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bi.svg?d0615c777a4d8ada254341565c49bcd5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bi.svg?d0615c777a4d8ada254341565c49bcd5);
 }
 
 .flag-icon-bj {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bj.svg?5561ec954d9c2ec533400b805354a4b6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bj.svg?5561ec954d9c2ec533400b805354a4b6);
 }
 
 .flag-icon-bj.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bj.svg?22430301448ceea1471d979ca319be92);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bj.svg?22430301448ceea1471d979ca319be92);
 }
 
 .flag-icon-bl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bl.svg?2a496da9f0ccf063b143d591045f587a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bl.svg?2a496da9f0ccf063b143d591045f587a);
 }
 
 .flag-icon-bl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bl.svg?2deb442f266b054738dc4389f509a553);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bl.svg?2deb442f266b054738dc4389f509a553);
 }
 
 .flag-icon-bm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bm.svg?012b04b78dff697d63abb50a1193144c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bm.svg?012b04b78dff697d63abb50a1193144c);
 }
 
 .flag-icon-bm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bm.svg?f2a17828e24a83b7bb4e980543c5fab6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bm.svg?f2a17828e24a83b7bb4e980543c5fab6);
 }
 
 .flag-icon-bn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bn.svg?f6d5f4005cca9ebb9883e5fb4e3edba9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bn.svg?f6d5f4005cca9ebb9883e5fb4e3edba9);
 }
 
 .flag-icon-bn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bn.svg?c5b91605c852ec62583c5e7498a9f4c5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bn.svg?c5b91605c852ec62583c5e7498a9f4c5);
 }
 
 .flag-icon-bo {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bo.svg?5f3fef091d666ea0ed093b1a427eac1f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bo.svg?5f3fef091d666ea0ed093b1a427eac1f);
 }
 
 .flag-icon-bo.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bo.svg?2b6773a9f72cc831c5fd8ac5a2115576);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bo.svg?2b6773a9f72cc831c5fd8ac5a2115576);
 }
 
 .flag-icon-bq {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bq.svg?fda6c02c937beae291172cd3f50df39c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bq.svg?fda6c02c937beae291172cd3f50df39c);
 }
 
 .flag-icon-bq.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bq.svg?8c6f85c7ffea34a1d11596e9945f112a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bq.svg?8c6f85c7ffea34a1d11596e9945f112a);
 }
 
 .flag-icon-br {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/br.svg?a31e25766b6f0ba6bea0e6bf7d8e91af);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/br.svg?a31e25766b6f0ba6bea0e6bf7d8e91af);
 }
 
 .flag-icon-br.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/br.svg?a30c10f8643bb31ef60f65958865a812);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/br.svg?a30c10f8643bb31ef60f65958865a812);
 }
 
 .flag-icon-bs {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bs.svg?cf40c6afb10d012e938c1fc4975301db);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bs.svg?cf40c6afb10d012e938c1fc4975301db);
 }
 
 .flag-icon-bs.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bs.svg?0f30e82c7146b9138138a31810ae9e1e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bs.svg?0f30e82c7146b9138138a31810ae9e1e);
 }
 
 .flag-icon-bt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bt.svg?87d65251ab5b878dd029615dd4794a8e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bt.svg?87d65251ab5b878dd029615dd4794a8e);
 }
 
 .flag-icon-bt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bt.svg?508393deb13245e36ff088316dbcd5da);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bt.svg?508393deb13245e36ff088316dbcd5da);
 }
 
 .flag-icon-bv {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bv.svg?4fbc14ad662107c170024061b40f6302);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bv.svg?4fbc14ad662107c170024061b40f6302);
 }
 
 .flag-icon-bv.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bv.svg?ce747379b653d0c81d931cd25779c857);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bv.svg?ce747379b653d0c81d931cd25779c857);
 }
 
 .flag-icon-bw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bw.svg?15ed460a57847531507e5ba7201597b5);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bw.svg?15ed460a57847531507e5ba7201597b5);
 }
 
 .flag-icon-bw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bw.svg?5f11a0beed3ff05c3accc5df7e42fd66);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bw.svg?5f11a0beed3ff05c3accc5df7e42fd66);
 }
 
 .flag-icon-by {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/by.svg?c05c8c07ade1f9ead97ddf35a747f95b);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/by.svg?c05c8c07ade1f9ead97ddf35a747f95b);
 }
 
 .flag-icon-by.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/by.svg?9b65127c617c5268e17e0997da71885b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/by.svg?9b65127c617c5268e17e0997da71885b);
 }
 
 .flag-icon-bz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/bz.svg?2458dd8a8870ea822b25e1cbbd9cb0a9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/bz.svg?2458dd8a8870ea822b25e1cbbd9cb0a9);
 }
 
 .flag-icon-bz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/bz.svg?81f2d6419e0debccb76714ed466b0652);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/bz.svg?81f2d6419e0debccb76714ed466b0652);
 }
 
 .flag-icon-ca {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ca.svg?0efb6bf1f18132e87ea2c57d9580c45c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ca.svg?0efb6bf1f18132e87ea2c57d9580c45c);
 }
 
 .flag-icon-ca.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ca.svg?a3999867cb776b04ebddf5d9eef4f48c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ca.svg?a3999867cb776b04ebddf5d9eef4f48c);
 }
 
 .flag-icon-cc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cc.svg?dd392e29d025f8df6555fbb825f3ac84);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cc.svg?dd392e29d025f8df6555fbb825f3ac84);
 }
 
 .flag-icon-cc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cc.svg?e53abbf8dc50b464cbb11a76ff1ec9d6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cc.svg?e53abbf8dc50b464cbb11a76ff1ec9d6);
 }
 
 .flag-icon-cd {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cd.svg?d4408d3c47a4436c01c71fe6af4825bd);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cd.svg?d4408d3c47a4436c01c71fe6af4825bd);
 }
 
 .flag-icon-cd.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cd.svg?a3ecd8067fcd90a99ce9385abdc99f45);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cd.svg?a3ecd8067fcd90a99ce9385abdc99f45);
 }
 
 .flag-icon-cf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cf.svg?d8dd15d37e5023c354126187fe19327f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cf.svg?d8dd15d37e5023c354126187fe19327f);
 }
 
 .flag-icon-cf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cf.svg?8f764c6dedaca265cead5bd746224551);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cf.svg?8f764c6dedaca265cead5bd746224551);
 }
 
 .flag-icon-cg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cg.svg?51ec77aa7dc9bd203501805508836662);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cg.svg?51ec77aa7dc9bd203501805508836662);
 }
 
 .flag-icon-cg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cg.svg?4ad6f3e8cf63bc61fc684d1e23e86899);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cg.svg?4ad6f3e8cf63bc61fc684d1e23e86899);
 }
 
 .flag-icon-ch {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ch.svg?a69a50e544ff08eb122eedb7dc274cac);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ch.svg?a69a50e544ff08eb122eedb7dc274cac);
 }
 
 .flag-icon-ch.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ch.svg?987cb82c1cadb50c89fe1e58dec40c31);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ch.svg?987cb82c1cadb50c89fe1e58dec40c31);
 }
 
 .flag-icon-ci {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ci.svg?11ac689d81026c7e72a1726cc5b8e435);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ci.svg?11ac689d81026c7e72a1726cc5b8e435);
 }
 
 .flag-icon-ci.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ci.svg?728ba64d6ecf525a8eb69909b6f62b58);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ci.svg?728ba64d6ecf525a8eb69909b6f62b58);
 }
 
 .flag-icon-ck {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ck.svg?fe45a10b7d10b55b741114dcb7e75f48);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ck.svg?fe45a10b7d10b55b741114dcb7e75f48);
 }
 
 .flag-icon-ck.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ck.svg?e2686b2a29a1d7e56e17214b72e4cb0a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ck.svg?e2686b2a29a1d7e56e17214b72e4cb0a);
 }
 
 .flag-icon-cl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cl.svg?2fd895c4996f542bf3b07caba07bec6e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cl.svg?2fd895c4996f542bf3b07caba07bec6e);
 }
 
 .flag-icon-cl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cl.svg?609867ee88ac78b4aaf397a6fabe6790);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cl.svg?609867ee88ac78b4aaf397a6fabe6790);
 }
 
 .flag-icon-cm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cm.svg?a56034b73ef6d0700c73206a2f72abe0);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cm.svg?a56034b73ef6d0700c73206a2f72abe0);
 }
 
 .flag-icon-cm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cm.svg?94ec67b0531daa72807d39d9c7fa2123);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cm.svg?94ec67b0531daa72807d39d9c7fa2123);
 }
 
 .flag-icon-cn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cn.svg?2c193ab31269f0da8be9830738325d0f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cn.svg?2c193ab31269f0da8be9830738325d0f);
 }
 
 .flag-icon-cn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cn.svg?3a0829042f88f0dd20060d30fd7057c2);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cn.svg?3a0829042f88f0dd20060d30fd7057c2);
 }
 
 .flag-icon-co {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/co.svg?c5d7116a03266225f537cb79a0b87c21);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/co.svg?c5d7116a03266225f537cb79a0b87c21);
 }
 
 .flag-icon-co.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/co.svg?11131041f85f1e5ebf68667f790af409);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/co.svg?11131041f85f1e5ebf68667f790af409);
 }
 
 .flag-icon-cr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cr.svg?0d349fd2526b99ef265d29d840611ce6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cr.svg?0d349fd2526b99ef265d29d840611ce6);
 }
 
 .flag-icon-cr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cr.svg?13c483a397095a9d8703d1eb46328c77);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cr.svg?13c483a397095a9d8703d1eb46328c77);
 }
 
 .flag-icon-cu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cu.svg?1c7cc4da857495d8b44eb88d22a51e33);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cu.svg?1c7cc4da857495d8b44eb88d22a51e33);
 }
 
 .flag-icon-cu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cu.svg?e4f897dc1790e9f3d1adafb62d0f7fd1);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cu.svg?e4f897dc1790e9f3d1adafb62d0f7fd1);
 }
 
 .flag-icon-cv {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cv.svg?624a2d4d919439bbd76b1431de002c18);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cv.svg?624a2d4d919439bbd76b1431de002c18);
 }
 
 .flag-icon-cv.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cv.svg?accdfa0ea8efad323ef4711339765a4b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cv.svg?accdfa0ea8efad323ef4711339765a4b);
 }
 
 .flag-icon-cw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cw.svg?9c06626ee2188bfd83b63be4b009cc30);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cw.svg?9c06626ee2188bfd83b63be4b009cc30);
 }
 
 .flag-icon-cw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cw.svg?ae75cba57510891147b59f88c71d3584);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cw.svg?ae75cba57510891147b59f88c71d3584);
 }
 
 .flag-icon-cx {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cx.svg?b2a59c5ce370cabebdcbd19672933e7e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cx.svg?b2a59c5ce370cabebdcbd19672933e7e);
 }
 
 .flag-icon-cx.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cx.svg?8142eab77f7fe4cfb349a14b4f94ce1d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cx.svg?8142eab77f7fe4cfb349a14b4f94ce1d);
 }
 
 .flag-icon-cy {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cy.svg?5e40be33df611e7bdecee279ccf3889e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cy.svg?5e40be33df611e7bdecee279ccf3889e);
 }
 
 .flag-icon-cy.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cy.svg?dbf92cb89053f06b273f767cc7dd3a8e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cy.svg?dbf92cb89053f06b273f767cc7dd3a8e);
 }
 
 .flag-icon-cz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/cz.svg?09a9b116642e821937ffc1d777a99022);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/cz.svg?09a9b116642e821937ffc1d777a99022);
 }
 
 .flag-icon-cz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/cz.svg?b325cced526f0d4cb42b655eca7f40e4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/cz.svg?b325cced526f0d4cb42b655eca7f40e4);
 }
 
 .flag-icon-de {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/de.svg?246a5fcba5ed21747c2a108e5e635ec7);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/de.svg?246a5fcba5ed21747c2a108e5e635ec7);
 }
 
 .flag-icon-de.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/de.svg?74018f0abdef885f425c141cc3244afb);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/de.svg?74018f0abdef885f425c141cc3244afb);
 }
 
 .flag-icon-dj {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/dj.svg?694ca31b23013c8f1127e23741dd54a0);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/dj.svg?694ca31b23013c8f1127e23741dd54a0);
 }
 
 .flag-icon-dj.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/dj.svg?63e20123441e1fe6998df866aceb2a4c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/dj.svg?63e20123441e1fe6998df866aceb2a4c);
 }
 
 .flag-icon-dk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/dk.svg?302b4687163f20c1e43779d2a3f671a0);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/dk.svg?302b4687163f20c1e43779d2a3f671a0);
 }
 
 .flag-icon-dk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/dk.svg?59a9d25f6d57f572f48c2c1eeecb0724);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/dk.svg?59a9d25f6d57f572f48c2c1eeecb0724);
 }
 
 .flag-icon-dm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/dm.svg?b1635699ae7bb121d9efce1f2a881320);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/dm.svg?b1635699ae7bb121d9efce1f2a881320);
 }
 
 .flag-icon-dm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/dm.svg?fda8fe7071e4410604350b7ca25aeb4b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/dm.svg?fda8fe7071e4410604350b7ca25aeb4b);
 }
 
 .flag-icon-do {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/do.svg?704fd2a9ed132ee8e42c5fc4dbea31a1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/do.svg?704fd2a9ed132ee8e42c5fc4dbea31a1);
 }
 
 .flag-icon-do.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/do.svg?88a82fcc61969d9c897ca685f5020b5e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/do.svg?88a82fcc61969d9c897ca685f5020b5e);
 }
 
 .flag-icon-dz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/dz.svg?0477e542720bf395ac09392db78e17a7);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/dz.svg?0477e542720bf395ac09392db78e17a7);
 }
 
 .flag-icon-dz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/dz.svg?ff15f060b5abba792024a5b144e5a31d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/dz.svg?ff15f060b5abba792024a5b144e5a31d);
 }
 
 .flag-icon-ec {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ec.svg?3bafd0714678cf63330f182d9ec4cc41);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ec.svg?3bafd0714678cf63330f182d9ec4cc41);
 }
 
 .flag-icon-ec.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ec.svg?8fb69b7933c6f712e20572580736f7c4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ec.svg?8fb69b7933c6f712e20572580736f7c4);
 }
 
 .flag-icon-ee {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ee.svg?03c3d564daa8527441e943dab22a6e24);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ee.svg?03c3d564daa8527441e943dab22a6e24);
 }
 
 .flag-icon-ee.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ee.svg?9b43910c06e045dae08a96b7e185ca30);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ee.svg?9b43910c06e045dae08a96b7e185ca30);
 }
 
 .flag-icon-eg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/eg.svg?b0aa9a4e893d49715b780350324cb985);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/eg.svg?b0aa9a4e893d49715b780350324cb985);
 }
 
 .flag-icon-eg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/eg.svg?4137f1081dc73f5450aa1732b27a73eb);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/eg.svg?4137f1081dc73f5450aa1732b27a73eb);
 }
 
 .flag-icon-eh {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/eh.svg?44d979031e6ecf702d00c9d07bbfcc0c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/eh.svg?44d979031e6ecf702d00c9d07bbfcc0c);
 }
 
 .flag-icon-eh.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/eh.svg?780a0a9e2e95e4971fdca31fbf97091e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/eh.svg?780a0a9e2e95e4971fdca31fbf97091e);
 }
 
 .flag-icon-er {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/er.svg?b4ea80f7a2a8848ad55e31b9bf3afc90);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/er.svg?b4ea80f7a2a8848ad55e31b9bf3afc90);
 }
 
 .flag-icon-er.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/er.svg?8d5171c77e388034f48931bb77b65014);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/er.svg?8d5171c77e388034f48931bb77b65014);
 }
 
 .flag-icon-es {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/es.svg?bcf1ab9854fa7d81fedb1115032ab465);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/es.svg?bcf1ab9854fa7d81fedb1115032ab465);
 }
 
 .flag-icon-es.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/es.svg?361eda2a8906d9753ced8c046a754606);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/es.svg?361eda2a8906d9753ced8c046a754606);
 }
 
 .flag-icon-et {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/et.svg?512bde19026857a0be17fa2271224762);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/et.svg?512bde19026857a0be17fa2271224762);
 }
 
 .flag-icon-et.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/et.svg?a61da8e203efc6ddf8be108c074e44e9);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/et.svg?a61da8e203efc6ddf8be108c074e44e9);
 }
 
 .flag-icon-fi {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/fi.svg?8c63a9af82c69e1e067cc51fe8251693);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/fi.svg?8c63a9af82c69e1e067cc51fe8251693);
 }
 
 .flag-icon-fi.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/fi.svg?55109a408f95186b773e8e89b5a67dcc);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/fi.svg?55109a408f95186b773e8e89b5a67dcc);
 }
 
 .flag-icon-fj {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/fj.svg?caf72f69ced8ffea30cc3a38bcc6011e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/fj.svg?caf72f69ced8ffea30cc3a38bcc6011e);
 }
 
 .flag-icon-fj.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/fj.svg?453532c2daca1423d88f079a82cfcfc5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/fj.svg?453532c2daca1423d88f079a82cfcfc5);
 }
 
 .flag-icon-fk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/fk.svg?1e53dc26d87dc2ff8cdec524787eb102);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/fk.svg?1e53dc26d87dc2ff8cdec524787eb102);
 }
 
 .flag-icon-fk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/fk.svg?1bffbf9fdbc7e06d1e4ea685247c72f5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/fk.svg?1bffbf9fdbc7e06d1e4ea685247c72f5);
 }
 
 .flag-icon-fm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/fm.svg?2c13a5d4f618959c50fcca1b498dd393);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/fm.svg?2c13a5d4f618959c50fcca1b498dd393);
 }
 
 .flag-icon-fm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/fm.svg?41b339f3be3f9e3f61694ab4a9086c09);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/fm.svg?41b339f3be3f9e3f61694ab4a9086c09);
 }
 
 .flag-icon-fo {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/fo.svg?c2f634751d1be4f5bb02637a2648823f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/fo.svg?c2f634751d1be4f5bb02637a2648823f);
 }
 
 .flag-icon-fo.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/fo.svg?32019da00e4ad54d1cda9ff412d32ca1);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/fo.svg?32019da00e4ad54d1cda9ff412d32ca1);
 }
 
 .flag-icon-fr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/fr.svg?4e3ec048e64c77815332dbb34f9b6305);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/fr.svg?4e3ec048e64c77815332dbb34f9b6305);
 }
 
 .flag-icon-fr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/fr.svg?f4529ed89ccd5521b6895e298346e71d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/fr.svg?f4529ed89ccd5521b6895e298346e71d);
 }
 
 .flag-icon-ga {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ga.svg?8629ddf547aa8d81b25fba0579963c21);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ga.svg?8629ddf547aa8d81b25fba0579963c21);
 }
 
 .flag-icon-ga.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ga.svg?886a7348fe2900f346fe427ffb40dbea);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ga.svg?886a7348fe2900f346fe427ffb40dbea);
 }
 
 .flag-icon-gb {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gb.svg?85a97dab5b090c1a8110d27fcd570939);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gb.svg?85a97dab5b090c1a8110d27fcd570939);
 }
 
 .flag-icon-gb.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gb.svg?fe60f8318501f211b9583bc6d666c874);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gb.svg?fe60f8318501f211b9583bc6d666c874);
 }
 
 .flag-icon-gd {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gd.svg?0e3d254c0cf13bf900b1eed7022fd68f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gd.svg?0e3d254c0cf13bf900b1eed7022fd68f);
 }
 
 .flag-icon-gd.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gd.svg?7c62ce7d1f45914b82768e971aa41745);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gd.svg?7c62ce7d1f45914b82768e971aa41745);
 }
 
 .flag-icon-ge {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ge.svg?a129579288ce45bca7de9c073c5e17a9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ge.svg?a129579288ce45bca7de9c073c5e17a9);
 }
 
 .flag-icon-ge.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ge.svg?49a0b418c43c1db8a679832ec0310144);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ge.svg?49a0b418c43c1db8a679832ec0310144);
 }
 
 .flag-icon-gf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gf.svg?434bae071ab5ed1b79860ca48122b681);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gf.svg?434bae071ab5ed1b79860ca48122b681);
 }
 
 .flag-icon-gf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gf.svg?d0185c1175c7d0fa26b1a282440d7677);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gf.svg?d0185c1175c7d0fa26b1a282440d7677);
 }
 
 .flag-icon-gg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gg.svg?c447047f465ae1303de6e46c43eb0a6a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gg.svg?c447047f465ae1303de6e46c43eb0a6a);
 }
 
 .flag-icon-gg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gg.svg?02df8a5dc2a174160c2ff4febae8c1f6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gg.svg?02df8a5dc2a174160c2ff4febae8c1f6);
 }
 
 .flag-icon-gh {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gh.svg?bb3bb60464f9de0885206ae68d817026);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gh.svg?bb3bb60464f9de0885206ae68d817026);
 }
 
 .flag-icon-gh.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gh.svg?e0ca5267471f6b47564b10068f37e874);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gh.svg?e0ca5267471f6b47564b10068f37e874);
 }
 
 .flag-icon-gi {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gi.svg?71cfe39b19a8cf801dac52745837879d);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gi.svg?71cfe39b19a8cf801dac52745837879d);
 }
 
 .flag-icon-gi.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gi.svg?1afed1e43b3df70621911e848165db4f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gi.svg?1afed1e43b3df70621911e848165db4f);
 }
 
 .flag-icon-gl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gl.svg?1495643c89bb2002c8d1af03cd3d68b7);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gl.svg?1495643c89bb2002c8d1af03cd3d68b7);
 }
 
 .flag-icon-gl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gl.svg?59e1835690dfbbb0414e59a72686b054);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gl.svg?59e1835690dfbbb0414e59a72686b054);
 }
 
 .flag-icon-gm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gm.svg?39937d8fd860274df069f97aefc58e15);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gm.svg?39937d8fd860274df069f97aefc58e15);
 }
 
 .flag-icon-gm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gm.svg?6b4107900a93999092ef63fb4b99b171);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gm.svg?6b4107900a93999092ef63fb4b99b171);
 }
 
 .flag-icon-gn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gn.svg?e2dcda47e6c4a060104aaa7be670bf86);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gn.svg?e2dcda47e6c4a060104aaa7be670bf86);
 }
 
 .flag-icon-gn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gn.svg?0798100ed78e72cc9070bb01924cba7e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gn.svg?0798100ed78e72cc9070bb01924cba7e);
 }
 
 .flag-icon-gp {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gp.svg?0dcdf9660c568a30d3dbf8caf64e9d42);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gp.svg?0dcdf9660c568a30d3dbf8caf64e9d42);
 }
 
 .flag-icon-gp.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gp.svg?8fc39c39ffec8d93e550676fec3b8b56);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gp.svg?8fc39c39ffec8d93e550676fec3b8b56);
 }
 
 .flag-icon-gq {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gq.svg?c095a0d44d955f381d95bc1223c5a74f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gq.svg?c095a0d44d955f381d95bc1223c5a74f);
 }
 
 .flag-icon-gq.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gq.svg?88946f8ad223fc1224a03988295e4849);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gq.svg?88946f8ad223fc1224a03988295e4849);
 }
 
 .flag-icon-gr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gr.svg?334890b69eef86b49a9083dcc2f33d31);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gr.svg?334890b69eef86b49a9083dcc2f33d31);
 }
 
 .flag-icon-gr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gr.svg?dcc2c8657fa2795dda11f625a3fd5d67);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gr.svg?dcc2c8657fa2795dda11f625a3fd5d67);
 }
 
 .flag-icon-gs {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gs.svg?21f7c99f17bb19ebe4b9921b7fa01afc);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gs.svg?21f7c99f17bb19ebe4b9921b7fa01afc);
 }
 
 .flag-icon-gs.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gs.svg?1067356806f9346264da936cc4c9e120);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gs.svg?1067356806f9346264da936cc4c9e120);
 }
 
 .flag-icon-gt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gt.svg?01ce618dccdf1c3af88fc6cab6c375e9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gt.svg?01ce618dccdf1c3af88fc6cab6c375e9);
 }
 
 .flag-icon-gt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gt.svg?4eea9e03835a6042e803aae0c5103137);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gt.svg?4eea9e03835a6042e803aae0c5103137);
 }
 
 .flag-icon-gu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gu.svg?beb28cdd728df39cc5016605a594cc99);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gu.svg?beb28cdd728df39cc5016605a594cc99);
 }
 
 .flag-icon-gu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gu.svg?d4375e9d037d29bc430f6b8f2591514e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gu.svg?d4375e9d037d29bc430f6b8f2591514e);
 }
 
 .flag-icon-gw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gw.svg?f0742332f72950dc2c88c2793ffe423f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gw.svg?f0742332f72950dc2c88c2793ffe423f);
 }
 
 .flag-icon-gw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gw.svg?1ea244637aa5bc1fb63541b77e6a54c0);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gw.svg?1ea244637aa5bc1fb63541b77e6a54c0);
 }
 
 .flag-icon-gy {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gy.svg?cbacc8b88ee72a8dcf56632a2b2b947d);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gy.svg?cbacc8b88ee72a8dcf56632a2b2b947d);
 }
 
 .flag-icon-gy.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gy.svg?333d94bf559357540545c39f94cb12ef);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gy.svg?333d94bf559357540545c39f94cb12ef);
 }
 
 .flag-icon-hk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/hk.svg?029a6bef7507e48f79319f007585eaec);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/hk.svg?029a6bef7507e48f79319f007585eaec);
 }
 
 .flag-icon-hk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/hk.svg?50fa2f99e1b35759629a6399ea58a5c6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/hk.svg?50fa2f99e1b35759629a6399ea58a5c6);
 }
 
 .flag-icon-hm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/hm.svg?8bbb5756e34452e030d2ccb14d7bf622);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/hm.svg?8bbb5756e34452e030d2ccb14d7bf622);
 }
 
 .flag-icon-hm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/hm.svg?45e61c98191d6b1210b748066ce97549);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/hm.svg?45e61c98191d6b1210b748066ce97549);
 }
 
 .flag-icon-hn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/hn.svg?db7e3de4435a912737ae15ff8c1b8130);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/hn.svg?db7e3de4435a912737ae15ff8c1b8130);
 }
 
 .flag-icon-hn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/hn.svg?4938f675b80bdc7e5ec2768cf4c09c18);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/hn.svg?4938f675b80bdc7e5ec2768cf4c09c18);
 }
 
 .flag-icon-hr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/hr.svg?176d2d57842eb1084e5363276bcaa988);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/hr.svg?176d2d57842eb1084e5363276bcaa988);
 }
 
 .flag-icon-hr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/hr.svg?635a60933b2268045706360f55b7b477);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/hr.svg?635a60933b2268045706360f55b7b477);
 }
 
 .flag-icon-ht {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ht.svg?5f6a49d0ed1c19657da2392ce95dc7fe);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ht.svg?5f6a49d0ed1c19657da2392ce95dc7fe);
 }
 
 .flag-icon-ht.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ht.svg?06eefed919d3723c507764ee01357a2e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ht.svg?06eefed919d3723c507764ee01357a2e);
 }
 
 .flag-icon-hu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/hu.svg?d1065faa141b030f4d6317927525ec32);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/hu.svg?d1065faa141b030f4d6317927525ec32);
 }
 
 .flag-icon-hu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/hu.svg?a38286595b4408dcfabeea890b327320);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/hu.svg?a38286595b4408dcfabeea890b327320);
 }
 
 .flag-icon-id {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/id.svg?e8f1c8799e91c132917570b3442d4ed2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/id.svg?e8f1c8799e91c132917570b3442d4ed2);
 }
 
 .flag-icon-id.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/id.svg?cd7ecc1e34dd7b23af6e87d25499a77a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/id.svg?cd7ecc1e34dd7b23af6e87d25499a77a);
 }
 
 .flag-icon-ie {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ie.svg?deca9e10a3bd63cbb1cc783d2fc85625);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ie.svg?deca9e10a3bd63cbb1cc783d2fc85625);
 }
 
 .flag-icon-ie.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ie.svg?ce6c7d810f03854cd7517de4dad68c5d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ie.svg?ce6c7d810f03854cd7517de4dad68c5d);
 }
 
 .flag-icon-il {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/il.svg?ad7a2d12e6947b430bc763470066d10a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/il.svg?ad7a2d12e6947b430bc763470066d10a);
 }
 
 .flag-icon-il.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/il.svg?5a12c248e7badb386042c6f20160aef6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/il.svg?5a12c248e7badb386042c6f20160aef6);
 }
 
 .flag-icon-im {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/im.svg?07fac2afc75f3b5d1c234ea32738512f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/im.svg?07fac2afc75f3b5d1c234ea32738512f);
 }
 
 .flag-icon-im.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/im.svg?f6e8452ca63057270d6e65c2688bfa12);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/im.svg?f6e8452ca63057270d6e65c2688bfa12);
 }
 
 .flag-icon-in {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/in.svg?98c5671706065988ddff35d83a2cadbb);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/in.svg?98c5671706065988ddff35d83a2cadbb);
 }
 
 .flag-icon-in.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/in.svg?f1c7c9bef4ab67d1e4a6cda4f63eb86c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/in.svg?f1c7c9bef4ab67d1e4a6cda4f63eb86c);
 }
 
 .flag-icon-io {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/io.svg?7fc155e7fac8126870876572461fe95b);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/io.svg?7fc155e7fac8126870876572461fe95b);
 }
 
 .flag-icon-io.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/io.svg?1734998df85efc34d79d0fb154fffd7d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/io.svg?1734998df85efc34d79d0fb154fffd7d);
 }
 
 .flag-icon-iq {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/iq.svg?77fca3a16e9b7d1b1de65cd1ae6c4973);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/iq.svg?77fca3a16e9b7d1b1de65cd1ae6c4973);
 }
 
 .flag-icon-iq.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/iq.svg?a632108725e2eb4eebf2bc82161185d3);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/iq.svg?a632108725e2eb4eebf2bc82161185d3);
 }
 
 .flag-icon-ir {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ir.svg?28b0fb3b3d83de326b81a1668e21beb6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ir.svg?28b0fb3b3d83de326b81a1668e21beb6);
 }
 
 .flag-icon-ir.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ir.svg?1a62e10d6cfe077c86a38c4c5e8215e5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ir.svg?1a62e10d6cfe077c86a38c4c5e8215e5);
 }
 
 .flag-icon-is {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/is.svg?ba30d1eb1308572f96dc27307903152d);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/is.svg?ba30d1eb1308572f96dc27307903152d);
 }
 
 .flag-icon-is.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/is.svg?2c3b9decb9e6eeff88565452a4be54f6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/is.svg?2c3b9decb9e6eeff88565452a4be54f6);
 }
 
 .flag-icon-it {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/it.svg?5a3412cbe8f690dc5dfc92c3b8b68001);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/it.svg?5a3412cbe8f690dc5dfc92c3b8b68001);
 }
 
 .flag-icon-it.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/it.svg?15a1f288182170a580964fb8a64248d7);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/it.svg?15a1f288182170a580964fb8a64248d7);
 }
 
 .flag-icon-je {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/je.svg?a2bead8f5c6abd826fe5b5e8c52901b4);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/je.svg?a2bead8f5c6abd826fe5b5e8c52901b4);
 }
 
 .flag-icon-je.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/je.svg?12bf2a5fe22bbdbcf5b5187920ed633e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/je.svg?12bf2a5fe22bbdbcf5b5187920ed633e);
 }
 
 .flag-icon-jm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/jm.svg?c5279e8583934fd4fcc2b95faab316c9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/jm.svg?c5279e8583934fd4fcc2b95faab316c9);
 }
 
 .flag-icon-jm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/jm.svg?1b388cb263bd368e45888104001165b2);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/jm.svg?1b388cb263bd368e45888104001165b2);
 }
 
 .flag-icon-jo {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/jo.svg?5806167645b758207aeb910e04e25ecf);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/jo.svg?5806167645b758207aeb910e04e25ecf);
 }
 
 .flag-icon-jo.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/jo.svg?e0c3d125e44478b3c9fc62c9c7b07951);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/jo.svg?e0c3d125e44478b3c9fc62c9c7b07951);
 }
 
 .flag-icon-jp {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/jp.svg?28157b5298df82905d87061bfe56788c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/jp.svg?28157b5298df82905d87061bfe56788c);
 }
 
 .flag-icon-jp.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/jp.svg?b5b509c87244a9ff54e87d54f97d64bd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/jp.svg?b5b509c87244a9ff54e87d54f97d64bd);
 }
 
 .flag-icon-ke {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ke.svg?ac8b7d8174a8767fefb6aa4a648e9024);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ke.svg?ac8b7d8174a8767fefb6aa4a648e9024);
 }
 
 .flag-icon-ke.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ke.svg?8db0f5f99c8a152df9a5386e54302cab);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ke.svg?8db0f5f99c8a152df9a5386e54302cab);
 }
 
 .flag-icon-kg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kg.svg?0e8c2a1deb7a97d5d6fae34edf6fffe0);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kg.svg?0e8c2a1deb7a97d5d6fae34edf6fffe0);
 }
 
 .flag-icon-kg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kg.svg?20cdf6156992570d17d7e923af3dd9d9);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kg.svg?20cdf6156992570d17d7e923af3dd9d9);
 }
 
 .flag-icon-kh {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kh.svg?add3236a32912b953efd4bcba465536c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kh.svg?add3236a32912b953efd4bcba465536c);
 }
 
 .flag-icon-kh.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kh.svg?2be5f19d71be932f32fbfe74572384b5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kh.svg?2be5f19d71be932f32fbfe74572384b5);
 }
 
 .flag-icon-ki {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ki.svg?db9ce4a8eedd3429844cb999147e4e05);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ki.svg?db9ce4a8eedd3429844cb999147e4e05);
 }
 
 .flag-icon-ki.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ki.svg?84841933e626d7194ab99001eaffcca7);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ki.svg?84841933e626d7194ab99001eaffcca7);
 }
 
 .flag-icon-km {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/km.svg?05c0e1c1d234ec535e809a8711e6f779);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/km.svg?05c0e1c1d234ec535e809a8711e6f779);
 }
 
 .flag-icon-km.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/km.svg?86ad579fab8211512f200facfb700eaf);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/km.svg?86ad579fab8211512f200facfb700eaf);
 }
 
 .flag-icon-kn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kn.svg?8d2a2bac0a4bec64f61798ef6c86046b);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kn.svg?8d2a2bac0a4bec64f61798ef6c86046b);
 }
 
 .flag-icon-kn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kn.svg?a1e5c90bb158a324df6f2f416b58a1a5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kn.svg?a1e5c90bb158a324df6f2f416b58a1a5);
 }
 
 .flag-icon-kp {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kp.svg?fc45ba59283feb5ac07259425091029e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kp.svg?fc45ba59283feb5ac07259425091029e);
 }
 
 .flag-icon-kp.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kp.svg?bab86a2769bae956735f43562d7a0a6e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kp.svg?bab86a2769bae956735f43562d7a0a6e);
 }
 
 .flag-icon-kr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kr.svg?472436a2cd7adcfb81854d5e9d45267b);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kr.svg?472436a2cd7adcfb81854d5e9d45267b);
 }
 
 .flag-icon-kr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kr.svg?7ce5a14098bfd2fb03e05cb0d1e178b4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kr.svg?7ce5a14098bfd2fb03e05cb0d1e178b4);
 }
 
 .flag-icon-kw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kw.svg?8758e4ab9960cbd0372b2bdbb5a97db4);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kw.svg?8758e4ab9960cbd0372b2bdbb5a97db4);
 }
 
 .flag-icon-kw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kw.svg?0a1e78f001df0d3a9a4657ad20df9d20);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kw.svg?0a1e78f001df0d3a9a4657ad20df9d20);
 }
 
 .flag-icon-ky {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ky.svg?bc2f4070b8aede23d93492f15b23af52);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ky.svg?bc2f4070b8aede23d93492f15b23af52);
 }
 
 .flag-icon-ky.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ky.svg?58b6db257c2227ed4023905121077fa6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ky.svg?58b6db257c2227ed4023905121077fa6);
 }
 
 .flag-icon-kz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/kz.svg?765abf25f0c5a3107513c0d71b66ea98);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/kz.svg?765abf25f0c5a3107513c0d71b66ea98);
 }
 
 .flag-icon-kz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/kz.svg?0855baa1155ef2663125457d2f27fb81);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/kz.svg?0855baa1155ef2663125457d2f27fb81);
 }
 
 .flag-icon-la {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/la.svg?d4742a0bc73e9af721f7b7e6c08c4720);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/la.svg?d4742a0bc73e9af721f7b7e6c08c4720);
 }
 
 .flag-icon-la.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/la.svg?635b3d0bd4b2f2854bff71670f72d22f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/la.svg?635b3d0bd4b2f2854bff71670f72d22f);
 }
 
 .flag-icon-lb {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lb.svg?c43e467ffa79b69e102a3242d03863ef);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lb.svg?c43e467ffa79b69e102a3242d03863ef);
 }
 
 .flag-icon-lb.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lb.svg?bdba8149d35cfa3642a7fddb7d204e19);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lb.svg?bdba8149d35cfa3642a7fddb7d204e19);
 }
 
 .flag-icon-lc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lc.svg?318596539572196c7f62fc47fc2a4e5e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lc.svg?318596539572196c7f62fc47fc2a4e5e);
 }
 
 .flag-icon-lc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lc.svg?5ad24b4c23e1c0240d15d4de8daf6103);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lc.svg?5ad24b4c23e1c0240d15d4de8daf6103);
 }
 
 .flag-icon-li {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/li.svg?7f2cb3e761858cd6cd0dad1e9a99c7b4);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/li.svg?7f2cb3e761858cd6cd0dad1e9a99c7b4);
 }
 
 .flag-icon-li.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/li.svg?f37f498e8d8d43d49133b6b2de2b447b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/li.svg?f37f498e8d8d43d49133b6b2de2b447b);
 }
 
 .flag-icon-lk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lk.svg?f8d21a6b463aa47f76f4eaaa36497fca);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lk.svg?f8d21a6b463aa47f76f4eaaa36497fca);
 }
 
 .flag-icon-lk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lk.svg?3ce70e5002961066169f54aff5492201);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lk.svg?3ce70e5002961066169f54aff5492201);
 }
 
 .flag-icon-lr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lr.svg?e026e0f7f0697fe0dd3cf3f86443b851);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lr.svg?e026e0f7f0697fe0dd3cf3f86443b851);
 }
 
 .flag-icon-lr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lr.svg?e3059e9827267ac9bf36de53a29cb0a8);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lr.svg?e3059e9827267ac9bf36de53a29cb0a8);
 }
 
 .flag-icon-ls {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ls.svg?6497b847f86af3b088814ff131f87ff2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ls.svg?6497b847f86af3b088814ff131f87ff2);
 }
 
 .flag-icon-ls.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ls.svg?fd0cc2e17bcb57d703a83d0079c316bd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ls.svg?fd0cc2e17bcb57d703a83d0079c316bd);
 }
 
 .flag-icon-lt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lt.svg?c2b153a464289ca2eda1e4c289b65c17);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lt.svg?c2b153a464289ca2eda1e4c289b65c17);
 }
 
 .flag-icon-lt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lt.svg?76ec6661382ebca94b7f03e61e76e72d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lt.svg?76ec6661382ebca94b7f03e61e76e72d);
 }
 
 .flag-icon-lu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lu.svg?cad8b8baa96492b8507359b0dfaaad66);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lu.svg?cad8b8baa96492b8507359b0dfaaad66);
 }
 
 .flag-icon-lu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lu.svg?57b9eece69ceaf18a2caa31327fa205d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lu.svg?57b9eece69ceaf18a2caa31327fa205d);
 }
 
 .flag-icon-lv {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/lv.svg?35ddb2f334c25ef94cafb8373be1bcae);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/lv.svg?35ddb2f334c25ef94cafb8373be1bcae);
 }
 
 .flag-icon-lv.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/lv.svg?4838077bfe980fe615358fdc5ce4af8b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/lv.svg?4838077bfe980fe615358fdc5ce4af8b);
 }
 
 .flag-icon-ly {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ly.svg?41489295bb65a7891cc8a0c030689412);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ly.svg?41489295bb65a7891cc8a0c030689412);
 }
 
 .flag-icon-ly.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ly.svg?27ae749c0846f8a5c2e256ed49faf819);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ly.svg?27ae749c0846f8a5c2e256ed49faf819);
 }
 
 .flag-icon-ma {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ma.svg?821b32398c1b5dbe1834770ef5f6ba61);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ma.svg?821b32398c1b5dbe1834770ef5f6ba61);
 }
 
 .flag-icon-ma.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ma.svg?c91b74041cf00efd50fc30b8e4d91ffb);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ma.svg?c91b74041cf00efd50fc30b8e4d91ffb);
 }
 
 .flag-icon-mc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mc.svg?37be4651b8d058120dd8cb47983e9c99);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mc.svg?37be4651b8d058120dd8cb47983e9c99);
 }
 
 .flag-icon-mc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mc.svg?04a4a202a022ccc10add49ca6cf706fd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mc.svg?04a4a202a022ccc10add49ca6cf706fd);
 }
 
 .flag-icon-md {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/md.svg?824e3e16727c39d5ad3be1d767e50584);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/md.svg?824e3e16727c39d5ad3be1d767e50584);
 }
 
 .flag-icon-md.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/md.svg?879bb31c43329e54330fdf47b5faced9);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/md.svg?879bb31c43329e54330fdf47b5faced9);
 }
 
 .flag-icon-me {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/me.svg?37b693f64c100e0b9a2d6be418dd4fdb);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/me.svg?37b693f64c100e0b9a2d6be418dd4fdb);
 }
 
 .flag-icon-me.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/me.svg?be3b17db49b465d383d3ac13ad8218fd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/me.svg?be3b17db49b465d383d3ac13ad8218fd);
 }
 
 .flag-icon-mf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mf.svg?d3fbe0d987afbd8149e84ca101791d16);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mf.svg?d3fbe0d987afbd8149e84ca101791d16);
 }
 
 .flag-icon-mf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mf.svg?647123880ea3877d53947e8c33ecabe4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mf.svg?647123880ea3877d53947e8c33ecabe4);
 }
 
 .flag-icon-mg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mg.svg?fba42999241fe114d86f32140ad674c8);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mg.svg?fba42999241fe114d86f32140ad674c8);
 }
 
 .flag-icon-mg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mg.svg?1491077425ac44fdd5ca2a301975640e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mg.svg?1491077425ac44fdd5ca2a301975640e);
 }
 
 .flag-icon-mh {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mh.svg?c1782cea933e24d2f7570be27ab5e12c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mh.svg?c1782cea933e24d2f7570be27ab5e12c);
 }
 
 .flag-icon-mh.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mh.svg?40dbb5c2801f16957059be2ca054fca1);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mh.svg?40dbb5c2801f16957059be2ca054fca1);
 }
 
 .flag-icon-mk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mk.svg?4a879fde847db3890fea5197ef3663d1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mk.svg?4a879fde847db3890fea5197ef3663d1);
 }
 
 .flag-icon-mk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mk.svg?12c1fffa458d1051841446e12b5f6ae8);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mk.svg?12c1fffa458d1051841446e12b5f6ae8);
 }
 
 .flag-icon-ml {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ml.svg?64aa836720124c581eea7ae0d5b60443);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ml.svg?64aa836720124c581eea7ae0d5b60443);
 }
 
 .flag-icon-ml.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ml.svg?02a95bc10fc1791b510be1ecbf972359);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ml.svg?02a95bc10fc1791b510be1ecbf972359);
 }
 
 .flag-icon-mm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mm.svg?a646bac36c08c5b843f8eb9efa0ddd88);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mm.svg?a646bac36c08c5b843f8eb9efa0ddd88);
 }
 
 .flag-icon-mm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mm.svg?95787e3a534c1ed0a1efe301f700811f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mm.svg?95787e3a534c1ed0a1efe301f700811f);
 }
 
 .flag-icon-mn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mn.svg?5f43e0c610de2e75736483bbbd06da28);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mn.svg?5f43e0c610de2e75736483bbbd06da28);
 }
 
 .flag-icon-mn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mn.svg?7ff5bebad5607af5a3a0fbedc02f4d37);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mn.svg?7ff5bebad5607af5a3a0fbedc02f4d37);
 }
 
 .flag-icon-mo {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mo.svg?012b278d37953c5a2e3e8ae12422e31e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mo.svg?012b278d37953c5a2e3e8ae12422e31e);
 }
 
 .flag-icon-mo.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mo.svg?94c09d5818bb170ef91f26db40712e94);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mo.svg?94c09d5818bb170ef91f26db40712e94);
 }
 
 .flag-icon-mp {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mp.svg?bccdcb5ecffe13079a8077d6cd57263a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mp.svg?bccdcb5ecffe13079a8077d6cd57263a);
 }
 
 .flag-icon-mp.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mp.svg?fec806e5ccb0f18ffcadac9464333cf1);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mp.svg?fec806e5ccb0f18ffcadac9464333cf1);
 }
 
 .flag-icon-mq {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mq.svg?9bcc4ffb912c745aa7098c0de1905eeb);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mq.svg?9bcc4ffb912c745aa7098c0de1905eeb);
 }
 
 .flag-icon-mq.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mq.svg?37d2d6810c154684782c747761c2e07c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mq.svg?37d2d6810c154684782c747761c2e07c);
 }
 
 .flag-icon-mr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mr.svg?55d8f233036c23373ecf6eade8d735a1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mr.svg?55d8f233036c23373ecf6eade8d735a1);
 }
 
 .flag-icon-mr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mr.svg?38d81da0d49d46e4227690edf3c52976);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mr.svg?38d81da0d49d46e4227690edf3c52976);
 }
 
 .flag-icon-ms {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ms.svg?ec75da93364b2dd68705a2718c551a8f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ms.svg?ec75da93364b2dd68705a2718c551a8f);
 }
 
 .flag-icon-ms.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ms.svg?830476bcbc2114c0edc9a88954f0816e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ms.svg?830476bcbc2114c0edc9a88954f0816e);
 }
 
 .flag-icon-mt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mt.svg?07ddb919be0f617b964ce47a59528c52);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mt.svg?07ddb919be0f617b964ce47a59528c52);
 }
 
 .flag-icon-mt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mt.svg?4f20d5a79880bb85d3733a8cea2cc22c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mt.svg?4f20d5a79880bb85d3733a8cea2cc22c);
 }
 
 .flag-icon-mu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mu.svg?33b7d11749d57a61797d72ab46cc0ed7);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mu.svg?33b7d11749d57a61797d72ab46cc0ed7);
 }
 
 .flag-icon-mu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mu.svg?fcbb9709a43b6b1f0b94cb5ae9db08be);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mu.svg?fcbb9709a43b6b1f0b94cb5ae9db08be);
 }
 
 .flag-icon-mv {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mv.svg?c11e6efecc84326132b226b7cf84bea5);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mv.svg?c11e6efecc84326132b226b7cf84bea5);
 }
 
 .flag-icon-mv.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mv.svg?f1beedaaf3f70d20d2e962a02d98c559);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mv.svg?f1beedaaf3f70d20d2e962a02d98c559);
 }
 
 .flag-icon-mw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mw.svg?8627c92dc660e33b047a1ae2efe17cf9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mw.svg?8627c92dc660e33b047a1ae2efe17cf9);
 }
 
 .flag-icon-mw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mw.svg?f075545eec970dd6bea4083002f29084);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mw.svg?f075545eec970dd6bea4083002f29084);
 }
 
 .flag-icon-mx {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mx.svg?1fcc3cf0c7e6ca135612d8b3ed399e3a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mx.svg?1fcc3cf0c7e6ca135612d8b3ed399e3a);
 }
 
 .flag-icon-mx.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mx.svg?4e358e43beb776d5c90cca5ffec8a2bd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mx.svg?4e358e43beb776d5c90cca5ffec8a2bd);
 }
 
 .flag-icon-my {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/my.svg?789a6ddf349312be499c1b20096b0240);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/my.svg?789a6ddf349312be499c1b20096b0240);
 }
 
 .flag-icon-my.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/my.svg?591d1e38714cc55a73f3b556f00afb11);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/my.svg?591d1e38714cc55a73f3b556f00afb11);
 }
 
 .flag-icon-mz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/mz.svg?c8308283028cbd9a0281a61635ed3b20);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/mz.svg?c8308283028cbd9a0281a61635ed3b20);
 }
 
 .flag-icon-mz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/mz.svg?4fce86a88ab94af0d4719440a29bbbad);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/mz.svg?4fce86a88ab94af0d4719440a29bbbad);
 }
 
 .flag-icon-na {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/na.svg?efac2847fb683491ca06372a63adc4d7);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/na.svg?efac2847fb683491ca06372a63adc4d7);
 }
 
 .flag-icon-na.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/na.svg?ca8997745270df3094bbff555d517db6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/na.svg?ca8997745270df3094bbff555d517db6);
 }
 
 .flag-icon-nc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/nc.svg?846211decb4c6a7eaf50944147654cbd);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/nc.svg?846211decb4c6a7eaf50944147654cbd);
 }
 
 .flag-icon-nc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/nc.svg?b72ab6b2a834a41cb6cfec2908bf4a78);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/nc.svg?b72ab6b2a834a41cb6cfec2908bf4a78);
 }
 
 .flag-icon-ne {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ne.svg?9a5589731c141e7c38d8ec613a5f0304);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ne.svg?9a5589731c141e7c38d8ec613a5f0304);
 }
 
 .flag-icon-ne.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ne.svg?a7f07f0ce07ab31c89770dddbf56d0c4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ne.svg?a7f07f0ce07ab31c89770dddbf56d0c4);
 }
 
 .flag-icon-nf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/nf.svg?5e07162fc6710cfed614804deb6d57f2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/nf.svg?5e07162fc6710cfed614804deb6d57f2);
 }
 
 .flag-icon-nf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/nf.svg?44fe5947279a723930d2d21b45017c03);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/nf.svg?44fe5947279a723930d2d21b45017c03);
 }
 
 .flag-icon-ng {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ng.svg?ba3bb51aca71f876f6d55d8ea53f7a73);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ng.svg?ba3bb51aca71f876f6d55d8ea53f7a73);
 }
 
 .flag-icon-ng.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ng.svg?f6a23478e72fa37e3b9f3869524e0dfa);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ng.svg?f6a23478e72fa37e3b9f3869524e0dfa);
 }
 
 .flag-icon-ni {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ni.svg?7affd52e71f565734b35c729fd9a69c6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ni.svg?7affd52e71f565734b35c729fd9a69c6);
 }
 
 .flag-icon-ni.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ni.svg?3f7681e7629b2dfdcb7f7c59c1e1b3e0);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ni.svg?3f7681e7629b2dfdcb7f7c59c1e1b3e0);
 }
 
 .flag-icon-nl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/nl.svg?feb9eea9ce02f8633ea8c37354a7e1cb);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/nl.svg?feb9eea9ce02f8633ea8c37354a7e1cb);
 }
 
 .flag-icon-nl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/nl.svg?db2b8b183dba8ab799213ee07763a43e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/nl.svg?db2b8b183dba8ab799213ee07763a43e);
 }
 
 .flag-icon-no {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/no.svg?fc029595f52e23b8f04102e4e3c802c2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/no.svg?fc029595f52e23b8f04102e4e3c802c2);
 }
 
 .flag-icon-no.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/no.svg?51a7ba8c6295a52f4b253b33694eecf1);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/no.svg?51a7ba8c6295a52f4b253b33694eecf1);
 }
 
 .flag-icon-np {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/np.svg?4211aa60556333402993bda5cc007ec3);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/np.svg?4211aa60556333402993bda5cc007ec3);
 }
 
 .flag-icon-np.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/np.svg?c28b6869e7499315df56b73fd2c42a65);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/np.svg?c28b6869e7499315df56b73fd2c42a65);
 }
 
 .flag-icon-nr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/nr.svg?66dd15736f1d79053d46cb60eea52e8a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/nr.svg?66dd15736f1d79053d46cb60eea52e8a);
 }
 
 .flag-icon-nr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/nr.svg?61a42463d2f4031baee80bfbb4976079);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/nr.svg?61a42463d2f4031baee80bfbb4976079);
 }
 
 .flag-icon-nu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/nu.svg?39cb2412fae122cbbb2ae8fc9011fed6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/nu.svg?39cb2412fae122cbbb2ae8fc9011fed6);
 }
 
 .flag-icon-nu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/nu.svg?482618606f493a8f71e79003956049a0);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/nu.svg?482618606f493a8f71e79003956049a0);
 }
 
 .flag-icon-nz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/nz.svg?07d3ae50c3576b59ca1cf5ef6eb1cf02);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/nz.svg?07d3ae50c3576b59ca1cf5ef6eb1cf02);
 }
 
 .flag-icon-nz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/nz.svg?d29645cfd55673bf87bf02f95bf79668);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/nz.svg?d29645cfd55673bf87bf02f95bf79668);
 }
 
 .flag-icon-om {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/om.svg?9170bae18fb32150c2ec4fdc6826238c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/om.svg?9170bae18fb32150c2ec4fdc6826238c);
 }
 
 .flag-icon-om.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/om.svg?7171b1e2bb68f23117e15cb01ea2e90a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/om.svg?7171b1e2bb68f23117e15cb01ea2e90a);
 }
 
 .flag-icon-pa {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pa.svg?3b4d5528e24d6aa61e049df51eb8c89f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pa.svg?3b4d5528e24d6aa61e049df51eb8c89f);
 }
 
 .flag-icon-pa.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pa.svg?943e160a9766c67a31c681d260e00f1d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pa.svg?943e160a9766c67a31c681d260e00f1d);
 }
 
 .flag-icon-pe {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pe.svg?fda667297974310505272d2c7ebaf723);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pe.svg?fda667297974310505272d2c7ebaf723);
 }
 
 .flag-icon-pe.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pe.svg?017a482a8e2647dc96dea5d770dab327);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pe.svg?017a482a8e2647dc96dea5d770dab327);
 }
 
 .flag-icon-pf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pf.svg?b6f47989b5c69e0ab2ed87e26869a342);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pf.svg?b6f47989b5c69e0ab2ed87e26869a342);
 }
 
 .flag-icon-pf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pf.svg?3ac8d5bdfe5d78013f568a73dd5b4d61);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pf.svg?3ac8d5bdfe5d78013f568a73dd5b4d61);
 }
 
 .flag-icon-pg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pg.svg?5c17391e78b57ac623cff8401a4e303a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pg.svg?5c17391e78b57ac623cff8401a4e303a);
 }
 
 .flag-icon-pg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pg.svg?4359608e6d3f7f7b4c471f4fe1576b6f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pg.svg?4359608e6d3f7f7b4c471f4fe1576b6f);
 }
 
 .flag-icon-ph {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ph.svg?807a7e5ded435f887dbebed8a7d8d81f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ph.svg?807a7e5ded435f887dbebed8a7d8d81f);
 }
 
 .flag-icon-ph.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ph.svg?605f52201b02fa5bb8a2b99ab1389ed7);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ph.svg?605f52201b02fa5bb8a2b99ab1389ed7);
 }
 
 .flag-icon-pk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pk.svg?fbfb5582df374e123a0d4748380f406e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pk.svg?fbfb5582df374e123a0d4748380f406e);
 }
 
 .flag-icon-pk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pk.svg?f76952932734f7ef0d655691158a4371);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pk.svg?f76952932734f7ef0d655691158a4371);
 }
 
 .flag-icon-pl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pl.svg?6607e08cafd66147db56631c31d66cec);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pl.svg?6607e08cafd66147db56631c31d66cec);
 }
 
 .flag-icon-pl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pl.svg?1f4f8ec32bba1e4e2ec3f4c5fc14efc6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pl.svg?1f4f8ec32bba1e4e2ec3f4c5fc14efc6);
 }
 
 .flag-icon-pm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pm.svg?6359f9eea5d35f2cc4d89366c20e0a26);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pm.svg?6359f9eea5d35f2cc4d89366c20e0a26);
 }
 
 .flag-icon-pm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pm.svg?68469c3f062b2fbeab2e96715a52c798);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pm.svg?68469c3f062b2fbeab2e96715a52c798);
 }
 
 .flag-icon-pn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pn.svg?97f773cab9a46804e0d4d49d3269b3d1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pn.svg?97f773cab9a46804e0d4d49d3269b3d1);
 }
 
 .flag-icon-pn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pn.svg?eb94153e3111b0694e49ac4066bbf9a8);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pn.svg?eb94153e3111b0694e49ac4066bbf9a8);
 }
 
 .flag-icon-pr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pr.svg?563200c5ca16c47d8db68f101700cfb6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pr.svg?563200c5ca16c47d8db68f101700cfb6);
 }
 
 .flag-icon-pr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pr.svg?6949cd9f76c1e488de1074d5d04dc189);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pr.svg?6949cd9f76c1e488de1074d5d04dc189);
 }
 
 .flag-icon-ps {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ps.svg?658c8814aa70f9ef97c7be35d136e492);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ps.svg?658c8814aa70f9ef97c7be35d136e492);
 }
 
 .flag-icon-ps.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ps.svg?1b8d03996bc990a274d24d660912fe66);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ps.svg?1b8d03996bc990a274d24d660912fe66);
 }
 
 .flag-icon-pt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pt.svg?03f36e39e92b313128a702a06fe14396);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pt.svg?03f36e39e92b313128a702a06fe14396);
 }
 
 .flag-icon-pt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pt.svg?6143c8e6835f2dba4080dd2214db7b3f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pt.svg?6143c8e6835f2dba4080dd2214db7b3f);
 }
 
 .flag-icon-pw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/pw.svg?5445894875274b8709f1d6f3fd6af976);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/pw.svg?5445894875274b8709f1d6f3fd6af976);
 }
 
 .flag-icon-pw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/pw.svg?069ec370e716891db264087afdcf6182);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/pw.svg?069ec370e716891db264087afdcf6182);
 }
 
 .flag-icon-py {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/py.svg?795e6d0e6797cfb82c1d039a39ef1387);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/py.svg?795e6d0e6797cfb82c1d039a39ef1387);
 }
 
 .flag-icon-py.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/py.svg?f1fa6887d16e8626a2ece3b50b551718);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/py.svg?f1fa6887d16e8626a2ece3b50b551718);
 }
 
 .flag-icon-qa {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/qa.svg?4f997308380e5dd75fff5a89723a3172);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/qa.svg?4f997308380e5dd75fff5a89723a3172);
 }
 
 .flag-icon-qa.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/qa.svg?29cc28337ed9450a402a45452246c160);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/qa.svg?29cc28337ed9450a402a45452246c160);
 }
 
 .flag-icon-re {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/re.svg?9c769f63698693183e0416f99ee0ab35);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/re.svg?9c769f63698693183e0416f99ee0ab35);
 }
 
 .flag-icon-re.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/re.svg?16aa0b5b66321c1281c063ee2619ab02);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/re.svg?16aa0b5b66321c1281c063ee2619ab02);
 }
 
 .flag-icon-ro {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ro.svg?b091db3bf85fd316caa80e5b05cf264a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ro.svg?b091db3bf85fd316caa80e5b05cf264a);
 }
 
 .flag-icon-ro.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ro.svg?488ee906d08b52610dfb7f47cb84f2e6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ro.svg?488ee906d08b52610dfb7f47cb84f2e6);
 }
 
 .flag-icon-rs {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/rs.svg?192092d6e9f30bd5151566a79fc77cfc);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/rs.svg?192092d6e9f30bd5151566a79fc77cfc);
 }
 
 .flag-icon-rs.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/rs.svg?95f28eccd867726d728d8973386f1a9b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/rs.svg?95f28eccd867726d728d8973386f1a9b);
 }
 
 .flag-icon-ru {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ru.svg?af31e644412f6079d91279ae7b977196);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ru.svg?af31e644412f6079d91279ae7b977196);
 }
 
 .flag-icon-ru.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ru.svg?911c03c21a5ddc5df70b61f46589bd5d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ru.svg?911c03c21a5ddc5df70b61f46589bd5d);
 }
 
 .flag-icon-rw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/rw.svg?dbf846e1d345cbded1f7bed600a96965);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/rw.svg?dbf846e1d345cbded1f7bed600a96965);
 }
 
 .flag-icon-rw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/rw.svg?d724e841628d040ff3484698907a1dd1);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/rw.svg?d724e841628d040ff3484698907a1dd1);
 }
 
 .flag-icon-sa {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sa.svg?45e17088c50060fa0549d945bc987c24);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sa.svg?45e17088c50060fa0549d945bc987c24);
 }
 
 .flag-icon-sa.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sa.svg?1c14b2ed39388b5bf16aa85c4b6d50bb);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sa.svg?1c14b2ed39388b5bf16aa85c4b6d50bb);
 }
 
 .flag-icon-sb {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sb.svg?ab93a7990b049074d06db8b0bc7b3ce2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sb.svg?ab93a7990b049074d06db8b0bc7b3ce2);
 }
 
 .flag-icon-sb.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sb.svg?5bc69a36b0852ca3e1023a0bfc21660e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sb.svg?5bc69a36b0852ca3e1023a0bfc21660e);
 }
 
 .flag-icon-sc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sc.svg?5d8966f42246b186ca5ef3d2144ba158);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sc.svg?5d8966f42246b186ca5ef3d2144ba158);
 }
 
 .flag-icon-sc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sc.svg?ed506f5afdd99e5f884903abf1da85d2);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sc.svg?ed506f5afdd99e5f884903abf1da85d2);
 }
 
 .flag-icon-sd {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sd.svg?aafc9cae603296bc1a353c32c9d0f8f2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sd.svg?aafc9cae603296bc1a353c32c9d0f8f2);
 }
 
 .flag-icon-sd.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sd.svg?d702bafe1580a1d29a20610f75f28964);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sd.svg?d702bafe1580a1d29a20610f75f28964);
 }
 
 .flag-icon-se {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/se.svg?b54f0ef0a393bb878f1eaa549bf100f1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/se.svg?b54f0ef0a393bb878f1eaa549bf100f1);
 }
 
 .flag-icon-se.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/se.svg?5d16ff9ec384c46df7c0261b82bc6267);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/se.svg?5d16ff9ec384c46df7c0261b82bc6267);
 }
 
 .flag-icon-sg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sg.svg?814c6d6547960991430a1c71871597ed);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sg.svg?814c6d6547960991430a1c71871597ed);
 }
 
 .flag-icon-sg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sg.svg?279844e992ca5aa5bbf4d830b2b79be6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sg.svg?279844e992ca5aa5bbf4d830b2b79be6);
 }
 
 .flag-icon-sh {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sh.svg?e26b4b82312cc681dea395e1de7176e9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sh.svg?e26b4b82312cc681dea395e1de7176e9);
 }
 
 .flag-icon-sh.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sh.svg?c147b9c0254aca2a7e4e5c46931ca631);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sh.svg?c147b9c0254aca2a7e4e5c46931ca631);
 }
 
 .flag-icon-si {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/si.svg?48107aebf18a50cd1f74f659dff023b3);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/si.svg?48107aebf18a50cd1f74f659dff023b3);
 }
 
 .flag-icon-si.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/si.svg?fdc1ceeae23c149deb2006431d51737a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/si.svg?fdc1ceeae23c149deb2006431d51737a);
 }
 
 .flag-icon-sj {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sj.svg?d08937cbcc45b5b72fdbca418a465986);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sj.svg?d08937cbcc45b5b72fdbca418a465986);
 }
 
 .flag-icon-sj.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sj.svg?f40433689ccd69fe698f04d5d27baf44);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sj.svg?f40433689ccd69fe698f04d5d27baf44);
 }
 
 .flag-icon-sk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sk.svg?daf75e75e18b8299db61fabcc0946af1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sk.svg?daf75e75e18b8299db61fabcc0946af1);
 }
 
 .flag-icon-sk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sk.svg?253c193837ab28e6fbc39c28024e023f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sk.svg?253c193837ab28e6fbc39c28024e023f);
 }
 
 .flag-icon-sl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sl.svg?f5cb409d2dfc8009c8d8d5d193068358);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sl.svg?f5cb409d2dfc8009c8d8d5d193068358);
 }
 
 .flag-icon-sl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sl.svg?58ef1e3b6bff58d6f4ca6047a96fc59d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sl.svg?58ef1e3b6bff58d6f4ca6047a96fc59d);
 }
 
 .flag-icon-sm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sm.svg?890ad891911e82e4bb6444077e4c4c67);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sm.svg?890ad891911e82e4bb6444077e4c4c67);
 }
 
 .flag-icon-sm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sm.svg?d69bce00e26722bba4db9516bdd7aeb3);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sm.svg?d69bce00e26722bba4db9516bdd7aeb3);
 }
 
 .flag-icon-sn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sn.svg?6d85da96305f317874f735494e0ac237);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sn.svg?6d85da96305f317874f735494e0ac237);
 }
 
 .flag-icon-sn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sn.svg?c1a6798abc4a04fd81139f968d305a8c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sn.svg?c1a6798abc4a04fd81139f968d305a8c);
 }
 
 .flag-icon-so {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/so.svg?fd9745c3e91d65bb27e0ce1a066def8a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/so.svg?fd9745c3e91d65bb27e0ce1a066def8a);
 }
 
 .flag-icon-so.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/so.svg?a3c1b7507d4d51368a9c9c7ef16e50c0);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/so.svg?a3c1b7507d4d51368a9c9c7ef16e50c0);
 }
 
 .flag-icon-sr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sr.svg?64fb37b49bdd1d10f833926e24da7226);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sr.svg?64fb37b49bdd1d10f833926e24da7226);
 }
 
 .flag-icon-sr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sr.svg?ceae0ffa4c003d02ae6151089d91a88d);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sr.svg?ceae0ffa4c003d02ae6151089d91a88d);
 }
 
 .flag-icon-ss {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ss.svg?5e0bad12f6f55064c3dbc63aa8e8128a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ss.svg?5e0bad12f6f55064c3dbc63aa8e8128a);
 }
 
 .flag-icon-ss.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ss.svg?c8e5f380d045c394f352a0bb77d6ff60);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ss.svg?c8e5f380d045c394f352a0bb77d6ff60);
 }
 
 .flag-icon-st {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/st.svg?00f5130cc14dbdb86779b734730a1d9d);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/st.svg?00f5130cc14dbdb86779b734730a1d9d);
 }
 
 .flag-icon-st.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/st.svg?3589e34b716c7cbfb519d64c63aa656c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/st.svg?3589e34b716c7cbfb519d64c63aa656c);
 }
 
 .flag-icon-sv {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sv.svg?abfac59c5ed910b2ddc7cc545c45cb17);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sv.svg?abfac59c5ed910b2ddc7cc545c45cb17);
 }
 
 .flag-icon-sv.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sv.svg?88ca96e7891e09e72a3f8c0cf2e22a7b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sv.svg?88ca96e7891e09e72a3f8c0cf2e22a7b);
 }
 
 .flag-icon-sx {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sx.svg?89f96e7884f6dbcbb0496360d3937c34);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sx.svg?89f96e7884f6dbcbb0496360d3937c34);
 }
 
 .flag-icon-sx.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sx.svg?6c22419aeaf5deb9ca0cd85368de24bd);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sx.svg?6c22419aeaf5deb9ca0cd85368de24bd);
 }
 
 .flag-icon-sy {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sy.svg?d648066bba18b3fedf66db0fca2da5ff);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sy.svg?d648066bba18b3fedf66db0fca2da5ff);
 }
 
 .flag-icon-sy.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sy.svg?96bb3c224fd1a7a3f7869ca176b6ce54);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sy.svg?96bb3c224fd1a7a3f7869ca176b6ce54);
 }
 
 .flag-icon-sz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/sz.svg?d00ba66465ba75f9a782e9f79944402c);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/sz.svg?d00ba66465ba75f9a782e9f79944402c);
 }
 
 .flag-icon-sz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/sz.svg?9ec8da3eae5c07ea00da519d29071389);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/sz.svg?9ec8da3eae5c07ea00da519d29071389);
 }
 
 .flag-icon-tc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tc.svg?d01602470bf5b8c2cc51fbb9925f71a9);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tc.svg?d01602470bf5b8c2cc51fbb9925f71a9);
 }
 
 .flag-icon-tc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tc.svg?bca9f99cb80af8a64a1249b13d08418b);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tc.svg?bca9f99cb80af8a64a1249b13d08418b);
 }
 
 .flag-icon-td {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/td.svg?d6ccfa17c984bf92472575c6cf018f80);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/td.svg?d6ccfa17c984bf92472575c6cf018f80);
 }
 
 .flag-icon-td.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/td.svg?cb622bc24400fd328947ffed78f0660a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/td.svg?cb622bc24400fd328947ffed78f0660a);
 }
 
 .flag-icon-tf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tf.svg?1129c04ba580e9e28171db5d40ce9f32);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tf.svg?1129c04ba580e9e28171db5d40ce9f32);
 }
 
 .flag-icon-tf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tf.svg?3f87ed9137eee673a8d3799760e5c5de);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tf.svg?3f87ed9137eee673a8d3799760e5c5de);
 }
 
 .flag-icon-tg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tg.svg?bf9d20b8945bd53245c9ea1e1eed2a4f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tg.svg?bf9d20b8945bd53245c9ea1e1eed2a4f);
 }
 
 .flag-icon-tg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tg.svg?aff94a793ed8d936373717694ddf3d99);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tg.svg?aff94a793ed8d936373717694ddf3d99);
 }
 
 .flag-icon-th {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/th.svg?565e3c4b62c18bb6ef101a0cf3b4c82f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/th.svg?565e3c4b62c18bb6ef101a0cf3b4c82f);
 }
 
 .flag-icon-th.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/th.svg?9c1e01fcbd77919148db921c5ce77446);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/th.svg?9c1e01fcbd77919148db921c5ce77446);
 }
 
 .flag-icon-tj {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tj.svg?e58f32ff84f001bc7168d27cdc241d71);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tj.svg?e58f32ff84f001bc7168d27cdc241d71);
 }
 
 .flag-icon-tj.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tj.svg?1793caa0c484adea27824ce612e96dfc);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tj.svg?1793caa0c484adea27824ce612e96dfc);
 }
 
 .flag-icon-tk {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tk.svg?b2df385f8dbecd292c77915242f35869);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tk.svg?b2df385f8dbecd292c77915242f35869);
 }
 
 .flag-icon-tk.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tk.svg?e37e35bfee8ec6f39e49f95ba55b4e32);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tk.svg?e37e35bfee8ec6f39e49f95ba55b4e32);
 }
 
 .flag-icon-tl {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tl.svg?547e42152a9dfb16e33dc6bc3663d712);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tl.svg?547e42152a9dfb16e33dc6bc3663d712);
 }
 
 .flag-icon-tl.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tl.svg?214b6f844896186fb3035180638b8a47);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tl.svg?214b6f844896186fb3035180638b8a47);
 }
 
 .flag-icon-tm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tm.svg?f2dc59b2535194d31ce8778386b52164);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tm.svg?f2dc59b2535194d31ce8778386b52164);
 }
 
 .flag-icon-tm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tm.svg?08d55ec816375fc81f1bc352977244e5);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tm.svg?08d55ec816375fc81f1bc352977244e5);
 }
 
 .flag-icon-tn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tn.svg?98351bcb280b1151a28fc9fcf4c1d0f2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tn.svg?98351bcb280b1151a28fc9fcf4c1d0f2);
 }
 
 .flag-icon-tn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tn.svg?34dba63bc62c862c8944dd2c827c1bf6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tn.svg?34dba63bc62c862c8944dd2c827c1bf6);
 }
 
 .flag-icon-to {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/to.svg?00aaa22b9af8c670b1dd4fb7855190b2);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/to.svg?00aaa22b9af8c670b1dd4fb7855190b2);
 }
 
 .flag-icon-to.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/to.svg?ee39c2dbb8ab06d415a474be5fc2beee);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/to.svg?ee39c2dbb8ab06d415a474be5fc2beee);
 }
 
 .flag-icon-tr {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tr.svg?ac4572ccd5aa06b5db888c21b07b728e);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tr.svg?ac4572ccd5aa06b5db888c21b07b728e);
 }
 
 .flag-icon-tr.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tr.svg?d4a61f6a22324244789eda3de42ebb68);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tr.svg?d4a61f6a22324244789eda3de42ebb68);
 }
 
 .flag-icon-tt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tt.svg?333675d63b5100b2ad628b0278de708a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tt.svg?333675d63b5100b2ad628b0278de708a);
 }
 
 .flag-icon-tt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tt.svg?3854b853aee040dd3a36a3bbbb526a16);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tt.svg?3854b853aee040dd3a36a3bbbb526a16);
 }
 
 .flag-icon-tv {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tv.svg?eda22a5dfd270426a548e811128409d4);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tv.svg?eda22a5dfd270426a548e811128409d4);
 }
 
 .flag-icon-tv.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tv.svg?ec5c179a3c54ff54fd82ddda3569f794);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tv.svg?ec5c179a3c54ff54fd82ddda3569f794);
 }
 
 .flag-icon-tw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tw.svg?89a1429ae91ef356268cfdd8759b89e3);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tw.svg?89a1429ae91ef356268cfdd8759b89e3);
 }
 
 .flag-icon-tw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tw.svg?7794932d0d22ed75f2e1e6f1e2fbf472);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tw.svg?7794932d0d22ed75f2e1e6f1e2fbf472);
 }
 
 .flag-icon-tz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/tz.svg?ed1c43d0c76533c8e19f0e8afd0f604a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/tz.svg?ed1c43d0c76533c8e19f0e8afd0f604a);
 }
 
 .flag-icon-tz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/tz.svg?206592dc6556e3cddf82e5f59dbcef24);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/tz.svg?206592dc6556e3cddf82e5f59dbcef24);
 }
 
 .flag-icon-ua {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ua.svg?e2202cb676678f90c10a1c1a0e04afa6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ua.svg?e2202cb676678f90c10a1c1a0e04afa6);
 }
 
 .flag-icon-ua.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ua.svg?5196d8ea0993d5b917b04ddb206163ec);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ua.svg?5196d8ea0993d5b917b04ddb206163ec);
 }
 
 .flag-icon-ug {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ug.svg?f6dbcb210c928f287afbbbf2a191c724);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ug.svg?f6dbcb210c928f287afbbbf2a191c724);
 }
 
 .flag-icon-ug.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ug.svg?69ed4876cb991fc0c03f2ad3ca250a86);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ug.svg?69ed4876cb991fc0c03f2ad3ca250a86);
 }
 
 .flag-icon-um {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/um.svg?f4540fe0a4fe6d781318ce86cd25ec15);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/um.svg?f4540fe0a4fe6d781318ce86cd25ec15);
 }
 
 .flag-icon-um.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/um.svg?2da266d727f6a285c2c6c45404d13857);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/um.svg?2da266d727f6a285c2c6c45404d13857);
 }
 
 .flag-icon-us {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/us.svg?da1c4f85e66e46f759fe736e3f2a5b37);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/us.svg?da1c4f85e66e46f759fe736e3f2a5b37);
 }
 
 .flag-icon-us.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/us.svg?269666d513f4326441bbbdc8564c7cab);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/us.svg?269666d513f4326441bbbdc8564c7cab);
 }
 
 .flag-icon-uy {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/uy.svg?2ac18c6e7d7cbee175d28bf5b7e764ad);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/uy.svg?2ac18c6e7d7cbee175d28bf5b7e764ad);
 }
 
 .flag-icon-uy.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/uy.svg?4caed1247a7d571f081e9cf2015038a9);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/uy.svg?4caed1247a7d571f081e9cf2015038a9);
 }
 
 .flag-icon-uz {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/uz.svg?d9b782092304b93fa203f2e84a9a5c60);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/uz.svg?d9b782092304b93fa203f2e84a9a5c60);
 }
 
 .flag-icon-uz.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/uz.svg?0b281dd521d66869cfba6fc17b814b19);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/uz.svg?0b281dd521d66869cfba6fc17b814b19);
 }
 
 .flag-icon-va {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/va.svg?8aae3709fb23884b7c01927b3ab56c15);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/va.svg?8aae3709fb23884b7c01927b3ab56c15);
 }
 
 .flag-icon-va.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/va.svg?a44c6ba981a68dc7e9cd12f0c07c3e9a);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/va.svg?a44c6ba981a68dc7e9cd12f0c07c3e9a);
 }
 
 .flag-icon-vc {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/vc.svg?fc6aa8fea6b1679f5618d420705c9fdf);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/vc.svg?fc6aa8fea6b1679f5618d420705c9fdf);
 }
 
 .flag-icon-vc.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/vc.svg?0d52b1116574139a04da5c57a6b24b51);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/vc.svg?0d52b1116574139a04da5c57a6b24b51);
 }
 
 .flag-icon-ve {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ve.svg?05045bcea6cd452ff2110d8595ca1895);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ve.svg?05045bcea6cd452ff2110d8595ca1895);
 }
 
 .flag-icon-ve.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ve.svg?d384c6ce97ba0ca4aecbc188e84a0670);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ve.svg?d384c6ce97ba0ca4aecbc188e84a0670);
 }
 
 .flag-icon-vg {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/vg.svg?eef14ab6f09e3eaf612af872df742845);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/vg.svg?eef14ab6f09e3eaf612af872df742845);
 }
 
 .flag-icon-vg.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/vg.svg?4236b3592713a56c25d146f790e2a4f4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/vg.svg?4236b3592713a56c25d146f790e2a4f4);
 }
 
 .flag-icon-vi {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/vi.svg?2127440f728f099608ed690b93661341);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/vi.svg?2127440f728f099608ed690b93661341);
 }
 
 .flag-icon-vi.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/vi.svg?8a178e2ccba3c073eff08cb67977c858);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/vi.svg?8a178e2ccba3c073eff08cb67977c858);
 }
 
 .flag-icon-vn {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/vn.svg?010b0c4c6dc4bdb48895ab271d4544c4);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/vn.svg?010b0c4c6dc4bdb48895ab271d4544c4);
 }
 
 .flag-icon-vn.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/vn.svg?7e156d1d24f51aca6179f2e54dec5c7c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/vn.svg?7e156d1d24f51aca6179f2e54dec5c7c);
 }
 
 .flag-icon-vu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/vu.svg?5bc20756ed74f649e3ce3722b2a9c5a1);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/vu.svg?5bc20756ed74f649e3ce3722b2a9c5a1);
 }
 
 .flag-icon-vu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/vu.svg?9c4c893a4c07eab2b1b6b9e5419f1785);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/vu.svg?9c4c893a4c07eab2b1b6b9e5419f1785);
 }
 
 .flag-icon-wf {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/wf.svg?5e6aa0d6196a1db8431a4fff6937079f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/wf.svg?5e6aa0d6196a1db8431a4fff6937079f);
 }
 
 .flag-icon-wf.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/wf.svg?a10487a62b8516b7d842cfb1bcf9489f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/wf.svg?a10487a62b8516b7d842cfb1bcf9489f);
 }
 
 .flag-icon-ws {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ws.svg?c4eb05965d7ed2e7d561e80e18dc1b68);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ws.svg?c4eb05965d7ed2e7d561e80e18dc1b68);
 }
 
 .flag-icon-ws.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ws.svg?2690f3d8a35c6ca0343fe931be856dc4);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ws.svg?2690f3d8a35c6ca0343fe931be856dc4);
 }
 
 .flag-icon-ye {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/ye.svg?68c397990d00c23f85c865ba696b19fb);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/ye.svg?68c397990d00c23f85c865ba696b19fb);
 }
 
 .flag-icon-ye.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/ye.svg?58d8d56309a5718c3a4f31be6cdf223e);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/ye.svg?58d8d56309a5718c3a4f31be6cdf223e);
 }
 
 .flag-icon-yt {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/yt.svg?0f00b1036165d69eff29d5b898873ad8);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/yt.svg?0f00b1036165d69eff29d5b898873ad8);
 }
 
 .flag-icon-yt.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/yt.svg?a1387f1c257ea0838b27317a6606575f);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/yt.svg?a1387f1c257ea0838b27317a6606575f);
 }
 
 .flag-icon-za {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/za.svg?177080d3e910a20e5b030f916d77760a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/za.svg?177080d3e910a20e5b030f916d77760a);
 }
 
 .flag-icon-za.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/za.svg?9ed44aea09b417be8090dae8e5222232);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/za.svg?9ed44aea09b417be8090dae8e5222232);
 }
 
 .flag-icon-zm {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/zm.svg?5ac3774ab0e7b84a715c175283127732);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/zm.svg?5ac3774ab0e7b84a715c175283127732);
 }
 
 .flag-icon-zm.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/zm.svg?402266a05380383f933eda9a8eff3fb2);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/zm.svg?402266a05380383f933eda9a8eff3fb2);
 }
 
 .flag-icon-zw {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/zw.svg?58e2cbd64ee1252a407f1ca815b6817f);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/zw.svg?58e2cbd64ee1252a407f1ca815b6817f);
 }
 
 .flag-icon-zw.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/zw.svg?25d67323ce7c449da65ae3af13fac562);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/zw.svg?25d67323ce7c449da65ae3af13fac562);
 }
 
 .flag-icon-es-ct {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/es-ct.svg?2f1565e802d4608517d8a9796d2abe88);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/es-ct.svg?2f1565e802d4608517d8a9796d2abe88);
 }
 
 .flag-icon-es-ct.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/es-ct.svg?e6db39f3fca00093bd7a3c2160ce0f57);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/es-ct.svg?e6db39f3fca00093bd7a3c2160ce0f57);
 }
 
 .flag-icon-eu {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/eu.svg?d8c5128679452fbb1742dc0b0fafcfe6);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/eu.svg?d8c5128679452fbb1742dc0b0fafcfe6);
 }
 
 .flag-icon-eu.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/eu.svg?824e473c761930ef1f65fe53a04a4f18);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/eu.svg?824e473c761930ef1f65fe53a04a4f18);
 }
 
 .flag-icon-gb-eng {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gb-eng.svg?e18b270f56f90ad1f19660e70b68fb3a);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gb-eng.svg?e18b270f56f90ad1f19660e70b68fb3a);
 }
 
 .flag-icon-gb-eng.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gb-eng.svg?99785a1e509f909b29d0aff772349748);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gb-eng.svg?99785a1e509f909b29d0aff772349748);
 }
 
 .flag-icon-gb-nir {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gb-nir.svg?080d05670e1d7ad2d3b7315edefa3653);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gb-nir.svg?080d05670e1d7ad2d3b7315edefa3653);
 }
 
 .flag-icon-gb-nir.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gb-nir.svg?5329af5915b425ea338f2eef0bac7af6);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gb-nir.svg?5329af5915b425ea338f2eef0bac7af6);
 }
 
 .flag-icon-gb-sct {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gb-sct.svg?c4361672853bbab112bd4b360e6dd199);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gb-sct.svg?c4361672853bbab112bd4b360e6dd199);
 }
 
 .flag-icon-gb-sct.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gb-sct.svg?6231d4d57245374c7e7578275498310c);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gb-sct.svg?6231d4d57245374c7e7578275498310c);
 }
 
 .flag-icon-gb-wls {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/gb-wls.svg?344dc57e2bbcc26eea7cb4f8211cb5e7);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/gb-wls.svg?344dc57e2bbcc26eea7cb4f8211cb5e7);
 }
 
 .flag-icon-gb-wls.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/gb-wls.svg?d67608c4a9127c21bc7236eaa82505b9);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/gb-wls.svg?d67608c4a9127c21bc7236eaa82505b9);
 }
 
 .flag-icon-un {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/4x3/un.svg?cc2eb7d1b1575db6532cbab447247a1b);
+  background-image: url(/images/vendor/flag-icon-css/flags/4x3/un.svg?cc2eb7d1b1575db6532cbab447247a1b);
 }
 
 .flag-icon-un.flag-icon-squared {
-  background-image: url(/fonts/vendor/flag-icon-css/flags/1x1/un.svg?424ca4dfb83e20505d9c5a92f107b151);
+  background-image: url(/images/vendor/flag-icon-css/flags/1x1/un.svg?424ca4dfb83e20505d9c5a92f107b151);
 }
 
 body {
@@ -10457,7 +10375,6 @@ body::after {
 
 .pickems-grid .bracket {
   padding: 5px 10px 0;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff)), -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff));
   background-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
   background-repeat: no-repeat;
   background-size: 5px 50%;
