@@ -1,3 +1,5 @@
+{{ $standings->first()->race->name }}
+
 [table]
 [tr]
     [td][/td]
@@ -24,12 +26,7 @@
 <?php $previous_rank = 0; ?>
 @foreach( $standings as $standing )
     [tr]
-        [td][right]
-            @if( $previous_rank != $standing->rank )
-                {{ $standing->rank }}
-            @endif
-            <?php $previous_rank = $standing->rank; ?>
-        [/right][/td]
+        [td][right]{{ $previous_rank != $standing->rank ? $standing->rank : '' }}[/right][/td]
         [td][right]{{ $standing->rankMoved }}[/right][/td]
         [td]{{ $standing->user->name }}[/td]
         [td][right]{{ $standing->total_overall }}[/right][/td]

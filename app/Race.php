@@ -18,7 +18,7 @@ class Race extends Model
 		'created_at',
 		'updated_at',
 	];
-	
+
 	/**
 	 * The attributes that are mass-assignable.
 	 *
@@ -49,7 +49,7 @@ class Race extends Model
 	{
 		return $this->belongsTo( Circuit::class );
 	}
-	
+
 	/**
 	 * Get the season of this race.
 	 *
@@ -59,7 +59,7 @@ class Race extends Model
 	{
 		return $this->belongsTo( Season::class );
 	}
-	
+
 	/**
 	 * Get the results of this race.
 	 *
@@ -69,7 +69,7 @@ class Race extends Model
 	{
 		return $this->hasMany( Result::class );
 	}
-	
+
 	/**
 	 * Get the standings of this race.
 	 *
@@ -79,7 +79,7 @@ class Race extends Model
 	{
 		return $this->hasMany( Standing::class );
 	}
-	
+
 	/**
 	 * Get the picks of this race.
 	 *
@@ -89,7 +89,7 @@ class Race extends Model
 	{
 		return $this->hasMany( Pick::class );
 	}
-	
+
 	/**
 	 * Get next race according to current date.
 	 *
@@ -100,34 +100,35 @@ class Race extends Model
 	public function scopeNextOrLast( Builder $query )
 	{
 		$newQuery = clone $query;
-		
+
 		$first = $query->where( 'race_day', '>=', date('Y-m-d') )->first();
-		
+
 		if( $first )
 			return $first;
-		
+
 		return $newQuery->withoutGlobalScope('sortByRaceDay')->orderBy( 'race_day', 'desc' )->first();
 	}
-	
+
 	/**
 	 * Get previous race according to current date.
 	 *
 	 * @param	$query	\Illuminate\Database\Eloquent\Builder
+	 * @param	$index	integer
 	 *
 	 * @return	\Illuminate\Database\Eloquent\Builder
 	 */
-	public function scopePreviousOrFirst( Builder $query )
+	public function scopePreviousOrFirst( Builder $query, int $index = 0 )
 	{
 		$newQuery = clone $query;
-		
-		$last = $query->withoutGlobalScope('sortByRaceDay')->where( 'race_day', '<=', date('Y-m-d') )->orderBy('race_day', 'desc')->first();
-		
+
+		$last = $query->withoutGlobalScope('sortByRaceDay')->where( 'race_day', '<=', date('Y-m-d') )->orderBy('race_day', 'desc')->get()->slice($index, 1)->first();
+
 		if( $last )
 			return $last;
-		
+
 		return $newQuery->first();
 	}
-	
+
 	/**
 	 * Get next race deadline according to current date.
 	 *
@@ -139,7 +140,7 @@ class Race extends Model
 	{
 		return $query->where( 'weekend_start', '>', date('Y-m-d H:i:s') );
 	}
-	
+
 	/**
 	 * Can we pick for this race?
 	 *

@@ -14,7 +14,7 @@ class Standings extends Command
      *
      * @var string
      */
-    protected $signature = 'standings {league}';
+    protected $signature = 'standings {league} {offset=0}';
 
     /**
      * The console command description.
@@ -40,9 +40,10 @@ class Standings extends Command
      */
     public function handle()
     {
-        $race       = Race::previousOrFirst();
         $leagueName = $this->argument('league');
         $leagues    = League::where('name', $leagueName)->get();
+        $offset     = $this->argument('offset');
+        $race       = Race::previousOrFirst($offset);
 
         if($leagues->isEmpty())
         {
