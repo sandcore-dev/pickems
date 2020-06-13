@@ -77,7 +77,7 @@ trait UserSeasonsList
      */
     protected function getSeasons( League $league, User $user = null, bool $includeFutureSeasons = true )
     {
-		if( $this->seasons[ $league->id ] )
+		if( isset($this->seasons[ $league->id ]) )
 			return $this->seasons[ $league->id ];
 		
 		$seasons = [];

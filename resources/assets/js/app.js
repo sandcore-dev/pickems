@@ -16,7 +16,7 @@ window.Vue = require('vue');
  */
 
 // Vue.component('example', require('./components/Example.vue'));
- Vue.component('user-league-results', require('./components/UserLeagueResults.vue'));
+Vue.component('user-league-results', require('./components/UserLeagueResults.vue').default);
 
 const app = new Vue({
     el: '.vue'
