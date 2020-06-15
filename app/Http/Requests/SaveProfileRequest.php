@@ -24,25 +24,25 @@ class SaveProfileRequest extends FormRequest
      */
     public function rules()
     {
-    	$user = auth()->user();
-    	
+        $user = auth()->user();
+
         return [
-    		'name'		=> [ 'required', 'max:255', Rule::unique('users')->ignore($user->id) ],
-    		'username'	=> [ 'required', 'max:255', Rule::unique('users')->ignore($user->id) ],
-    		'email'		=> [ 'required_with:reminder', 'nullable', 'email', Rule::unique('users')->ignore($user->id) ],
-    		'reminder'	=> [ 'nullable' ],
-    	];
+            'name' => ['required', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => ['required', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required_with:reminder', 'nullable', 'email', Rule::unique('users')->ignore($user->id)],
+            'reminder' => ['nullable'],
+        ];
     }
-    
+
     /**
      * Get custom error messages.
      *
-     * @return	array
+     * @return array
      */
     public function messages()
     {
-    	return [
-    		'email.required_with'	=> 'An e-mail address is required when you want to receive reminders.',
-    	];
+        return [
+            'email.required_with' => 'An e-mail address is required when you want to receive reminders.',
+        ];
     }
 }

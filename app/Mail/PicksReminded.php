@@ -5,40 +5,43 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
 use App\User;
 use App\Race;
 
 class PicksReminded extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * The user instance.
      *
-     * @var	App\User
+     * @var User
      */
     public $user;
 
     /**
      * The race instance.
      *
-     * @var	App\Race
+     * @var Race
      */
     public $race;
 
     /**
      * Create a new message instance.
      *
-     * @return void
+     * @param User $user
+     * @param Race $race
      */
-    public function __construct( User $user, Race $race )
+    public function __construct(User $user, Race $race)
     {
-    	$this->user	= $user;
-    	$this->race	= $race;
+        $this->user = $user;
+        $this->race = $race;
 
-        $this->subject( __(':appname reminder: :race', [ 'appname' => config('app.name'), 'race' => $this->race->circuit->country->localName ]) );
+        $this->subject(__(':appname reminder: :race', [
+            'appname' => config('app.name'),
+            'race' => $this->race->circuit->country->localName,
+        ]));
     }
 
     /**
@@ -48,6 +51,7 @@ class PicksReminded extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.picksreminded.html')->text('mail.picksreminded.text');
+        return $this->view('mail.picksreminded.html')
+            ->text('mail.picksreminded.text');
     }
 }

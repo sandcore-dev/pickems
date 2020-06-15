@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\User;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rule;
-
 use App\Http\Requests\SaveProfileRequest;
 use App\Http\Requests\SavePasswordRequest;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
@@ -23,63 +26,69 @@ class ProfileController extends Controller
     /**
      * Show the profile page.
      *
-     * @return \Illuminate\Http\Response
+     * @return Factory|Application|View
      */
     public function index()
     {
-        return view('profile')->with( 'user', auth()->user() );
+        return view('profile')->with('user', auth()->user());
     }
-    
+
     /**
      * Save the profile.
      *
-     * @var	$request	\Illuminate\Http\Request
-     *
-     * @return	\Illuminate\Http\Response
+     * @param SaveProfileRequest $request
+     * @return RedirectResponse
      */
-    public function saveProfile( SaveProfileRequest $request )
+    public function saveProfile(SaveProfileRequest $request)
     {
-		$user = auth()->user();
-		
-		$request->validate([
-			'name'		=> [ 'required', 'unique:users,name,' . $user->id ],
-			'username'	=> [ 'required', 'unique:users,username,' . $user->id ],
-			'email'		=> [ 'required', 'email', 'unique:users,email,' . $user->id ],
-			'locale'	=> [ 'required', Rule::in( array_keys(config('app.locales')) ) ],
-		]);
-    	
-    	$user->name		= $request->name;
-    	$user->username	= $request->username;
-    	$user->email	= $request->email;
-    	$user->locale	= $request->locale;
-    	$user->reminder	= $request->filled('reminder');
-    	
-    	if( $user->save() )
-    	{
-			app()->setLocale( $user->locale );
-			
-	    	return redirect()->route('profile')->with( 'status', __('Your profile has been changed succesfully.') );
-	    }
-	    
-		return redirect()->route('profile');
+        /** @var User $user */
+        $user = auth()->user();
+
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        $request->validate(
+            [
+                'name' => ['required', 'unique:users,name,' . $user->id],
+                'username' => ['required', 'unique:users,username,' . $user->id],
+                'email' => ['required', 'email', 'unique:users,email,' . $user->id],
+                'locale' => ['required', Rule::in(array_keys(config('app.locales')))],
+            ]
+        );
+
+        $user->name = $request->input('name');
+        $user->username = $request->input('username');
+        $user->email = $request->input('email');
+        $user->locale = $request->input('locale');
+        $user->reminder = $request->filled('reminder');
+
+        if ($user->save()) {
+            app()->setLocale($user->locale);
+
+            return redirect()->route('profile')
+                ->with('status', __('Your profile has been changed succesfully.'));
+        }
+
+        return redirect()->route('profile');
     }
-    
+
     /**
      * Save new password.
      *
-     * @var	$request	\Illuminate\Http\Request
-     *
-     * @return	\Illuminate\Http\Response
+     * @param SavePasswordRequest $request
+     * @return RedirectResponse
      */
-    public function savePassword( SavePasswordRequest $request )
+    public function savePassword(SavePasswordRequest $request)
     {
-    	$user = auth()->user();
-    	
-    	$user->password	= bcrypt( $request->newpassword );
-    	
-    	if( $user->save() )
-	    	return redirect()->route('profile')->with( 'status', __('Your password has been changed succesfully.') );
-	    
-	return redirect()->route('profile');
+        /** @var User $user */
+        $user = auth()->user();
+
+        $user->password = bcrypt($request->input('newpassword'));
+
+        if ($user->save()) {
+            return redirect()
+                ->route('profile')
+                ->with('status', __('Your password has been changed succesfully.'));
+        }
+
+        return redirect()->route('profile');
     }
 }

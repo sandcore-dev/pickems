@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Traits\UserSeasonsList;
-
 use App\League;
 use App\Season;
 use App\Race;
-use App\Standing;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class StandingsListController extends Controller
 {
-	use UserSeasonsList;
-	
+    use UserSeasonsList;
+
     /**
      * Create a new controller instance.
      *
@@ -28,41 +28,50 @@ class StandingsListController extends Controller
     /**
      * Use season data to go to the default race.
      *
-     * @return \Illuminate\Http\Response
+     * @param League $league
+     * @param Season $season
+     * @return Factory|Application|RedirectResponse|View
      */
-    public function season( League $league, Season $season )
+    public function season(League $league, Season $season)
     {
-    	$race		= $season->races()->previousOrFirst();
-    	
-    	if( !$race->count() )
-			return view('picks.error')->with( 'error', __("There are no races available.") );
+        /** @noinspection PhpUndefinedMethodInspection */
+        $race = $season->races()->previousOrFirst();
 
-    	return redirect()->route( 'standings.race', [ 'league' => $league->id, 'race' => $race->id ] );
+        if (!$race->count()) {
+            return view('picks.error')->with('error', __("There are no races available."));
+        }
+
+        return redirect()->route('standings.race', ['league' => $league->id, 'race' => $race->id]);
     }
-    
+
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @param League $league
+     * @param Race $race
+     * @return Factory|Application|View
      */
-    public function race( League $league, Race $race )
+    public function race(League $league, Race $race)
     {
-    	$user		= auth()->user();
-    	
-    	if( !$user->leagues->contains($league) )
-    		abort(404);
-    	
-    	$league->load( 'standings.user' );
-    	
-    	$standings	= $league->standings->where( 'race_id', $race->id );
-    	
-        return view('standings.index')->with([
-        	'leagues'	=> $user->leagues,
-        	
-        	'currentLeague'	=> $league,
-        	'currentRace'	=> $race,
-        	
-        	'standings'	=> $standings,
-        ]);
+        $user = auth()->user();
+
+        if (!$user->leagues->contains($league)) {
+            abort(404);
+        }
+
+        $league->load('standings.user');
+
+        $standings = $league->standings->where('race_id', $race->id);
+
+        return view('standings.index')->with(
+            [
+                'leagues' => $user->leagues,
+
+                'currentLeague' => $league,
+                'currentRace' => $race,
+
+                'standings' => $standings,
+            ]
+        );
     }
 }

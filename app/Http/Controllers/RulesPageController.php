@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
+use Illuminate\View\View;
 
 class RulesPageController extends Controller
 {
@@ -15,14 +17,14 @@ class RulesPageController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     /**
      * Show rules page depending on current user locale.
      *
-     * @return \Illuminate\Http\Response
+     * @return Factory|Application|View
      */
     public function index()
     {
-		return view('rules.index')->with( 'locale', auth()->user()->locale );
+        return view('rules.index')->with('locale', auth()->user()->locale);
     }
 }

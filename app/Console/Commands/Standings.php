@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Race;
 use App\League;
 
@@ -35,8 +34,6 @@ class Standings extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {
@@ -45,18 +42,17 @@ class Standings extends Command
         $offset     = $this->argument('offset');
         $race       = Race::previousOrFirst($offset);
 
-        if($leagues->isEmpty())
-        {
+        if ($leagues->isEmpty()) {
             $this->error("League {$leagueName} not found.");
             return;
         }
 
         $league = $leagues->first();
 
-        $league->load( 'standings.user' );
+        $league->load('standings.user');
 
-    	$standings = $league->standings->where( 'race_id', $race->id );
+        $standings = $league->standings->where('race_id', $race->id);
 
-        $this->line( (string) view('standings.bbcode')->with('standings', $standings) );
+        $this->line((string) view('standings.bbcode')->with('standings', $standings));
     }
 }

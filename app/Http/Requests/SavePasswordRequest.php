@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
 use App\Rules\PasswordCheckRule;
 
 class SavePasswordRequest extends FormRequest
@@ -26,22 +25,22 @@ class SavePasswordRequest extends FormRequest
     public function rules()
     {
         return [
-        	'password'			=> [ 'required', 'min:3', new PasswordCheckRule ],
-        	'newpassword'			=> [ 'required', 'min:3', 'confirmed' ],
-        	'newpassword_confirmation'	=> [ 'required', 'same:newpassword' ],
+            'password' => ['required', 'min:3', new PasswordCheckRule()],
+            'newpassword' => ['required', 'min:3', 'confirmed'],
+            'newpassword_confirmation' => ['required', 'same:newpassword'],
         ];
     }
-    
-    
+
+
     /**
      * Get custom error messages.
      *
-     * @return	array
+     * @return array
      */
     public function messages()
     {
-    	return [
-    		'newpassword.min'	=> 'The new password must be at least :min characters.',
-    	];
+        return [
+            'newpassword.min' => 'The new password must be at least :min characters.',
+        ];
     }
 }

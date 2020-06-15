@@ -20,13 +20,13 @@ class PasswordCheckRule implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
     {
-    	return Hash::check( $value, auth()->user()->getAuthPassword() );
+        return Hash::check($value, auth()->user()->getAuthPassword());
     }
 
     /**

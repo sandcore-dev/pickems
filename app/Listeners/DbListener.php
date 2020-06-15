@@ -2,45 +2,42 @@
 
 namespace App\Listeners;
 
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
 class DbListener
 {
     /**
      * Query counter.
      *
-     * @var	integer
+     * @var integer
      */
     public static $count = 0;
-	
+
     /**
      * Query storage.
      *
-     * @var	array
+     * @var array
      */
     public static $queries = [];
-	
+
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param object $event
      * @return void
      */
     public function handle($event)
     {
-    	self::$count++;
-    	
-    	self::$queries[] = $event->sql;
+        self::$count++;
+
+        self::$queries[] = $event->sql;
     }
-    
+
     /**
      * Get queries as a collection.
      *
-     * @return	\Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public static function queries()
     {
-    	return collect( self::$queries );
+        return collect(self::$queries);
     }
 }

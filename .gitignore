@@ -12,4 +12,5 @@ yarn-error.log
 .env
 logs
 /database/dumps
-
+_ide_helper.php
+.phpstorm.meta.php

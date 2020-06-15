@@ -17,7 +17,6 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
     use AuthenticatesUsers;
 
     /**
@@ -40,10 +39,10 @@ class LoginController extends Controller
     /**
      * What is the username column called?
      *
-     * @return	string
+     * @return string
      */
     public function username()
     {
-    	return 'username';
+        return 'username';
     }
 }
