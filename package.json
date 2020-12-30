@@ -25,6 +25,7 @@
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
-    "highcharts": "^8.2.2"
+    "highcharts": "^8.2.2",
+    "node-notifier": "^9.0.0"
   }
 }
