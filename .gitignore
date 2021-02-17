@@ -1,6 +1,10 @@
 /node_modules
 /public/hot
 /public/storage
+/public/css/
+/public/js/
+/public/fonts/
+/public/images/vendor/
 /storage/*.key
 /vendor
 /.idea
@@ -12,5 +16,5 @@ yarn-error.log
 .env
 logs
 /database/dumps
-_ide_helper.php
-.phpstorm.meta.php
+_ide_helper.*
+.phpstorm.*
