@@ -17,7 +17,7 @@
 				<div class="text-center">
 					{{ $seasons->links() }}
 				</div>
-				
+
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -36,13 +36,13 @@
 						@forelse( $seasons as $season )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}">{{ $season->name }}</a>
+									<a href="{{ route( 'admin.seasons.edit', [ 'season' => $season->id ] ) }}">{{ $season->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}">{{ $season->picks_max }}</a>
+									<a href="{{ route( 'admin.seasons.edit', [ 'season' => $season->id ] ) }}">{{ $season->picks_max }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.seasons.edit', [ 'seasons' => $season->id ] ) }}" title="@lang('Edit this season')" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.seasons.edit', [ 'season' => $season->id ] ) }}" title="@lang('Edit this season')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$season->races->count() )
@@ -59,7 +59,7 @@
 						@endforelse
 					</tbody>
 				</table>
-				
+
 				<div class="text-center">
 					{{ $seasons->links() }}
 				</div>

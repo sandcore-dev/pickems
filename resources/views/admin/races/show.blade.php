@@ -8,8 +8,8 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    
-                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.races.destroy', [ 'races' => $race->id ] ) }}">
+
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.races.destroy', [ 'race' => $race->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('DELETE') }}
 
@@ -18,10 +18,10 @@
                         </div>
 
 						@component('admin.form.submit')
-							@slot('cancel', route( 'admin.races.index', [ 'races' => $race->season->id ] ))
-							
+							@slot('cancel', route( 'admin.races.index', [ 'season' => $race->season->id ] ))
+
 							@slot('context', 'danger')
-							
+
 							Delete race
 						@endcomponent
                     </form>

@@ -15,7 +15,7 @@
 				<div class="text-center">
 					{{ $users->links() }}
 				</div>
-				
+
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -34,7 +34,7 @@
 						@forelse( $users as $user )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.userleagues.edit', [ 'users' => $user->id ] ) }}">{{ $user->name }}</a>
+									<a href="{{ route( 'admin.userleagues.edit', [ 'user' => $user->id ] ) }}">{{ $user->name }}</a>
 								</td>
 								<td>
 									@forelse( $user->leagues->take(3) as $league )
@@ -42,13 +42,13 @@
 									@empty
 										&nbsp;
 									@endforelse
-									
+
 									@if( $user->leagues->count() > 3 )
 										and {{ $user->leagues->count() - 3 }} other(s)
 									@endif
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.userleagues.edit', [ 'users' => $user->id ] ) }}" title="@lang('Edit leagues of this user')" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.userleagues.edit', [ 'user' => $user->id ] ) }}" title="@lang('Edit leagues of this user')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 							</tr>
 						@empty
@@ -58,7 +58,7 @@
 						@endforelse
 					</tbody>
 				</table>
-				
+
 				<div class="text-center">
 					{{ $users->links() }}
 				</div>

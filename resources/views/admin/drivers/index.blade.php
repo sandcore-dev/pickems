@@ -15,7 +15,7 @@
 				<div class="text-center">
 					{{ $drivers->links() }}
 				</div>
-				
+
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -40,10 +40,10 @@
 						@forelse( $drivers as $driver )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->first_name }}</a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'driver' => $driver->id ] ) }}">{{ $driver->first_name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}">{{ $driver->fullLastName }}</a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'driver' => $driver->id ] ) }}">{{ $driver->fullLastName }}</a>
 								</td>
 								<td>
 									<span class="{{ $driver->country->flagClass }} title="{{ $driver->country->localName }}"></span>
@@ -52,11 +52,11 @@
 									<span class="glyphicon glyphicon-{{ $driver->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.drivers.edit', [ 'drivers' => $driver->id ] ) }}" title="@lang('Edit this driver')" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.drivers.edit', [ 'driver' => $driver->id ] ) }}" title="@lang('Edit this driver')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$driver->entries->count() )
-										<a href="{{ route( 'admin.drivers.destroy', [ 'drivers' => $driver->id ] ) }}" title="@lang('Delete this driver')" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.drivers.destroy', [ 'driver' => $driver->id ] ) }}" title="@lang('Delete this driver')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -69,7 +69,7 @@
 						@endforelse
 					</tbody>
 				</table>
-				
+
 				<div class="text-center">
 					{{ $drivers->links() }}
 				</div>

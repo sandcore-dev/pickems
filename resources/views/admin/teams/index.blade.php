@@ -15,7 +15,7 @@
 				<div class="text-center">
 					{{ $teams->links() }}
 				</div>
-				
+
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -37,7 +37,7 @@
 						@forelse( $teams as $team )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}">{{ $team->name }}</a>
+									<a href="{{ route( 'admin.teams.edit', [ 'team' => $team->id ] ) }}">{{ $team->name }}</a>
 								</td>
 								<td>
 									<span class="{{ $team->country->flagClass }}" title="{{ $team->country->name }}"></span>
@@ -46,11 +46,11 @@
 									<span class="glyphicon glyphicon-{{ $team->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.teams.edit', [ 'teams' => $team->id ] ) }}" title="@lang('Edit this team')" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.teams.edit', [ 'team' => $team->id ] ) }}" title="@lang('Edit this team')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$team->entries->count() )
-										<a href="{{ route( 'admin.teams.destroy', [ 'teams' => $team->id ] ) }}" title="@lang('Delete this team')" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.teams.destroy', [ 'team' => $team->id ] ) }}" title="@lang('Delete this team')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -63,7 +63,7 @@
 						@endforelse
 					</tbody>
 				</table>
-				
+
 				<div class="text-center">
 					{{ $teams->links() }}
 				</div>

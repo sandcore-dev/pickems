@@ -8,8 +8,8 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    
-                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.drivers.update', [ 'drivers' => $driver->id ] ) }}">
+
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.drivers.update', [ 'driver' => $driver->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
@@ -17,9 +17,9 @@
 							@slot('field', 'first_name')
 
 							@slot('value', $driver->first_name)
-							
+
 							@slot('label', 'First name')
-							
+
 							@slot('attributes')
 								required autofocus
 							@endslot
@@ -27,7 +27,7 @@
 
 						@component('admin.form.input')
 							@slot('field', 'surname_prefix')
-							
+
 							@slot('value', $driver->surname_prefix)
 
 							@slot('label', 'Surname prefix')
@@ -35,11 +35,11 @@
 
 						@component('admin.form.input')
 							@slot('field', 'last_name')
-							
+
 							@slot('value', $driver->last_name)
 
 							@slot('label', 'Last name')
-							
+
 							@slot('attributes')
 								required
 							@endslot
@@ -47,17 +47,17 @@
 
 						@component('admin.form.select')
 							@slot('field', 'country_id')
-							
+
 							@slot('value', $driver->country_id)
 
 							@slot('label', 'Country')
-							
+
 							@slot('options', $countries)
 						@endcomponent
 
 						@component('admin.form.checkbox')
 							@slot('field', 'active')
-							
+
 							@slot('value', $driver->active)
 
 							@slot('label', 'Active')
@@ -65,7 +65,7 @@
 
 						@component('admin.form.submit')
 							@slot('cancel', route('admin.drivers.index'))
-							
+
 							Edit driver
 						@endcomponent
                     </form>

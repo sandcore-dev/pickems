@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
@@ -61,7 +62,6 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2', 'unique:users'],
@@ -76,7 +76,7 @@ class UsersController extends Controller
         );
 
         $data = $request->only('name', 'locale', 'email', 'username', 'reminder', 'active');
-        $data['password'] = bcrypt(str_random(10));
+        $data['password'] = bcrypt(Str::random(10));
 
         if ($user = User::create($data)) {
             session()->flash('status', __("The user :name has been added.", ['name' > $user->name]));
@@ -124,7 +124,6 @@ class UsersController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2', 'unique:users,name,' . $user->id],

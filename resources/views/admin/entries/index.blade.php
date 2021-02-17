@@ -18,7 +18,7 @@
 				<div class="text-center">
 					{{ $entries->links() }}
 				</div>
-				
+
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -38,7 +38,7 @@
 								@lang('Active')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.entries.create', [ 'season' => $currentSeason->id ] ) }}" title="@lang('Add an entry')" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.entries.create', [ 'entry' => $currentSeason->id ] ) }}" title="@lang('Add an entry')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -46,30 +46,30 @@
 						@forelse( $entries as $entry )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->car_number }}</a>
-									
+									<a href="{{ route( 'admin.entries.edit', [ 'entry' => $entry->id ] ) }}">{{ $entry->car_number }}</a>
+
 									@if( $entry->color )
 									<span class="pull-right glyphicon glyphicon-stop" style="color: {{ $entry->color }}"></span>
 									@endif
 								</td>
 								<td>
-									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->team->name }}</a>
+									<a href="{{ route( 'admin.entries.edit', [ 'entry' => $entry->id ] ) }}">{{ $entry->team->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->driver->fullName }}</a>
+									<a href="{{ route( 'admin.entries.edit', [ 'entry' => $entry->id ] ) }}">{{ $entry->driver->fullName }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}">{{ $entry->abbreviation }}</a>
+									<a href="{{ route( 'admin.entries.edit', [ 'entry' => $entry->id ] ) }}">{{ $entry->abbreviation }}</a>
 								</td>
 								<td>
 									<span class="glyphicon glyphicon-{{ $entry->active ? 'ok text-success' : 'remove text-danger' }}"></span>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.entries.edit', [ 'seasons' => $entry->id ] ) }}" title="@lang('Edit this entry')" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.entries.edit', [ 'entry' => $entry->id ] ) }}" title="@lang('Edit this entry')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( $entry->results->isEmpty() and $entry->picks->isEmpty() )
-										<a href="{{ route( 'admin.entries.destroy', [ 'entries' => $entry->id ] ) }}" title="@lang('Delete this entry')" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.entries.destroy', [ 'entry' => $entry->id ] ) }}" title="@lang('Delete this entry')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -82,14 +82,14 @@
 										@lang('No entries found.')
 									</p>
 									<p>
-										<a class="btn btn-primary" href="{{ route('admin.entries.populate', [ 'season' => $currentSeason ]) }}">@lang('Populate with entries from previous season (:year)', [ 'year' => $currentSeason->previous->name ])</a>
+										<a class="btn btn-primary" href="{{ route('admin.entries.populate', [ 'entry' => $currentSeason ]) }}">@lang('Populate with entries from previous season (:year)', [ 'year' => $currentSeason->previous->name ])</a>
 									</p>
 								</td>
 							</tr>
 						@endforelse
 					</tbody>
 				</table>
-				
+
 				<div class="text-center">
 					{{ $entries->links() }}
 				</div>

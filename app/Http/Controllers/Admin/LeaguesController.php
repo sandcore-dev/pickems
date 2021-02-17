@@ -11,6 +11,7 @@ use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
 use App\Series;
 use App\League;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class LeaguesController extends Controller
@@ -24,7 +25,7 @@ class LeaguesController extends Controller
     {
         $this->middleware([ 'auth', 'admin' ]);
     }
- 
+
     /**
      * Display a listing of the resource.
      *
@@ -61,7 +62,6 @@ class LeaguesController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
             'name'              => [ 'required', 'min:2', 'unique:leagues' ],
@@ -69,17 +69,17 @@ class LeaguesController extends Controller
             'generate_token'    => [ 'boolean' ],
             ]
         );
-        
+
         if ($league = League::create($request->only('name', 'series_id'))) {
             session()->flash('status', __("The league :name has been added.", [ 'name' => $league->name ]));
-        
+
             if ($request->input('generate_token')) {
-                $league->access_token = str_random(10);
+                $league->access_token = Str::random(10);
             }
-            
+
             $league->save();
         }
-        
+
         return redirect()->route('admin.leagues.index');
     }
 
@@ -114,22 +114,21 @@ class LeaguesController extends Controller
      */
     public function update(Request $request, League $league)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
             'name'              => [ 'required', 'min:2', 'unique:leagues,name,' . $league->id ],
             'generate_token'    => [ 'boolean' ],
             ]
         );
-        
+
         if ($league->update($request->only('name'))) {
             session()->flash('status', __("The league :name has been changed.", [ 'name' => $league->name ]));
         }
-            
+
         if ($request->input('generate_token')) {
-            $league->update([ 'access_token' => str_random(10) ]);
+            $league->update([ 'access_token' => Str::random(10) ]);
         }
-        
+
         return redirect()->route('admin.leagues.index');
     }
 
@@ -144,12 +143,12 @@ class LeaguesController extends Controller
     {
         try {
             $league->delete();
-            
+
             session()->flash('status', __("The league :name has been deleted.", [ 'name' => $league->name ]));
         } catch (QueryException $e) {
             session()->flash('status', __("The league :name could not be deleted.", [ 'name' => $league->name ]));
         }
-            
+
         return redirect()->route('admin.leagues.index');
     }
 }

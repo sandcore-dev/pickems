@@ -24,7 +24,7 @@
 				<div class="text-center">
 					{{ $races->links() }}
 				</div>
-				
+
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -38,7 +38,7 @@
 								@lang('Start of weekend')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.races.create', [ 'season' => $currentSeason->id ] ) }}" title="@lang('Add a race')" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.races.create', [ 'race' => $currentSeason->id ] ) }}" title="@lang('Add a race')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
@@ -46,20 +46,20 @@
 						@forelse( $races as $race )
 							<tr>
 								<td>
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->race_day->formatLocalized('%d %B') }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'race' => $race->id ] ) }}">{{ $race->race_day->formatLocalized('%d %B') }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->name }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'race' => $race->id ] ) }}">{{ $race->name }}</a>
 								</td>
 								<td>
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}">{{ $race->weekend_start->formatLocalized('%d %B %H:%M') }}</a>
+									<a href="{{ route( 'admin.races.edit', [ 'race' => $race->id ] ) }}">{{ $race->weekend_start->formatLocalized('%d %B %H:%M') }}</a>
 								</td>
 								<td class="text-center">
-									<a href="{{ route( 'admin.races.edit', [ 'seasons' => $race->id ] ) }}" title="@lang('Edit this race')" class="glyphicon glyphicon-pencil"></a>
+									<a href="{{ route( 'admin.races.edit', [ 'race' => $race->id ] ) }}" title="@lang('Edit this race')" class="glyphicon glyphicon-pencil"></a>
 								</td>
 								<td class="text-center">
 									@if( !$race->results->count() )
-										<a href="{{ route( 'admin.races.destroy', [ 'seasons' => $race->id ] ) }}" title="@lang('Delete this race')" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.races.destroy', [ 'race' => $race->id ] ) }}" title="@lang('Delete this race')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
@@ -79,7 +79,7 @@
 						@endforelse
 					</tbody>
 				</table>
-				
+
 				<div class="text-center">
 					{{ $races->links() }}
 				</div>

@@ -8,8 +8,8 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    
-                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.drivers.destroy', [ 'drivers' => $driver->id ] ) }}">
+
+                    <form class="form-horizontal" method="POST" action="{{ route( 'admin.drivers.destroy', [ 'driver' => $driver->id ] ) }}">
                         {{ csrf_field() }}
                         {{ method_field('DELETE') }}
 
@@ -19,9 +19,9 @@
 
 						@component('admin.form.submit')
 							@slot('cancel', route('admin.drivers.index'))
-							
+
 							@slot('context', 'danger')
-							
+
 							Delete driver
 						@endcomponent
                     </form>
