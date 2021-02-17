@@ -44,7 +44,7 @@ class Standings extends Command
 
         if ($leagues->isEmpty()) {
             $this->error("League {$leagueName} not found.");
-            return;
+            return 1;
         }
 
         $league = $leagues->first();
@@ -54,5 +54,7 @@ class Standings extends Command
         $standings = $league->standings->where('race_id', $race->id);
 
         $this->line((string) view('standings.bbcode')->with('standings', $standings));
+
+        return 0;
     }
 }

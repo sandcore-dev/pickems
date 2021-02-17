@@ -33,7 +33,7 @@ class MigrateOldData extends Command
      * @var string
      */
     protected $description = 'Migrate old database data to new database structure';
-    
+
     /**
      * Team color for each team (2017 only.)
      *
@@ -51,7 +51,7 @@ class MigrateOldData extends Command
         'Mercedes GP'   => '#00CFBA',
         'Haas F1 Team'  => '#6C0000',
     ];
-    
+
     /**
      * Country code for each driver.
      *
@@ -81,7 +81,7 @@ class MigrateOldData extends Command
         'Ricciardo, Daniel' => 'AU',
         'Perez, Sergio'     => 'MX',
         'Bottas, Valtteri'  => 'FI',
-        
+
         'Kovalainen, Heikki'    => 'FI',
         'Kubica, Robert'    => 'PL',
         'Heidfeld, Nick'    => 'DE',
@@ -125,7 +125,7 @@ class MigrateOldData extends Command
         'Merhi, Roberto'    => 'ES',
         'Haryanto, Rio'     => 'ID',
     ];
-    
+
     /**
      * Create a new command instance.
      *
@@ -143,11 +143,11 @@ class MigrateOldData extends Command
     {
         if (!$this->isDatabaseEmpty()) {
             $this->error('Database was not empty. Stopping.');
-            return;
+            return 1;
         }
-        
+
         $oldDatabase = $this->argument('olddb');
-        
+
         $this->migrate(
             $oldDatabase,
             [
@@ -193,7 +193,7 @@ class MigrateOldData extends Command
             ]
             ]
         );
-    
+
         $this->migrate(
             $oldDatabase,
             [
@@ -229,7 +229,7 @@ class MigrateOldData extends Command
             ],
             ]
         );
-    
+
         $this->migrate(
             $oldDatabase,
             [
@@ -307,11 +307,11 @@ class MigrateOldData extends Command
             ],
             ]
         );
-    
+
         $this->attachAllUsersToLeagues();
-    
+
         $this->completeEntryData();
-    
+
         $this->migrate(
             $oldDatabase,
             [
@@ -329,8 +329,10 @@ class MigrateOldData extends Command
             ],
             ]
         );
+
+        return 0;
     }
-    
+
     /**
      * Is the database empty so we can migrate?
      *
@@ -366,7 +368,7 @@ class MigrateOldData extends Command
             Circuit::count() == 0
         ;
     }
-    
+
     /**
      * Migrate tables from the old database.
      *
@@ -380,18 +382,18 @@ class MigrateOldData extends Command
         foreach ($mappings as $mapping) {
             $oldTable   = $mapping['table'];
             $orderBy    = isset($mapping['orderBy']) ? $mapping['orderBy'] : 'id';
-            
+
             $this->info("Migrating {$oldDatabase}.{$oldTable} table.");
-            
+
             $table = DB::table("{$oldDatabase}.{$oldTable}")->orderBy($orderBy);
-            
+
             $this->output->progressStart($table->count());
-            
+
             $rows = $table->get();
-            
+
             foreach ($rows as $row) {
                 $model = new $mapping['model']();
-            
+
                 foreach ($mapping['fields'] as $newField => $oldField) {
                     if (is_callable($oldField)) {
                         $model->{$newField} = $oldField($row);
@@ -401,16 +403,16 @@ class MigrateOldData extends Command
                         $model->{$newField} = $oldField;
                     }
                 }
-            
+
                 $model->save();
-            
+
                 $this->output->progressAdvance();
             }
-            
+
             $this->output->progressFinish();
         }
     }
-    
+
     /**
      * Attach all users to leagues.
      *
@@ -419,15 +421,15 @@ class MigrateOldData extends Command
     protected function attachAllUsersToLeagues()
     {
         $this->info('Attaching all users to leagues.');
-        
+
         $users      = User::all();
         $leagues    = League::pluck('id');
-        
+
         foreach ($users as $user) {
             $user->leagues()->attach($leagues);
         }
     }
-    
+
     /**
      * Add data to empty fields of each entry.
      *
@@ -436,14 +438,14 @@ class MigrateOldData extends Command
     protected function completeEntryData()
     {
         $this->info('Completing entry data with colors and abbreviations.');
-        
+
         $entries = Entry::all();
-        
+
         foreach ($entries as $entry) {
             $entry->abbreviation    = strtoupper(substr(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $entry->driver->last_name), 0, 3));
-            
+
             $entry->color       = isset($this->teamColors[ $entry->team->name ]) ? $this->teamColors[ $entry->team->name ] : null;
-            
+
             $entry->save();
         }
     }
