@@ -9,11 +9,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Traits\UserSeasonsList;
-use App\User;
-use App\League;
-use App\Season;
-use App\Race;
-use App\Pick;
+use App\Models\User;
+use App\Models\League;
+use App\Models\Season;
+use App\Models\Race;
+use App\Models\Pick;
 use App\Rules\NotPickedYet;
 use App\Rules\MaxPicksExceeded;
 use Illuminate\View\View;
@@ -117,7 +117,6 @@ class PicksController extends Controller
             abort(404);
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'entry' => [
@@ -168,7 +167,6 @@ class PicksController extends Controller
             return redirect()->back();
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'pick' => ['required', 'integer'],

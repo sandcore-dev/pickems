@@ -3,31 +3,31 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\User;
-use App\Race;
-use App\Entry;
-use App\Pick;
+use App\Models\User;
+use App\Models\Race;
+use App\Models\Entry;
+use App\Models\Pick;
 
 class NotPickedYet implements Rule
 {
     /**
      * Required PickUser object.
      *
-     * @var \App\User
+     * @var \App\Models\User
      */
     protected $user;
 
     /**
      * Required Race object.
      *
-     * @var \App\Race
+     * @var \App\Models\Race
      */
     protected $race;
 
     /**
      * Entry helper object.
      *
-     * @var \App\Entry
+     * @var \App\Models\Entry
      */
     protected $entry;
 

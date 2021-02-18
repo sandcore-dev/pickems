@@ -9,8 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\Team;
-use App\Country;
+use App\Models\Team;
+use App\Models\Country;
 use Illuminate\View\View;
 
 class TeamsController extends Controller
@@ -53,7 +53,6 @@ class TeamsController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2', 'unique:teams'],
@@ -105,7 +104,6 @@ class TeamsController extends Controller
      */
     public function update(Request $request, Team $team)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2', 'unique:teams,name,' . $team->id],

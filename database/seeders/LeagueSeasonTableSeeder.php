@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\League;
+use App\Models\Season;
 use Illuminate\Database\Seeder;
-
-use App\League;
-use App\Season;
 
 class LeagueSeasonTableSeeder extends Seeder
 {

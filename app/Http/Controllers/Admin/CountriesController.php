@@ -8,7 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\Country;
+use App\Models\Country;
 use Illuminate\View\View;
 
 class CountriesController extends Controller
@@ -51,7 +51,6 @@ class CountriesController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'code' => ['required', 'alpha', 'size:2', 'unique:countries'],
@@ -97,7 +96,6 @@ class CountriesController extends Controller
      */
     public function update(Request $request, Country $country)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'code' => ['required', 'alpha', 'size:2', 'unique:countries,code,' . $country->id],

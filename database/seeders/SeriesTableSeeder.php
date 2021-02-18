@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Series;
 use Illuminate\Database\Seeder;
-
-use App\Series;
 
 class SeriesTableSeeder extends Seeder
 {

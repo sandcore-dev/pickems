@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
@@ -44,7 +44,6 @@ class ProfileController extends Controller
         /** @var User $user */
         $user = auth()->user();
 
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
         $request->validate(
             [
                 'name' => ['required', 'unique:users,name,' . $user->id],

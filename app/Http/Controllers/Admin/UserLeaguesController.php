@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\User;
-use App\League;
+use App\Models\User;
+use App\Models\League;
 
 class UserLeaguesController extends Controller
 {
@@ -34,7 +34,7 @@ class UserLeaguesController extends Controller
     /**
      * Edit leagues of this user
      *
-     * @param \App\User
+     * @param \App\Models\User
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
@@ -51,8 +51,8 @@ class UserLeaguesController extends Controller
     /**
      * Attach league of this user
      *
-     * @param \App\User
-     * @param \App\League
+     * @param \App\Models\User
+     * @param \App\Models\League
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -68,8 +68,8 @@ class UserLeaguesController extends Controller
     /**
      * Detach league of this user
      *
-     * @param \App\User
-     * @param \App\League
+     * @param \App\Models\User
+     * @param \App\Models\League
      *
      * @return \Illuminate\Http\RedirectResponse
      */

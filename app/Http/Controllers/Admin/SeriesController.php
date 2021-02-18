@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
-use App\Series;
+use App\Models\Series;
 use Illuminate\View\View;
 
 class SeriesController extends Controller
@@ -52,7 +52,6 @@ class SeriesController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2', 'unique:series,name'],
@@ -97,7 +96,6 @@ class SeriesController extends Controller
      */
     public function update(Request $request, Series $series)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2', Rule::unique('series')->ignore($series->id)],

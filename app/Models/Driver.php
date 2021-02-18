@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Driver
+ * App\Models\Driver
  *
  * @property int $id
  * @property string $first_name
@@ -19,24 +19,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Country|null $country
- * @property-read \App\Collections\EntryCollection|\App\Entry[] $entries
+ * @property-read \App\Models\Country|null $country
+ * @property-read \App\Collections\EntryCollection|\App\Models\Entry[] $entries
  * @property-read int|null $entries_count
  * @property-read string $first_letter
  * @property-read string $full_last_name
  * @property-read string $full_name
  * @property-read string $last_first
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereFirstName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereLastName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereSurnamePrefix($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereUpdatedAt($value)
+ * @method static Builder|Driver newModelQuery()
+ * @method static Builder|Driver newQuery()
+ * @method static Builder|Driver query()
+ * @method static Builder|Driver whereActive($value)
+ * @method static Builder|Driver whereCountryId($value)
+ * @method static Builder|Driver whereCreatedAt($value)
+ * @method static Builder|Driver whereFirstName($value)
+ * @method static Builder|Driver whereId($value)
+ * @method static Builder|Driver whereLastName($value)
+ * @method static Builder|Driver whereSurnamePrefix($value)
+ * @method static Builder|Driver whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

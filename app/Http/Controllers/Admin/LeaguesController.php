@@ -9,8 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\Series;
-use App\League;
+use App\Models\Series;
+use App\Models\League;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 

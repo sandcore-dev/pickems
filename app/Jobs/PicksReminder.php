@@ -8,8 +8,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Mail;
-use App\Race;
-use App\Pick;
+use App\Models\Race;
+use App\Models\Pick;
 use App\Mail\PicksReminded;
 
 class PicksReminder implements ShouldQueue

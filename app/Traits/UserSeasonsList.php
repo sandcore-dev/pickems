@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use App\League;
-use App\User;
-use App\Season;
+use App\Models\League;
+use App\Models\User;
+use App\Models\Season;
 use Illuminate\View\View;
 
 trait UserSeasonsList

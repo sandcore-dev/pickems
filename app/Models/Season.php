@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,32 +9,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Season
+ * App\Models\Season
  *
  * @property int $id
  * @property int $series_id
- * @property float $start_year
- * @property float $end_year
+ * @property string $start_year
+ * @property string $end_year
  * @property int $picks_max
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Collections\EntryCollection|\App\Entry[] $entries
+ * @property-read \App\Collections\EntryCollection|\App\Models\Entry[] $entries
  * @property-read int|null $entries_count
  * @property-read string $name
- * @property-read \App\Season $previous
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Race[] $races
+ * @property-read Season $previous
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Race[] $races
  * @property-read int|null $races_count
- * @property-read \App\Series $series
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season whereEndYear($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season wherePicksMax($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season whereSeriesId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season whereStartYear($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Season whereUpdatedAt($value)
+ * @property-read \App\Models\Series $series
+ * @method static Builder|Season newModelQuery()
+ * @method static Builder|Season newQuery()
+ * @method static Builder|Season query()
+ * @method static Builder|Season whereCreatedAt($value)
+ * @method static Builder|Season whereEndYear($value)
+ * @method static Builder|Season whereId($value)
+ * @method static Builder|Season wherePicksMax($value)
+ * @method static Builder|Season whereSeriesId($value)
+ * @method static Builder|Season whereStartYear($value)
+ * @method static Builder|Season whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Season;
-use App\Standing;
-use App\League;
-use App\Pick;
-use App\Race;
+use App\Models\Season;
+use App\Models\Standing;
+use App\Models\League;
+use App\Models\Pick;
+use App\Models\Race;
 
 class StandingsController extends Controller
 {
@@ -33,7 +33,7 @@ class StandingsController extends Controller
     /**
      * Recalculate standings of the given season.
      *
-     * @param \App\Season $season
+     * @param \App\Models\Season $season
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -49,7 +49,7 @@ class StandingsController extends Controller
     /**
      * Clear standings of this season.
      *
-     * @param \App\Season $season
+     * @param \App\Models\Season $season
      *
      * @return void
      */
@@ -61,7 +61,7 @@ class StandingsController extends Controller
     /**
      * Add standings of this season.
      *
-     * @param \App\Season $season
+     * @param \App\Models\Season $season
      *
      * @return void
      */
@@ -110,7 +110,7 @@ class StandingsController extends Controller
     /**
      * Calculate points for this standing.
      *
-     * @param \App\Standing $standing
+     * @param \App\Models\Standing $standing
      *
      * @return void
      */
@@ -148,8 +148,8 @@ class StandingsController extends Controller
     /**
      * Set the rank of a standing.
      *
-     * @param \App\League $league
-     * @param \App\Race $race
+     * @param \App\Models\League $league
+     * @param \App\Models\Race $race
      *
      * @return void
      */

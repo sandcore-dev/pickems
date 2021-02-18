@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Driver;
+use App\Models\Driver;
 use Illuminate\Database\Seeder;
 
 class DriversTableSeeder extends Seeder

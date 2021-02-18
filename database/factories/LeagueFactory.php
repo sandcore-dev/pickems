@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\League;
+use App\Models\League;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LeagueFactory extends Factory

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Series;
+use App\Models\Series;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SeriesFactory extends Factory

@@ -9,8 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\Circuit;
-use App\Country;
+use App\Models\Circuit;
+use App\Models\Country;
 use Illuminate\View\View;
 
 class CircuitsController extends Controller
@@ -24,7 +24,7 @@ class CircuitsController extends Controller
     {
         $this->middleware([ 'auth', 'admin' ]);
     }
- 
+
     /**
      * Display a listing of the resource.
      *
@@ -53,7 +53,6 @@ class CircuitsController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
             'name'      => [ 'required', 'min:2', 'unique:circuits,name' ],
@@ -63,11 +62,11 @@ class CircuitsController extends Controller
             'country_id'    => [ 'required', 'integer', 'exists:countries,id' ],
             ]
         );
-        
+
         if ($circuit = Circuit::create($request->only('name', 'length', 'city', 'area', 'country_id'))) {
             session()->flash('status', __("The circuit :name has been added.", [ 'name' => $circuit->name ]));
         }
-        
+
         return redirect()->route('admin.circuits.index');
     }
 
@@ -107,7 +106,6 @@ class CircuitsController extends Controller
      */
     public function update(Request $request, Circuit $circuit)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
             'name'      => [ 'required', 'min:2', 'unique:circuits,name,' . $circuit->id ],
@@ -117,11 +115,11 @@ class CircuitsController extends Controller
             'country_id'    => [ 'required', 'integer', 'exists:countries,id' ],
             ]
         );
-        
+
         if ($circuit->update($request->only('name', 'length', 'city', 'area', 'country_id'))) {
             session()->flash('status', __("The circuit :name has been changed.", [ 'name' => $circuit->name ]));
         }
-        
+
         return redirect()->route('admin.circuits.index');
     }
 
@@ -136,12 +134,12 @@ class CircuitsController extends Controller
     {
         try {
             $circuit->delete();
-            
+
             session()->flash('status', __("The circuit :name has been deleted.", [ 'name' => $circuit->name ]));
         } catch (QueryException $e) {
             session()->flash('status', __("The circuit :name could not be deleted.", [ 'name' => $circuit->name ]));
         }
-            
+
         return redirect()->route('admin.circuits.index');
     }
 }

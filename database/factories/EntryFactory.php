@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Entry;
-use App\Season;
-use App\Team;
-use App\Driver;
+use App\Models\Entry;
+use App\Models\Season;
+use App\Models\Team;
+use App\Models\Driver;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EntryFactory extends Factory

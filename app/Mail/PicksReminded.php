@@ -5,8 +5,8 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\User;
-use App\Race;
+use App\Models\User;
+use App\Models\Race;
 
 class PicksReminded extends Mailable
 {

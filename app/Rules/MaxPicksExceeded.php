@@ -3,23 +3,23 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\User;
-use App\Race;
-use App\Pick;
+use App\Models\User;
+use App\Models\Race;
+use App\Models\Pick;
 
 class MaxPicksExceeded implements Rule
 {
     /**
      * Required User object.
      *
-     * @var \App\User
+     * @var \App\Models\User
      */
     protected $user;
 
     /**
      * Required Race object.
      *
-     * @var \App\Race
+     * @var \App\Models\Race
      */
     protected $race;
 

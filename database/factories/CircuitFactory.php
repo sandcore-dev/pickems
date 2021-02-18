@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Circuit;
-use App\Country;
+use App\Models\Circuit;
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CircuitFactory extends Factory

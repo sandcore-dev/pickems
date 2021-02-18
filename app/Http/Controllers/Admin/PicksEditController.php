@@ -8,12 +8,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Series;
-use App\Season;
-use App\Race;
-use App\Pick;
-use App\League;
-use App\User;
+use App\Models\Series;
+use App\Models\Season;
+use App\Models\Race;
+use App\Models\Pick;
+use App\Models\League;
+use App\Models\User;
 use App\Rules\NotPickedYet;
 use App\Rules\MaxPicksExceeded;
 use Illuminate\View\View;
@@ -64,7 +64,10 @@ class PicksEditController extends Controller
         $users = $league->users;
         $user = $request->user ? User::findOrFail($request->user) : $users->first();
 
-        $picks = Pick::with(['entry.driver.country', 'entry.team', 'race.results'])->byUser($user)->byRace($race)->get();
+        $picks = Pick::with(['entry.driver.country', 'entry.team', 'race.results'])
+            ->byUser($user)
+            ->byRace($race)
+            ->get();
 
         $entriesByTeam = $race->season->entries()->with(['driver.country', 'team'])->whereNotIn('id', $picks->pluck('entry_id'))->get()->getByTeam();
 
@@ -98,7 +101,6 @@ class PicksEditController extends Controller
      */
     public function create(Race $race, User $user, Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'entry' => ['required', 'integer', 'exists:entries,id', new NotPickedYet($user, $race), new MaxPicksExceeded($user, $race, $race->season->picks_max)],
@@ -126,7 +128,6 @@ class PicksEditController extends Controller
      */
     public function delete(Race $race, User $user, Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'pick' => ['required', 'integer'],

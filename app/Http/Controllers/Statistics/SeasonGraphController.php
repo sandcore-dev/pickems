@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use App\Traits\UserSeasonsList;
-use App\League;
-use App\Season;
-use App\Standing;
-use App\User;
+use App\Models\League;
+use App\Models\Season;
+use App\Models\Standing;
+use App\Models\User;
 use Illuminate\View\View;
 
 class SeasonGraphController extends Controller

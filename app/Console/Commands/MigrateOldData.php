@@ -4,19 +4,19 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\User;
-use App\Team;
-use App\Standing;
-use App\Series;
-use App\Season;
-use App\Result;
-use App\Race;
-use App\Pick;
-use App\League;
-use App\Entry;
-use App\Driver;
-use App\Country;
-use App\Circuit;
+use App\Models\User;
+use App\Models\Team;
+use App\Models\Standing;
+use App\Models\Series;
+use App\Models\Season;
+use App\Models\Result;
+use App\Models\Race;
+use App\Models\Pick;
+use App\Models\League;
+use App\Models\Entry;
+use App\Models\Driver;
+use App\Models\Country;
+use App\Models\Circuit;
 
 class MigrateOldData extends Command
 {

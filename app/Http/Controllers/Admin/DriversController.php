@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
-use App\Driver;
-use App\Country;
+use App\Models\Driver;
+use App\Models\Country;
 use Illuminate\View\View;
 
 class DriversController extends Controller
@@ -25,7 +25,7 @@ class DriversController extends Controller
     {
         $this->middleware([ 'auth', 'admin' ]);
     }
- 
+
     /**
      * Display a listing of the resource.
      *
@@ -54,7 +54,6 @@ class DriversController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
             'first_name'        => [ 'required', 'min:2' ],
@@ -64,11 +63,11 @@ class DriversController extends Controller
             'active'            => [ 'boolean' ],
             ]
         );
-        
+
         if ($driver = Driver::create($request->only('first_name', 'surname_prefix', 'last_name', 'active', 'country_id'))) {
             session()->flash('status', __("The driver :name has been added.", [ 'name' => $driver->fullName ]));
         }
-        
+
         return redirect()->route('admin.drivers.index');
     }
 
@@ -108,7 +107,6 @@ class DriversController extends Controller
      */
     public function update(Request $request, Driver $driver)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
             'first_name'        => [ 'required', 'min:2' ],
@@ -118,11 +116,11 @@ class DriversController extends Controller
             'active'            => [ 'boolean' ],
             ]
         );
-        
+
         if ($driver->update($request->only('first_name', 'surname_prefix', 'last_name', 'active', 'country_id'))) {
             session()->flash('status', __("The driver :name has been changed.", [ 'name' => $driver->fullName ]));
         }
-        
+
         return redirect()->route('admin.drivers.index');
     }
 
@@ -137,12 +135,12 @@ class DriversController extends Controller
     {
         try {
             $driver->delete();
-            
+
             session()->flash('status', __("The driver :name has been deleted.", [ 'name' => $driver->fullName ]));
         } catch (QueryException $e) {
             session()->flash('status', __("The driver :name could not be deleted.", [ 'name' => $driver->fullName ]));
         }
-            
+
         return redirect()->route('admin.drivers.index');
     }
 }

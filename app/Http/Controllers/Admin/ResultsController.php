@@ -8,10 +8,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Series;
-use App\Season;
-use App\Race;
-use App\Result;
+use App\Models\Series;
+use App\Models\Season;
+use App\Models\Race;
+use App\Models\Result;
 use Illuminate\View\View;
 
 class ResultsController extends Controller
@@ -83,7 +83,6 @@ class ResultsController extends Controller
      */
     public function create(Race $race, Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'entry' => ['required', 'integer', 'exists:entries,id'],
@@ -110,7 +109,6 @@ class ResultsController extends Controller
      */
     public function delete(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'result' => ['required', 'integer'],

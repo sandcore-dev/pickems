@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Pick;
-use App\Race;
-use App\Entry;
-use App\User;
+use App\Models\Pick;
+use App\Models\Race;
+use App\Models\Entry;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PickFactory extends Factory

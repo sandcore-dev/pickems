@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Entry
+ * App\Models\Entry
  *
  * @property int $id
  * @property int $season_id
@@ -23,30 +23,30 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Driver $driver
- * @property-read \App\Collections\PickCollection|\App\Pick[] $picks
+ * @property-read \App\Models\Driver $driver
+ * @property-read \App\Collections\PickCollection|\App\Models\Pick[] $picks
  * @property-read int|null $picks_count
- * @property-read \App\Collections\ResultCollection|\App\Result[] $results
+ * @property-read \App\Collections\ResultCollection|\App\Models\Result[] $results
  * @property-read int|null $results_count
- * @property-read \App\Season $season
- * @property-read \App\Team $team
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry active()
- * @method static \App\Collections\EntryCollection|static[] all($columns = ['*'])
- * @method static \App\Collections\EntryCollection|static[] get($columns = ['*'])
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry sortByTeamDriver()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereAbbreviation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereCarNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereColor($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereDriverId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereSeasonId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereTeamId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Entry whereUpdatedAt($value)
+ * @property-read \App\Models\Season $season
+ * @property-read \App\Models\Team $team
+ * @method static Builder|Entry active()
+ * @method static EntryCollection|static[] all($columns = ['*'])
+ * @method static EntryCollection|static[] get($columns = ['*'])
+ * @method static Builder|Entry newModelQuery()
+ * @method static Builder|Entry newQuery()
+ * @method static Builder|Entry query()
+ * @method static Builder|Entry sortByTeamDriver()
+ * @method static Builder|Entry whereAbbreviation($value)
+ * @method static Builder|Entry whereActive($value)
+ * @method static Builder|Entry whereCarNumber($value)
+ * @method static Builder|Entry whereColor($value)
+ * @method static Builder|Entry whereCreatedAt($value)
+ * @method static Builder|Entry whereDriverId($value)
+ * @method static Builder|Entry whereId($value)
+ * @method static Builder|Entry whereSeasonId($value)
+ * @method static Builder|Entry whereTeamId($value)
+ * @method static Builder|Entry whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

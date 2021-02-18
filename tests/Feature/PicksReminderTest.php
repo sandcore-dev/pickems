@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Mail;
 
 use App\Jobs\PicksReminder;
 use App\Mail\PicksReminded;
-use App\Race;
+use App\Models\Race;
 
 class PicksReminderTest extends TestCase
 {

@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Pick;
 use Illuminate\Database\Seeder;
-
-use App\Pick;
 
 class PicksTableSeeder extends Seeder
 {

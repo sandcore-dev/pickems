@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Circuit;
+use App\Models\Circuit;
 
 class CircuitsTableSeeder extends Seeder
 {

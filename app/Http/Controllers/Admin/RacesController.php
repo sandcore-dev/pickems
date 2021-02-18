@@ -11,10 +11,10 @@ use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Helpers\Date;
-use App\Series;
-use App\Season;
-use App\Circuit;
-use App\Race;
+use App\Models\Series;
+use App\Models\Season;
+use App\Models\Circuit;
+use App\Models\Race;
 use Illuminate\View\View;
 
 class RacesController extends Controller
@@ -86,7 +86,6 @@ class RacesController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'season_id' => ['bail', 'required', 'integer', 'exists:seasons,id'],
@@ -160,7 +159,6 @@ class RacesController extends Controller
      */
     public function update(Request $request, Race $race)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'name' => ['required', 'min:2'],

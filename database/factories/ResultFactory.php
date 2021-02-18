@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Result;
-use App\Race;
-use App\Entry;
+use App\Models\Result;
+use App\Models\Race;
+use App\Models\Entry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ResultFactory extends Factory

@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Race;
-use App\Season;
-use App\Circuit;
+use App\Models\Race;
+use App\Models\Season;
+use App\Models\Circuit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RaceFactory extends Factory

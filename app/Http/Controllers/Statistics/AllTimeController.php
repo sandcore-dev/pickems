@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Application;
-use App\League;
-use App\Standing;
+use App\Models\League;
+use App\Models\Standing;
 use Illuminate\View\View;
 
 class AllTimeController extends Controller
@@ -61,7 +61,10 @@ class AllTimeController extends Controller
     {
         $lastRaces = $this->getLastRaceEachSeason($league);
 
-        $finalStandings = Standing::with('user')->byLeague($league)->whereIn('race_id', $lastRaces)->get();
+        $finalStandings = Standing::with('user')
+            ->byLeague($league)
+            ->whereIn('race_id', $lastRaces)
+            ->get();
 
         $mappedByUser = $finalStandings->mapToGroups(
             function ($item) {

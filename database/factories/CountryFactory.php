@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Country;
+use App\Models\Country;
 use Countries;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Monarobase\CountryList\CountryNotFoundException;

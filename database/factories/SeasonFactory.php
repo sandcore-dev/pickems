@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Season;
-use App\Series;
+use App\Models\Season;
+use App\Models\Series;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SeasonFactory extends Factory

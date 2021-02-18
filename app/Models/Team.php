@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Team
+ * App\Models\Team
  *
  * @property int $id
  * @property string $name
@@ -17,18 +17,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Country|null $country
- * @property-read \App\Collections\EntryCollection|\App\Entry[] $entries
+ * @property-read \App\Models\Country|null $country
+ * @property-read \App\Collections\EntryCollection|\App\Models\Entry[] $entries
  * @property-read int|null $entries_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Team whereUpdatedAt($value)
+ * @method static Builder|Team newModelQuery()
+ * @method static Builder|Team newQuery()
+ * @method static Builder|Team query()
+ * @method static Builder|Team whereActive($value)
+ * @method static Builder|Team whereCountryId($value)
+ * @method static Builder|Team whereCreatedAt($value)
+ * @method static Builder|Team whereId($value)
+ * @method static Builder|Team whereName($value)
+ * @method static Builder|Team whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

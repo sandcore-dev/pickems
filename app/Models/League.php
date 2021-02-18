@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\League
+ * App\Models\League
  *
  * @property int $id
  * @property int $series_id
@@ -18,22 +18,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $access_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Race|null $next_deadline
- * @property-read \App\Series $series
- * @property-read \App\Collections\StandingCollection|\App\Standing[] $standings
+ * @property-read \App\Models\Race|null $next_deadline
+ * @property-read \App\Models\Series $series
+ * @property-read \App\Collections\StandingCollection|\App\Models\Standing[] $standings
  * @property-read int|null $standings_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $users
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  * @property-read int|null $users_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League byToken($token)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League whereAccessToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League whereSeriesId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\League whereUpdatedAt($value)
+ * @method static Builder|League byToken(string $token)
+ * @method static Builder|League newModelQuery()
+ * @method static Builder|League newQuery()
+ * @method static Builder|League query()
+ * @method static Builder|League whereAccessToken($value)
+ * @method static Builder|League whereCreatedAt($value)
+ * @method static Builder|League whereId($value)
+ * @method static Builder|League whereName($value)
+ * @method static Builder|League whereSeriesId($value)
+ * @method static Builder|League whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

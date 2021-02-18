@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +9,7 @@ use App\Collections\ResultCollection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Result
+ * App\Models\Result
  *
  * @property int $id
  * @property int $rank
@@ -17,19 +17,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $entry_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Entry $entry
- * @property-read \App\Race $race
- * @method static \App\Collections\ResultCollection|static[] all($columns = ['*'])
- * @method static \App\Collections\ResultCollection|static[] get($columns = ['*'])
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result whereEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result whereRaceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result whereRank($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Result whereUpdatedAt($value)
+ * @property-read \App\Models\Entry $entry
+ * @property-read \App\Models\Race $race
+ * @method static ResultCollection|static[] all($columns = ['*'])
+ * @method static ResultCollection|static[] get($columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder|Result newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Result newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Result query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereRaceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereRank($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

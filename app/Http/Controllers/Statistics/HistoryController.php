@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Application;
-use App\League;
-use App\Standing;
+use App\Models\League;
+use App\Models\Standing;
 use Illuminate\View\View;
 
 class HistoryController extends Controller

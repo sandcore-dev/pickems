@@ -8,8 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\Series;
-use App\Season;
+use App\Models\Series;
+use App\Models\Season;
 use Illuminate\View\View;
 
 class SeasonsController extends Controller
@@ -68,7 +68,6 @@ class SeasonsController extends Controller
      */
     public function store(Request $request)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'series_id' => ['bail', 'required', 'exists:series,id'],
@@ -125,7 +124,6 @@ class SeasonsController extends Controller
      */
     public function update(Request $request, Season $season)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $request->validate(
             [
                 'start_year' => ['required', 'integer', 'between:1970,9999'],

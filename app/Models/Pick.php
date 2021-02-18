@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +10,7 @@ use App\Collections\PickCollection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Pick
+ * App\Models\Pick
  *
  * @property int $id
  * @property int $race_id
@@ -20,26 +20,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $carry_over
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Entry $entry
+ * @property-read \App\Models\Entry $entry
  * @property-read integer|null $points
  * @property-read Race $race
  * @property-read User $user
- * @method static \App\Collections\PickCollection|static[] all($columns = ['*'])
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick byRace(Race $race)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick byRaceAndUser(Race $race, User $user)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick byUser(User $user)
- * @method static \App\Collections\PickCollection|static[] get($columns = ['*'])
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereCarryOver($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereRaceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereRank($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Pick whereUserId($value)
+ * @method static PickCollection|static[] all($columns = ['*'])
+ * @method static Builder|Pick byRace(Race $race)
+ * @method static Builder|Pick byRaceAndUser(Race $race, User $user)
+ * @method static Builder|Pick byUser(User $user)
+ * @method static PickCollection|static[] get($columns = ['*'])
+ * @method static Builder|Pick newModelQuery()
+ * @method static Builder|Pick newQuery()
+ * @method static Builder|Pick query()
+ * @method static Builder|Pick whereCarryOver($value)
+ * @method static Builder|Pick whereCreatedAt($value)
+ * @method static Builder|Pick whereEntryId($value)
+ * @method static Builder|Pick whereId($value)
+ * @method static Builder|Pick whereRaceId($value)
+ * @method static Builder|Pick whereRank($value)
+ * @method static Builder|Pick whereUpdatedAt($value)
+ * @method static Builder|Pick whereUserId($value)
+ * @method static Builder|Pick with(array|string $value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

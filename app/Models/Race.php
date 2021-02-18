@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Race
+ * App\Models\Race
  *
  * @property int $id
  * @property int $season_id
@@ -19,29 +19,29 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon $race_day
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Circuit $circuit
+ * @property-read \App\Models\Circuit $circuit
  * @property-read bool $pickable
- * @property-read \App\Collections\PickCollection|\App\Pick[] $picks
+ * @property-read \App\Collections\PickCollection|\App\Models\Pick[] $picks
  * @property-read int|null $picks_count
- * @property-read \App\Collections\ResultCollection|\App\Result[] $results
+ * @property-read \App\Collections\ResultCollection|\App\Models\Result[] $results
  * @property-read int|null $results_count
- * @property-read \App\Season $season
- * @property-read \App\Collections\StandingCollection|\App\Standing[] $standings
+ * @property-read \App\Models\Season $season
+ * @property-read \App\Collections\StandingCollection|\App\Models\Standing[] $standings
  * @property-read int|null $standings_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race nextDeadline()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race nextOrLast()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race previousOrFirst($index = 0)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereCircuitId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereRaceDay($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereSeasonId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Race whereWeekendStart($value)
+ * @method static Builder|Race newModelQuery()
+ * @method static Builder|Race newQuery()
+ * @method static Builder|Race nextDeadline()
+ * @method static Builder|Race nextOrLast()
+ * @method static Builder|Race previousOrFirst(int $index = 0)
+ * @method static Builder|Race query()
+ * @method static Builder|Race whereCircuitId($value)
+ * @method static Builder|Race whereCreatedAt($value)
+ * @method static Builder|Race whereId($value)
+ * @method static Builder|Race whereName($value)
+ * @method static Builder|Race whereRaceDay($value)
+ * @method static Builder|Race whereSeasonId($value)
+ * @method static Builder|Race whereUpdatedAt($value)
+ * @method static Builder|Race whereWeekendStart($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

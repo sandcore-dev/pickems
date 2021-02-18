@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Models\User;
 use Illuminate\View\View;
 
 class UsersController extends Controller

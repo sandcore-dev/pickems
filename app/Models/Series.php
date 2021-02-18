@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,24 +8,24 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Series
+ * App\Models\Series
  *
  * @property int $id
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Season $latest_season
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\League[] $leagues
+ * @property-read \App\Models\Season $latest_season
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\League[] $leagues
  * @property-read int|null $leagues_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Season[] $seasons
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Season[] $seasons
  * @property-read int|null $seasons_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Series whereUpdatedAt($value)
+ * @method static Builder|Series newModelQuery()
+ * @method static Builder|Series newQuery()
+ * @method static Builder|Series query()
+ * @method static Builder|Series whereCreatedAt($value)
+ * @method static Builder|Series whereId($value)
+ * @method static Builder|Series whereName($value)
+ * @method static Builder|Series whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

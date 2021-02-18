@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Circuit
+ * App\Models\Circuit
  *
  * @property int $id
  * @property string $name
@@ -19,24 +19,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $country_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Country $country
+ * @property-read \App\Models\Country $country
  * @property-read string $local_location
  * @property-read string $local_location_short
  * @property-read string $location
  * @property-read string $location_short
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Race[] $races
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Race[] $races
  * @property-read int|null $races_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereLength($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Circuit whereUpdatedAt($value)
+ * @method static Builder|Circuit newModelQuery()
+ * @method static Builder|Circuit newQuery()
+ * @method static Builder|Circuit query()
+ * @method static Builder|Circuit whereArea($value)
+ * @method static Builder|Circuit whereCity($value)
+ * @method static Builder|Circuit whereCountryId($value)
+ * @method static Builder|Circuit whereCreatedAt($value)
+ * @method static Builder|Circuit whereId($value)
+ * @method static Builder|Circuit whereLength($value)
+ * @method static Builder|Circuit whereName($value)
+ * @method static Builder|Circuit whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

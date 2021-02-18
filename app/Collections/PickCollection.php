@@ -3,15 +3,15 @@
 namespace App\Collections;
 
 use Illuminate\Database\Eloquent\Collection;
-use App\Race;
-use App\Pick;
+use App\Models\Race;
+use App\Models\Pick;
 
 class PickCollection extends Collection
 {
     /**
      * Get picks of the given race.
      *
-     * @parm \App\Race
+     * @parm \App\Models\Race
      *
      * @return \App\Collections\PickCollection
      */
@@ -48,7 +48,7 @@ class PickCollection extends Collection
     /**
      * Get a new instance of the object.
      *
-     * @return \App\Pick
+     * @return \App\Models\Pick
      */
     protected function getNewObject()
     {

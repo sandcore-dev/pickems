@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Race;
-use App\League;
+use App\Models\Race;
+use App\Models\League;
 
 class Standings extends Command
 {

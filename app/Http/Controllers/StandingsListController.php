@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Traits\UserSeasonsList;
-use App\League;
-use App\Season;
-use App\Race;
+use App\Models\League;
+use App\Models\Season;
+use App\Models\Race;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;

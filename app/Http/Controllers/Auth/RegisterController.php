@@ -8,8 +8,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use App\League;
-use App\User;
+use App\Models\League;
+use App\Models\User;
 use Illuminate\View\View;
 
 class RegisterController extends Controller

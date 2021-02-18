@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Standing;
 use Illuminate\Database\Seeder;
-
-use App\Standing;
 
 class StandingsTableSeeder extends Seeder
 {

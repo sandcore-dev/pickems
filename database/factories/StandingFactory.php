@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Standing;
-use App\User;
-use App\Race;
+use App\Models\Standing;
+use App\Models\User;
+use App\Models\Race;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class StandingFactory extends Factory

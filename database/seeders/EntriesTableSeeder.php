@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Entry;
 use Illuminate\Database\Seeder;
-
-use App\Entry;
 
 class EntriesTableSeeder extends Seeder
 {

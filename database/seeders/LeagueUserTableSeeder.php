@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\League;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-
-use App\League;
-use App\User;
 
 class LeagueUserTableSeeder extends Seeder
 {
@@ -16,12 +15,11 @@ class LeagueUserTableSeeder extends Seeder
      */
     public function run()
     {
-    	$leagues	= League::all();
-    	$users		= User::all();
+        $leagues = League::all();
+        $users = User::all();
 
-    	for( $i = 0; $i < 50; $i++ )
-    	{
-    		$leagues->random()->users()->syncWithoutDetaching( $users->random()->id );
-    	}
+        for ($i = 0; $i < 50; $i++) {
+            $leagues->random()->users()->syncWithoutDetaching($users->random()->id);
+        }
     }
 }

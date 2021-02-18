@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Result;
 use Illuminate\Database\Seeder;
-
-use App\Result;
 
 class ResultsTableSeeder extends Seeder
 {

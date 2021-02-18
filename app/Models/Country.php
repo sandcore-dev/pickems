@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,29 +10,29 @@ use Monarobase\CountryList\CountryListFacade as Countries;
 use Monarobase\CountryList\CountryNotFoundException;
 
 /**
- * App\Country
+ * App\Models\Country
  *
  * @property int $id
  * @property string $code
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Circuit[] $circuits
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Circuit[] $circuits
  * @property-read int|null $circuits_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Driver[] $drivers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Driver[] $drivers
  * @property-read int|null $drivers_count
  * @property-read string $flag_class
  * @property-read string $local_name
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Team[] $teams
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Team[] $teams
  * @property-read int|null $teams_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Country whereUpdatedAt($value)
+ * @method static Builder|Country newModelQuery()
+ * @method static Builder|Country newQuery()
+ * @method static Builder|Country query()
+ * @method static Builder|Country whereCode($value)
+ * @method static Builder|Country whereCreatedAt($value)
+ * @method static Builder|Country whereId($value)
+ * @method static Builder|Country whereName($value)
+ * @method static Builder|Country whereUpdatedAt($value)
  * @mixin \Eloquent
  * @noinspection PhpFullyQualifiedNameUsageInspection
  * @noinspection PhpUnnecessaryFullyQualifiedNameInspection

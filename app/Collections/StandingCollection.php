@@ -3,7 +3,7 @@
 namespace App\Collections;
 
 use Illuminate\Database\Eloquent\Collection;
-use App\Standing;
+use App\Models\Standing;
 
 class StandingCollection extends Collection
 {
