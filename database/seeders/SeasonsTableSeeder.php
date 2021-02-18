@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\Season;
@@ -13,6 +15,8 @@ class SeasonsTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( Season::class, 25 )->create();
+        Season::factory()
+            ->times(25)
+            ->create();
     }
 }

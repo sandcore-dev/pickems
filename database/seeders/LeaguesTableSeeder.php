@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\League;
@@ -13,6 +15,8 @@ class LeaguesTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( League::class, 20)->create();
+        League::factory()
+            ->times(20)
+            ->create();
     }
 }

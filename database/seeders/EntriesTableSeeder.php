@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\Entry;
@@ -13,6 +15,8 @@ class EntriesTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( Entry::class, 50 )->create();
+        Entry::factory()
+            ->times(50)
+            ->create();
     }
 }

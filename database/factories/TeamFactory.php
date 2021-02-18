@@ -1,14 +1,21 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\Team;
 use App\Country;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Team::class, function (Faker $faker) {
-    return [
-    	'name'		=> $faker->unique()->company . ' Team',
-    	'country_id'	=> Country::all()->random()->id,
-    	'active'	=> $faker->boolean,
-    ];
-});
+class TeamFactory extends Factory
+{
+    protected $model = Team::class;
+
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->unique()->company . ' Team',
+            'country_id' => Country::factory(),
+            'active' => $this->faker->boolean,
+        ];
+    }
+}

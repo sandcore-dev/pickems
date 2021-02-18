@@ -1,15 +1,29 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\Circuit;
 use App\Country;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Circuit::class, function (Faker $faker) {
-    return [
-    	'name'		=> $faker->unique()->city . ' Circuit',
-    	'length'	=> $faker->numberBetween( 3000, 25000 ),
-    	'city'		=> $faker->city,
-    	'country_id'	=> Country::all()->random()->id,
-    ];
-});
+class CircuitFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Circuit::class;
+
+    public function definition()
+    {
+        return [
+            'name' => function (array $attributes) {
+                return $attributes['city'] . $this->faker->randomElement([' Raceway', ' Speedway', ' Circuit']);
+            },
+            'length' => $this->faker->numberBetween(3000, 25000),
+            'city' => $this->faker->city,
+            'country_id' => Country::factory(),
+        ];
+    }
+}

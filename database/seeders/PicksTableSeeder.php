@@ -1,10 +1,12 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
-use App\User;
+use App\Pick;
 
-class UsersTableSeeder extends Seeder
+class PicksTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +15,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( User::class, 15 )->create();
+        Pick::factory()
+            ->times(500)
+            ->create();
     }
 }

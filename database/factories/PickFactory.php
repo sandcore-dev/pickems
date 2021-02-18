@@ -1,31 +1,32 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\Pick;
-
 use App\Race;
 use App\Entry;
 use App\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Pick::class, function (Faker $faker) {
-	$usersWithLeagues	= User::has('leagues')->get();
-	
-	do
-	{
-		$raceId			= Race::all()->random()->id;
-		$entryId		= Entry::all()->random()->id;
-		$leagueUserId		= $usersWithLeagues->random()->leagues->random()->id;
-	}
-	while( !Pick::where( 'race_id', $raceId )->where( 'entry_id', $entryId )->where( 'league_user_id', $leagueUserId )->get()->isEmpty() );
+class PickFactory extends Factory
+{
+    protected $model = Pick::class;
 
-	$rank				= Pick::where( 'race_id', $raceId )->where( 'league_user_id', $leagueUserId )->max('rank') + 1;
-	
-	return [
-		'race_id'		=> $raceId,
-		'entry_id'		=> $entryId,
-		'league_user_id'	=> $leagueUserId,
-		'rank'			=> $rank,
-		'carry_over'		=> 0,
-	];
-});
+    public function definition()
+    {
+        $usersWithLeagues = User::has('leagues')->get();
+        $leagueUserId = $usersWithLeagues->random()->leagues->random()->id;
+
+        return [
+            'race_id' => Race::factory(),
+            'entry_id' => Entry::factory(),
+            'league_user_id' => $leagueUserId,
+            'rank' => function (array $attributes) {
+                return Pick::where('race_id', $attributes['race_id'])
+                        ->where('league_user_id', $attributes['league_user_id'])
+                        ->max('rank') + 1;
+            },
+            'carry_over' => 0,
+        ];
+    }
+}

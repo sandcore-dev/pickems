@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,13 +14,13 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call( UsersTableSeeder::class );
-        
+
         $this->call( SeriesTableSeeder::class );
         $this->call( SeasonsTableSeeder::class );
-        
+
         $this->call( CountriesTableSeeder::class );
         $this->call( CircuitsTableSeeder::class );
-        
+
         $this->call( DriversTableSeeder::class );
         $this->call( TeamsTableSeeder::class );
 
@@ -29,7 +31,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call( LeagueSeasonTableSeeder::class );
         $this->call( LeagueUserTableSeeder::class );
-        
+
         $this->call( PicksTableSeeder::class );
         $this->call( ResultsTableSeeder::class );
         $this->call( StandingsTableSeeder::class );

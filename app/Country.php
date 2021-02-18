@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -38,6 +39,8 @@ use Monarobase\CountryList\CountryNotFoundException;
  */
 class Country extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass-assignable.
      *
@@ -71,7 +74,7 @@ class Country extends Model
     {
         return $this->hasMany(Circuit::class);
     }
-    
+
     /**
      * Get drivers of this country.
      *
@@ -81,7 +84,7 @@ class Country extends Model
     {
         return $this->hasMany(Driver::class);
     }
-    
+
     /**
      * Get teams of this country.
      *
@@ -91,7 +94,7 @@ class Country extends Model
     {
         return $this->hasMany(Team::class);
     }
-    
+
     /**
      * Get the flag class of this country.
      *
@@ -114,7 +117,7 @@ class Country extends Model
         } catch (CountryNotFoundException $e) {
             error_log('CountryNotFoundException: ' . $e->getMessage());
         }
-        
+
         return $this->name;
     }
 }

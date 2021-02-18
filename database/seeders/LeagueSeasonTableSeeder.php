@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\League;
@@ -16,7 +18,7 @@ class LeagueSeasonTableSeeder extends Seeder
     {
     	$leagues	= League::all();
     	$seasons	= Season::all();
-    	
+
     	for( $i = 0; $i < 50; $i++ )
     	{
     		$leagues->random()->seasons()->syncWithoutDetaching( $seasons->random()->id );

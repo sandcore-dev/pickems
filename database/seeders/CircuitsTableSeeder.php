@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
+namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use App\Circuit;
 
 class CircuitsTableSeeder extends Seeder
@@ -13,6 +14,8 @@ class CircuitsTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( Circuit::class, 22 )->create();
+        Circuit::factory()
+            ->times(22)
+            ->create();
     }
 }

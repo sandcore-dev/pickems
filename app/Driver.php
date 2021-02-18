@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Driver extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass-assignable.
      *
@@ -75,7 +78,7 @@ class Driver extends Model
     {
         return $this->belongsTo(Country::class)->withDefault();
     }
-    
+
     /**
      * Get entries of this driver.
      *
@@ -85,7 +88,7 @@ class Driver extends Model
     {
         return $this->hasMany(Entry::class);
     }
-    
+
     /**
      * Get full name of this driver.
      *
@@ -95,7 +98,7 @@ class Driver extends Model
     {
         return substr($this->first_name, 0, 1) . '.';
     }
-    
+
     /**
      * Get full last name of this driver.
      *
@@ -105,7 +108,7 @@ class Driver extends Model
     {
         return ($this->surname_prefix ? $this->surname_prefix . ' ' : '') . $this->last_name;
     }
-    
+
     /**
      * Get full name of this driver.
      *
@@ -115,7 +118,7 @@ class Driver extends Model
     {
         return $this->first_name . ' ' . $this->fullLastName;
     }
-    
+
     /**
      * Get full name of this driver, with last name first and then a comma.
      *

@@ -1,10 +1,12 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
-use App\Team;
+use App\User;
 
-class TeamsTableSeeder extends Seeder
+class UsersTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +15,8 @@ class TeamsTableSeeder extends Seeder
      */
     public function run()
     {
-	factory( Team::class, 11 )->create();
+        User::factory()
+            ->times(15)
+            ->create();
     }
 }

@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Seeder;
+namespace Database\Seeders;
 
 use App\Driver;
+use Illuminate\Database\Seeder;
 
 class DriversTableSeeder extends Seeder
 {
@@ -13,6 +14,8 @@ class DriversTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( Driver::class, 25 )->create();
+        Driver::factory()
+            ->times(25)
+            ->create();
     }
 }

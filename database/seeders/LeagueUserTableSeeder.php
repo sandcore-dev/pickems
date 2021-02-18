@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\League;
@@ -16,7 +18,7 @@ class LeagueUserTableSeeder extends Seeder
     {
     	$leagues	= League::all();
     	$users		= User::all();
-    	
+
     	for( $i = 0; $i < 50; $i++ )
     	{
     		$leagues->random()->users()->syncWithoutDetaching( $users->random()->id );

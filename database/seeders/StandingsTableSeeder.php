@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\Standing;
@@ -13,7 +15,8 @@ class StandingsTableSeeder extends Seeder
      */
     public function run()
     {
-    	for( $i = 0; $i < 100; $i++ )
-	    	factory( Standing::class )->create();
+        Standing::factory()
+            ->times(100)
+            ->create();
     }
 }

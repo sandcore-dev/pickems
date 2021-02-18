@@ -1,11 +1,18 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\League;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(League::class, function (Faker $faker) {
-    return [
-    	'name'	=> $faker->unique()->words( 3, true ),
-    ];
-});
+class LeagueFactory extends Factory
+{
+    protected $model = League::class;
+
+    public function definition()
+    {
+        return [
+            'name'	=> $this->faker->unique()->words( 3, true ),
+        ];
+    }
+}

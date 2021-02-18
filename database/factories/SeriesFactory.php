@@ -1,11 +1,18 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\Series;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Series::class, function (Faker $faker) {
-    return [
-    	'name'	=> $faker->unique()->company . ' Championship',
-    ];
-});
+class SeriesFactory extends Factory
+{
+    protected $model = Series::class;
+
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->unique()->company . ' Championship',
+        ];
+    }
+}

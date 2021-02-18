@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\Result;
@@ -13,6 +15,8 @@ class ResultsTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( Result::class, 200 )->create();
+        Result::factory()
+            ->times(200)
+            ->create();
     }
 }

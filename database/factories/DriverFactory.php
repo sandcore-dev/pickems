@@ -1,15 +1,23 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-use App\Driver;
 use App\Country;
+use App\Driver;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Driver::class, function (Faker $faker) {
-    return [
-    	'first_name'	=> $faker->firstName,
-    	'last_name'	=> $faker->lastName,
-    	'country_id'	=> Country::all()->random()->id,
-    	'active'	=> $faker->boolean,
-    ];
-});
+class DriverFactory extends Factory
+{
+    protected $model = Driver::class;
+
+    public function definition()
+    {
+        return [
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'country_id' => Country::factory(),
+            'active' => $this->faker->boolean,
+        ];
+    }
+}
+

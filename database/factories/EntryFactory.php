@@ -1,27 +1,25 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\Entry;
-
 use App\Season;
 use App\Team;
 use App\Driver;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Entry::class, function (Faker $faker) {
-	do
-	{
-		$seasonId 	= Season::all()->random()->id;
-		$teamId		= Team::all()->random()->id;
-		$driverId	= Driver::all()->random()->id;
-	}
-	while( !Entry::where( 'season_id', $seasonId )->where( 'team_id', $teamId )->where( 'driver_id', $driverId )->get()->isEmpty() );
+class EntryFactory extends Factory
+{
+    protected $model = Entry::class;
 
-	return [
-		'season_id'	=> $seasonId,
-		'team_id'	=> $teamId,
-		'driver_id'	=> $driverId,
-		'car_number'	=> $faker->unique()->numberBetween(0, 99),
-		'active'	=> $faker->boolean,
-	];
-});
+    public function definition()
+    {
+        return [
+            'season_id' => Season::factory(),
+            'team_id' => Team::factory(),
+            'driver_id' => Driver::factory(),
+            'car_number' => $this->faker->unique()->numberBetween(0, 99),
+            'active' => $this->faker->boolean,
+        ];
+    }
+}

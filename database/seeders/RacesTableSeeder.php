@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\Race;
@@ -14,6 +16,8 @@ class RacesTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory( Race::class, Season::count() * 20 )->create();
+        Race::factory()
+            ->times(Season::count() * 20)
+            ->create();
     }
 }

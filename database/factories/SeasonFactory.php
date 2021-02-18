@@ -1,17 +1,27 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
 use App\Season;
 use App\Series;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Season::class, function (Faker $faker) {
-	$start_year	= $faker->year();
-	$end_year	= $faker->boolean ? $start_year : $start_year + 1;
-	
-	return [
-		'series_id'	=> Series::all()->random()->id,
-		'start_year'	=> $start_year,
-		'end_year'	=> $end_year,
-	];
-});
+class SeasonFactory extends Factory
+{
+    protected $model = Season::class;
+
+    public function definition()
+    {
+        $start_year = (int)$this->faker->year();
+        $end_year = $this->faker->boolean
+            ? $start_year
+            : $start_year + 1;
+
+        return [
+            'series_id' => Series::factory(),
+            'start_year' => $start_year,
+            'end_year' => $end_year,
+        ];
+    }
+}
+

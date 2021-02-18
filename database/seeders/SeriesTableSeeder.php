@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 use App\Series;
@@ -13,6 +15,8 @@ class SeriesTableSeeder extends Seeder
      */
     public function run()
     {
-	factory( Series::class, 10 )->create();
+        Series::factory()
+            ->times(10)
+            ->create();
     }
 }
