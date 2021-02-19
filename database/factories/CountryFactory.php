@@ -9,27 +9,17 @@ use Monarobase\CountryList\CountryNotFoundException;
 
 class CountryFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Country::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
-    public function definition()
+    public function definition(): array
     {
         return [
-            'code' => $this->faker->countryCode,
+            'code' => $this->faker->unique()->countryCode,
             'name' => function (array $attributes) {
                 try {
                     return Countries::getOne($attributes['code'], config('app.locale'));
                 } catch (CountryNotFoundException $e) {
-                    return '(random)' . $this->faker->country;
+                    return '(random) ' . $this->faker->country;
                 }
             },
         ];

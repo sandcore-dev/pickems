@@ -7,15 +7,10 @@ use Illuminate\Database\Seeder;
 
 class CountriesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
         Country::factory()
-            ->times(25)
+            ->count(25)
             ->create();
     }
 }

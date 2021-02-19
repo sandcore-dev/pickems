@@ -11,7 +11,7 @@ class RaceFactory extends Factory
 {
     protected $model = Race::class;
 
-    public function definition()
+    public function definition(): array
     {
         $race_day = strtotime('next Sunday', $this->faker->unixTime());
         $weekend_start = strtotime('-3 days', $race_day);

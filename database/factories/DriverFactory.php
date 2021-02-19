@@ -10,11 +10,13 @@ class DriverFactory extends Factory
 {
     protected $model = Driver::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'surname_prefix' => $this->faker->optional(75)
+                ->randomElement(['van', 'de', 'van de', 'van der', 'der', 'von', 'van den', 'den']),
+            'last_name' => $this->faker->unique()->lastName,
             'country_id' => Country::factory(),
             'active' => $this->faker->boolean,
         ];

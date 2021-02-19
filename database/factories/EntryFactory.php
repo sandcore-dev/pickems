@@ -12,7 +12,7 @@ class EntryFactory extends Factory
 {
     protected $model = Entry::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'season_id' => Season::factory(),

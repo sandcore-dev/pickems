@@ -2,20 +2,29 @@
 
 namespace Database\Seeders;
 
+use App\Models\Country;
 use App\Models\Team;
 use Illuminate\Database\Seeder;
 
 class TeamsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
+        if (!Country::exists()) {
+            Team::factory()
+                ->count(11)
+                ->create();
+            return;
+        }
+
+        $countries = Country::all();
+
         Team::factory()
-            ->times(11)
-            ->create();
+            ->count(11)
+            ->create([
+                'country_id' => function () use ($countries) {
+                    return $countries->random();
+                }
+            ]);
     }
 }

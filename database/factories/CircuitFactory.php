@@ -15,7 +15,7 @@ class CircuitFactory extends Factory
      */
     protected $model = Circuit::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => function (array $attributes) {

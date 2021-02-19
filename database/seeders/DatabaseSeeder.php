@@ -6,34 +6,28 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        $this->call( UsersTableSeeder::class );
+        $this->call([
+            UsersTableSeeder::class,
 
-        $this->call( SeriesTableSeeder::class );
-        $this->call( SeasonsTableSeeder::class );
+            SeriesTableSeeder::class,
+            SeasonsTableSeeder::class,
 
-        $this->call( CountriesTableSeeder::class );
-        $this->call( CircuitsTableSeeder::class );
+            CountriesTableSeeder::class,
+            CircuitsTableSeeder::class,
 
-        $this->call( DriversTableSeeder::class );
-        $this->call( TeamsTableSeeder::class );
+            DriversTableSeeder::class,
+            TeamsTableSeeder::class,
 
-        $this->call( EntriesTableSeeder::class );
-        $this->call( RacesTableSeeder::class );
+            EntriesTableSeeder::class,
+            RacesTableSeeder::class,
 
-        $this->call( LeaguesTableSeeder::class );
+            LeaguesTableSeeder::class,
 
-        $this->call( LeagueSeasonTableSeeder::class );
-        $this->call( LeagueUserTableSeeder::class );
-
-        $this->call( PicksTableSeeder::class );
-        $this->call( ResultsTableSeeder::class );
-        $this->call( StandingsTableSeeder::class );
+            PicksTableSeeder::class,
+            ResultsTableSeeder::class,
+            StandingsTableSeeder::class,
+        ]);
     }
 }

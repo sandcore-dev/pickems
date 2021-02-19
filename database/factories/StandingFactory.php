@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\League;
 use App\Models\Standing;
 use App\Models\User;
 use App\Models\Race;
@@ -11,17 +12,11 @@ class StandingFactory extends Factory
 {
     protected $model = Standing::class;
 
-    public function definition()
+    public function definition(): array
     {
-        $usersWithLeagues = User::has('leagues')->get();
-
-        do {
-            $leagueUserId = $usersWithLeagues->random()->leagues->random()->id;
-            $raceId = Race::all()->random()->id;
-        } while (!Standing::where('league_user_id', $leagueUserId)->where('race_id', $raceId)->get()->isEmpty());
-
         return [
-            'league_user_id' => $leagueUserId,
+            'user_id' => User::factory(),
+            'league_id' => League::factory(),
             'race_id' => Race::factory(),
             'rank' => $this->faker->numberBetween(1, User::count()),
             'previous_id' => null,

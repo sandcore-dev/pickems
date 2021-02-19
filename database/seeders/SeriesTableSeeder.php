@@ -7,15 +7,10 @@ use Illuminate\Database\Seeder;
 
 class SeriesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
         Series::factory()
-            ->times(10)
+            ->count(10)
             ->create();
     }
 }

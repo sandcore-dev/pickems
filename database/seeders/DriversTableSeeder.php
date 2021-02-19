@@ -2,20 +2,28 @@
 
 namespace Database\Seeders;
 
+use App\Models\Country;
 use App\Models\Driver;
 use Illuminate\Database\Seeder;
 
 class DriversTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
+        if (!Country::exists()) {
+            Driver::factory()
+                ->count(25)
+                ->create();
+            return;
+        }
+
+        $countries = Country::all();
+
         Driver::factory()
-            ->times(25)
-            ->create();
+            ->create([
+                'country_id' => function () use ($countries) {
+                    return $countries->random();
+                },
+            ]);
     }
 }

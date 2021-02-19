@@ -9,7 +9,7 @@ class SeriesFactory extends Factory
 {
     protected $model = Series::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => $this->faker->unique()->company . ' Championship',

@@ -11,7 +11,7 @@ class ResultFactory extends Factory
 {
     protected $model = Result::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'rank' => $this->faker->numberBetween(1, 22),

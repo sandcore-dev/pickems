@@ -10,7 +10,7 @@ class SeasonFactory extends Factory
 {
     protected $model = Season::class;
 
-    public function definition()
+    public function definition(): array
     {
         $start_year = (int)$this->faker->year();
         $end_year = $this->faker->boolean
@@ -21,6 +21,7 @@ class SeasonFactory extends Factory
             'series_id' => Series::factory(),
             'start_year' => $start_year,
             'end_year' => $end_year,
+            'picks_max' => $this->faker->numberbetween(3, 25),
         ];
     }
 }

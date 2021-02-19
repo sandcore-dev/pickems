@@ -8,15 +8,20 @@ use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
         User::factory()
-            ->times(15)
-            ->create();
+            ->create([
+                'email' => 'webmaster@localhost',
+                'username' => 'webmaster',
+                'active' => true,
+                'is_admin' => true,
+            ]);
+
+        User::factory()
+            ->count(20)
+            ->create([
+                'is_admin' => false,
+            ]);
     }
 }
