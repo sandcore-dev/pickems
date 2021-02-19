@@ -82,7 +82,7 @@
 										@lang('No entries found.')
 									</p>
 									<p>
-										<a class="btn btn-primary" href="{{ route('admin.entries.populate', [ 'entry' => $currentSeason ]) }}">@lang('Populate with entries from previous season (:year)', [ 'year' => $currentSeason->previous->name ])</a>
+										<a class="btn btn-primary" href="{{ route('admin.entries.populate', [ 'season' => $currentSeason ]) }}">@lang('Populate with entries from previous season (:year)', [ 'year' => $currentSeason->previous->name ])</a>
 									</p>
 								</td>
 							</tr>
