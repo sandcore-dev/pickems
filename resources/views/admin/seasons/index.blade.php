@@ -46,7 +46,7 @@
 								</td>
 								<td class="text-center">
 									@if( !$season->races->count() )
-										<a href="{{ route( 'admin.seasons.destroy', [ 'seasons' => $season->id ] ) }}" title="@lang('Delete this season')" class="glyphicon glyphicon-trash"></a>
+										<a href="{{ route( 'admin.seasons.destroy', [ 'season' => $season->id ] ) }}" title="@lang('Delete this season')" class="glyphicon glyphicon-trash"></a>
 									@else
 										&nbsp;
 									@endif
