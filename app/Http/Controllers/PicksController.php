@@ -80,7 +80,6 @@ class PicksController extends Controller
 
         return view('picks.index')->with(
             [
-                'leagues' => $user->leagues,
                 'seasons' => $this->getSeasons($league),
 
                 'currentLeague' => $league,
