@@ -32,16 +32,16 @@ class RacesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request
+     * @param Request $request
      * @return Factory|Application|View
      */
     public function index(Request $request)
     {
-        if ($request->series) {
-            $series = Series::has('seasons')->findOrFail($request->series);
+        if ($request->filled('series')) {
+            $series = Series::has('seasons')->findOrFail($request->input('series'));
             $season = $series->seasons()->first();
-        } elseif ($request->season) {
-            $season = Season::findOrFail($request->season);
+        } elseif ($request->filled('season')) {
+            $season = Season::findOrFail($request->input('season'));
             $series = $season->series;
         } else {
             $series = Series::has('seasons')->first();
@@ -68,7 +68,7 @@ class RacesController extends Controller
      */
     public function create(Request $request)
     {
-        $season = Season::findOrFail($request->season);
+        $season = Season::findOrFail($request->input('season'));
 
         return view('admin.races.create')->with(
             [
@@ -100,14 +100,30 @@ class RacesController extends Controller
             ]
         );
 
-        $race_day = Carbon::createFromDate($request->input('race_day_year'), $request->input('race_day_month'), $request->input('race_day_day'));
-        $weekend_start = Carbon::create($request->input('weekend_start_year'), $request->input('weekend_start_month'), $request->input('weekend_start_day'), $request->input('weekend_start_hour'), $request->input('weekend_start_minute'), 0);
+        $race_day = Carbon::createFromDate(
+            $request->input('race_day_year'),
+            $request->input('race_day_month'),
+            $request->input('race_day_day')
+        );
+        $weekend_start = Carbon::create(
+            $request->input('weekend_start_year'),
+            $request->input('weekend_start_month'),
+            $request->input('weekend_start_day'),
+            $request->input('weekend_start_hour'),
+            $request->input('weekend_start_minute'),
+            0
+        );
 
         if ($weekend_start->greaterThan($race_day)) {
-            return redirect()->back()->withInput()->withErrors(['weekend_start' => __('The weekend start cannot be after race day.')]);
+            return redirect()->back()->withInput()->withErrors(
+                ['weekend_start' => __('The weekend start cannot be after race day.')]
+            );
         }
 
-        if (Race::where('season_id', $request->input('season_id'))->where('circuit_id', $request->input('circuit_id'))->where('race_day', $race_day)->count()) {
+        if (Race::where('season_id', $request->input('season_id'))->where(
+            'circuit_id',
+            $request->input('circuit_id')
+        )->where('race_day', $race_day)->count()) {
             return redirect()->back()->withInput()->withErrors(['name' => __('This race already exists.')]);
         }
 
@@ -172,14 +188,30 @@ class RacesController extends Controller
             ]
         );
 
-        $race_day = Carbon::createFromDate($request->input('race_day_year'), $request->input('race_day_month'), $request->input('race_day_day'));
-        $weekend_start = Carbon::create($request->input('weekend_start_year'), $request->input('weekend_start_month'), $request->input('weekend_start_day'), $request->input('weekend_start_hour'), $request->input('weekend_start_minute'), 0);
+        $race_day = Carbon::createFromDate(
+            $request->input('race_day_year'),
+            $request->input('race_day_month'),
+            $request->input('race_day_day')
+        );
+        $weekend_start = Carbon::create(
+            $request->input('weekend_start_year'),
+            $request->input('weekend_start_month'),
+            $request->input('weekend_start_day'),
+            $request->input('weekend_start_hour'),
+            $request->input('weekend_start_minute'),
+            0
+        );
 
         if ($weekend_start->greaterThan($race_day)) {
-            return redirect()->back()->withInput()->withErrors(['weekend_start' => 'The weekend start cannot be after race day.']);
+            return redirect()->back()->withInput()->withErrors(
+                ['weekend_start' => 'The weekend start cannot be after race day.']
+            );
         }
 
-        if (Race::where('season_id', $request->input('season_id'))->where('circuit_id', $request->input('circuit_id'))->where('race_day', $race_day)->count()) {
+        if (Race::where('season_id', $request->input('season_id'))->where(
+            'circuit_id',
+            $request->input('circuit_id')
+        )->where('race_day', $race_day)->count()) {
             return redirect()->back()->withInput()->withErrors(['name' => 'This race already exists.']);
         }
 
@@ -225,9 +257,23 @@ class RacesController extends Controller
     public function populate(Season $season)
     {
         if ($this->copyRacesFromPreviousSeasonTo($season)) {
-            return redirect()->route('admin.races.index')->with('status', __('The races from :from are copied to :to.', ['from' => $season->previous->name, 'to' => $season->name]));
+            return redirect()->route('admin.races.index')->with(
+                'status',
+                __(
+                    'The races from :from are copied to :to.',
+                    [
+                        'from' => $season->previous->name,
+                        'to' => $season->name,
+                    ]
+                )
+            );
         } else {
-            return redirect()->route('admin.races.index')->with('error', __('An error occurred when trying to copy races. Is the destination season empty?'));
+            return redirect()->route('admin.races.index')->with(
+                'error',
+                __(
+                    'An error occurred when trying to copy races. Is the destination season empty?'
+                )
+            );
         }
     }
 

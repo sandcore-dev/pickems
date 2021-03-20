@@ -38,7 +38,7 @@
 								@lang('Start of weekend')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.races.create', [ 'race' => $currentSeason->id ] ) }}" title="@lang('Add a race')" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.races.create', [ 'season' => $currentSeason->id ] ) }}" title="@lang('Add a race')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
