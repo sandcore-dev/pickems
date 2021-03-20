@@ -11,7 +11,10 @@
 	<title>@yield('title') {{ config('app.name', 'Laravel') }}</title>
 
 	<!-- Styles -->
-	<link href="{{ asset('css/app.css') }}" rel="stylesheet">
+	<link href="{{ mix('css/app.css') }}" rel="stylesheet">
+
+	<!-- Scripts -->
+	<script src="{{ mix('js/app.js') }}" defer></script>
 </head>
 <body>
 	<div class="container">
@@ -19,22 +22,22 @@
 			<div class="col-xs-12">
 				<h1 class="hidden-xs">{{ config('app.name', 'Laravel') }} @yield('secondary')</h1>
 
-				@section('menu')		
+				@section('menu')
 					@include('menu')
 				@show
 			</div>
 		</div>
 	</div>
-	
+
 	@yield('content')
-	
+
 	<footer class="container">
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="text-center">
 					@lang('Thanks to :name for making the Glyphicon Halflings set free of use.', [ 'name' => '<a href="http://glyphicons.com/" target="_blank">Glyphicons</a>' ])
 				</p>
-				
+
 				@if( env('APP_DEBUG') )
 				<p class="text-center">
 					{{ App\Listeners\DbListener::$count }} quer{{ App\Listeners\DbListener::$count == 1 ? 'y' : 'ies' }} executed.<br>
@@ -48,8 +51,5 @@
 			</div>
 		</div>
 	</footer>
-
-	<!-- Scripts -->
-	<script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
