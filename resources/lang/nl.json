@@ -52,7 +52,6 @@
 	"Total" : "Totaal",
 	"Finish" : "Gefinisht",
 	"Top :number" : "Top :number",
-	"Race" : "Race",
 	"No standings found for this race." : "Er is geen stand gevonden voor deze race.",
 
 	"Ranking" : "Stand",
@@ -191,6 +190,7 @@
 	"Invitation URL": "Uitnodigingslink",
 	"Generate a (new) access token": "(Nieuwe) uitnodigingslink genereren",
 	"Generate an access token": "Maak een uitnodigingslink aan",
+	"Championship picks": "Kampioenschap voorspellen",
 
 	"League(s)": "Subleague(s)",
 	"Edit leagues of this user": "Bewerk subleagues van deze gebruiker",

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,19 +43,14 @@ class League extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass-assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['series_id', 'name', 'access_token'];
+    protected $fillable = [
+        'series_id',
+        'name',
+        'access_token',
+        'championship_picks_enabled',
+    ];
 
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -69,9 +65,9 @@ class League extends Model
     /**
      * Get users of this league.
      *
-     * @return BelongsToMany
+     * @return BelongsToMany|User
      */
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
     }
@@ -79,9 +75,9 @@ class League extends Model
     /**
      * Get series of this league.
      *
-     * @return BelongsTo
+     * @return BelongsTo|Series
      */
-    public function series()
+    public function series(): BelongsTo
     {
         return $this->belongsTo(Series::class);
     }
@@ -89,22 +85,18 @@ class League extends Model
     /**
      * Get standings of this league.
      *
-     * @return HasMany
+     * @return HasMany|Standing
      */
-    public function standings()
+    public function standings(): HasMany
     {
         return $this->hasMany(Standing::class);
     }
 
-    /**
-     * Scope query by token.
-     *
-     * @param string $token
-     * @return Builder
-     */
-    public function scopeByToken($query, $token)
+    public function scopeByToken(Builder $query, string $token): Builder
     {
-        return $query->whereNotNull('access_token')->where('access_token', $token);
+        return $query
+            ->whereNotNull('access_token')
+            ->where('access_token', $token);
     }
 
     /**
@@ -112,10 +104,18 @@ class League extends Model
      *
      * @return Race|null
      */
-    public function getNextDeadlineAttribute()
+    public function getNextDeadlineAttribute(): ?Race
     {
-        $nextDeadline = $this->series->first()->seasons->first()->races()->nextDeadline();
-
-        return $nextDeadline->count() ? $nextDeadline->first() : null;
+        try {
+            return $this->series()
+                ->firstOrFail()
+                ->seasons()
+                ->firstOrFail()
+                ->races()
+                ->nextDeadline()
+                ->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            return null;
+        }
     }
 }

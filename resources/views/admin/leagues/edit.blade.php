@@ -57,7 +57,15 @@
 							@slot('label', 'Generate a (new) access token')
 						@endcomponent
 
-						@component('admin.form.submit')
+                        @component('admin.form.checkbox')
+                            @slot('field', 'championship_picks_enabled')
+
+                            @slot('label', 'Championship picks')
+
+                            @slot('value', $league->championship_picks_enabled)
+                        @endcomponent
+
+                    @component('admin.form.submit')
 							@slot('cancel', route( 'admin.leagues.index' ))
 
 							Edit league
