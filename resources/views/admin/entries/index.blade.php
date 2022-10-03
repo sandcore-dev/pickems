@@ -38,7 +38,7 @@
 								@lang('Active')
 							</th>
 							<th colspan="2" class="text-center">
-								<a href="{{ route( 'admin.entries.create', [ 'entry' => $currentSeason->id ] ) }}" title="@lang('Add an entry')" class="glyphicon glyphicon-plus"></a>
+								<a href="{{ route( 'admin.entries.create', [ 'season' => $currentSeason->id ] ) }}" title="@lang('Add an entry')" class="glyphicon glyphicon-plus"></a>
 							</th>
 						</tr>
 					</thead>
